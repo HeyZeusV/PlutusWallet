@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         // b/c FragMana saves list of frags
         if (currentFragment == null) {
 
-            val fragment = TransactionFragment()
+            val fragment = TransactionListFragment.newInstance()
             // Create a new fragment transaction, include one add operation in it,
             // and then commit it
             supportFragmentManager
