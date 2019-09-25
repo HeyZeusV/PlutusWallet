@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Finance Application</string>
+    <string name="transaction_title">Title</string>
+    <string name="transaction_title_hint">Enter title such as location/website of purchase</string>
+    <string name="transaction_date">Date</string>
+    <string name="transaction_total">Total</string>
+    <string name="transaction_total_hint">Enter total of transaction</string>
+    <string name="transaction_category">Category</string>
+    <string name="transaction_repeating_transaction">Repeating Transaction</string>
+    <string name="transaction_frequency">Frequency</string>
+    <string name="transaction_memo">Memo</string>
+    <string name="transaction_memo_hint">Enter any additional information needed</string>
 </resources>
