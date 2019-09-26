@@ -2,8 +2,10 @@ package com.heyzeusv.financeapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 
-class MainActivity : AppCompatActivity() {
+private const val TAG = "MainActivity"
+class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,7 +16,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragment_container)
 
         // would not be null if activity is destroyed and recreated
-        // b/c FragMana saves list of frags
+        // b/c FragmentManager saves list of frags
         if (currentFragment == null) {
 
             val fragment = TransactionListFragment.newInstance()
@@ -23,9 +25,23 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager
                 .beginTransaction()
                 // container view ID (where fragment's view should appear and
-                // unique ID for frag in FragMana's list, CrimeFragment
+                // unique ID for frag in FragmentManager's list, CrimeFragment
                 .add(R.id.fragment_container, fragment)
                 .commit()
         }
+    }
+
+    override fun onTransactionSelected(transactionId: Int) {
+        Log.d(TAG, "MainActivity.onTransactionSelected: $transactionId")
+
+        val fragment = TransactionFragment()
+        supportFragmentManager
+            .beginTransaction()
+            // replace fragment hosted at location with new fragment provided
+            // will add fragment even if there is none
+            .replace(R.id.fragment_container, fragment)
+            // pressing back button will go back to previous fragment (if any)
+            .addToBackStack(null)
+            .commit()
     }
 }

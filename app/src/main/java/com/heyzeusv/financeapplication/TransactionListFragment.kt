@@ -1,5 +1,6 @@
 package com.heyzeusv.financeapplication
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +19,16 @@ private const val TAG = "TransactionListFragment"
 
 class TransactionListFragment : Fragment() {
 
+    /**
+     * Required interface for hosting activities
+     * defines work that the fragment needs done by hosting activity
+     */
+    interface Callbacks {
+
+        fun onTransactionSelected(transactionId : Int)
+    }
+
+    private var callbacks : Callbacks? = null
     private lateinit var transactionRecyclerView : RecyclerView
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var adapter : TransactionAdapter? = TransactionAdapter(emptyList())
@@ -25,6 +36,14 @@ class TransactionListFragment : Fragment() {
     // provides instance of ViewModel
     private val transactionListViewModel : TransactionListViewModel by lazy {
         ViewModelProviders.of(this).get(TransactionListViewModel::class.java)
+    }
+
+    // called when fragment is attached to activity
+    override fun onAttach(context : Context) {
+        super.onAttach(context)
+
+        // stashing context into callbacks property which is the activity instance hosting fragment
+        callbacks = context as Callbacks?
     }
 
     // inflates the layout and returns the inflated view to hosting activity
@@ -64,6 +83,14 @@ class TransactionListFragment : Fragment() {
             })
     }
 
+    override fun onDetach() {
+        super.onDetach()
+
+        // afterward you cannot access the activity
+        // or count on the activity continuing to exist
+        callbacks = null
+    }
+
     private fun updateUI(transactions: List<Transaction>) {
 
         // creates CrimeAdapter to set with RecyclerView
@@ -98,7 +125,11 @@ class TransactionListFragment : Fragment() {
 
         override fun onClick(v : View?) {
 
-            Toast.makeText(context, "${transaction.title} pressed!", Toast.LENGTH_SHORT).show()
+            // test to check if correct Transaction is pressed
+            // Toast.makeText(context, "${transaction.title} pressed!", Toast.LENGTH_SHORT).show()
+
+            // notifies hosting activity which item was selected
+            callbacks?.onTransactionSelected(transaction.id)
         }
     }
 
