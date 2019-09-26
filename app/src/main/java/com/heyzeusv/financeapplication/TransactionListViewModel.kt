@@ -12,6 +12,7 @@ class TransactionListViewModel : ViewModel() {
         for (i in 0 until 100) {
 
             val transaction = Transaction()
+            transaction.id = i
             transaction.title = "Transaction #$i"
             transaction.total = BigDecimal("100.00")
             transaction.repeating = i % 2 == 0

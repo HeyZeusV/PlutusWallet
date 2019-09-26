@@ -32,10 +32,10 @@ class TransactionFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater : LayoutInflater,
+        container : ViewGroup?,
+        savedInstanceState : Bundle?
+    ) : View? {
 
         val view = inflater.inflate(R.layout.fragment_transaction, container, false)
         
@@ -61,10 +61,10 @@ class TransactionFragment : Fragment() {
 
             // sequence is user's input which title is changed to
             override fun onTextChanged(
-                sequence: CharSequence?,
-                start  : Int,
-                before : Int,
-                count  : Int
+                sequence : CharSequence?,
+                start    : Int,
+                before   : Int,
+                count    : Int
             ) {
                 transaction.title = sequence.toString()
             }
@@ -81,10 +81,10 @@ class TransactionFragment : Fragment() {
 
             // sequence is user's input which total is changed to
             override fun onTextChanged(
-                sequence: CharSequence?,
-                start  : Int,
-                before : Int,
-                count  : Int
+                sequence : CharSequence?,
+                start    : Int,
+                before   : Int,
+                count    : Int
             ) {
                 transaction.total = BigDecimal(sequence.toString())
             }
@@ -101,10 +101,10 @@ class TransactionFragment : Fragment() {
 
             // sequence is user's input which memo is changed to
             override fun onTextChanged(
-                sequence: CharSequence?,
-                start  : Int,
-                before : Int,
-                count  : Int
+                sequence : CharSequence?,
+                start    : Int,
+                before   : Int,
+                count    : Int
             ) {
                 transaction.memo = sequence.toString()
             }
@@ -125,6 +125,7 @@ class TransactionFragment : Fragment() {
             isEnabled = false
         }
         repeatingCheckBox.apply {
+
             setOnCheckedChangeListener { _, isChecked ->
                 transaction.repeating = isChecked
             }
