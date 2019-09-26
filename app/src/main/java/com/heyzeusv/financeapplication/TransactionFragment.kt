@@ -12,6 +12,8 @@ import android.widget.EditText
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import java.math.BigDecimal
+import java.text.DateFormat
+import java.util.*
 
 class TransactionFragment : Fragment() {
 
@@ -121,7 +123,7 @@ class TransactionFragment : Fragment() {
         // but nice to have listeners in one place
         dateButton.apply {
 
-            text = transaction.date.toString()
+            text = DateFormat.getDateInstance(DateFormat.FULL).format(transaction.date)
             isEnabled = false
         }
         repeatingCheckBox.apply {

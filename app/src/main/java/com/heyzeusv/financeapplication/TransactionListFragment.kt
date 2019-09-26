@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.DateFormat
 
 private const val TAG = "TransactionListFragment"
 
@@ -80,7 +81,7 @@ class TransactionListFragment : Fragment() {
 
             this.transaction = transaction
             titleTextView.text = this.transaction.title
-            dateTextView. text = this.transaction.date.toString()
+            dateTextView. text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
             totalTextView.text = String.format("$%.2f", this.transaction.total)
         }
 
