@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,11 +60,34 @@ class TransactionListFragment : Fragment() {
     }
 
     // ViewHolder stores a reference to an item's view
-    private inner class TransactionHolder(view : View) : RecyclerView.ViewHolder(view) {
+    private inner class TransactionHolder(view : View)
+        : RecyclerView.ViewHolder(view), View.OnClickListener {
 
-        val titleTextView : TextView = itemView.findViewById(R.id.transaction_title)
-        val dateTextView  : TextView = itemView.findViewById(R.id.transaction_date)
-        val totalTextView : TextView = itemView.findViewById(R.id.transaction_total)
+        private lateinit var transaction : Transaction
+
+        // views in the ItemView
+        private val titleTextView : TextView = itemView.findViewById(R.id.transaction_title)
+        private val dateTextView  : TextView = itemView.findViewById(R.id.transaction_date)
+        private val totalTextView : TextView = itemView.findViewById(R.id.transaction_total)
+
+        init {
+
+            itemView.setOnClickListener(this)
+        }
+
+        // sets the views with transaction data
+        fun bind(transaction : Transaction) {
+
+            this.transaction = transaction
+            titleTextView.text = this.transaction.title
+            dateTextView. text = this.transaction.date.toString()
+            totalTextView.text = String.format("$%.2f", this.transaction.total)
+        }
+
+        override fun onClick(v : View?) {
+
+            Toast.makeText(context, "${transaction.title} pressed!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // creates ViewHolder and binds ViewHolder to data from model layer
@@ -84,11 +108,7 @@ class TransactionListFragment : Fragment() {
         override fun onBindViewHolder(holder : TransactionHolder, position : Int) {
 
             val transaction = transactions[position]
-            holder.apply {
-                titleTextView.text = transaction.title
-                dateTextView. text = transaction.date.toString()
-                totalTextView.text = String.format("$%.2f", transaction.total)
-            }
+            holder.bind(transaction)
         }
     }
 
