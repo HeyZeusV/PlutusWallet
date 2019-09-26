@@ -5,6 +5,8 @@ import java.math.BigDecimal
 
 class TransactionListViewModel : ViewModel() {
 
+    /*
+    USED FOR TESTING PURPOSES
     val transactions = mutableListOf<Transaction>()
 
     init {
@@ -19,4 +21,10 @@ class TransactionListViewModel : ViewModel() {
             transactions += transaction
         }
     }
+    */
+
+    // gets instance of TransactionRepository and
+    // retrieves list of Transactions from database
+    private val transactionRepository = TransactionRepository.get()
+    val transactions = transactionRepository.getTransactions()
 }

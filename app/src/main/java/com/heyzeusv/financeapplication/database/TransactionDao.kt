@@ -1,5 +1,6 @@
 package com.heyzeusv.financeapplication.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.financeapplication.Transaction
@@ -16,8 +17,8 @@ interface TransactionDao : BaseDao<Transaction> {
 
     // returns all transactions
     @Query("SELECT * FROM `transaction`")
-    fun getTransactions() : List<Transaction>
+    fun getTransactions() : LiveData<List<Transaction>>
 
     @Query("SELECT * FROM `transaction` WHERE id=(:id)")
-    fun getTransaction(id : Int) : Transaction?
+    fun getTransaction(id : Int) : LiveData<Transaction?>
 }
