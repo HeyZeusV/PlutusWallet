@@ -1,7 +1,6 @@
 package com.heyzeusv.financeapplication
 
 import androidx.lifecycle.ViewModel
-import java.math.BigDecimal
 
 class TransactionListViewModel : ViewModel() {
 
@@ -26,5 +25,5 @@ class TransactionListViewModel : ViewModel() {
     // gets instance of TransactionRepository and
     // retrieves list of Transactions from database
     private val transactionRepository = TransactionRepository.get()
-    val transactions = transactionRepository.getTransactions()
+    val transactionsListLiveData = transactionRepository.getTransactions()
 }

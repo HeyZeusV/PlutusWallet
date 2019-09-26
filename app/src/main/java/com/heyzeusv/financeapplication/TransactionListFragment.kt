@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,18 +19,12 @@ private const val TAG = "TransactionListFragment"
 class TransactionListFragment : Fragment() {
 
     private lateinit var transactionRecyclerView : RecyclerView
-    private var adapter : TransactionAdapter? = null
+    // initialize adapter with empty crime list since we have to wait for results from DB
+    private var adapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
     // provides instance of ViewModel
     private val transactionListViewModel : TransactionListViewModel by lazy {
         ViewModelProviders.of(this).get(TransactionListViewModel::class.java)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // logs number of transactions
-        Log.d(TAG, "Total crimes: ${transactionListViewModel.transactions.size}")
     }
 
     // inflates the layout and returns the inflated view to hosting activity
@@ -46,16 +41,32 @@ class TransactionListFragment : Fragment() {
             view.findViewById(R.id.transaction_recycler_view) as RecyclerView
         // RecyclerView NEEDS a LayoutManager to work
         transactionRecyclerView.layoutManager = LinearLayoutManager(context)
-
-        updateUI()
+        // set adapter for RecyclerView
+        transactionRecyclerView.adapter = adapter
 
         return view
     }
 
-    private fun updateUI() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // register an observer on LiveData instance and tie life to another component
+        transactionListViewModel.transactionsListLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { transactions ->
+                // if not null
+                transactions?.let {
+                    Log.i(TAG, "Got crimes ${transactions.size}")
+                    updateUI(transactions)
+                }
+            })
+    }
+
+    private fun updateUI(transactions: List<Transaction>) {
 
         // creates CrimeAdapter to set with RecyclerView
-        val transactions = transactionListViewModel.transactions
         adapter = TransactionAdapter(transactions)
         transactionRecyclerView.adapter = adapter
     }
