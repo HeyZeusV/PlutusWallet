@@ -19,6 +19,7 @@ import java.text.DateFormat
 
 private const val TAG = "TransactionFragment"
 private const val ARG_TRANSACTION_ID = "transaction_id"
+private const val DIALOG_DATE = "DialogDate"
 
 class TransactionFragment : Fragment() {
 
@@ -153,10 +154,11 @@ class TransactionFragment : Fragment() {
 
         // OnClickListener not affected by state restoration,
         // but nice to have listeners in one place
-        dateButton.apply {
-
-            text = DateFormat.getDateInstance(DateFormat.FULL).format(transaction.date)
-            isEnabled = false
+        dateButton.setOnClickListener {
+            DatePickerFragment().apply {
+                // want requireFragmentManager from TransactionFragment, so need outer scope
+                show(this@TransactionFragment.requireFragmentManager(), DIALOG_DATE)
+            }
         }
         repeatingCheckBox.apply {
 
