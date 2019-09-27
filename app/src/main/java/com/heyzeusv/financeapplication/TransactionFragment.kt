@@ -15,13 +15,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
 import java.math.BigDecimal
-import java.text.DateFormat
+import java.util.*
 
 private const val TAG = "TransactionFragment"
 private const val ARG_TRANSACTION_ID = "transaction_id"
 private const val DIALOG_DATE = "DialogDate"
+private const val REQUEST_DATE = 0
 
-class TransactionFragment : Fragment() {
+class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
     // views
     private lateinit var transaction       : Transaction
@@ -45,7 +46,7 @@ class TransactionFragment : Fragment() {
 
         // retrieves arguments passed on (if any)
         val transactionId : Int = arguments?.getInt(ARG_TRANSACTION_ID) as Int
-        // Log.d(TAG, "args bundle transaction ID: $transactionId`")
+        Log.d(TAG, "args bundle transaction ID: $transactionId`")
         transactionDetailViewModel.loadTransaction(transactionId)
     }
 
@@ -155,7 +156,9 @@ class TransactionFragment : Fragment() {
         // OnClickListener not affected by state restoration,
         // but nice to have listeners in one place
         dateButton.setOnClickListener {
-            DatePickerFragment().apply {
+            DatePickerFragment.newInstance(transaction.date).apply {
+                // fragment that will be target and request code
+                setTargetFragment(this@TransactionFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
                 show(this@TransactionFragment.requireFragmentManager(), DIALOG_DATE)
             }
@@ -185,6 +188,13 @@ class TransactionFragment : Fragment() {
             // skips animation
             jumpDrawablesToCurrentState()
         }
+    }
+
+    // will update date with the date selected from DatePickerFragment
+    override fun onDateSelected(date : Date) {
+
+        transaction.date = date
+        updateUI()
     }
 
     companion object {
