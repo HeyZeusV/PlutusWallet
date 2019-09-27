@@ -36,6 +36,7 @@ class TransactionTypeConverters {
     @TypeConverter
     fun toBigDecimal(total : String?) : BigDecimal? {
 
-        return BigDecimal(total)
+
+        return BigDecimal(total?.replace("$", ""))
     }
 }

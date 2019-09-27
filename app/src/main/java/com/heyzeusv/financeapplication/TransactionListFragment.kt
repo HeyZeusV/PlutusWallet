@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.DateFormat
 
 private const val TAG = "TransactionListFragment"
@@ -30,6 +31,7 @@ class TransactionListFragment : Fragment() {
 
     private var callbacks : Callbacks? = null
     private lateinit var transactionRecyclerView : RecyclerView
+    private lateinit var transactionAddFab : FloatingActionButton
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var adapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
@@ -62,6 +64,14 @@ class TransactionListFragment : Fragment() {
         transactionRecyclerView.layoutManager = LinearLayoutManager(context)
         // set adapter for RecyclerView
         transactionRecyclerView.adapter = adapter
+
+        transactionAddFab =
+            view.findViewById(R.id.transaction_add_fab) as FloatingActionButton
+        transactionAddFab.setOnClickListener {
+            val transaction = Transaction()
+            transactionListViewModel.insert(transaction)
+            callbacks?.onTransactionSelected(transaction.id)
+        }
 
         return view
     }

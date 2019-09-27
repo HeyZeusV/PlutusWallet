@@ -26,4 +26,9 @@ class TransactionListViewModel : ViewModel() {
     // retrieves list of Transactions from database
     private val transactionRepository = TransactionRepository.get()
     val transactionsListLiveData = transactionRepository.getTransactions()
+
+    fun insert(transaction : Transaction) {
+
+        transactionRepository.insert(transaction)
+    }
 }

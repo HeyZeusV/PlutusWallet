@@ -122,7 +122,8 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 before   : Int,
                 count    : Int
             ) {
-                transaction.total = BigDecimal(sequence.toString())
+                val totalString = sequence.toString()
+                transaction.total = BigDecimal(totalString.replace("$", ""))
             }
 
             // not needed so blank
