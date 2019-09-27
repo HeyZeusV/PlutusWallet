@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 
 private const val TAG = "MainActivity"
+
 class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
     override fun onTransactionSelected(transactionId: Int) {
         Log.d(TAG, "MainActivity.onTransactionSelected: $transactionId")
 
-        val fragment = TransactionFragment()
+        val fragment = TransactionFragment.newInstance(transactionId)
         supportFragmentManager
             .beginTransaction()
             // replace fragment hosted at location with new fragment provided
