@@ -166,6 +166,12 @@ class TransactionFragment : Fragment() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        transactionDetailViewModel.saveTransaction(transaction)
+    }
+
     private fun updateUI() {
 
         titleField.setText(transaction.title)

@@ -24,4 +24,9 @@ class TransactionDetailViewModel : ViewModel() {
 
         transactionIdLiveData.value = transactionId
     }
+
+    fun saveTransaction(transaction : Transaction) {
+
+        transactionRepository.update(transaction)
+    }
 }

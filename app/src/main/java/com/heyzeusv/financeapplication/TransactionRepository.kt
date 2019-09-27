@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.heyzeusv.financeapplication.database.TransactionDatabase
 import java.lang.IllegalStateException
+import java.util.concurrent.Executors
 
 private const val DATABASE_NAME = "transaction-database"
 
@@ -18,11 +19,29 @@ class TransactionRepository private constructor(context : Context){
     ).build()
 
     private val transactionDao = database.transactionDao()
+    // starts background thread to run update and insert
+    private val executor = Executors.newSingleThreadExecutor()
 
     // need one for each function in DAO
     fun getTransactions() : LiveData<List<Transaction>> = transactionDao.getTransactions()
 
     fun getTransaction(id : Int) : LiveData<Transaction?> = transactionDao.getTransaction(id)
+
+    fun update(transaction : Transaction) {
+
+        executor.execute {
+
+            transactionDao.update(transaction)
+        }
+    }
+
+    fun insert(transaction : Transaction) {
+
+        executor.execute {
+
+            transactionDao.insert(transaction)
+        }
+    }
 
     companion object {
 
