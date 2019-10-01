@@ -36,6 +36,7 @@ class TransactionListFragment : Fragment() {
     private lateinit var transactionAddFab : FloatingActionButton
     private var fabX : Int = 0
     private var fabY : Int = 0
+    private var recyclerViewPosition : Int = 0
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
@@ -120,6 +121,9 @@ class TransactionListFragment : Fragment() {
         fabX = fabLocationArray[0] + transactionAddFab.width / 2
         fabY = fabLocationArray[1] - transactionAddFab.height
         Log.d(TAG, "fabX: $fabX fabY: $fabY")
+
+        // used to return user to previous position in transactionRecyclerView
+        transactionRecyclerView.scrollToPosition(recyclerViewPosition)
     }
 
     // ViewHolder stores a reference to an item's view
@@ -152,6 +156,8 @@ class TransactionListFragment : Fragment() {
             // test to check if correct Transaction is pressed
             // Toast.makeText(context, "${transaction.title} pressed!", Toast.LENGTH_SHORT).show()
 
+            // the position that the user clicked on
+            recyclerViewPosition = this.layoutPosition
             // notifies hosting activity which item was selected
             callbacks?.onTransactionSelected(transaction.id, fabX, fabY, false)
         }

@@ -96,8 +96,9 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                     val finalRadius = hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
                     val anim = ViewAnimationUtils.createCircularReveal(
                         v, fabX, fabY, 10.0F, finalRadius)
-                    anim.duration = 5000
+                    anim.duration = 1000
                     anim.start()
+                    updateUI()
                 }
             })
         }
