@@ -26,12 +26,14 @@ class TransactionListFragment : Fragment() {
      */
     interface Callbacks {
 
-        fun onTransactionSelected(transactionId : Int)
+        fun onTransactionSelected(transactionId : Int, fabX : Int, fabY : Int)
     }
 
     private var callbacks : Callbacks? = null
     private lateinit var transactionRecyclerView : RecyclerView
     private lateinit var transactionAddFab : FloatingActionButton
+    private var fabX : Int = 0
+    private var fabY : Int = 0
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var adapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
@@ -70,7 +72,7 @@ class TransactionListFragment : Fragment() {
         transactionAddFab.setOnClickListener {
             val transaction = Transaction()
             transactionListViewModel.insert(transaction)
-            callbacks?.onTransactionSelected(transaction.id)
+            callbacks?.onTransactionSelected(transaction.id, fabX, fabY)
         }
 
         return view
@@ -106,6 +108,12 @@ class TransactionListFragment : Fragment() {
         // creates CrimeAdapter to set with RecyclerView
         adapter = TransactionAdapter(transactions)
         transactionRecyclerView.adapter = adapter
+        // gets location of FAB button in order to start animation from correct location
+        val fabLocationArray = IntArray(2)
+        transactionAddFab.getLocationOnScreen(fabLocationArray)
+        fabX = fabLocationArray[0]
+        fabY = fabLocationArray[1]
+        Log.d(TAG, "fabX: $fabX fabY: $fabY")
     }
 
     // ViewHolder stores a reference to an item's view
@@ -139,7 +147,7 @@ class TransactionListFragment : Fragment() {
             // Toast.makeText(context, "${transaction.title} pressed!", Toast.LENGTH_SHORT).show()
 
             // notifies hosting activity which item was selected
-            callbacks?.onTransactionSelected(transaction.id)
+            callbacks?.onTransactionSelected(transaction.id, fabX, fabY)
         }
     }
 

@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
@@ -19,6 +20,8 @@ import java.util.*
 
 private const val TAG = "TransactionFragment"
 private const val ARG_TRANSACTION_ID = "transaction_id"
+private const val ARG_FAB_X = "fab_X"
+private const val ARG_FAB_Y = "fab_Y"
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 
@@ -46,7 +49,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
         // retrieves arguments passed on (if any)
         val transactionId : Int = arguments?.getInt(ARG_TRANSACTION_ID) as Int
-        Log.d(TAG, "args bundle transaction ID: $transactionId`")
+        Log.d(TAG, "args bundle transaction ID: $transactionId")
         transactionDetailViewModel.loadTransaction(transactionId)
     }
 
@@ -65,6 +68,26 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         repeatingCheckBox = view.findViewById(R.id.transaction_repeating) as CheckBox
         categorySpinner   = view.findViewById(R.id.transaction_category)  as Spinner
         frequencySpinner  = view.findViewById(R.id.transaction_frequency) as Spinner
+
+        view.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+
+            override fun onLayoutChange(v : View, left : Int, top : Int, right : Int,
+                               bottom : Int, oldLeft : Int, oldTop : Int,
+                               oldRight : Int, oldButton : Int) {
+
+                v.removeOnLayoutChangeListener(this)
+                val fabX : Int = arguments?.getInt(ARG_FAB_X) as Int
+                val fabY : Int = arguments?.getInt(ARG_FAB_Y) as Int
+                Log.d(TAG, "args bundle fabX: $fabX fabY: $fabY")
+                val width = 1000
+                val height = 1000
+                val finalRadius = (Math.max(width, height) / 2 + Math.max(width - fabX, height - fabY)).toFloat()
+                val anim = ViewAnimationUtils.createCircularReveal(v, fabX, fabY, 0.0F, 10000F)
+                anim.duration = 500
+                anim.start()
+
+            }
+        })
 
         return view
     }
@@ -202,11 +225,13 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
         // creates arguments bundle, creates a fragment instance,
         // and attaches the arguments to the fragment
-        fun newInstance(transactionId : Int) : TransactionFragment {
+        fun newInstance(transactionId : Int, fabX : Int, fabY : Int) : TransactionFragment {
 
             val args = Bundle().apply {
 
                 putInt(ARG_TRANSACTION_ID, transactionId)
+                putInt(ARG_FAB_X, fabX)
+                putInt(ARG_FAB_Y, fabY)
             }
 
             return TransactionFragment().apply {
