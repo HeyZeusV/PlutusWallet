@@ -8,10 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Spinner
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
@@ -39,6 +36,8 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var repeatingCheckBox : CheckBox
     private lateinit var categorySpinner   : Spinner
     private lateinit var frequencySpinner  : Spinner
+
+    private var list = arrayOf("1", "2", "3")
 
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
@@ -72,6 +71,12 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         categorySpinner   = view.findViewById(R.id.transaction_category)  as Spinner
         frequencySpinner  = view.findViewById(R.id.transaction_frequency) as Spinner
 
+        val categorySpinnerAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, list)
+        val frequencySpinnerAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, list)
+        categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+        frequencySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+        categorySpinner.adapter = categorySpinnerAdapter
+        frequencySpinner.adapter = frequencySpinnerAdapter
         // checks to see how user arrived to TransactionFragment
         val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
         if (fromFab) {
@@ -200,6 +205,35 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
             setOnCheckedChangeListener { _, isChecked ->
                 transaction.repeating = isChecked
             }
+        }
+        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+
+                Log.d(TAG, "CategorySpinner: $position")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        frequencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+
+                Log.d(TAG, "FrequencySpinner: $position")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 

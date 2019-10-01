@@ -11,9 +11,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+
 import java.text.DateFormat
 
 private const val TAG = "TransactionListFragment"
@@ -35,7 +37,7 @@ class TransactionListFragment : Fragment() {
     private var fabX : Int = 0
     private var fabY : Int = 0
     // initialize adapter with empty crime list since we have to wait for results from DB
-    private var adapter : TransactionAdapter? = TransactionAdapter(emptyList())
+    private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
     // provides instance of ViewModel
     private val transactionListViewModel : TransactionListViewModel by lazy {
@@ -65,7 +67,7 @@ class TransactionListFragment : Fragment() {
         // RecyclerView NEEDS a LayoutManager to work
         transactionRecyclerView.layoutManager = LinearLayoutManager(context)
         // set adapter for RecyclerView
-        transactionRecyclerView.adapter = adapter
+        transactionRecyclerView.adapter = transactionAdapter
 
         transactionAddFab =
             view.findViewById(R.id.transaction_add_fab) as FloatingActionButton
@@ -106,8 +108,12 @@ class TransactionListFragment : Fragment() {
     private fun updateUI(transactions: List<Transaction>) {
 
         // creates CrimeAdapter to set with RecyclerView
-        adapter = TransactionAdapter(transactions)
-        transactionRecyclerView.adapter = adapter
+        transactionAdapter = TransactionAdapter(transactions)
+        transactionRecyclerView.adapter = transactionAdapter
+        // adds horizontal divider between each item in RecyclerView
+        transactionRecyclerView.addItemDecoration(DividerItemDecoration(
+            transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
+
         // gets location of FAB button in order to start animation from correct location
         val fabLocationArray = IntArray(2)
         transactionAddFab.getLocationOnScreen(fabLocationArray)
