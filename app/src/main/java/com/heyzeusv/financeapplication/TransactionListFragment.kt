@@ -65,8 +65,14 @@ class TransactionListFragment : Fragment() {
 
         transactionRecyclerView =
             view.findViewById(R.id.transaction_recycler_view) as RecyclerView
+        val linearLayoutManager = LinearLayoutManager(context)
+        // newer items will be displayed at the top of RecyclerView
+        linearLayoutManager.reverseLayout = true
+        // scrollToPosition will display item scrolled to at top rather than
+        // below when this is false
+        linearLayoutManager.stackFromEnd = true
         // RecyclerView NEEDS a LayoutManager to work
-        transactionRecyclerView.layoutManager = LinearLayoutManager(context)
+        transactionRecyclerView.layoutManager = linearLayoutManager
         // set adapter for RecyclerView
         transactionRecyclerView.adapter = transactionAdapter
 
