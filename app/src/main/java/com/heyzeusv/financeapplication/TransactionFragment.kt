@@ -16,12 +16,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
 import java.math.BigDecimal
+import java.text.DateFormat
 import java.util.*
+import kotlin.math.hypot
 
 private const val TAG = "TransactionFragment"
 private const val ARG_TRANSACTION_ID = "transaction_id"
 private const val ARG_FAB_X = "fab_X"
 private const val ARG_FAB_Y = "fab_Y"
+private const val ARG_FROM_FAB = "from_fab"
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 
@@ -69,25 +72,30 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         categorySpinner   = view.findViewById(R.id.transaction_category)  as Spinner
         frequencySpinner  = view.findViewById(R.id.transaction_frequency) as Spinner
 
-        view.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+        // checks to see how user arrived to TransactionFragment
+        val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
+        if (fromFab) {
+            // animation that plays on user presses FAB
+            view.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
 
-            override fun onLayoutChange(v : View, left : Int, top : Int, right : Int,
-                               bottom : Int, oldLeft : Int, oldTop : Int,
-                               oldRight : Int, oldButton : Int) {
+                override fun onLayoutChange(
+                    v: View, left: Int, top: Int, right: Int,
+                    bottom: Int, oldLeft: Int, oldTop: Int,
+                    oldRight: Int, oldButton: Int
+                ) {
 
-                v.removeOnLayoutChangeListener(this)
-                val fabX : Int = arguments?.getInt(ARG_FAB_X) as Int
-                val fabY : Int = arguments?.getInt(ARG_FAB_Y) as Int
-                Log.d(TAG, "args bundle fabX: $fabX fabY: $fabY")
-                val width = 1000
-                val height = 1000
-                val finalRadius = (Math.max(width, height) / 2 + Math.max(width - fabX, height - fabY)).toFloat()
-                val anim = ViewAnimationUtils.createCircularReveal(v, fabX, fabY, 0.0F, 10000F)
-                anim.duration = 500
-                anim.start()
-
-            }
-        })
+                    v.removeOnLayoutChangeListener(this)
+                    val fabX: Int = arguments?.getInt(ARG_FAB_X) as Int
+                    val fabY: Int = arguments?.getInt(ARG_FAB_Y) as Int
+                    Log.d(TAG, "args bundle fabX: $fabX fabY: $fabY")
+                    val finalRadius = hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
+                    val anim = ViewAnimationUtils.createCircularReveal(
+                        v, fabX, fabY, 10.0F, finalRadius)
+                    anim.duration = 5000
+                    anim.start()
+                }
+            })
+        }
 
         return view
     }
@@ -206,7 +214,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         titleField.setText(transaction.title)
         memoField .setText(transaction.memo)
         totalField.setText(String.format("$%.2f", transaction.total))
-        dateButton.text = transaction.date.toString()
+        dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
         repeatingCheckBox.apply {
             isChecked = transaction.repeating
             // skips animation
@@ -225,13 +233,14 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
         // creates arguments bundle, creates a fragment instance,
         // and attaches the arguments to the fragment
-        fun newInstance(transactionId : Int, fabX : Int, fabY : Int) : TransactionFragment {
+        fun newInstance(transactionId : Int, fabX : Int, fabY : Int, fromFab : Boolean) : TransactionFragment {
 
             val args = Bundle().apply {
 
-                putInt(ARG_TRANSACTION_ID, transactionId)
-                putInt(ARG_FAB_X, fabX)
-                putInt(ARG_FAB_Y, fabY)
+                putInt    (ARG_TRANSACTION_ID, transactionId)
+                putInt    (ARG_FAB_X         , fabX)
+                putInt    (ARG_FAB_Y         , fabY)
+                putBoolean(ARG_FROM_FAB      , fromFab)
             }
 
             return TransactionFragment().apply {

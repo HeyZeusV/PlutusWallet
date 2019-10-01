@@ -32,10 +32,10 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
         }
     }
 
-    override fun onTransactionSelected(transactionId: Int, fabX : Int, fabY : Int) {
+override fun onTransactionSelected(transactionId: Int, fabX : Int, fabY : Int, fromFab : Boolean) {
         Log.d(TAG, "MainActivity.onTransactionSelected: $transactionId")
 
-        val fragment = TransactionFragment.newInstance(transactionId, fabX, fabY)
+        val fragment = TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
         supportFragmentManager
             .beginTransaction()
             // replace fragment hosted at location with new fragment provided

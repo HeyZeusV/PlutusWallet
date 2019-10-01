@@ -26,7 +26,7 @@ class TransactionListFragment : Fragment() {
      */
     interface Callbacks {
 
-        fun onTransactionSelected(transactionId : Int, fabX : Int, fabY : Int)
+        fun onTransactionSelected(transactionId : Int, fabX : Int, fabY : Int, fromFab : Boolean)
     }
 
     private var callbacks : Callbacks? = null
@@ -72,7 +72,7 @@ class TransactionListFragment : Fragment() {
         transactionAddFab.setOnClickListener {
             val transaction = Transaction()
             transactionListViewModel.insert(transaction)
-            callbacks?.onTransactionSelected(transaction.id, fabX, fabY)
+            callbacks?.onTransactionSelected(transaction.id, fabX, fabY, true)
         }
 
         return view
@@ -111,8 +111,8 @@ class TransactionListFragment : Fragment() {
         // gets location of FAB button in order to start animation from correct location
         val fabLocationArray = IntArray(2)
         transactionAddFab.getLocationOnScreen(fabLocationArray)
-        fabX = fabLocationArray[0]
-        fabY = fabLocationArray[1]
+        fabX = fabLocationArray[0] + transactionAddFab.width / 2
+        fabY = fabLocationArray[1] - transactionAddFab.height
         Log.d(TAG, "fabX: $fabX fabY: $fabY")
     }
 
@@ -147,7 +147,7 @@ class TransactionListFragment : Fragment() {
             // Toast.makeText(context, "${transaction.title} pressed!", Toast.LENGTH_SHORT).show()
 
             // notifies hosting activity which item was selected
-            callbacks?.onTransactionSelected(transaction.id, fabX, fabY)
+            callbacks?.onTransactionSelected(transaction.id, fabX, fabY, false)
         }
     }
 
