@@ -255,8 +255,8 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
 
         // gives Transactions simple titles if user doesn't enter any
         if (transaction.title == "") {
@@ -277,6 +277,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
             // skips animation
             jumpDrawablesToCurrentState()
         }
+        Log.d(TAG, "transaction ID: $transaction.id")
     }
 
     // will update date with the date selected from DatePickerFragment

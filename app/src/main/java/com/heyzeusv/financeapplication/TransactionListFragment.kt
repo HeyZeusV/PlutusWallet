@@ -1,5 +1,6 @@
 package com.heyzeusv.financeapplication
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -83,11 +84,6 @@ class TransactionListFragment : Fragment() {
 
         transactionAddFab =
             view.findViewById(R.id.transaction_add_fab) as FloatingActionButton
-        transactionAddFab.setOnClickListener {
-            val transaction = Transaction()
-            transactionListViewModel.insert(transaction)
-            callbacks?.onTransactionSelected(transaction.id, fabX, fabY, true)
-        }
 
         return view
     }
@@ -115,6 +111,16 @@ class TransactionListFragment : Fragment() {
         // afterward you cannot access the activity
         // or count on the activity continuing to exist
         callbacks = null
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        transactionAddFab.setOnClickListener {
+            val transaction = Transaction()
+            transactionListViewModel.insert(transaction)
+            callbacks?.onTransactionSelected(transaction.id, fabX, fabY, true)
+        }
     }
 
     private fun updateUI(transactions: List<Transaction>) {
@@ -180,11 +186,27 @@ class TransactionListFragment : Fragment() {
             callbacks?.onTransactionSelected(transaction.id, fabX, fabY, false)
         }
 
-        // deletes Transaction selected
+        // shows AlertDialog asking user if they want to delete Transaction
         override fun onLongClick(v : View?) : Boolean {
 
             recyclerViewPosition = this.layoutPosition
-            transactionListViewModel.deleteTransaction(transaction)
+            // initialize instance of Builder
+            val alertDialogBuilder = AlertDialog.Builder(context)
+            // set title of AlertDialog
+            alertDialogBuilder.setTitle("Delete Transaction")
+            // set message of AlertDialog
+            alertDialogBuilder.setMessage("Are you sure you want to delete ${transaction.title}?")
+            // set positive button and its click listener
+            alertDialogBuilder.setPositiveButton("YES") { _, _ ->
+
+                transactionListViewModel.deleteTransaction(transaction)
+            }
+            // set negative button and its click listener
+            alertDialogBuilder.setNegativeButton("NO") { _, _ ->  }
+            // make the AlertDialog using the builder
+            val alertDialog : AlertDialog = alertDialogBuilder.create()
+            // display AlertDialog
+            alertDialog.show()
 
             return true
         }
