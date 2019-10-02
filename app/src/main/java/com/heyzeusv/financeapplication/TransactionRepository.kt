@@ -43,6 +43,14 @@ class TransactionRepository private constructor(context : Context){
         }
     }
 
+    fun delete(transaction : Transaction) {
+
+        executor.execute {
+
+            transactionDao.delete(transaction)
+        }
+    }
+
     companion object {
 
         private var INSTANCE : TransactionRepository? = null

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -37,6 +38,7 @@ class TransactionListFragment : Fragment() {
     private var fabX : Int = 0
     private var fabY : Int = 0
     private var recyclerViewPosition : Int = 0
+    private var startUp : Boolean = true
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
@@ -75,6 +77,9 @@ class TransactionListFragment : Fragment() {
         transactionRecyclerView.layoutManager = linearLayoutManager
         // set adapter for RecyclerView
         transactionRecyclerView.adapter = transactionAdapter
+        // adds horizontal divider between each item in RecyclerView
+        transactionRecyclerView.addItemDecoration(DividerItemDecoration(
+            transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
         transactionAddFab =
             view.findViewById(R.id.transaction_add_fab) as FloatingActionButton
@@ -117,9 +122,6 @@ class TransactionListFragment : Fragment() {
         // creates CrimeAdapter to set with RecyclerView
         transactionAdapter = TransactionAdapter(transactions)
         transactionRecyclerView.adapter = transactionAdapter
-        // adds horizontal divider between each item in RecyclerView
-        transactionRecyclerView.addItemDecoration(DividerItemDecoration(
-            transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
         // gets location of FAB button in order to start animation from correct location
         val fabLocationArray = IntArray(2)
@@ -130,11 +132,20 @@ class TransactionListFragment : Fragment() {
 
         // used to return user to previous position in transactionRecyclerView
         transactionRecyclerView.scrollToPosition(recyclerViewPosition)
+
+        // this will only run once, when application is first started
+        if (startUp) {
+
+            // will make RecyclerView open up at the last item in list which would
+            // be the item at the top of the view since it will be reversed
+            transactionRecyclerView.scrollToPosition(transactionRecyclerView.size - 1)
+            startUp = false
+        }
     }
 
     // ViewHolder stores a reference to an item's view
     private inner class TransactionHolder(view : View)
-        : RecyclerView.ViewHolder(view), View.OnClickListener {
+        : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnLongClickListener {
 
         private lateinit var transaction : Transaction
 
@@ -146,6 +157,7 @@ class TransactionListFragment : Fragment() {
         init {
 
             itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
         }
 
         // sets the views with transaction data
@@ -166,6 +178,15 @@ class TransactionListFragment : Fragment() {
             recyclerViewPosition = this.layoutPosition
             // notifies hosting activity which item was selected
             callbacks?.onTransactionSelected(transaction.id, fabX, fabY, false)
+        }
+
+        // deletes Transaction selected
+        override fun onLongClick(v : View?) : Boolean {
+
+            recyclerViewPosition = this.layoutPosition
+            transactionListViewModel.deleteTransaction(transaction)
+
+            return true
         }
     }
 
