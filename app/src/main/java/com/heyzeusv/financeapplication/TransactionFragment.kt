@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
@@ -36,6 +37,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var repeatingCheckBox : CheckBox
     private lateinit var categorySpinner   : Spinner
     private lateinit var frequencySpinner  : Spinner
+    private lateinit var frequencyText     : TextView
 
     private var list = arrayOf("1", "2", "3")
 
@@ -70,9 +72,11 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         repeatingCheckBox = view.findViewById(R.id.transaction_repeating) as CheckBox
         categorySpinner   = view.findViewById(R.id.transaction_category)  as Spinner
         frequencySpinner  = view.findViewById(R.id.transaction_frequency) as Spinner
+        frequencyText     = view.findViewById(R.id.frequencyTextView)     as TextView
 
-        val categorySpinnerAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, list)
-        val frequencySpinnerAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, list)
+        // set up for the spinners
+        val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, list)
+        val frequencySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, list)
         categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         frequencySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         categorySpinner.adapter = categorySpinnerAdapter
@@ -159,8 +163,12 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 before   : Int,
                 count    : Int
             ) {
-                val totalString = sequence.toString()
-                transaction.total = BigDecimal(totalString.replace("$", ""))
+                try {
+                    transaction.total = BigDecimal(sequence.toString())
+                } catch (e : NumberFormatException) {
+
+                    transaction.total = BigDecimal("0.00")
+                }
             }
 
             // not needed so blank
@@ -205,6 +213,15 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
             setOnCheckedChangeListener { _, isChecked ->
                 transaction.repeating = isChecked
+                if (isChecked) {
+
+                    frequencyText.isVisible = true
+                    frequencySpinner.isVisible = true
+                } else {
+
+                    frequencyText.isVisible = false
+                    frequencySpinner.isVisible = false
+                }
             }
         }
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -241,6 +258,11 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     override fun onStop() {
         super.onStop()
 
+        // gives Transactions simple titles if user doesn't enter any
+        if (transaction.title == "") {
+
+            transaction.title = "Transaction #" + transaction.id
+        }
         transactionDetailViewModel.saveTransaction(transaction)
     }
 
@@ -248,7 +270,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
         titleField.setText(transaction.title)
         memoField .setText(transaction.memo)
-        totalField.setText(String.format("$%.2f", transaction.total))
+        totalField.setText(String.format(transaction.total.toString()))
         dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
         repeatingCheckBox.apply {
             isChecked = transaction.repeating
