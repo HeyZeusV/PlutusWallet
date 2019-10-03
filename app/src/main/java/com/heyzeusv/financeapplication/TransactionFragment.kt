@@ -113,6 +113,8 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
+
         // register an observer on LiveData instance and tie life to another component
         transactionDetailViewModel.transactionLiveData.observe(
             // view's lifecycle owner ensures that updates are only received when view is on screen
@@ -124,7 +126,24 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                     this.transaction = transaction
                     updateUI()
                 }
-            })
+            }
+        )
+        // register an observer on LiveData instance and tie life to another component
+        transactionDetailViewModel.transactionMaxIdLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { maxId ->
+                // if not null
+                maxId?.let {
+                    // runs only when user creates a new Transaction
+                    if (fromFab) {
+                        transaction.id = maxId
+                        Log.d(TAG, "Transaction ID onViewCreated: ${transaction.id}")
+                    }
+                }
+            }
+        )
     }
 
     override fun onStart() {

@@ -19,6 +19,11 @@ interface TransactionDao : BaseDao<Transaction> {
     @Query("SELECT * FROM `transaction`")
     fun getTransactions() : LiveData<List<Transaction>>
 
+    // returns transaction with specific id
     @Query("SELECT * FROM `transaction` WHERE id=(:id)")
     fun getTransaction(id : Int) : LiveData<Transaction?>
+
+    // returns the highest id in database
+    @Query("SELECT MAX(id) FROM `transaction`")
+    fun getMaxId() : LiveData<Int>
 }

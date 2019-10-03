@@ -27,6 +27,8 @@ class TransactionRepository private constructor(context : Context){
 
     fun getTransaction(id : Int) : LiveData<Transaction?> = transactionDao.getTransaction(id)
 
+    fun getMaxId() : LiveData<Int> = transactionDao.getMaxId()
+
     fun update(transaction : Transaction) {
 
         executor.execute {

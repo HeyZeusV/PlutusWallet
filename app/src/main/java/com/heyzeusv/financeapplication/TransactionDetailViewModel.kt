@@ -11,6 +11,8 @@ class TransactionDetailViewModel : ViewModel() {
     private val transactionRepository = TransactionRepository.get()
     // stores ID of transaction displayed
     private val transactionIdLiveData = MutableLiveData<Int>()
+    // retrieves max id of database
+    val transactionMaxIdLiveData = transactionRepository.getMaxId()
 
     // value gets updated every time a new value gets set on the trigger LiveData instance
     var transactionLiveData : LiveData<Transaction?> =
