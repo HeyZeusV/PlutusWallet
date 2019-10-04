@@ -16,9 +16,11 @@ class TransactionRepository private constructor(context : Context){
         context.applicationContext,
         TransactionDatabase::class.java,
         DATABASE_NAME
-    ).build()
+    ).fallbackToDestructiveMigration()
+        .build()
 
     private val transactionDao = database.transactionDao()
+    private val categoryDao      = database.categoryDao()
     // starts background thread to run update and insert
     private val executor = Executors.newSingleThreadExecutor()
 
@@ -29,29 +31,15 @@ class TransactionRepository private constructor(context : Context){
 
     fun getMaxId() : LiveData<Int> = transactionDao.getMaxId()
 
-    fun update(transaction : Transaction) {
+    fun getCategorySize() : LiveData<Int?> = categoryDao.getCategorySize()
 
-        executor.execute {
-
-            transactionDao.update(transaction)
-        }
-    }
-
-    fun insert(transaction : Transaction) {
-
-        executor.execute {
-
-            transactionDao.insert(transaction)
-        }
-    }
-
-    fun delete(transaction : Transaction) {
-
-        executor.execute {
-
-            transactionDao.delete(transaction)
-        }
-    }
+    fun updateTransaction(transaction : Transaction)     {executor.execute {transactionDao.update(transaction)}}
+    fun insertTransaction(transaction : Transaction)     {executor.execute {transactionDao.insert(transaction)}}
+    fun deleteTransaction(transaction : Transaction)     {executor.execute {transactionDao.delete(transaction)}}
+    fun updateCategory   (category    : Category)        {executor.execute {categoryDao   .update(category)}}
+    fun insertCategory   (category    : Category)        {executor.execute {categoryDao   .insert(category)}}
+    fun deleteCategory   (category    : Category)        {executor.execute {categoryDao   .delete(category)}}
+    fun insertCategories (categories  : Array<Category>) {executor.execute {categoryDao   .insert(categories)}}
 
     companion object {
 

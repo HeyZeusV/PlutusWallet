@@ -17,7 +17,7 @@ interface BaseDao<T> {
 
     // Insert an array of objects in the database.
     @Insert
-    fun insert(vararg obj: T)
+    fun insert(obj: Array<T>)
 
     // Update an object from the database.
     @Update

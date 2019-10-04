@@ -29,6 +29,6 @@ class TransactionDetailViewModel : ViewModel() {
 
     fun saveTransaction(transaction : Transaction) {
 
-        transactionRepository.update(transaction)
+        transactionRepository.updateTransaction(transaction)
     }
 }

@@ -8,14 +8,20 @@ class TransactionListViewModel : ViewModel() {
     // retrieves list of Transactions from database
     private val transactionRepository = TransactionRepository.get()
     val transactionsListLiveData = transactionRepository.getTransactions()
+    val categorySizeLiveData = transactionRepository.getCategorySize()
 
-    fun insert(transaction : Transaction) {
+    fun insertTransaction(transaction : Transaction) {
 
-        transactionRepository.insert(transaction)
+        transactionRepository.insertTransaction(transaction)
     }
 
     fun deleteTransaction(transaction : Transaction) {
 
-        transactionRepository.delete(transaction)
+        transactionRepository.deleteTransaction(transaction)
+    }
+
+    fun insertCategories(categories : Array<Category>) {
+
+        transactionRepository.insertCategories(categories)
     }
 }

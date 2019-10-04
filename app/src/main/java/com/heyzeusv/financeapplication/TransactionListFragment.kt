@@ -102,7 +102,25 @@ class TransactionListFragment : Fragment() {
                     Log.i(TAG, "Got crimes ${transactions.size}")
                     updateUI(transactions)
                 }
-            })
+            }
+        )
+
+        // register an observer on LiveData instance and tie life to another component
+        transactionListViewModel.categorySizeLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { categorySize ->
+                // if not null
+                categorySize?.let {
+                    Log.d(TAG, "Category Size: $categorySize")
+                    if (categorySize == 0) {
+                        initializeCategoryTable()
+                        Log.d(TAG, "Category Size: $categorySize")
+                    }
+                }
+            }
+        )
     }
 
     override fun onDetach() {
@@ -118,9 +136,31 @@ class TransactionListFragment : Fragment() {
 
         transactionAddFab.setOnClickListener {
             val transaction = Transaction()
-            transactionListViewModel.insert(transaction)
+            transactionListViewModel.insertTransaction(transaction)
             callbacks?.onTransactionSelected(transaction.id, fabX, fabY, true)
+            // this will make it so the list will snap to the top after user
+            // creates a new Transaction
+            recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
         }
+    }
+
+    // this should only be run the very first time a user opens the app
+    // fills table with a few predetermined categories
+    private fun initializeCategoryTable() {
+
+        val education      = Category("Education")
+        val entertainment  = Category("Entertainment")
+        val food           = Category("Food")
+        val home           = Category("Home")
+        val income         = Category("Income")
+        val savings        = Category("Savings")
+        val transportation = Category("Transportation")
+        val utilities      = Category("Utilities")
+        val addCategory    = Category("Create New Category")
+
+        val initialCategoryList = arrayOf(education, entertainment, food,
+            home, income, savings, transportation, utilities, addCategory)
+        transactionListViewModel.insertCategories(initialCategoryList)
     }
 
     private fun updateUI(transactions: List<Transaction>) {

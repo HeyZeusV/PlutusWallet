@@ -53,7 +53,6 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
         // retrieves arguments passed on (if any)
         val transactionId : Int = arguments?.getInt(ARG_TRANSACTION_ID) as Int
-        Log.d(TAG, "args bundle transaction ID: $transactionId")
         transactionDetailViewModel.loadTransaction(transactionId)
     }
 
@@ -296,7 +295,6 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
             // skips animation
             jumpDrawablesToCurrentState()
         }
-        Log.d(TAG, "transaction ID: $transaction.id")
     }
 
     // will update date with the date selected from DatePickerFragment
