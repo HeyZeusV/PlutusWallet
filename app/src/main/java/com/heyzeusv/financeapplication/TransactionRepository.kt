@@ -33,6 +33,8 @@ class TransactionRepository private constructor(context : Context){
 
     fun getCategorySize() : LiveData<Int?> = categoryDao.getCategorySize()
 
+    fun getCategoryNames() : LiveData<List<String>> = categoryDao.getCategoryNames()
+
     fun updateTransaction(transaction : Transaction)     {executor.execute {transactionDao.update(transaction)}}
     fun insertTransaction(transaction : Transaction)     {executor.execute {transactionDao.insert(transaction)}}
     fun deleteTransaction(transaction : Transaction)     {executor.execute {transactionDao.delete(transaction)}}

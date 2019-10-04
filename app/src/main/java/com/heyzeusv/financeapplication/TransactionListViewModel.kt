@@ -7,7 +7,9 @@ class TransactionListViewModel : ViewModel() {
     // gets instance of TransactionRepository and
     // retrieves list of Transactions from database
     private val transactionRepository = TransactionRepository.get()
+    // LiveData<List<Transaction>>
     val transactionsListLiveData = transactionRepository.getTransactions()
+    // LiveData<Int?>
     val categorySizeLiveData = transactionRepository.getCategorySize()
 
     fun insertTransaction(transaction : Transaction) {

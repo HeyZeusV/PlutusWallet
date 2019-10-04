@@ -18,4 +18,7 @@ interface CategoryDao : BaseDao<Category> {
     // return total number of categories
     @Query("SELECT COUNT(*) FROM category")
     fun getCategorySize() : LiveData<Int?>
+
+    @Query("SELECT category FROM category")
+    fun getCategoryNames() : LiveData<List<String>>
 }

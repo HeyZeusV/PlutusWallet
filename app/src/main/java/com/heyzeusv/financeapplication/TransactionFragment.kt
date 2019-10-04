@@ -40,7 +40,6 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var frequencyText     : TextView
 
     private var list = arrayOf("1", "2", "3")
-
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
         ViewModelProviders.of(this).get(TransactionDetailViewModel::class.java)
@@ -73,12 +72,9 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         frequencySpinner  = view.findViewById(R.id.transaction_frequency) as Spinner
         frequencyText     = view.findViewById(R.id.frequencyTextView)     as TextView
 
-        // set up for the spinners
-        val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, list)
+        // set up for the frequencySpinner
         val frequencySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, list)
-        categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         frequencySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-        categorySpinner.adapter = categorySpinnerAdapter
         frequencySpinner.adapter = frequencySpinnerAdapter
         // checks to see how user arrived to TransactionFragment
         val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
@@ -140,6 +136,23 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                         transaction.id = maxId
                         Log.d(TAG, "Transaction ID onViewCreated: ${transaction.id}")
                     }
+                }
+            }
+        )
+        // register an observer on LiveData instance and tie life to another component
+        transactionDetailViewModel.categoryNamesLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { categoryNames ->
+                // if not null
+                categoryNames?.let {
+                    // sets up the categorySpinner
+                    val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, categoryNames)
+                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                    categorySpinner.adapter = categorySpinnerAdapter
+                    // starts the spinner up to Category saved, if any
+                    categorySpinner.setSelection(categoryNames.indexOf(transaction.category))
                 }
             }
         )
@@ -251,7 +264,9 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 id: Long
             ) {
 
-                Log.d(TAG, "CategorySpinner: $position")
+                Log.d(TAG, "CategorySpinner: ${parent?.getItemAtPosition(position)}")
+                // updates the category to selected one
+                transaction.category = parent?.getItemAtPosition(position).toString()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
