@@ -29,17 +29,24 @@ private const val REQUEST_DATE = 0
 class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
     // views
-    private lateinit var transaction       : Transaction
-    private lateinit var titleField        : EditText
-    private lateinit var totalField        : EditText
-    private lateinit var memoField         : EditText
-    private lateinit var dateButton        : Button
-    private lateinit var repeatingCheckBox : CheckBox
-    private lateinit var categorySpinner   : Spinner
-    private lateinit var frequencySpinner  : Spinner
-    private lateinit var frequencyText     : TextView
+    private lateinit var transaction            : Transaction
+    private lateinit var titleField             : EditText
+    private lateinit var totalField             : EditText
+    private lateinit var memoField              : EditText
+    private lateinit var dateButton             : Button
+    private lateinit var repeatingCheckBox      : CheckBox
+    private lateinit var categorySpinner        : Spinner
+    private lateinit var frequencySpinner       : Spinner
+    private lateinit var frequencyPeriodSpinner : Spinner
+    private lateinit var frequencyText          : TextView
 
-    private var list = arrayOf("1", "2", "3")
+    // arrays holding values for frequency spinners
+    private var dayArray       = arrayOf("1", "2", "3", "4", "5", "6")
+    private var weekArray      = arrayOf("1", "2", "3")
+    private var monthArray     = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11")
+    private var yearArray      = arrayOf("1", "2", "3", "4", "5")
+    private var frequencyArray = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
+
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
         ViewModelProviders.of(this).get(TransactionDetailViewModel::class.java)
@@ -63,19 +70,23 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
         val view = inflater.inflate(R.layout.fragment_transaction, container, false)
         
-        titleField        = view.findViewById(R.id.transaction_title)     as EditText
-        totalField        = view.findViewById(R.id.transaction_total)     as EditText
-        memoField         = view.findViewById(R.id.transaction_memo)      as EditText
-        dateButton        = view.findViewById(R.id.transaction_date)      as Button
-        repeatingCheckBox = view.findViewById(R.id.transaction_repeating) as CheckBox
-        categorySpinner   = view.findViewById(R.id.transaction_category)  as Spinner
-        frequencySpinner  = view.findViewById(R.id.transaction_frequency) as Spinner
-        frequencyText     = view.findViewById(R.id.frequencyTextView)     as TextView
+        titleField             = view.findViewById(R.id.transaction_title)            as EditText
+        totalField             = view.findViewById(R.id.transaction_total)            as EditText
+        memoField              = view.findViewById(R.id.transaction_memo)             as EditText
+        dateButton             = view.findViewById(R.id.transaction_date)             as Button
+        repeatingCheckBox      = view.findViewById(R.id.transaction_repeating)        as CheckBox
+        categorySpinner        = view.findViewById(R.id.transaction_category)         as Spinner
+        frequencySpinner       = view.findViewById(R.id.transaction_frequency)        as Spinner
+        frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
+        frequencyText          = view.findViewById(R.id.frequencyTextView)            as TextView
 
-        // set up for the frequencySpinner
-        val frequencySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, list)
-        frequencySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-        frequencySpinner.adapter = frequencySpinnerAdapter
+        // set up for the frequencySpinners
+        val frequencySpinnerAdapter       = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, dayArray)
+        val frequencyPeriodSpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyArray)
+        frequencySpinnerAdapter      .setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+        frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+        frequencySpinner.adapter       = frequencySpinnerAdapter
+        frequencyPeriodSpinner.adapter = frequencyPeriodSpinnerAdapter
         // checks to see how user arrived to TransactionFragment
         val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
         if (fromFab) {
@@ -246,12 +257,14 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 transaction.repeating = isChecked
                 if (isChecked) {
 
-                    frequencyText.isVisible = true
-                    frequencySpinner.isVisible = true
+                    frequencyText         .isVisible = true
+                    frequencySpinner      .isVisible = true
+                    frequencyPeriodSpinner.isVisible = true
                 } else {
 
-                    frequencyText.isVisible = false
-                    frequencySpinner.isVisible = false
+                    frequencyText         .isVisible = false
+                    frequencySpinner      .isVisible = false
+                    frequencyPeriodSpinner.isVisible = false
                 }
             }
         }
@@ -282,6 +295,26 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
             ) {
 
                 Log.d(TAG, "FrequencySpinner: $position")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        frequencyPeriodSpinner.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                when (position) {
+
+                    0 -> setFrequencySpinner(dayArray)
+                    1 -> setFrequencySpinner(weekArray)
+                    2 -> setFrequencySpinner(monthArray)
+                    3 -> setFrequencySpinner(yearArray)
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -318,6 +351,18 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         transaction.date = date
         updateUI()
     }
+
+    // sets up the frequencySpinner depending on what the user selects
+    // for the frequencyPeriodSpinner
+    fun setFrequencySpinner(frequencyArray : Array<String>) {
+
+        val frequencySpinnerAdapter =
+            ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyArray)
+        frequencySpinnerAdapter.setDropDownViewResource(
+            android.R.layout.simple_dropdown_item_1line)
+        frequencySpinner.adapter = frequencySpinnerAdapter
+    }
+
 
     companion object {
 

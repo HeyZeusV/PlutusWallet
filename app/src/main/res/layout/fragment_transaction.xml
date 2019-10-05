@@ -180,11 +180,22 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
+        android:background="@null"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
+        app:layout_constraintTop_toBottomOf="@+id/transaction_repeating" />
+
+    <Spinner
+        android:id="@+id/transaction_frequency_period"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
         android:background="@null"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
+        app:layout_constraintStart_toEndOf="@+id/transaction_frequency"
         app:layout_constraintTop_toBottomOf="@+id/transaction_repeating" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
