@@ -33,10 +33,10 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var titleField             : EditText
     private lateinit var totalField             : EditText
     private lateinit var memoField              : EditText
+    private lateinit var frequencyField         : EditText
     private lateinit var dateButton             : Button
     private lateinit var repeatingCheckBox      : CheckBox
     private lateinit var categorySpinner        : Spinner
-    private lateinit var frequencySpinner       : Spinner
     private lateinit var frequencyPeriodSpinner : Spinner
     private lateinit var frequencyText          : TextView
 
@@ -46,6 +46,8 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     private var monthArray     = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11")
     private var yearArray      = arrayOf("1", "2", "3", "4", "5")
     private var frequencyArray = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
+
+    private var categoryNamesList = listOf<String>()
 
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
@@ -73,20 +75,18 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         titleField             = view.findViewById(R.id.transaction_title)            as EditText
         totalField             = view.findViewById(R.id.transaction_total)            as EditText
         memoField              = view.findViewById(R.id.transaction_memo)             as EditText
+        frequencyField         = view.findViewById(R.id.transaction_frequency)        as EditText
         dateButton             = view.findViewById(R.id.transaction_date)             as Button
         repeatingCheckBox      = view.findViewById(R.id.transaction_repeating)        as CheckBox
         categorySpinner        = view.findViewById(R.id.transaction_category)         as Spinner
-        frequencySpinner       = view.findViewById(R.id.transaction_frequency)        as Spinner
         frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
         frequencyText          = view.findViewById(R.id.frequencyTextView)            as TextView
 
-        // set up for the frequencySpinners
-        val frequencySpinnerAdapter       = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, dayArray)
+        // set up for the frequencyPeriodSpinner
         val frequencyPeriodSpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyArray)
-        frequencySpinnerAdapter      .setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-        frequencySpinner.adapter       = frequencySpinnerAdapter
         frequencyPeriodSpinner.adapter = frequencyPeriodSpinnerAdapter
+
         // checks to see how user arrived to TransactionFragment
         val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
         if (fromFab) {
@@ -159,6 +159,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 // if not null
                 categoryNames?.let {
                     // sets up the categorySpinner
+                    categoryNamesList = categoryNames
                     val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, categoryNames)
                     categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
                     categorySpinner.adapter = categorySpinnerAdapter
@@ -180,10 +181,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
             // sequence is user's input which title is changed to
             override fun onTextChanged(
-                sequence : CharSequence?,
-                start    : Int,
-                before   : Int,
-                count    : Int
+                sequence : CharSequence?, start : Int, before : Int, count : Int
             ) {
                 transaction.title = sequence.toString()
             }
@@ -200,10 +198,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
             // sequence is user's input which total is changed to
             override fun onTextChanged(
-                sequence : CharSequence?,
-                start    : Int,
-                before   : Int,
-                count    : Int
+                sequence : CharSequence?, start : Int, before : Int, count : Int
             ) {
                 try {
                     transaction.total = BigDecimal(sequence.toString())
@@ -225,10 +220,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
             // sequence is user's input which memo is changed to
             override fun onTextChanged(
-                sequence : CharSequence?,
-                start    : Int,
-                before   : Int,
-                count    : Int
+                sequence : CharSequence?, start : Int, before : Int, count : Int
             ) {
                 transaction.memo = sequence.toString()
             }
@@ -237,9 +229,32 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
             override fun afterTextChanged(sequence: Editable?) {}
         }
 
-        titleField.addTextChangedListener(titleWatcher)
-        totalField.addTextChangedListener(totalWatcher)
-        memoField .addTextChangedListener(memoWatcher)
+        // placed in onStart due to being triggered when view state is restored
+        val frequencyWatcher = object : TextWatcher {
+
+            // not needed so blank
+            override fun beforeTextChanged(sequence: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            // sequence is user's input which memo is changed to
+            override fun onTextChanged(
+                sequence : CharSequence?, start : Int, before : Int, count : Int
+            ) {
+                try {
+                    transaction.frequency = Integer.parseInt(sequence.toString())
+                } catch (e : NumberFormatException) {
+
+                    transaction.frequency = 0
+                }
+            }
+
+            // not needed so blank
+            override fun afterTextChanged(sequence: Editable?) {}
+        }
+
+        titleField    .addTextChangedListener(titleWatcher)
+        totalField    .addTextChangedListener(totalWatcher)
+        memoField     .addTextChangedListener(memoWatcher)
+        frequencyField.addTextChangedListener(frequencyWatcher)
 
         // OnClickListener not affected by state restoration,
         // but nice to have listeners in one place
@@ -258,12 +273,12 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 if (isChecked) {
 
                     frequencyText         .isVisible = true
-                    frequencySpinner      .isVisible = true
+                    frequencyField        .isVisible = true
                     frequencyPeriodSpinner.isVisible = true
                 } else {
 
                     frequencyText         .isVisible = false
-                    frequencySpinner      .isVisible = false
+                    frequencyField        .isVisible = false
                     frequencyPeriodSpinner.isVisible = false
                 }
             }
@@ -271,30 +286,12 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
 
                 Log.d(TAG, "CategorySpinner: ${parent?.getItemAtPosition(position)}")
                 // updates the category to selected one
-                transaction.category = parent?.getItemAtPosition(position).toString()
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        frequencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-
-                Log.d(TAG, "FrequencySpinner: $position")
+                transaction.category = parent?.getItemAtPosition(position) as String
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -303,18 +300,10 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         frequencyPeriodSpinner.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
-                when (position) {
 
-                    0 -> setFrequencySpinner(dayArray)
-                    1 -> setFrequencySpinner(weekArray)
-                    2 -> setFrequencySpinner(monthArray)
-                    3 -> setFrequencySpinner(yearArray)
-                }
+                    transaction.period = position
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -334,15 +323,18 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
     private fun updateUI() {
 
-        titleField.setText(transaction.title)
-        memoField .setText(transaction.memo)
-        totalField.setText(String.format(transaction.total.toString()))
+        titleField    .setText(transaction.title)
+        memoField     .setText(transaction.memo)
+        totalField    .setText(String.format(transaction.total.toString()))
+        frequencyField.setText(transaction.frequency.toString())
         dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
+        categorySpinner.setSelection(categoryNamesList.indexOf(transaction.category))
         repeatingCheckBox.apply {
             isChecked = transaction.repeating
             // skips animation
             jumpDrawablesToCurrentState()
         }
+        frequencyPeriodSpinner.setSelection(transaction.period)
     }
 
     // will update date with the date selected from DatePickerFragment
@@ -351,18 +343,6 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         transaction.date = date
         updateUI()
     }
-
-    // sets up the frequencySpinner depending on what the user selects
-    // for the frequencyPeriodSpinner
-    fun setFrequencySpinner(frequencyArray : Array<String>) {
-
-        val frequencySpinnerAdapter =
-            ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyArray)
-        frequencySpinnerAdapter.setDropDownViewResource(
-            android.R.layout.simple_dropdown_item_1line)
-        frequencySpinner.adapter = frequencySpinnerAdapter
-    }
-
 
     companion object {
 

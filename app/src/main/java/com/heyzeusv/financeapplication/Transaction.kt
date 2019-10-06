@@ -19,4 +19,5 @@ data class Transaction(
     var memo      : String     = "",
     var category  : String     = "Education",
     var repeating : Boolean    = false,
-    var frequency : Int        = 0)
+    var frequency : Int        = 1,
+    var period    : Int        = 0)
