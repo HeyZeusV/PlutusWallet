@@ -3,6 +3,9 @@ package com.heyzeusv.financeapplication
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
+import com.heyzeusv.financeapplication.database.CategoryDao
+import com.heyzeusv.financeapplication.database.FutureTransactionDao
+import com.heyzeusv.financeapplication.database.TransactionDao
 import com.heyzeusv.financeapplication.database.TransactionDatabase
 import java.lang.IllegalStateException
 import java.util.concurrent.Executors
@@ -19,8 +22,11 @@ class TransactionRepository private constructor(context : Context){
     ).fallbackToDestructiveMigration()
         .build()
 
-    private val transactionDao = database.transactionDao()
-    private val categoryDao      = database.categoryDao()
+    // DAOs
+    private val transactionDao : TransactionDao             = database.transactionDao()
+    private val categoryDao : CategoryDao                   = database.categoryDao()
+    private val futureTransactionDao : FutureTransactionDao = database.futureTransactionDao()
+
     // starts background thread to run update and insert
     private val executor = Executors.newSingleThreadExecutor()
 
@@ -38,10 +44,13 @@ class TransactionRepository private constructor(context : Context){
     fun updateTransaction(transaction : Transaction)     {executor.execute {transactionDao.update(transaction)}}
     fun insertTransaction(transaction : Transaction)     {executor.execute {transactionDao.insert(transaction)}}
     fun deleteTransaction(transaction : Transaction)     {executor.execute {transactionDao.delete(transaction)}}
+
     fun updateCategory   (category    : Category)        {executor.execute {categoryDao   .update(category)}}
     fun insertCategory   (category    : Category)        {executor.execute {categoryDao   .insert(category)}}
     fun deleteCategory   (category    : Category)        {executor.execute {categoryDao   .delete(category)}}
     fun insertCategories (categories  : Array<Category>) {executor.execute {categoryDao   .insert(categories)}}
+
+    fun insertFutureTransaction(futureTransaction : FutureTransaction) {executor.execute {futureTransactionDao.insert(futureTransaction)}}
 
     companion object {
 

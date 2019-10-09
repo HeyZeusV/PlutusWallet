@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
+import com.heyzeusv.financeapplication.utilities.CurrencyEditText
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.*
@@ -31,20 +32,17 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     // views
     private lateinit var transaction            : Transaction
     private lateinit var titleField             : EditText
-    private lateinit var totalField             : EditText
     private lateinit var memoField              : EditText
     private lateinit var frequencyField         : EditText
+    private lateinit var totalField             : CurrencyEditText
     private lateinit var dateButton             : Button
     private lateinit var repeatingCheckBox      : CheckBox
     private lateinit var categorySpinner        : Spinner
     private lateinit var frequencyPeriodSpinner : Spinner
     private lateinit var frequencyText          : TextView
 
-    // arrays holding values for frequency spinners
-    private var dayArray       = arrayOf("1", "2", "3", "4", "5", "6")
-    private var weekArray      = arrayOf("1", "2", "3")
-    private var monthArray     = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11")
-    private var yearArray      = arrayOf("1", "2", "3", "4", "5")
+
+    // arrays holding values for frequency spinner
     private var frequencyArray = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
 
     private var categoryNamesList = listOf<String>()
@@ -73,9 +71,9 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         val view = inflater.inflate(R.layout.fragment_transaction, container, false)
         
         titleField             = view.findViewById(R.id.transaction_title)            as EditText
-        totalField             = view.findViewById(R.id.transaction_total)            as EditText
         memoField              = view.findViewById(R.id.transaction_memo)             as EditText
         frequencyField         = view.findViewById(R.id.transaction_frequency)        as EditText
+        totalField             = view.findViewById(R.id.transaction_total)            as CurrencyEditText
         dateButton             = view.findViewById(R.id.transaction_date)             as Button
         repeatingCheckBox      = view.findViewById(R.id.transaction_repeating)        as CheckBox
         categorySpinner        = view.findViewById(R.id.transaction_category)         as Spinner
@@ -191,28 +189,6 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         }
 
         // placed in onStart due to being triggered when view state is restored
-        val totalWatcher = object : TextWatcher {
-
-            // not needed so blank
-            override fun beforeTextChanged(sequence: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            // sequence is user's input which total is changed to
-            override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int
-            ) {
-                try {
-                    transaction.total = BigDecimal(sequence.toString())
-                } catch (e : NumberFormatException) {
-
-                    transaction.total = BigDecimal("0.00")
-                }
-            }
-
-            // not needed so blank
-            override fun afterTextChanged(sequence: Editable?) {}
-        }
-
-        // placed in onStart due to being triggered when view state is restored
         val memoWatcher = object : TextWatcher {
 
             // not needed so blank
@@ -252,7 +228,6 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         }
 
         titleField    .addTextChangedListener(titleWatcher)
-        totalField    .addTextChangedListener(totalWatcher)
         memoField     .addTextChangedListener(memoWatcher)
         frequencyField.addTextChangedListener(frequencyWatcher)
 
@@ -318,6 +293,20 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
             transaction.title = "Transaction #" + transaction.id
         }
+        // frequency must always be at least 1
+        if (transaction.frequency < 1) {
+
+            transaction.frequency = 1
+        }
+        try {
+            transaction.total = BigDecimal(
+                totalField.text.toString()
+                    .replace("$", "").replace(",", "")
+            )
+        } catch (e : java.lang.NumberFormatException) {
+
+            transaction.total = BigDecimal("0.00")
+        }
         transactionDetailViewModel.saveTransaction(transaction)
     }
 
@@ -325,7 +314,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
         titleField    .setText(transaction.title)
         memoField     .setText(transaction.memo)
-        totalField    .setText(String.format(transaction.total.toString()))
+        totalField    .setText("$" + String.format(transaction.total.toString()))
         frequencyField.setText(transaction.frequency.toString())
         dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
         categorySpinner.setSelection(categoryNamesList.indexOf(transaction.category))

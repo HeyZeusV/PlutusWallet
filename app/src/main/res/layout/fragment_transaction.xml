@@ -76,16 +76,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
 
-    <EditText
+    <com.heyzeusv.financeapplication.utilities.CurrencyEditText
         android:id="@+id/transaction_total"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
-        android:hint="@string/transaction_total_hint"
         android:importantForAutofill="no"
-        android:inputType="numberDecimal"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/totalTextView"
