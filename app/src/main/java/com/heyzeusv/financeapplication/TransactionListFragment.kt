@@ -9,19 +9,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.size
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.launch
 
 import java.text.DateFormat
 
 private const val TAG = "TransactionListFragment"
 
-class TransactionListFragment : BaseFragment() {
+class TransactionListFragment : Fragment() {
 
     /**
      * Required interface for hosting activities
@@ -237,10 +237,7 @@ class TransactionListFragment : BaseFragment() {
             // set positive button and its click listener
             alertDialogBuilder.setPositiveButton("YES") { _, _ ->
 
-                launch {
-
-                    transactionListViewModel.deleteTransaction(transaction)
-                }
+                transactionListViewModel.deleteTransaction(transaction)
             }
             // set negative button and its click listener
             alertDialogBuilder.setNegativeButton("NO") { _, _ ->  }

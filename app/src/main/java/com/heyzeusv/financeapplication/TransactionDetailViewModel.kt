@@ -1,9 +1,7 @@
 package com.heyzeusv.financeapplication
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import kotlinx.coroutines.launch
 
 class TransactionDetailViewModel : ViewModel() {
 
@@ -29,13 +27,19 @@ class TransactionDetailViewModel : ViewModel() {
         transactionIdLiveData.value = transactionId
     }
 
-    suspend fun saveTransaction(transaction : Transaction) {
+    fun saveTransaction(transaction : Transaction) {
 
-        transactionRepository.updateTransaction(transaction)
+        viewModelScope.launch {
+
+            transactionRepository.updateTransaction(transaction)
+        }
     }
 
-    suspend fun insertTransaction(transaction : Transaction) {
+    fun insertTransaction(transaction : Transaction) {
 
-        transactionRepository.insertTransaction(transaction)
+        viewModelScope.launch {
+
+            transactionRepository.insertTransaction(transaction)
+        }
     }
 }

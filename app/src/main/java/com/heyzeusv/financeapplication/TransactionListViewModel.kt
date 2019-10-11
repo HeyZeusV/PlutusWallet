@@ -1,6 +1,8 @@
 package com.heyzeusv.financeapplication
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class TransactionListViewModel : ViewModel() {
 
@@ -12,9 +14,12 @@ class TransactionListViewModel : ViewModel() {
     // LiveData<Int?>
     val categorySizeLiveData = transactionRepository.getCategorySize()
 
-    suspend fun deleteTransaction(transaction : Transaction) {
+    fun deleteTransaction(transaction : Transaction) {
 
-        transactionRepository.deleteTransaction(transaction)
+        viewModelScope.launch {
+
+            transactionRepository.deleteTransaction(transaction)
+        }
     }
 
     fun insertCategories(categories : Array<Category>) {

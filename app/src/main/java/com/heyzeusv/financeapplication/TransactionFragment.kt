@@ -10,11 +10,11 @@ import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.*
@@ -28,7 +28,7 @@ private const val ARG_FROM_FAB = "from_fab"
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 
-class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
+class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
     // views
     private lateinit var transaction            : Transaction
@@ -312,15 +312,15 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                 transaction.total = BigDecimal("0.00")
             }
-            launch {
 
-                if (newTransaction) {
 
-                    transactionDetailViewModel.insertTransaction(transaction)
-                    newTransaction = false
-                }
-                transactionDetailViewModel.saveTransaction(transaction)
+            if (newTransaction) {
+
+                transactionDetailViewModel.insertTransaction(transaction)
+                newTransaction = false
             }
+            transactionDetailViewModel.saveTransaction(transaction)
+
             updateUI()
             Log.d(TAG, "$transaction")
         }
