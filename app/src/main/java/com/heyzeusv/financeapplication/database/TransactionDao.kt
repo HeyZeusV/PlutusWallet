@@ -25,5 +25,5 @@ interface TransactionDao : BaseDao<Transaction> {
 
     // returns the highest id in database
     @Query("SELECT MAX(id) FROM `transaction`")
-    fun getMaxId() : LiveData<Int>
+    suspend fun getMaxId() : Int?
 }

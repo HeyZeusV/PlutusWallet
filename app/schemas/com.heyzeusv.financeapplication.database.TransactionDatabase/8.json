@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 6,
-    "identityHash": "b59a67fe104608e912b81bd86674d189",
+    "version": 8,
+    "identityHash": "bde377eb6d84bd604579df9661476272",
     "entities": [
       {
         "tableName": "Transaction",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `date` INTEGER NOT NULL, `total` TEXT NOT NULL, `memo` TEXT NOT NULL, `category` TEXT NOT NULL, `repeating` INTEGER NOT NULL, `frequency` INTEGER NOT NULL, `period` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `title` TEXT NOT NULL, `date` INTEGER NOT NULL, `total` TEXT NOT NULL, `memo` TEXT NOT NULL, `category` TEXT NOT NULL, `repeating` INTEGER NOT NULL, `frequency` INTEGER NOT NULL, `period` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -67,7 +67,7 @@
           "columnNames": [
             "id"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
@@ -149,7 +149,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b59a67fe104608e912b81bd86674d189')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bde377eb6d84bd604579df9661476272')"
     ]
   }
 }

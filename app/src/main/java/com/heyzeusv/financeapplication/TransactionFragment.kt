@@ -10,11 +10,12 @@ import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.heyzeusv.financeapplication.utilities.BaseFragment
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.*
@@ -28,7 +29,7 @@ private const val ARG_FROM_FAB = "from_fab"
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 
-class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
+class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // views
     private lateinit var transaction            : Transaction
@@ -122,7 +123,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
+        val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
 
         // register an observer on LiveData instance and tie life to another component
         transactionDetailViewModel.transactionLiveData.observe(
@@ -137,24 +138,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 }
             }
         )
-        // register an observer on LiveData instance and tie life to another component
-        transactionDetailViewModel.transactionMaxIdLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { maxId ->
-                // if not null
-                maxId?.let {
-                    // runs only when user creates a new Transaction
-                    if (fromFab) {
-                        transaction.id = maxId + 1
-                        newTransaction = true
-                        Log.d(TAG, "Transaction ID onViewCreated: ${transaction.id}")
-                        fromFab = false
-                    }
-                }
-            }
-        )
+
         // register an observer on LiveData instance and tie life to another component
         transactionDetailViewModel.categoryNamesLiveData.observe(
             // view's lifecycle owner ensures that updates are only received when view is on screen
@@ -173,6 +157,25 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 }
             }
         )
+
+        // only occurs if user wants to create new Transaction
+        if (fromFab) {
+
+            launch {
+
+                // returns the highest id in Transaction table
+                var maxId = transactionDetailViewModel.getMaxIdAsync().await()
+                // should only run if Transaction table is empty
+                if (maxId == null) {
+
+                    maxId = 0
+                }
+                // id is primary key, so have to increase it
+                transaction.id = maxId.plus(1)
+            }
+            // used for saveFab
+            newTransaction = true
+        }
     }
 
     override fun onStart() {
@@ -313,13 +316,18 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 transaction.total = BigDecimal("0.00")
             }
 
+            launch {
 
-            if (newTransaction) {
+                // will insert Transaction if it was new, else update existing
+                if (newTransaction) {
 
-                transactionDetailViewModel.insertTransaction(transaction)
-                newTransaction = false
+                    transactionDetailViewModel.insertTransaction(transaction)
+                    newTransaction = false
+                } else {
+
+                    transactionDetailViewModel.saveTransaction(transaction)
+                }
             }
-            transactionDetailViewModel.saveTransaction(transaction)
 
             updateUI()
             Log.d(TAG, "$transaction")

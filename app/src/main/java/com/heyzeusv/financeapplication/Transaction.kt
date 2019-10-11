@@ -12,7 +12,7 @@ import java.util.*
 
 @Entity
 data class Transaction(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     var id        : Int = 0,
     var title     : String     = "",
     var date      : Date       = Date(),

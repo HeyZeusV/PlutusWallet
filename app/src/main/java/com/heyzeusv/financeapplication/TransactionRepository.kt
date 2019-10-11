@@ -8,7 +8,6 @@ import com.heyzeusv.financeapplication.database.FutureTransactionDao
 import com.heyzeusv.financeapplication.database.TransactionDao
 import com.heyzeusv.financeapplication.database.TransactionDatabase
 import kotlinx.coroutines.*
-import java.lang.IllegalStateException
 import java.util.concurrent.Executors
 
 private const val DATABASE_NAME = "transaction-database"
@@ -34,10 +33,11 @@ class TransactionRepository private constructor(context : Context){
     // need one for each function in DAO
     fun getTransactions()  : LiveData<List<Transaction>>   = transactionDao.getTransactions()
     fun getTransaction(id  : Int) : LiveData<Transaction?> = transactionDao.getTransaction(id)
-    fun getMaxId()         : LiveData<Int>                 = transactionDao.getMaxId()
     fun getCategorySize()  : LiveData<Int?>                = categoryDao.getCategorySize()
     fun getCategoryNames() : LiveData<List<String>>        = categoryDao.getCategoryNames()
 
+    suspend fun getMaxIdAsync() : Deferred<Int?> = withContext(Dispatchers.IO) {
+        async {transactionDao.getMaxId()}}
     suspend fun updateTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
         launch {transactionDao.update(transaction)}}
     suspend fun insertTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {

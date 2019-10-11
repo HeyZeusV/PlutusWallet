@@ -1,7 +1,7 @@
 package com.heyzeusv.financeapplication
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Deferred
 
 class TransactionDetailViewModel : ViewModel() {
 
@@ -9,8 +9,6 @@ class TransactionDetailViewModel : ViewModel() {
     private val transactionRepository = TransactionRepository.get()
     // stores ID of transaction displayed
     private val transactionIdLiveData = MutableLiveData<Int>()
-    // retrieves max id of database
-    val transactionMaxIdLiveData = transactionRepository.getMaxId()
     // LiveData<List<String>>
     val categoryNamesLiveData = transactionRepository.getCategoryNames()
 
@@ -27,19 +25,19 @@ class TransactionDetailViewModel : ViewModel() {
         transactionIdLiveData.value = transactionId
     }
 
-    fun saveTransaction(transaction : Transaction) {
+    suspend fun saveTransaction(transaction : Transaction) {
 
-        viewModelScope.launch {
-
-            transactionRepository.updateTransaction(transaction)
-        }
+        transactionRepository.updateTransaction(transaction)
     }
 
-    fun insertTransaction(transaction : Transaction) {
+    suspend fun insertTransaction(transaction : Transaction) {
 
-        viewModelScope.launch {
-
-            transactionRepository.insertTransaction(transaction)
-        }
+        transactionRepository.insertTransaction(transaction)
     }
+
+    suspend fun getMaxIdAsync() : Deferred<Int?> {
+
+        return transactionRepository.getMaxIdAsync()
+    }
+
 }

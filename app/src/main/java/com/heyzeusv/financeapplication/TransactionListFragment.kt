@@ -16,12 +16,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.heyzeusv.financeapplication.utilities.BaseFragment
+import kotlinx.coroutines.launch
 
 import java.text.DateFormat
 
 private const val TAG = "TransactionListFragment"
 
-class TransactionListFragment : Fragment() {
+class TransactionListFragment : BaseFragment() {
 
     /**
      * Required interface for hosting activities
@@ -237,7 +239,10 @@ class TransactionListFragment : Fragment() {
             // set positive button and its click listener
             alertDialogBuilder.setPositiveButton("YES") { _, _ ->
 
-                transactionListViewModel.deleteTransaction(transaction)
+                launch {
+
+                    transactionListViewModel.deleteTransaction(transaction)
+                }
             }
             // set negative button and its click listener
             alertDialogBuilder.setNegativeButton("NO") { _, _ ->  }
