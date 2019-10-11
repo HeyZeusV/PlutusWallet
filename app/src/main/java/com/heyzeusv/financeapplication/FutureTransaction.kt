@@ -18,7 +18,7 @@ import java.util.*
         indices     = [Index     (value = ["transactionId"],
                                   name = "transactionId")])
 data class FutureTransaction(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     var id            : Int,
     var transactionId : Int,
     var futureDate    : Date

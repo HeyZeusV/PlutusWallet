@@ -16,5 +16,5 @@ interface FutureTransactionDao : BaseDao<FutureTransaction> {
 
     // returns FutureTransaction with specific transactionId
     @Query("SELECT * FROM `futuretransaction` WHERE transactionId=(:transactionId)")
-    fun getFutureTransaction(transactionId : Int) : FutureTransaction?
+    suspend fun getFutureTransaction(transactionId : Int) : FutureTransaction?
 }

@@ -316,6 +316,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 transaction.total = BigDecimal("0.00")
             }
 
+            if (transaction.repeating) {
+
+                createFutureTransaction()
+            }
             launch {
 
                 // will insert Transaction if it was new, else update existing
@@ -325,7 +329,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     newTransaction = false
                 } else {
 
-                    transactionDetailViewModel.saveTransaction(transaction)
+                    transactionDetailViewModel.updateTransaction(transaction)
                 }
             }
 
@@ -356,6 +360,49 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         transaction.date = date
         updateUI()
+    }
+
+    // creates or updates FutureTransaction
+    private fun createFutureTransaction() {
+
+        val futureDate : Date = createFutureDate()
+        launch {
+
+            var futureTransaction : FutureTransaction? =
+                transactionDetailViewModel.getFutureTransactionAsync(transaction.id).await()
+
+            // means current Transaction has no FutureTransaction created for it
+            if (futureTransaction == null) {
+
+                futureTransaction = FutureTransaction(transaction.id, transaction.id, futureDate)
+                transactionDetailViewModel.insertFutureTransaction(futureTransaction)
+            // there is a FutureTransaction for current Transaction so update new futureDate
+            } else {
+
+                futureTransaction.futureDate = futureDate
+                transactionDetailViewModel.updateFutureTransaction(futureTransaction)
+            }
+            Log.d(TAG, "$futureTransaction")
+        }
+    }
+
+    // adds frequency * period to the date on Transaction
+    private fun createFutureDate() : Date {
+
+        val calendar : Calendar = Calendar.getInstance()
+        // set to Transaction date rather than current time due to Users being able
+        // to select a Date in the past or future
+        calendar.time = transaction.date
+
+        //0 = Day(s), 1 = Week(s), 2 = Month(s), 3 = Year(s)
+        when (transaction.period) {
+
+            0 -> calendar.add(Calendar.DAY_OF_MONTH, transaction.frequency)
+            1 -> calendar.add(Calendar.WEEK_OF_YEAR, transaction.frequency)
+            2 -> calendar.add(Calendar.MONTH       , transaction.frequency)
+            3 -> calendar.add(Calendar.YEAR        , transaction.frequency)
+        }
+        return calendar.time
     }
 
     companion object {

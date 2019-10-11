@@ -38,23 +38,27 @@ class TransactionRepository private constructor(context : Context){
 
     suspend fun getMaxIdAsync() : Deferred<Int?> = withContext(Dispatchers.IO) {
         async {transactionDao.getMaxId()}}
-    suspend fun updateTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
-        launch {transactionDao.update(transaction)}}
-    suspend fun insertTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
-        launch {transactionDao.insert(transaction)}}
     suspend fun deleteTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
         launch {transactionDao.delete(transaction)}}
+    suspend fun insertTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
+        launch {transactionDao.insert(transaction)}}
+    suspend fun updateTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
+        launch {transactionDao.update(transaction)}}
 
-    suspend fun updateCategory(category : Category) : Job = withContext(Dispatchers.IO) {
-        launch {categoryDao.update(category)}}
-    suspend fun insertCategory(category : Category) : Job = withContext(Dispatchers.IO) {
-        launch {categoryDao.insert(category)}}
+    fun insertCategories (categories : Array<Category>) {executor.execute {categoryDao   .insert(categories)}}
     suspend fun deleteCategory(category : Category) : Job = withContext(Dispatchers.IO) {
         launch {categoryDao.delete(category)} }
-    fun insertCategories (categories : Array<Category>) {executor.execute {categoryDao   .insert(categories)}}
+    suspend fun insertCategory(category : Category) : Job = withContext(Dispatchers.IO) {
+        launch {categoryDao.insert(category)}}
+    suspend fun updateCategory(category : Category) : Job = withContext(Dispatchers.IO) {
+        launch {categoryDao.update(category)}}
 
+    suspend fun getFutureTransactionAsync(transactionId : Int) : Deferred<FutureTransaction?> = withContext(Dispatchers.IO) {
+        async {futureTransactionDao.getFutureTransaction(transactionId)}}
     suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
         launch {futureTransactionDao.insert(futureTransaction)}}
+    suspend fun updateFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
+        launch {futureTransactionDao.update(futureTransaction)}}
 
     companion object {
 
