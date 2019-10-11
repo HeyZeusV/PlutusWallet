@@ -12,12 +12,7 @@ class TransactionListViewModel : ViewModel() {
     // LiveData<Int?>
     val categorySizeLiveData = transactionRepository.getCategorySize()
 
-    fun insertTransaction(transaction : Transaction) {
-
-        transactionRepository.insertTransaction(transaction)
-    }
-
-    fun deleteTransaction(transaction : Transaction) {
+    suspend fun deleteTransaction(transaction : Transaction) {
 
         transactionRepository.deleteTransaction(transaction)
     }

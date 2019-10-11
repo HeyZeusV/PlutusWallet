@@ -29,8 +29,13 @@ class TransactionDetailViewModel : ViewModel() {
         transactionIdLiveData.value = transactionId
     }
 
-    fun saveTransaction(transaction : Transaction) {
+    suspend fun saveTransaction(transaction : Transaction) {
 
         transactionRepository.updateTransaction(transaction)
+    }
+
+    suspend fun insertTransaction(transaction : Transaction) {
+
+        transactionRepository.insertTransaction(transaction)
     }
 }

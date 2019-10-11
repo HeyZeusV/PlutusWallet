@@ -10,10 +10,11 @@ import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.*
@@ -27,7 +28,7 @@ private const val ARG_FROM_FAB = "from_fab"
 private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 
-class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
+class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // views
     private lateinit var transaction            : Transaction
@@ -40,12 +41,15 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     private lateinit var categorySpinner        : Spinner
     private lateinit var frequencyPeriodSpinner : Spinner
     private lateinit var frequencyText          : TextView
+    private lateinit var saveFab                : FloatingActionButton
 
 
     // arrays holding values for frequency spinner
     private var frequencyArray = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
 
     private var categoryNamesList = listOf<String>()
+
+    private var newTransaction = false
 
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
@@ -79,6 +83,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
         categorySpinner        = view.findViewById(R.id.transaction_category)         as Spinner
         frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
         frequencyText          = view.findViewById(R.id.frequencyTextView)            as TextView
+        saveFab                = view.findViewById(R.id.transaction_save_fab)         as FloatingActionButton
 
         // set up for the frequencyPeriodSpinner
         val frequencyPeriodSpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyArray)
@@ -117,7 +122,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
+        var fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
 
         // register an observer on LiveData instance and tie life to another component
         transactionDetailViewModel.transactionLiveData.observe(
@@ -142,8 +147,10 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
                 maxId?.let {
                     // runs only when user creates a new Transaction
                     if (fromFab) {
-                        transaction.id = maxId
+                        transaction.id = maxId + 1
+                        newTransaction = true
                         Log.d(TAG, "Transaction ID onViewCreated: ${transaction.id}")
+                        fromFab = false
                     }
                 }
             }
@@ -283,31 +290,40 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-    }
 
-    override fun onPause() {
-        super.onPause()
+        saveFab.setOnClickListener {
 
-        // gives Transactions simple titles if user doesn't enter any
-        if (transaction.title == "") {
+            // gives Transactions simple titles if user doesn't enter any
+            if (transaction.title == "") {
 
-            transaction.title = "Transaction #" + transaction.id
+                transaction.title = "Transaction #" + transaction.id
+            }
+            // frequency must always be at least 1
+            if (transaction.frequency < 1) {
+
+                transaction.frequency = 1
+            }
+            try {
+                transaction.total = BigDecimal(
+                    totalField.text.toString()
+                        .replace("$", "").replace(",", "")
+                )
+            } catch (e : java.lang.NumberFormatException) {
+
+                transaction.total = BigDecimal("0.00")
+            }
+            launch {
+
+                if (newTransaction) {
+
+                    transactionDetailViewModel.insertTransaction(transaction)
+                    newTransaction = false
+                }
+                transactionDetailViewModel.saveTransaction(transaction)
+            }
+            updateUI()
+            Log.d(TAG, "$transaction")
         }
-        // frequency must always be at least 1
-        if (transaction.frequency < 1) {
-
-            transaction.frequency = 1
-        }
-        try {
-            transaction.total = BigDecimal(
-                totalField.text.toString()
-                    .replace("$", "").replace(",", "")
-            )
-        } catch (e : java.lang.NumberFormatException) {
-
-            transaction.total = BigDecimal("0.00")
-        }
-        transactionDetailViewModel.saveTransaction(transaction)
     }
 
     private fun updateUI() {
@@ -324,6 +340,7 @@ class TransactionFragment : Fragment(), DatePickerFragment.Callbacks {
             jumpDrawablesToCurrentState()
         }
         frequencyPeriodSpinner.setSelection(transaction.period)
+        Log.d(TAG, "$transaction")
     }
 
     // will update date with the date selected from DatePickerFragment

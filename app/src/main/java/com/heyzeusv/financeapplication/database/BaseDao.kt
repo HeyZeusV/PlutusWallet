@@ -13,17 +13,17 @@ interface BaseDao<T> {
 
     // Insert an object in the database.
     @Insert
-    fun insert(obj: T)
+    suspend fun insert(obj : T)
 
     // Insert an array of objects in the database.
     @Insert
-    fun insert(obj: Array<T>)
+    fun insert(obj : Array<T>)
 
     // Update an object from the database.
     @Update
-    fun update(obj: T)
+    suspend fun update(obj : T)
 
     // Delete an object from the database
     @Delete
-    fun delete(obj: T)
+    suspend fun delete(obj : T)
 }

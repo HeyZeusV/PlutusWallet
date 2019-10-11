@@ -8,21 +8,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.size
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.launch
 
 import java.text.DateFormat
 
 private const val TAG = "TransactionListFragment"
 
-class TransactionListFragment : Fragment() {
+class TransactionListFragment : BaseFragment() {
 
     /**
      * Required interface for hosting activities
@@ -136,7 +135,6 @@ class TransactionListFragment : Fragment() {
 
         transactionAddFab.setOnClickListener {
             val transaction = Transaction()
-            transactionListViewModel.insertTransaction(transaction)
             callbacks?.onTransactionSelected(transaction.id, fabX, fabY, true)
             // this will make it so the list will snap to the top after user
             // creates a new Transaction
@@ -239,7 +237,10 @@ class TransactionListFragment : Fragment() {
             // set positive button and its click listener
             alertDialogBuilder.setPositiveButton("YES") { _, _ ->
 
-                transactionListViewModel.deleteTransaction(transaction)
+                launch {
+
+                    transactionListViewModel.deleteTransaction(transaction)
+                }
             }
             // set negative button and its click listener
             alertDialogBuilder.setNegativeButton("NO") { _, _ ->  }

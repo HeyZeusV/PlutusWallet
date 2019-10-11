@@ -8,7 +8,7 @@ import com.heyzeusv.financeapplication.FutureTransaction
 import com.heyzeusv.financeapplication.Transaction
 
 @Database(entities = [Transaction::class, Category::class, FutureTransaction::class],
-    version = 5, exportSchema = true)
+    version = 6, exportSchema = true)
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {
 

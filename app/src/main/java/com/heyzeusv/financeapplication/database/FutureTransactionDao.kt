@@ -1,6 +1,7 @@
 package com.heyzeusv.financeapplication.database
 
 import androidx.room.Dao
+import androidx.room.Query
 import com.heyzeusv.financeapplication.FutureTransaction
 
 /*
@@ -12,4 +13,8 @@ import com.heyzeusv.financeapplication.FutureTransaction
 
 @Dao
 interface FutureTransactionDao : BaseDao<FutureTransaction> {
+
+    // returns FutureTransaction with specific transactionId
+    @Query("SELECT * FROM `futuretransaction` WHERE transactionId=(:transactionId)")
+    fun getFutureTransaction(transactionId : Int) : FutureTransaction?
 }

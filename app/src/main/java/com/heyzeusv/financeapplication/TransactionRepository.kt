@@ -7,6 +7,7 @@ import com.heyzeusv.financeapplication.database.CategoryDao
 import com.heyzeusv.financeapplication.database.FutureTransactionDao
 import com.heyzeusv.financeapplication.database.TransactionDao
 import com.heyzeusv.financeapplication.database.TransactionDatabase
+import kotlinx.coroutines.*
 import java.lang.IllegalStateException
 import java.util.concurrent.Executors
 
@@ -31,26 +32,29 @@ class TransactionRepository private constructor(context : Context){
     private val executor = Executors.newSingleThreadExecutor()
 
     // need one for each function in DAO
-    fun getTransactions() : LiveData<List<Transaction>> = transactionDao.getTransactions()
+    fun getTransactions()  : LiveData<List<Transaction>>   = transactionDao.getTransactions()
+    fun getTransaction(id  : Int) : LiveData<Transaction?> = transactionDao.getTransaction(id)
+    fun getMaxId()         : LiveData<Int>                 = transactionDao.getMaxId()
+    fun getCategorySize()  : LiveData<Int?>                = categoryDao.getCategorySize()
+    fun getCategoryNames() : LiveData<List<String>>        = categoryDao.getCategoryNames()
 
-    fun getTransaction(id : Int) : LiveData<Transaction?> = transactionDao.getTransaction(id)
+    suspend fun updateTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
+        launch {transactionDao.update(transaction)}}
+    suspend fun insertTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
+        launch {transactionDao.insert(transaction)}}
+    suspend fun deleteTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
+        launch {transactionDao.delete(transaction)}}
 
-    fun getMaxId() : LiveData<Int> = transactionDao.getMaxId()
+    suspend fun updateCategory(category : Category) : Job = withContext(Dispatchers.IO) {
+        launch {categoryDao.update(category)}}
+    suspend fun insertCategory(category : Category) : Job = withContext(Dispatchers.IO) {
+        launch {categoryDao.insert(category)}}
+    suspend fun deleteCategory(category : Category) : Job = withContext(Dispatchers.IO) {
+        launch {categoryDao.delete(category)} }
+    fun insertCategories (categories : Array<Category>) {executor.execute {categoryDao   .insert(categories)}}
 
-    fun getCategorySize() : LiveData<Int?> = categoryDao.getCategorySize()
-
-    fun getCategoryNames() : LiveData<List<String>> = categoryDao.getCategoryNames()
-
-    fun updateTransaction(transaction : Transaction)     {executor.execute {transactionDao.update(transaction)}}
-    fun insertTransaction(transaction : Transaction)     {executor.execute {transactionDao.insert(transaction)}}
-    fun deleteTransaction(transaction : Transaction)     {executor.execute {transactionDao.delete(transaction)}}
-
-    fun updateCategory   (category    : Category)        {executor.execute {categoryDao   .update(category)}}
-    fun insertCategory   (category    : Category)        {executor.execute {categoryDao   .insert(category)}}
-    fun deleteCategory   (category    : Category)        {executor.execute {categoryDao   .delete(category)}}
-    fun insertCategories (categories  : Array<Category>) {executor.execute {categoryDao   .insert(categories)}}
-
-    fun insertFutureTransaction(futureTransaction : FutureTransaction) {executor.execute {futureTransactionDao.insert(futureTransaction)}}
+    suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
+        launch {futureTransactionDao.insert(futureTransaction)}}
 
     companion object {
 

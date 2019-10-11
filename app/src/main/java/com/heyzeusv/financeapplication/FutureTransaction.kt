@@ -15,7 +15,8 @@ import java.util.*
                                   childColumns = arrayOf("transactionId"),
                                   onDelete = ForeignKey.CASCADE)])
 data class FutureTransaction(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    var id            : Int,
     var transactionId : Int,
-    var futureDate : Date
+    var futureDate    : Date
 )
