@@ -1,5 +1,6 @@
 package com.heyzeusv.financeapplication
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
@@ -49,10 +50,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // arrays holding values for frequency spinner
     private var frequencyArray = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
 
+    // used with categories
     private var categoryNamesList = mutableListOf<String>()
     private var newCategoryName = ""
     private var madeNewCategory = false
 
+    // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
 
     // provides instance of ViewModel
@@ -191,6 +194,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
     }
 
+    @ExperimentalStdlibApi
     override fun onStart() {
         super.onStart()
 
@@ -286,21 +290,35 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-
+                // only creates AlertDialog if user selects "Create New Category"
                 if (parent?.getItemAtPosition(position) == "Create New Category") {
+
+                    // initialize instance of Builder
                     val builder = AlertDialog.Builder(context)
+                    // set title of AlertDialog
                     builder.setTitle("Create new category")
+                    // inflates view that holds EditText
                     val viewInflated: View = LayoutInflater.from(context)
                         .inflate(R.layout.dialog_new_category, getView() as ViewGroup, false)
+                    // the EditText to be used
                     val input: EditText = viewInflated.findViewById(R.id.category_Input)
+                    // sets the view
                     builder.setView(viewInflated)
+                    // set positive button and its click listener
                     builder.setPositiveButton("Save") { _, _ ->
 
-                        Log.d(TAG, "new category ${input.text}")
                         insertCategory(input.text.toString())
                     }
-                    builder.setNegativeButton("Cancel") { _, _ -> }
+                    // set negative button and its click listener
+                    builder.setNegativeButton("Cancel") { _, _ ->
+
+                        // users shouldn't be able to save on "Create New Category",
+                        // this prevents that
+                        categorySpinner.setSelection(0)
+                    }
+                    // make the AlertDialog using the builder
                     val categoryAlertDialog: AlertDialog = builder.create()
+                    // display AlertDialog
                     categoryAlertDialog.show()
                 }
                 // updates the category to selected one
@@ -450,15 +468,28 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
     }
 
+    @SuppressLint("DefaultLocale")
+    @ExperimentalStdlibApi
+    // inserts new Category into database or selects it in categorySpinner if it exists already
     private fun insertCategory(input : String) {
 
-        val newCategory = Category(input)
-        launch {
+        // makes first letter of every word capital and every other letter lower case
+        val name = input.split(" ").joinToString(" ") {it.toLowerCase(Locale.US).capitalize(Locale.US)  }
 
-            transactionDetailViewModel.insertCategory(newCategory)
+        // -1 means it doesn't exist
+        if (categoryNamesList.indexOf(name) == -1) {
+
+            val newCategory = Category(name)
+            launch {
+
+                transactionDetailViewModel.insertCategory(newCategory)
+            }
+            newCategoryName = name
+            madeNewCategory = true
+        } else {
+
+            categorySpinner.setSelection(categoryNamesList.indexOf(name))
         }
-        newCategoryName = input
-        madeNewCategory = true
     }
 
     companion object {
