@@ -25,6 +25,10 @@ class TransactionDetailViewModel : ViewModel() {
         transactionIdLiveData.value = transactionId
     }
 
+    /*
+        Transaction queries
+     */
+
     suspend fun getMaxIdAsync() : Deferred<Int?> {
 
         return transactionRepository.getMaxIdAsync()
@@ -40,9 +44,17 @@ class TransactionDetailViewModel : ViewModel() {
         transactionRepository.updateTransaction(transaction)
     }
 
+    /*
+        FutureTransaction queries
+     */
     suspend fun getFutureTransactionAsync(transactionId : Int) : Deferred<FutureTransaction?> {
 
         return transactionRepository.getFutureTransactionAsync(transactionId)
+    }
+
+    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) {
+
+        transactionRepository.deleteFutureTransaction(futureTransaction)
     }
 
     suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) {
@@ -53,5 +65,13 @@ class TransactionDetailViewModel : ViewModel() {
     suspend fun updateFutureTransaction(futureTransaction : FutureTransaction) {
 
          transactionRepository.updateFutureTransaction(futureTransaction)
+    }
+
+    /*
+        Category queries
+     */
+    suspend fun insertCategory(category : Category) {
+
+        transactionRepository.insertCategory(category)
     }
 }

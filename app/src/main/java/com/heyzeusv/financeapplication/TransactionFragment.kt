@@ -1,5 +1,6 @@
 package com.heyzeusv.financeapplication
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -48,7 +49,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // arrays holding values for frequency spinner
     private var frequencyArray = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
 
-    private var categoryNamesList = listOf<String>()
+    private var categoryNamesList = mutableListOf<String>()
+    private var newCategoryName = ""
+    private var madeNewCategory = false
 
     private var newTransaction = false
 
@@ -94,6 +97,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // checks to see how user arrived to TransactionFragment
         val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
         if (fromFab) {
+
             // animation that plays on user presses FAB
             view.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
 
@@ -106,7 +110,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     v.removeOnLayoutChangeListener(this)
                     val fabX: Int = arguments?.getInt(ARG_FAB_X) as Int
                     val fabY: Int = arguments?.getInt(ARG_FAB_Y) as Int
-                    Log.d(TAG, "args bundle fabX: $fabX fabY: $fabY")
                     val finalRadius = hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
                     val anim = ViewAnimationUtils.createCircularReveal(
                         v, fabX, fabY, 10.0F, finalRadius)
@@ -147,13 +150,23 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             Observer { categoryNames ->
                 // if not null
                 categoryNames?.let {
+                    categoryNamesList = categoryNames.toMutableList()
+                    // "Create New Category will always be at bottom of the list
+                    categoryNamesList.remove("Create New Category")
+                    categoryNamesList.sort()
+                    categoryNamesList.add("Create New Category")
                     // sets up the categorySpinner
-                    categoryNamesList = categoryNames
-                    val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, categoryNames)
+                    val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, categoryNamesList)
                     categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
                     categorySpinner.adapter = categorySpinnerAdapter
-                    // starts the spinner up to Category saved, if any
-                    categorySpinner.setSelection(categoryNames.indexOf(transaction.category))
+                    // if user made a new category, then sets the categorySpinner to new one
+                    // else starts the spinner up to Category saved
+                    if (madeNewCategory) {
+
+                        categorySpinner.setSelection(categoryNamesList.indexOf(newCategoryName))
+                    } else {
+                        categorySpinner.setSelection(categoryNamesList.indexOf(transaction.category))
+                    }
                 }
             }
         )
@@ -189,8 +202,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // sequence is user's input which title is changed to
             override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int
-            ) {
+                sequence : CharSequence?, start : Int, before : Int, count : Int) {
+
                 transaction.title = sequence.toString()
             }
 
@@ -206,8 +219,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // sequence is user's input which memo is changed to
             override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int
-            ) {
+                sequence : CharSequence?, start : Int, before : Int, count : Int) {
+
                 transaction.memo = sequence.toString()
             }
 
@@ -223,8 +236,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // sequence is user's input which memo is changed to
             override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int
-            ) {
+                sequence : CharSequence?, start : Int, before : Int, count : Int) {
+
                 try {
                     transaction.frequency = Integer.parseInt(sequence.toString())
                 } catch (e : NumberFormatException) {
@@ -271,10 +284,25 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-                Log.d(TAG, "CategorySpinner: ${parent?.getItemAtPosition(position)}")
+
+                if (parent?.getItemAtPosition(position) == "Create New Category") {
+                    val builder = AlertDialog.Builder(context)
+                    builder.setTitle("Create new category")
+                    val viewInflated: View = LayoutInflater.from(context)
+                        .inflate(R.layout.dialog_new_category, getView() as ViewGroup, false)
+                    val input: EditText = viewInflated.findViewById(R.id.category_Input)
+                    builder.setView(viewInflated)
+                    builder.setPositiveButton("Save") { _, _ ->
+
+                        Log.d(TAG, "new category ${input.text}")
+                        insertCategory(input.text.toString())
+                    }
+                    builder.setNegativeButton("Cancel") { _, _ -> }
+                    val categoryAlertDialog: AlertDialog = builder.create()
+                    categoryAlertDialog.show()
+                }
                 // updates the category to selected one
                 transaction.category = parent?.getItemAtPosition(position) as String
             }
@@ -285,8 +313,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         frequencyPeriodSpinner.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
                     transaction.period = position
             }
@@ -301,11 +328,13 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                 transaction.title = "Transaction #" + transaction.id
             }
+
             // frequency must always be at least 1
             if (transaction.frequency < 1) {
 
                 transaction.frequency = 1
             }
+
             try {
                 transaction.total = BigDecimal(
                     totalField.text.toString()
@@ -319,7 +348,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             if (transaction.repeating) {
 
                 createFutureTransaction()
+            } else {
+
+                deleteFutureTransaction()
             }
+
             launch {
 
                 // will insert Transaction if it was new, else update existing
@@ -334,7 +367,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
 
             updateUI()
-            Log.d(TAG, "$transaction")
         }
     }
 
@@ -352,7 +384,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             jumpDrawablesToCurrentState()
         }
         frequencyPeriodSpinner.setSelection(transaction.period)
-        Log.d(TAG, "$transaction")
     }
 
     // will update date with the date selected from DatePickerFragment
@@ -382,7 +413,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 futureTransaction.futureDate = futureDate
                 transactionDetailViewModel.updateFutureTransaction(futureTransaction)
             }
-            Log.d(TAG, "$futureTransaction")
         }
     }
 
@@ -403,6 +433,32 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             3 -> calendar.add(Calendar.YEAR        , transaction.frequency)
         }
         return calendar.time
+    }
+
+    // deletes FutureTransaction for this Transaction, if any
+    private fun deleteFutureTransaction() {
+
+        launch {
+
+            val futureTransaction : FutureTransaction? =
+                transactionDetailViewModel.getFutureTransactionAsync(transaction.id).await()
+
+            if (futureTransaction != null) {
+
+                transactionDetailViewModel.deleteFutureTransaction(futureTransaction)
+            }
+        }
+    }
+
+    private fun insertCategory(input : String) {
+
+        val newCategory = Category(input)
+        launch {
+
+            transactionDetailViewModel.insertCategory(newCategory)
+        }
+        newCategoryName = input
+        madeNewCategory = true
     }
 
     companion object {

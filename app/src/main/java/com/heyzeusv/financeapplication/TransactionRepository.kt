@@ -55,6 +55,8 @@ class TransactionRepository private constructor(context : Context){
 
     suspend fun getFutureTransactionAsync(transactionId : Int) : Deferred<FutureTransaction?> = withContext(Dispatchers.IO) {
         async {futureTransactionDao.getFutureTransaction(transactionId)}}
+    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
+        launch {futureTransactionDao.delete(futureTransaction)}}
     suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
         launch {futureTransactionDao.insert(futureTransaction)}}
     suspend fun updateFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
