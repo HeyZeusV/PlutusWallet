@@ -6,11 +6,11 @@ import kotlinx.coroutines.Deferred
 class TransactionDetailViewModel : ViewModel() {
 
     // stores handle to TransactionRepository
-    private val transactionRepository = TransactionRepository.get()
+    private val transactionRepository : TransactionRepository = TransactionRepository.get()
     // stores ID of transaction displayed
     private val transactionIdLiveData = MutableLiveData<Int>()
-    // LiveData<List<String>>
-    val categoryNamesLiveData = transactionRepository.getCategoryNames()
+
+    val categoryNamesLiveData : LiveData<List<String>> = transactionRepository.getCategoryNames()
 
     // value gets updated every time a new value gets set on the trigger LiveData instance
     var transactionLiveData : LiveData<Transaction?> =

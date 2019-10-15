@@ -23,13 +23,13 @@ import java.text.DateFormat
 import java.util.*
 import kotlin.math.hypot
 
-private const val TAG = "TransactionFragment"
+private const val TAG                = "TransactionFragment"
 private const val ARG_TRANSACTION_ID = "transaction_id"
-private const val ARG_FAB_X = "fab_X"
-private const val ARG_FAB_Y = "fab_Y"
-private const val ARG_FROM_FAB = "from_fab"
-private const val DIALOG_DATE = "DialogDate"
-private const val REQUEST_DATE = 0
+private const val ARG_FAB_X          = "fab_X"
+private const val ARG_FAB_Y          = "fab_Y"
+private const val ARG_FROM_FAB       = "from_fab"
+private const val DIALOG_DATE        = "DialogDate"
+private const val REQUEST_DATE       = 0
 
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 

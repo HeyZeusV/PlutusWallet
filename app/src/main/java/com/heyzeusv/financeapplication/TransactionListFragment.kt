@@ -156,10 +156,9 @@ class TransactionListFragment : BaseFragment() {
         val savings        = Category("Savings")
         val transportation = Category("Transportation")
         val utilities      = Category("Utilities")
-        val addCategory    = Category("Create New Category")
 
         val initialCategoryList = arrayOf(education, entertainment, food,
-            home, income, savings, transportation, utilities, addCategory)
+            home, income, savings, transportation, utilities)
         transactionListViewModel.insertCategories(initialCategoryList)
     }
 

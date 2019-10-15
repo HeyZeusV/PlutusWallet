@@ -12,4 +12,6 @@
     <string name="transaction_memo_hint">Enter any additional information needed</string>
     <string name="transaction_frequency_hint">1–99</string>
     <string name="category_hint">Category</string>
+    <string name="filter_start">Start:</string>
+    <string name="end">End:</string>
 </resources>
