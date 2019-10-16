@@ -3,15 +3,23 @@ package com.heyzeusv.financeapplication
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BlankFragment
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
 
+    private lateinit var fab : FloatingActionButton
+
+    private var fabX = 0
+    private var fabY = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        fab = findViewById(R.id.activity_fab)
 
         // FragmentManager adds fragments to an activity
         val currentFragment =
@@ -33,11 +41,13 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
                 .add(R.id.fragment_filter_container, filterFragment)
                 .commit()
         }
+
     }
 
-    override fun onTransactionSelected(transactionId: Int, fabX : Int, fabY : Int, fromFab : Boolean) {
+    override fun onTransactionSelected(transactionId: Int, fromFab : Boolean) {
 
         Log.d(TAG, "MainActivity.onTransactionSelected: $transactionId")
+        getFabLocation()
 
         val transactionFragment = TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
         val blankFragment = BlankFragment()
@@ -52,5 +62,15 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
             .commit()
+    }
+
+    // gets location of FAB button in order to start animation from correct location
+    private fun getFabLocation() {
+
+        val fabLocationArray = IntArray(2)
+        fab.getLocationOnScreen(fabLocationArray)
+        fabX = fabLocationArray[0] + fab.width / 2
+        fabY = fabLocationArray[1] - fab.height
+        Log.d(TAG, "fabX: $fabX fabY: $fabY")
     }
 }

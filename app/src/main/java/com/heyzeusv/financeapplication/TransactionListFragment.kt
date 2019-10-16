@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.size
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -31,14 +30,12 @@ class TransactionListFragment : BaseFragment() {
      */
     interface Callbacks {
 
-        fun onTransactionSelected(transactionId : Int, fabX : Int, fabY : Int, fromFab : Boolean)
+        fun onTransactionSelected(transactionId : Int, fromFab : Boolean)
     }
 
     private var callbacks : Callbacks? = null
     private lateinit var transactionRecyclerView : RecyclerView
     private lateinit var transactionAddFab : FloatingActionButton
-    private var fabX : Int = 0
-    private var fabY : Int = 0
     private var recyclerViewPosition : Int = 0
     private var startUp : Boolean = true
     // initialize adapter with empty crime list since we have to wait for results from DB
@@ -137,7 +134,7 @@ class TransactionListFragment : BaseFragment() {
 
         transactionAddFab.setOnClickListener {
             val transaction = Transaction()
-            callbacks?.onTransactionSelected(transaction.id, fabX, fabY, true)
+            callbacks?.onTransactionSelected(transaction.id, true)
             // this will make it so the list will snap to the top after user
             // creates a new Transaction
             recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
@@ -167,13 +164,6 @@ class TransactionListFragment : BaseFragment() {
         // creates CrimeAdapter to set with RecyclerView
         transactionAdapter = TransactionAdapter(transactions)
         transactionRecyclerView.adapter = transactionAdapter
-
-        // gets location of FAB button in order to start animation from correct location
-        val fabLocationArray = IntArray(2)
-        transactionAddFab.getLocationOnScreen(fabLocationArray)
-        fabX = fabLocationArray[0] + transactionAddFab.width / 2
-        fabY = fabLocationArray[1] - transactionAddFab.height
-        Log.d(TAG, "fabX: $fabX fabY: $fabY")
 
         // used to return user to previous position in transactionRecyclerView
         transactionRecyclerView.scrollToPosition(recyclerViewPosition)
@@ -222,7 +212,7 @@ class TransactionListFragment : BaseFragment() {
             // the position that the user clicked on
             recyclerViewPosition = this.layoutPosition
             // notifies hosting activity which item was selected
-            callbacks?.onTransactionSelected(transaction.id, fabX, fabY, false)
+            callbacks?.onTransactionSelected(transaction.id, false)
         }
 
         // shows AlertDialog asking user if they want to delete Transaction
