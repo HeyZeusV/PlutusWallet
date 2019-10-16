@@ -6,7 +6,7 @@
     <string name="transaction_total">Total:</string>
     <string name="transaction_total_hint">Enter total of transaction</string>
     <string name="transaction_category">Category:</string>
-    <string name="transaction_repeating_transaction">Repeating Transaction</string>
+    <string name="transaction_repeating_transaction">Repeating Transaction:</string>
     <string name="transaction_frequency">Frequency: Every</string>
     <string name="transaction_memo">Memo:</string>
     <string name="transaction_memo_hint">Enter any additional information needed</string>
@@ -14,4 +14,5 @@
     <string name="category_hint">Category</string>
     <string name="filter_start">Start:</string>
     <string name="end">End:</string>
+    <string name="filter_apply">Apply Filter</string>
 </resources>

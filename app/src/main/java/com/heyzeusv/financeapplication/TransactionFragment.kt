@@ -14,6 +14,7 @@ import android.widget.*
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
@@ -34,18 +35,18 @@ private const val REQUEST_DATE       = 0
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // views
-    private lateinit var transaction            : Transaction
+    private lateinit var repeatingCheckBox      : CheckBox
+    private lateinit var totalField             : CurrencyEditText
     private lateinit var titleField             : EditText
     private lateinit var memoField              : EditText
     private lateinit var frequencyField         : EditText
-    private lateinit var totalField             : CurrencyEditText
-    private lateinit var dateButton             : Button
-    private lateinit var repeatingCheckBox      : CheckBox
+    private lateinit var saveFab                : FloatingActionButton
+    private lateinit var dateButton             : MaterialButton
     private lateinit var categorySpinner        : Spinner
     private lateinit var frequencyPeriodSpinner : Spinner
     private lateinit var frequencyText          : TextView
-    private lateinit var saveFab                : FloatingActionButton
 
+    private lateinit var transaction            : Transaction
 
     // arrays holding values for frequency spinner
     private var frequencyArray = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
@@ -80,17 +81,17 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     ) : View? {
 
         val view = inflater.inflate(R.layout.fragment_transaction, container, false)
-        
+
+        repeatingCheckBox      = view.findViewById(R.id.transaction_repeating)        as CheckBox
+        totalField             = view.findViewById(R.id.transaction_total)            as CurrencyEditText
         titleField             = view.findViewById(R.id.transaction_title)            as EditText
         memoField              = view.findViewById(R.id.transaction_memo)             as EditText
         frequencyField         = view.findViewById(R.id.transaction_frequency)        as EditText
-        totalField             = view.findViewById(R.id.transaction_total)            as CurrencyEditText
-        dateButton             = view.findViewById(R.id.transaction_date)             as Button
-        repeatingCheckBox      = view.findViewById(R.id.transaction_repeating)        as CheckBox
+        saveFab                = view.findViewById(R.id.transaction_save_fab)         as FloatingActionButton
+        dateButton             = view.findViewById(R.id.transaction_date)             as MaterialButton
         categorySpinner        = view.findViewById(R.id.transaction_category)         as Spinner
         frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
         frequencyText          = view.findViewById(R.id.frequencyTextView)            as TextView
-        saveFab                = view.findViewById(R.id.transaction_save_fab)         as FloatingActionButton
 
         // set up for the frequencyPeriodSpinner
         val frequencyPeriodSpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyArray)
@@ -261,7 +262,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // OnClickListener not affected by state restoration,
         // but nice to have listeners in one place
         dateButton.setOnClickListener {
+
             DatePickerFragment.newInstance(transaction.date).apply {
+
                 // fragment that will be target and request code
                 setTargetFragment(this@TransactionFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
