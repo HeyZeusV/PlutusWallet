@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
@@ -15,9 +16,10 @@ import com.heyzeusv.financeapplication.utilities.BaseFragment
 import java.text.DateFormat
 import java.util.*
 
-private const val TAG          = "FilterFragment"
-private const val DIALOG_DATE  = "DialogDate"
-private const val REQUEST_DATE = 0
+private const val TAG           = "FilterFragment"
+private const val DIALOG_DATE   = "DialogDate"
+private const val REQUEST_DATE  = 0
+private const val ONE_DAY_MILLI = 86400000
 
 class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
@@ -33,10 +35,11 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var start = false
     private var end   = false
 
-    // used to pass Dates to queries
+    // used to set button time and to pass Dates to queries
     private var startDate = Date()
-    private var endDate   = Date()
+    private var endDate   = Date(startDate.time + ONE_DAY_MILLI)
 
+    // state of checkboxes
     private var categorySelected = false
     private var dateSelected     = false
 
@@ -60,15 +63,14 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         applyButton      = view.findViewById(R.id.filter_apply)          as MaterialButton
         categorySpinner  = view.findViewById(R.id.filter_category)       as Spinner
 
-        categorySpinner.isEnabled = false
+        // restores state of views
+        categorySpinner.isEnabled = categorySelected
+        startDateButton.isEnabled = dateSelected
+        endDateButton  .isEnabled = dateSelected
+        applyButton    .isEnabled = categorySelected or dateSelected
+        endDateButton  .text = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
+        startDateButton.text = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
 
-        // used to set start to current date and end to the next day as default
-        val calendar : Calendar = Calendar.getInstance()
-        calendar.time = Date()
-        calendar.add(Calendar.DAY_OF_MONTH, 1)
-        endDateButton  .text = DateFormat.getDateInstance(DateFormat.SHORT).format(calendar.time)
-        startDateButton.text = DateFormat.getDateInstance(DateFormat.SHORT).format(Date())
-        endDate = calendar.time
 
         return view
     }
@@ -107,6 +109,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 categorySpinner.isEnabled = isChecked
                 applyButton    .isEnabled = isChecked or dateSelected
             }
+            // skips animation
+            jumpDrawablesToCurrentState()
         }
 
         dateCheckBox.apply {
@@ -118,11 +122,13 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 endDateButton  .isEnabled = isChecked
                 applyButton    .isEnabled = isChecked or categorySelected
             }
+            // skips animation
+            jumpDrawablesToCurrentState()
         }
 
         startDateButton.setOnClickListener {
 
-            DatePickerFragment.newInstance(Date()).apply {
+            DatePickerFragment.newInstance(startDate).apply {
 
                 // fragment that will be target and request code
                 setTargetFragment(this@FilterFragment, REQUEST_DATE)
@@ -134,7 +140,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         endDateButton.setOnClickListener {
 
-            DatePickerFragment.newInstance(Date()).apply {
+            DatePickerFragment.newInstance(endDate).apply {
 
                 // fragment that will be target and request code
                 setTargetFragment(this@FilterFragment, REQUEST_DATE)
@@ -142,6 +148,13 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 show(this@FilterFragment.requireFragmentManager(), DIALOG_DATE)
                 end = true
             }
+        }
+
+        applyButton.setOnClickListener {
+
+            if (startDate > endDate) {
+
+                Toast.makeText(it.context, "End date is before start date!!", Toast.LENGTH_LONG).show()            }
         }
     }
 
@@ -161,5 +174,4 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             end                = false
         }
     }
-
 }
