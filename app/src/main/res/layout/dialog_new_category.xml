@@ -6,14 +6,17 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/category_Input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/category_hint"
-            android:inputType="text"/>
+            android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

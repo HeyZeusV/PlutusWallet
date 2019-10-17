@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
@@ -297,7 +298,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 if (parent?.getItemAtPosition(position) == "Create New Category") {
 
                     // initialize instance of Builder
-                    val builder = AlertDialog.Builder(context)
+                    val builder = MaterialAlertDialogBuilder(context)
                     // set title of AlertDialog
                     builder.setTitle("Create new category")
                     // inflates view that holds EditText
@@ -320,7 +321,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                         categorySpinner.setSelection(0)
                     }
                     // make the AlertDialog using the builder
-                    val categoryAlertDialog: AlertDialog = builder.create()
+                    val categoryAlertDialog : androidx.appcompat.app.AlertDialog = builder.create()
                     // display AlertDialog
                     categoryAlertDialog.show()
                 }
@@ -331,7 +332,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        frequencyPeriodSpinner.onItemSelectedListener = object :AdapterView.OnItemSelectedListener {
+        frequencyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

@@ -5,10 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.CheckBox
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
@@ -16,12 +13,19 @@ import com.heyzeusv.financeapplication.utilities.BaseFragment
 import java.text.DateFormat
 import java.util.*
 
-private const val TAG           = "FilterFragment"
-private const val DIALOG_DATE   = "DialogDate"
-private const val REQUEST_DATE  = 0
-private const val ONE_DAY_MILLI = 86400000
+private const val TAG            = "FilterFragment"
+private const val DIALOG_DATE    = "DialogDate"
+private const val REQUEST_DATE   = 0
+private const val MIDNIGHT_MILLI = 86399999
 
 class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
+
+    interface Callbacks {
+
+        fun onFilterApplied(category : Boolean, date : Boolean, categoryName : String, start : Date, end : Date)
+    }
+
+    private var callbacks : Callbacks? = null
 
     // views
     private lateinit var categoryCheckBox : CheckBox
@@ -37,11 +41,13 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // used to set button time and to pass Dates to queries
     private var startDate = Date()
-    private var endDate   = Date(startDate.time + ONE_DAY_MILLI)
+    private var endDate   = Date()
 
     // state of checkboxes
     private var categorySelected = false
     private var dateSelected     = false
+
+    private var categoryName : String = "All"
 
     // provides instance of ViewModel
     private val filterViewModel : FilterViewModel by lazy {
@@ -63,6 +69,15 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         applyButton      = view.findViewById(R.id.filter_apply)          as MaterialButton
         categorySpinner  = view.findViewById(R.id.filter_category)       as Spinner
 
+        // sets start and end Dates to be right at day start
+        val date = GregorianCalendar()
+        date.set(Calendar.HOUR_OF_DAY, 0)
+        date.set(Calendar.MINUTE     , 0)
+        date.set(Calendar.SECOND     , 0)
+        date.set(Calendar.MILLISECOND, 0)
+        startDate.time = date.timeInMillis
+        endDate  .time = startDate.time
+
         // restores state of views
         categorySpinner.isEnabled = categorySelected
         startDateButton.isEnabled = dateSelected
@@ -70,7 +85,6 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         applyButton    .isEnabled = categorySelected or dateSelected
         endDateButton  .text = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
         startDateButton.text = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
-
 
         return view
     }
@@ -150,11 +164,29 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
         }
 
+        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+                categoryName = parent?.getItemAtPosition(position) as String
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         applyButton.setOnClickListener {
 
+            // startDate must be before endDate
             if (startDate > endDate) {
 
-                Toast.makeText(it.context, "End date is before start date!!", Toast.LENGTH_LONG).show()            }
+                Toast.makeText(it.context, "End date is before start date!!", Toast.LENGTH_LONG).show()
+            } else {
+
+                // adds time to endDate to make it right before midnight of next day
+                val endDateCorrected = Date(endDate.time + MIDNIGHT_MILLI)
+                callbacks?.onFilterApplied(categorySelected, dateSelected, categoryName, startDate, endDateCorrected)
+            }
         }
     }
 

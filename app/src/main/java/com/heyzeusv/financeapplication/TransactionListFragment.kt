@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
 import kotlinx.coroutines.launch
@@ -34,10 +35,14 @@ class TransactionListFragment : BaseFragment() {
     }
 
     private var callbacks : Callbacks? = null
+
+    // views
     private lateinit var transactionRecyclerView : RecyclerView
     private lateinit var transactionAddFab : FloatingActionButton
+
     private var recyclerViewPosition : Int = 0
     private var startUp : Boolean = true
+
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
@@ -220,7 +225,7 @@ class TransactionListFragment : BaseFragment() {
 
             recyclerViewPosition = this.layoutPosition
             // initialize instance of Builder
-            val alertDialogBuilder = AlertDialog.Builder(context)
+            val alertDialogBuilder = MaterialAlertDialogBuilder(context)
             // set title of AlertDialog
             alertDialogBuilder.setTitle("Delete Transaction")
             // set message of AlertDialog
@@ -236,7 +241,7 @@ class TransactionListFragment : BaseFragment() {
             // set negative button and its click listener
             alertDialogBuilder.setNegativeButton("NO") { _, _ ->  }
             // make the AlertDialog using the builder
-            val alertDialog : AlertDialog = alertDialogBuilder.create()
+            val alertDialog : androidx.appcompat.app.AlertDialog = alertDialogBuilder.create()
             // display AlertDialog
             alertDialog.show()
 
