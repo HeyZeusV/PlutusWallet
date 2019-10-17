@@ -14,5 +14,6 @@
     <string name="category_hint">Category</string>
     <string name="filter_start">Start:</string>
     <string name="end">End:</string>
-    <string name="filter_apply">Apply Filter</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_reset">Reset</string>
 </resources>

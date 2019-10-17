@@ -50,12 +50,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var transaction            : Transaction
 
     // arrays holding values for frequency spinner
-    private var frequencyArray = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
+    private var frequencyArray : Array<String> = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
 
     // used with categories
-    private var categoryNamesList = mutableListOf<String>()
-    private var newCategoryName = ""
-    private var madeNewCategory = false
+    private var categoryNamesList : MutableList<String> = mutableListOf()
+    private var newCategoryName                         = ""
+    private var madeNewCategory                         = false
 
     // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
@@ -502,7 +502,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // and attaches the arguments to the fragment
         fun newInstance(transactionId : Int, fabX : Int, fabY : Int, fromFab : Boolean) : TransactionFragment {
 
-            val args = Bundle().apply {
+            val args : Bundle = Bundle().apply {
 
                 putInt    (ARG_TRANSACTION_ID, transactionId)
                 putInt    (ARG_FAB_X         , fabX)

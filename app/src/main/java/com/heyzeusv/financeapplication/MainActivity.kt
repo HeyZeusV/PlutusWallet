@@ -3,12 +3,14 @@ package com.heyzeusv.financeapplication
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BlankFragment
+import java.util.*
 
 private const val TAG = "MainActivity"
 
-class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
+class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, FilterFragment.Callbacks {
 
     private lateinit var fab : FloatingActionButton
 
@@ -22,7 +24,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
         fab = findViewById(R.id.activity_fab)
 
         // FragmentManager adds fragments to an activity
-        val currentFragment =
+        val currentFragment : Fragment? =
             supportFragmentManager.findFragmentById(R.id.fragment_transaction_list_container)
 
         // would not be null if activity is destroyed and recreated
@@ -30,7 +32,8 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
         if (currentFragment == null) {
 
             val transactionListFragment : TransactionListFragment = TransactionListFragment.newInstance()
-            val filterFragment                                    = FilterFragment()
+            val filterFragment          : FilterFragment          = FilterFragment         .newInstance()
+
             // Create a new fragment transaction, add fragments,
             // and then commit it
             supportFragmentManager
@@ -44,14 +47,38 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks {
 
     }
 
+    // replaces TransactionListFragment with new TransactionListFragment with filters applied
+    override fun onFilterApplied(category : Boolean, date : Boolean, categoryName : String, start : Date, end : Date) {
+
+        Log.d(TAG, "onFilterApplied: Category: $category, Date: $date")
+
+        val filteredTransactionListFragment : TransactionListFragment =
+            TransactionListFragment.newInstance(category, date, categoryName, start, end)
+
+        // Create a new fragment transaction, add fragments,
+        // and then commit it
+        supportFragmentManager
+            .beginTransaction()
+            // replace fragment hosted at location with new fragment provided
+            // will add fragment even if there is none
+            .replace(R.id.fragment_transaction_list_container, filteredTransactionListFragment)
+            // pressing back button will go back to previous fragment (if any)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    // replaces TransactionListFragment and FilterFragment with TransactionFragment selected
     override fun onTransactionSelected(transactionId: Int, fromFab : Boolean) {
 
-        Log.d(TAG, "MainActivity.onTransactionSelected: $transactionId")
+        Log.d(TAG, "onTransactionSelected: $transactionId")
         getFabLocation()
 
-        val transactionFragment = TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
-        val blankFragment = BlankFragment()
-        val blankFragment2 = BlankFragment()
+        val transactionFragment : TransactionFragment = TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
+        val blankFragment                             = BlankFragment()
+        val blankFragment2                            = BlankFragment()
+
+        // Create a new fragment transaction, add fragments,
+        // and then commit it
         supportFragmentManager
             .beginTransaction()
             // replace fragment hosted at location with new fragment provided

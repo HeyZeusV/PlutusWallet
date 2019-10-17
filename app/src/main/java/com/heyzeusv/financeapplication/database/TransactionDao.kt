@@ -22,15 +22,15 @@ interface TransactionDao : BaseDao<Transaction> {
 
     // returns all transactions with given category
     @Query("SELECT * FROM `transaction` WHERE category=(:category)")
-    fun getTransactions(category : String) : LiveData<List<Transaction>>
+    fun getTransactions(category : String?) : LiveData<List<Transaction>>
 
     // returns all transactions within given dates
     @Query("SELECT * FROM `transaction` WHERE date BETWEEN :start AND :end")
-    fun getTransactions(start : Date, end : Date) : LiveData<List<Transaction>>
+    fun getTransactions(start : Date?, end : Date?) : LiveData<List<Transaction>>
 
     // returns all transactions with given category and within given dates
     @Query("SELECT * FROM `transaction` WHERE category=(:category) AND date BETWEEN :start AND :end")
-    fun getTransactions(category : String, start : Date, end : Date) : LiveData<List<Transaction>>
+    fun getTransactions(category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>
 
     // returns transaction with specific id
     @Query("SELECT * FROM `transaction` WHERE id=(:id)")

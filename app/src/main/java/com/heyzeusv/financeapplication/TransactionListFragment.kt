@@ -1,6 +1,5 @@
 package com.heyzeusv.financeapplication
 
-import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.size
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -20,8 +20,14 @@ import com.heyzeusv.financeapplication.utilities.BaseFragment
 import kotlinx.coroutines.launch
 
 import java.text.DateFormat
+import java.util.*
 
-private const val TAG = "TransactionListFragment"
+private const val TAG               = "TransactionListFragment"
+private const val ARG_CATEGORY      = "category"
+private const val ARG_DATE          = "date"
+private const val ARG_CATEGORY_NAME = "category_name"
+private const val ARG_START         = "start"
+private const val ARG_END           = "end"
 
 class TransactionListFragment : BaseFragment() {
 
@@ -94,8 +100,19 @@ class TransactionListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // loading in arguments, if any
+        val category     : Boolean? = arguments?.getBoolean     (ARG_CATEGORY)
+        val date         : Boolean? = arguments?.getBoolean     (ARG_DATE)
+        val categoryName : String?  = arguments?.getString      (ARG_CATEGORY_NAME)
+        val start        : Date?    = arguments?.getSerializable(ARG_START)         as Date?
+        val end          : Date?    = arguments?.getSerializable(ARG_END)           as Date?
+
+        // tells ViewModel which query to run on Transactions
+        val transactionListLiveData : LiveData<List<Transaction>> =
+            transactionListViewModel.filteredTransactionList(category, date, categoryName, start, end)
+
         // register an observer on LiveData instance and tie life to another component
-        transactionListViewModel.transactionsListLiveData.observe(
+        transactionListLiveData.observe(
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
@@ -167,7 +184,7 @@ class TransactionListFragment : BaseFragment() {
     private fun updateUI(transactions: List<Transaction>) {
 
         // creates CrimeAdapter to set with RecyclerView
-        transactionAdapter = TransactionAdapter(transactions)
+        transactionAdapter              = TransactionAdapter(transactions)
         transactionRecyclerView.adapter = transactionAdapter
 
         // used to return user to previous position in transactionRecyclerView
@@ -257,7 +274,7 @@ class TransactionListFragment : BaseFragment() {
         override fun onCreateViewHolder(parent : ViewGroup, viewType : Int)
                 : TransactionHolder {
 
-            val view = layoutInflater.inflate(R.layout.item_view_transaction, parent, false)
+            val view : View = layoutInflater.inflate(R.layout.item_view_transaction, parent, false)
             return TransactionHolder(view)
         }
 
@@ -266,7 +283,7 @@ class TransactionListFragment : BaseFragment() {
         // populates given holder with transaction from the given position in TransactionList
         override fun onBindViewHolder(holder : TransactionHolder, position : Int) {
 
-            val transaction = transactions[position]
+            val transaction : Transaction = transactions[position]
             holder.bind(transaction)
         }
     }
@@ -277,6 +294,25 @@ class TransactionListFragment : BaseFragment() {
         fun newInstance() : TransactionListFragment {
 
             return TransactionListFragment()
+        }
+
+        // creates arguments bundle, creates a fragment instance,
+        // and attaches the arguments to the fragment
+        fun newInstance(category : Boolean, date : Boolean, categoryName : String, start : Date, end : Date) : TransactionListFragment {
+
+            val args : Bundle = Bundle().apply {
+
+                putBoolean     (ARG_CATEGORY     , category)
+                putBoolean     (ARG_DATE         , date)
+                putString      (ARG_CATEGORY_NAME, categoryName)
+                putSerializable(ARG_START        , start)
+                putSerializable(ARG_END          , end)
+            }
+
+            return TransactionListFragment().apply {
+
+                arguments = args
+            }
         }
     }
 }

@@ -32,11 +32,11 @@ class TransactionRepository private constructor(context : Context){
     private val executor = Executors.newSingleThreadExecutor()
 
     // Transaction
-    fun getTransactions()                                             : LiveData<List<Transaction>>   = transactionDao.getTransactions()
-    fun getTransactions(category : String)                            : LiveData<List<Transaction>>   = transactionDao.getTransactions(category)
-    fun getTransactions(start : Date, end : Date)                     : LiveData<List<Transaction>>   = transactionDao.getTransactions(start, end)
-    fun getTransactions(category : String, start : Date, end : Date)  : LiveData<List<Transaction>>   = transactionDao.getTransactions(category, start, end)
-    fun getTransaction (id  : Int)                                    : LiveData<Transaction?>        = transactionDao.getTransaction(id)
+    fun getTransactions()                                                : LiveData<List<Transaction>>   = transactionDao.getTransactions()
+    fun getTransactions(category : String?)                              : LiveData<List<Transaction>>   = transactionDao.getTransactions(category)
+    fun getTransactions(start : Date?, end : Date?)                      : LiveData<List<Transaction>>   = transactionDao.getTransactions(start, end)
+    fun getTransactions(category : String?, start : Date?, end : Date?)  : LiveData<List<Transaction>>   = transactionDao.getTransactions(category, start, end)
+    fun getTransaction (id  : Int)                                       : LiveData<Transaction?>        = transactionDao.getTransaction (id)
     suspend fun getMaxIdAsync() : Deferred<Int?> = withContext(Dispatchers.IO) {
         async {transactionDao.getMaxId()}}
     suspend fun deleteTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
