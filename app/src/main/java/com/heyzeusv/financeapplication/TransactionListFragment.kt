@@ -66,14 +66,10 @@ class TransactionListFragment : BaseFragment() {
     }
 
     // inflates the layout and returns the inflated view to hosting activity
-    override fun onCreateView(
-        inflater : LayoutInflater,
-        container : ViewGroup?,
-        savedInstanceState : Bundle?
-    ) : View? {
+    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
 
         // layout resource id, view's parent, do not immediately add inflated view to parent
-        val view = inflater.inflate(R.layout.fragment_transaction_list, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_transaction_list, container, false)
 
         transactionRecyclerView =
             view.findViewById(R.id.transaction_recycler_view) as RecyclerView

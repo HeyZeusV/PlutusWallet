@@ -75,13 +75,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         transactionDetailViewModel.loadTransaction(transactionId)
     }
 
-    override fun onCreateView(
-        inflater : LayoutInflater,
-        container : ViewGroup?,
-        savedInstanceState : Bundle?
-    ) : View? {
+    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
 
-        val view = inflater.inflate(R.layout.fragment_transaction, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_transaction, container, false)
 
         repeatingCheckBox      = view.findViewById(R.id.transaction_repeating)        as CheckBox
         totalField             = view.findViewById(R.id.transaction_total)            as CurrencyEditText

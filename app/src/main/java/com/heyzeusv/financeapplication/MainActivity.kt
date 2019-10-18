@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
 
             val transactionListFragment : TransactionListFragment = TransactionListFragment.newInstance()
             val filterFragment          : FilterFragment          = FilterFragment         .newInstance()
+            val graphFragment           : GraphFragment           = GraphFragment          .newInstance()
 
             // Create a new fragment transaction, add fragments,
             // and then commit it
@@ -41,7 +42,8 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
                 // container view ID (where fragment's view should appear)
                 // fragment to be added
                 .add(R.id.fragment_transaction_list_container, transactionListFragment)
-                .add(R.id.fragment_filter_container, filterFragment)
+                .add(R.id.fragment_filter_container          , filterFragment)
+                .add(R.id.fragment_graph_container           , graphFragment)
                 .commit()
         }
 
@@ -76,6 +78,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
         val transactionFragment : TransactionFragment = TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
         val blankFragment                             = BlankFragment()
         val blankFragment2                            = BlankFragment()
+        val blankFragment3                            = BlankFragment()
 
         // Create a new fragment transaction, add fragments,
         // and then commit it
@@ -83,9 +86,10 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
             .beginTransaction()
             // replace fragment hosted at location with new fragment provided
             // will add fragment even if there is none
-            .add(R.id.fragment_transaction_container, transactionFragment)
+            .add(R.id.fragment_transaction_container         , transactionFragment)
             .replace(R.id.fragment_transaction_list_container, blankFragment)
-            .replace(R.id.fragment_filter_container, blankFragment2)
+            .replace(R.id.fragment_filter_container          , blankFragment2)
+            .replace(R.id.fragment_graph_container           , blankFragment3)
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
             .commit()

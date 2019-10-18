@@ -70,13 +70,9 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         callbacks = context as Callbacks?
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
 
-        val view = inflater.inflate(R.layout.fragment_filter, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_filter, container, false)
 
         categoryCheckBox = view.findViewById(R.id.filter_category_check) as CheckBox
         dateCheckBox     = view.findViewById(R.id.filter_date_check)     as CheckBox
