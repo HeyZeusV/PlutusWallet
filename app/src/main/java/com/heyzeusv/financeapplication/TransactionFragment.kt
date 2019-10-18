@@ -15,6 +15,8 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
@@ -37,6 +39,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // views
     private lateinit var repeatingCheckBox      : CheckBox
+    private lateinit var expenseChip            : Chip
+    private lateinit var incomeChip             : Chip
+    private lateinit var typeChipGroup          : ChipGroup
     private lateinit var totalField             : CurrencyEditText
     private lateinit var titleField             : EditText
     private lateinit var memoField              : EditText
@@ -60,6 +65,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
 
+    private var expenseSelected = true
+    private var incomeSelected  = false
+
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
         ViewModelProviders.of(this).get(TransactionDetailViewModel::class.java)
@@ -80,6 +88,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         val view : View = inflater.inflate(R.layout.fragment_transaction, container, false)
 
         repeatingCheckBox      = view.findViewById(R.id.transaction_repeating)        as CheckBox
+        expenseChip            = view.findViewById(R.id.transaction_expense_chip)     as Chip
+        incomeChip             = view.findViewById(R.id.transaction_income_chip)      as Chip
+        typeChipGroup          = view.findViewById(R.id.transaction_type_chips)       as ChipGroup
         totalField             = view.findViewById(R.id.transaction_total)            as CurrencyEditText
         titleField             = view.findViewById(R.id.transaction_title)            as EditText
         memoField              = view.findViewById(R.id.transaction_memo)             as EditText
@@ -120,6 +131,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
             })
         }
+
+        expenseChip.isChecked = expenseSelected
+        incomeChip .isChecked = incomeSelected
 
         return view
     }
@@ -268,23 +282,30 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 show(this@TransactionFragment.requireFragmentManager(), DIALOG_DATE)
             }
         }
-        repeatingCheckBox.apply {
 
-            setOnCheckedChangeListener { _, isChecked ->
-                transaction.repeating = isChecked
-                if (isChecked) {
+        typeChipGroup.setOnCheckedChangeListener { group, checkedId ->
 
-                    frequencyText         .isVisible = true
-                    frequencyField        .isVisible = true
-                    frequencyPeriodSpinner.isVisible = true
-                } else {
+            for (i in 0 until group.childCount) {
 
-                    frequencyText         .isVisible = false
-                    frequencyField        .isVisible = false
-                    frequencyPeriodSpinner.isVisible = false
+                val chip = group.getChildAt(i)
+                chip.isClickable = chip.id != group.checkedChipId
+            }
+
+            when (checkedId) {
+
+                R.id.transaction_expense_chip -> {
+
+                    expenseSelected = true
+                    incomeSelected  = false
+                }
+                R.id.transaction_income_chip -> {
+
+                    expenseSelected = false
+                    incomeSelected  = true
                 }
             }
         }
+
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
@@ -326,6 +347,24 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        repeatingCheckBox.apply {
+
+            setOnCheckedChangeListener { _, isChecked ->
+                transaction.repeating = isChecked
+                if (isChecked) {
+
+                    frequencyText         .isVisible = true
+                    frequencyField        .isVisible = true
+                    frequencyPeriodSpinner.isVisible = true
+                } else {
+
+                    frequencyText         .isVisible = false
+                    frequencyField        .isVisible = false
+                    frequencyPeriodSpinner.isVisible = false
+                }
+            }
         }
 
         frequencyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

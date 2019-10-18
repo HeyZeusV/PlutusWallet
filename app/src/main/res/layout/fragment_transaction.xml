@@ -57,7 +57,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="6dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/transaction_date"
                     android:textColor="@android:color/black"
@@ -71,7 +71,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +84,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:paddingStart="8dip"
                     android:paddingEnd="8dip"
                     android:text="@string/transaction_total"
@@ -98,7 +98,7 @@
                     android:id="@+id/transaction_total"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="2dp"
                     android:layout_marginEnd="16dp"
                     android:ems="10"
                     android:importantForAutofill="no"
@@ -108,13 +108,56 @@
                     app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
 
                 <TextView
+                    android:id="@+id/typeTextView"
+                    style="?android:listSeparatorTextViewStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:paddingStart="8dip"
+                    android:paddingEnd="8dip"
+                    android:text="@string/transaction_type"
+                    android:textColor="@android:color/black"
+
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/totalTextView" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/transaction_type_chips"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginEnd="16dp"
+                    app:chipSpacingHorizontal="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/typeTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_total"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/transaction_expense_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/transaction_expense" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/transaction_income_chip"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/transaction_income" />
+                </com.google.android.material.chip.ChipGroup>
+
+                <TextView
                     android:id="@+id/categoryTextView"
                     style="?android:listSeparatorTextViewStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="14dp"
                     android:paddingStart="8dip"
                     android:paddingEnd="8dip"
                     android:text="@string/transaction_category"
@@ -122,18 +165,17 @@
                     android:textSize="18sp"
                     app:layout_constraintEnd_toStartOf="@+id/transaction_category"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_total" />
+                    app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
 
                 <Spinner
                     android:id="@+id/transaction_category"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="16dp"
-                    android:background="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_total" />
+                    app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
 
                 <TextView
                     android:id="@+id/memoTextView"
@@ -141,7 +183,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="14dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/transaction_memo"
                     android:textColor="@android:color/black"
@@ -155,7 +197,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="6dp"
                     android:layout_marginEnd="16dp"
                     android:ems="10"
                     android:hint="@string/transaction_memo_hint"
@@ -169,20 +211,29 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/memoTextView" />
 
-                <CheckBox
-                    android:id="@+id/transaction_repeating"
+                <TextView
+                    android:id="@+id/repeatingTextView"
                     style="?android:listSeparatorTextViewStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layoutDirection="rtl"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
                     android:paddingStart="8dip"
                     android:paddingEnd="8dip"
                     android:text="@string/transaction_repeating_transaction"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_memo" />
+
+                <CheckBox
+                    android:id="@+id/transaction_repeating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:paddingStart="8dip"
+                    android:paddingEnd="8dip"
+                    app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
                     app:layout_constraintTop_toBottomOf="@+id/transaction_memo" />
 
                 <TextView
@@ -222,13 +273,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:layout_marginEnd="16dp"
-                    android:background="@null"
                     android:gravity="start|center_vertical"
                     android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/transaction_frequency"
                     app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
                     tools:visibility="visible" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
@@ -244,5 +295,6 @@
             android:focusable="true"
             app:fabSize="auto"
             app:srcCompat="@android:drawable/ic_menu_save" />
+
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>
