@@ -10,16 +10,16 @@ class TransactionListViewModel : ViewModel() {
     // retrieves list of Transactions from database
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
-    val categorySizeLiveData : LiveData<Int?> = transactionRepository.getCategorySize()
+    val expenseCategorySizeLiveData : LiveData<Int?> = transactionRepository.getExpenseCategorySize()
 
     suspend fun deleteTransaction(transaction : Transaction) {
 
         transactionRepository.deleteTransaction(transaction)
     }
 
-    fun insertCategories(categories : Array<Category>) {
+    fun insertExpenseCategories(expenseCategories : Array<ExpenseCategory>) {
 
-        transactionRepository.insertCategories(categories)
+        transactionRepository.insertExpenseCategories(expenseCategories)
     }
 
     // tells repository which query to run on Transaction and passes any arguments needed

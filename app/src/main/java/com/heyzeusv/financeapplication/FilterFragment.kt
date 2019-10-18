@@ -115,7 +115,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, categoryNamesList)
                     categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
                     categorySpinner.adapter = categorySpinnerAdapter
-                    // starts the spinner up to Category saved
+                    // starts the spinner up to ExpenseCategory saved
                     categorySpinner.setSelection(categoryNamesList.indexOf(categoryName))
                 }
             }

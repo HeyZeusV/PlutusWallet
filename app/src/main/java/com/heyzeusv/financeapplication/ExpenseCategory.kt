@@ -9,6 +9,6 @@ import androidx.room.PrimaryKey
 */
 
 @Entity
-data class Category (
+data class ExpenseCategory (
     @PrimaryKey
     var category : String = "")

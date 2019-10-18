@@ -10,7 +10,7 @@ class TransactionDetailViewModel : ViewModel() {
     // stores ID of transaction displayed
     private val transactionIdLiveData = MutableLiveData<Int>()
 
-    val categoryNamesLiveData : LiveData<List<String>> = transactionRepository.getCategoryNames()
+    val expenseCategoryNamesLiveData : LiveData<List<String>> = transactionRepository.getExpenseCategoryNames()
 
     // value gets updated every time a new value gets set on the trigger LiveData instance
     var transactionLiveData : LiveData<Transaction?> =
@@ -68,10 +68,10 @@ class TransactionDetailViewModel : ViewModel() {
     }
 
     /*
-        Category queries
+        ExpenseCategory queries
      */
-    suspend fun insertCategory(category : Category) {
+    suspend fun insertExpenseCategory(expenseCategory : ExpenseCategory) {
 
-        transactionRepository.insertCategory(category)
+        transactionRepository.insertExpenseCategory(expenseCategory)
     }
 }

@@ -1,11 +1,9 @@
 package com.heyzeusv.financeapplication
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -58,7 +56,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var frequencyArray : Array<String> = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
 
     // used with categories
-    private var categoryNamesList : MutableList<String> = mutableListOf()
+    private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
     private var newCategoryName                         = ""
     private var madeNewCategory                         = false
 
@@ -158,29 +156,29 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         )
 
         // register an observer on LiveData instance and tie life to another component
-        transactionDetailViewModel.categoryNamesLiveData.observe(
+        transactionDetailViewModel.expenseCategoryNamesLiveData.observe(
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
             Observer { categoryNames ->
                 // if not null
                 categoryNames?.let {
-                    categoryNamesList = categoryNames.toMutableList()
-                    // "Create New Category will always be at bottom of the list
-                    categoryNamesList.remove("Create New Category")
-                    categoryNamesList.sort()
-                    categoryNamesList.add("Create New Category")
+                    expenseCategoryNamesList = categoryNames.toMutableList()
+                    // "Create New ExpenseCategory will always be at bottom of the list
+                    expenseCategoryNamesList.remove("Create New ExpenseCategory")
+                    expenseCategoryNamesList.sort()
+                    expenseCategoryNamesList.add("Create New ExpenseCategory")
                     // sets up the categorySpinner
-                    val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, categoryNamesList)
+                    val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
                     categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
                     categorySpinner.adapter = categorySpinnerAdapter
                     // if user made a new category, then sets the categorySpinner to new one
-                    // else starts the spinner up to Category saved
+                    // else starts the spinner up to ExpenseCategory saved
                     if (madeNewCategory) {
 
-                        categorySpinner.setSelection(categoryNamesList.indexOf(newCategoryName))
+                        categorySpinner.setSelection(expenseCategoryNamesList.indexOf(newCategoryName))
                     } else {
-                        categorySpinner.setSelection(categoryNamesList.indexOf(transaction.category))
+                        categorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
                     }
                 }
             }
@@ -333,7 +331,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     // set negative button and its click listener
                     builder.setNegativeButton("Cancel") { _, _ ->
 
-                        // users shouldn't be able to save on "Create New Category",
+                        // users shouldn't be able to save on "Create New ExpenseCategory",
                         // this prevents that
                         categorySpinner.setSelection(0)
                     }
@@ -434,7 +432,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         totalField    .setText("$" + String.format(transaction.total.toString()))
         frequencyField.setText(transaction.frequency.toString())
         dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
-        categorySpinner.setSelection(categoryNamesList.indexOf(transaction.category))
+        categorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
         repeatingCheckBox.apply {
             isChecked = transaction.repeating
             // skips animation
@@ -509,25 +507,25 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     @SuppressLint("DefaultLocale")
     @ExperimentalStdlibApi
-    // inserts new Category into database or selects it in categorySpinner if it exists already
+    // inserts new ExpenseCategory into database or selects it in categorySpinner if it exists already
     private fun insertCategory(input : String) {
 
         // makes first letter of every word capital and every other letter lower case
         val name = input.split(" ").joinToString(" ") {it.toLowerCase(Locale.US).capitalize(Locale.US)  }
 
         // -1 means it doesn't exist
-        if (categoryNamesList.indexOf(name) == -1) {
+        if (expenseCategoryNamesList.indexOf(name) == -1) {
 
-            val newCategory = Category(name)
+            val newCategory = ExpenseCategory(name)
             launch {
 
-                transactionDetailViewModel.insertCategory(newCategory)
+                transactionDetailViewModel.insertExpenseCategory(newCategory)
             }
             newCategoryName = name
             madeNewCategory = true
         } else {
 
-            categorySpinner.setSelection(categoryNamesList.indexOf(name))
+            categorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
         }
     }
 

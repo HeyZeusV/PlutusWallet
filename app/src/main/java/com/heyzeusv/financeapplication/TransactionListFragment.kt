@@ -122,17 +122,17 @@ class TransactionListFragment : BaseFragment() {
         )
 
         // register an observer on LiveData instance and tie life to another component
-        transactionListViewModel.categorySizeLiveData.observe(
+        transactionListViewModel.expenseCategorySizeLiveData.observe(
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
             Observer { categorySize ->
                 // if not null
                 categorySize?.let {
-                    Log.d(TAG, "Category Size: $categorySize")
+                    Log.d(TAG, "ExpenseCategory Size: $categorySize")
                     if (categorySize == 0) {
-                        initializeCategoryTable()
-                        Log.d(TAG, "Category Size: $categorySize")
+                        initializeCategoryTables()
+                        Log.d(TAG, "ExpenseCategory Size: $categorySize")
                     }
                 }
             }
@@ -161,20 +161,20 @@ class TransactionListFragment : BaseFragment() {
 
     // this should only be run the very first time a user opens the app
     // fills table with a few predetermined categories
-    private fun initializeCategoryTable() {
+    private fun initializeCategoryTables() {
 
-        val education      = Category("Education")
-        val entertainment  = Category("Entertainment")
-        val food           = Category("Food")
-        val home           = Category("Home")
-        val income         = Category("Income")
-        val savings        = Category("Savings")
-        val transportation = Category("Transportation")
-        val utilities      = Category("Utilities")
+        val education      = ExpenseCategory("Education")
+        val entertainment  = ExpenseCategory("Entertainment")
+        val food           = ExpenseCategory("Food")
+        val home           = ExpenseCategory("Home")
+        val income         = ExpenseCategory("Income")
+        val savings        = ExpenseCategory("Savings")
+        val transportation = ExpenseCategory("Transportation")
+        val utilities      = ExpenseCategory("Utilities")
 
-        val initialCategoryList = arrayOf(education, entertainment, food,
+        val initialExpenseCategory : Array<ExpenseCategory> = arrayOf(education, entertainment, food,
             home, income, savings, transportation, utilities)
-        transactionListViewModel.insertCategories(initialCategoryList)
+        transactionListViewModel.insertExpenseCategories(initialExpenseCategory)
     }
 
     private fun updateUI(transactions: List<Transaction>) {
