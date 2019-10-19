@@ -5,14 +5,17 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.heyzeusv.financeapplication.ExpenseCategory
 import com.heyzeusv.financeapplication.FutureTransaction
+import com.heyzeusv.financeapplication.IncomeCategory
 import com.heyzeusv.financeapplication.Transaction
 
-@Database(entities = [Transaction::class, ExpenseCategory::class, FutureTransaction::class],
-    version = 10, exportSchema = true)
+@Database(entities = [Transaction::class, FutureTransaction::class,
+                      ExpenseCategory::class, IncomeCategory::class],
+    version = 11, exportSchema = true)
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {
 
-    abstract fun transactionDao()       : TransactionDao
-    abstract fun expenseCategoryDao()   : ExpenseCategoryDao
+    abstract fun transactionDao      () : TransactionDao
     abstract fun futureTransactionDao() : FutureTransactionDao
+    abstract fun expenseCategoryDao  () : ExpenseCategoryDao
+    abstract fun incomeCategoryDao   () : IncomeCategoryDao
 }

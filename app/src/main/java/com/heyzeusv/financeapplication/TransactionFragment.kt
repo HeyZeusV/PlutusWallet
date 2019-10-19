@@ -46,7 +46,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var frequencyField         : EditText
     private lateinit var saveFab                : FloatingActionButton
     private lateinit var dateButton             : MaterialButton
-    private lateinit var categorySpinner        : Spinner
+    private lateinit var expenseCategorySpinner : Spinner
+    private lateinit var incomeCategorySpinner  : Spinner
     private lateinit var frequencyPeriodSpinner : Spinner
     private lateinit var frequencyText          : TextView
 
@@ -57,8 +58,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // used with categories
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
-    private var newCategoryName                         = ""
-    private var madeNewCategory                         = false
+    private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
+    private var newCategoryName                                = ""
+    private var madeNewCategory                                = false
+
 
     // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
@@ -95,7 +98,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         frequencyField         = view.findViewById(R.id.transaction_frequency)        as EditText
         saveFab                = view.findViewById(R.id.transaction_save_fab)         as FloatingActionButton
         dateButton             = view.findViewById(R.id.transaction_date)             as MaterialButton
-        categorySpinner        = view.findViewById(R.id.transaction_category)         as Spinner
+        expenseCategorySpinner = view.findViewById(R.id.transaction_expense_category) as Spinner
+        incomeCategorySpinner  = view.findViewById(R.id.transaction_income_category)  as Spinner
         frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
         frequencyText          = view.findViewById(R.id.frequencyTextView)            as TextView
 
@@ -128,6 +132,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     updateUI()
                 }
             })
+        } else {
+
+            updateUI()
         }
 
         expenseChip.isChecked = expenseSelected
@@ -160,25 +167,54 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
-            Observer { categoryNames ->
+            Observer { expenseCategoryNames ->
                 // if not null
-                categoryNames?.let {
-                    expenseCategoryNamesList = categoryNames.toMutableList()
-                    // "Create New ExpenseCategory will always be at bottom of the list
-                    expenseCategoryNamesList.remove("Create New ExpenseCategory")
+                expenseCategoryNames?.let {
+                    expenseCategoryNamesList = expenseCategoryNames.toMutableList()
+                    // "Create New Category will always be at bottom of the list
                     expenseCategoryNamesList.sort()
-                    expenseCategoryNamesList.add("Create New ExpenseCategory")
+                    expenseCategoryNamesList.add("Create New Category")
                     // sets up the categorySpinner
-                    val categorySpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
+                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
                     categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    categorySpinner.adapter = categorySpinnerAdapter
+                    expenseCategorySpinner.adapter = categorySpinnerAdapter
                     // if user made a new category, then sets the categorySpinner to new one
                     // else starts the spinner up to ExpenseCategory saved
                     if (madeNewCategory) {
 
-                        categorySpinner.setSelection(expenseCategoryNamesList.indexOf(newCategoryName))
+                        expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(newCategoryName))
                     } else {
-                        categorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+
+                        expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+                    }
+                }
+            }
+        )
+
+        // register an observer on LiveData instance and tie life to another component
+        transactionDetailViewModel.incomeCategoryNamesLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { incomeCategoryNames ->
+                // if not null
+                incomeCategoryNames?.let {
+                    incomeCategoryNamesList = incomeCategoryNames.toMutableList()
+                    // "Create New Category will always be at bottom of the list
+                    incomeCategoryNamesList.sort()
+                    incomeCategoryNamesList.add("Create New Category")
+                    // sets up the categorySpinner
+                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, incomeCategoryNamesList)
+                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                incomeCategorySpinner.adapter = categorySpinnerAdapter
+                    // if user made a new category, then sets the categorySpinner to new one
+                    // else starts the spinner up to IncomeCategory saved
+                    if (madeNewCategory) {
+
+                        incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(newCategoryName))
+                    } else {
+
+                        incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
                     }
                 }
             }
@@ -190,7 +226,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             launch {
 
                 // returns the highest id in Transaction table
-                var maxId = transactionDetailViewModel.getMaxIdAsync().await()
+                var maxId : Int? = transactionDetailViewModel.getMaxIdAsync().await()
                 // should only run if Transaction table is empty
                 if (maxId == null) {
 
@@ -283,7 +319,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         typeChipGroup.setOnCheckedChangeListener { group, checkedId ->
 
-            for (i in 0 until group.childCount) {
+            // prevents no chips being selected
+            for (i : Int in 0 until group.childCount) {
 
                 val chip = group.getChildAt(i)
                 chip.isClickable = chip.id != group.checkedChipId
@@ -295,16 +332,22 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                     expenseSelected = true
                     incomeSelected  = false
+                    expenseCategorySpinner.isVisible = true
+                    incomeCategorySpinner .isVisible = false
+                    transaction.type = "Expense"
                 }
                 R.id.transaction_income_chip -> {
 
                     expenseSelected = false
                     incomeSelected  = true
+                    expenseCategorySpinner.isVisible = false
+                    incomeCategorySpinner .isVisible = true
+                    transaction.type = "Income"
                 }
             }
         }
 
-        categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        expenseCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -312,33 +355,24 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // only creates AlertDialog if user selects "Create New Category"
                 if (parent?.getItemAtPosition(position) == "Create New Category") {
 
-                    // initialize instance of Builder
-                    val builder = MaterialAlertDialogBuilder(context)
-                    // set title of AlertDialog
-                    builder.setTitle("Create new category")
-                    // inflates view that holds EditText
-                    val viewInflated: View = LayoutInflater.from(context)
-                        .inflate(R.layout.dialog_new_category, getView() as ViewGroup, false)
-                    // the EditText to be used
-                    val input: EditText = viewInflated.findViewById(R.id.category_Input)
-                    // sets the view
-                    builder.setView(viewInflated)
-                    // set positive button and its click listener
-                    builder.setPositiveButton("Save") { _, _ ->
+                     newCategoryDialog(expenseCategorySpinner)
+                }
+                // updates the category to selected one
+                transaction.category = parent?.getItemAtPosition(position) as String
+            }
 
-                        insertCategory(input.text.toString())
-                    }
-                    // set negative button and its click listener
-                    builder.setNegativeButton("Cancel") { _, _ ->
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
-                        // users shouldn't be able to save on "Create New ExpenseCategory",
-                        // this prevents that
-                        categorySpinner.setSelection(0)
-                    }
-                    // make the AlertDialog using the builder
-                    val categoryAlertDialog : androidx.appcompat.app.AlertDialog = builder.create()
-                    // display AlertDialog
-                    categoryAlertDialog.show()
+        incomeCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+                // only creates AlertDialog if user selects "Create New Category"
+                if (parent?.getItemAtPosition(position) == "Create New Category") {
+
+                    newCategoryDialog(incomeCategorySpinner)
                 }
                 // updates the category to selected one
                 transaction.category = parent?.getItemAtPosition(position) as String
@@ -432,7 +466,28 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         totalField    .setText("$" + String.format(transaction.total.toString()))
         frequencyField.setText(transaction.frequency.toString())
         dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
-        categorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+        if (transaction.type == "Income") {
+
+            expenseSelected = false
+            incomeSelected  = true
+            expenseCategorySpinner.isVisible = false
+            incomeCategorySpinner .isVisible = true
+        } else {
+
+            expenseSelected = true
+            incomeSelected  = false
+            expenseCategorySpinner.isVisible = true
+            incomeCategorySpinner .isVisible = false
+        }
+        expenseChip.isChecked = expenseSelected
+        incomeChip .isChecked = incomeSelected
+        if (expenseSelected) {
+
+            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+        } else {
+
+            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
+        }
         repeatingCheckBox.apply {
             isChecked = transaction.repeating
             // skips animation
@@ -507,26 +562,78 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     @SuppressLint("DefaultLocale")
     @ExperimentalStdlibApi
-    // inserts new ExpenseCategory into database or selects it in categorySpinner if it exists already
+    // inserts new Category into database or selects it in categorySpinner if it exists already
     private fun insertCategory(input : String) {
 
         // makes first letter of every word capital and every other letter lower case
         val name = input.split(" ").joinToString(" ") {it.toLowerCase(Locale.US).capitalize(Locale.US)  }
 
-        // -1 means it doesn't exist
-        if (expenseCategoryNamesList.indexOf(name) == -1) {
+        if (expenseSelected) {
 
-            val newCategory = ExpenseCategory(name)
-            launch {
+            // -1 means it doesn't exist
+            if (expenseCategoryNamesList.indexOf(name) == -1) {
 
-                transactionDetailViewModel.insertExpenseCategory(newCategory)
+                val newCategory = ExpenseCategory(name)
+                launch {
+
+                    transactionDetailViewModel.insertExpenseCategory(newCategory)
+                }
+                newCategoryName = name
+                madeNewCategory = true
+            } else {
+
+                expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
             }
-            newCategoryName = name
-            madeNewCategory = true
-        } else {
+        } else if (incomeSelected) {
 
-            categorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
+            // -1 means it doesn't exist
+            if (incomeCategoryNamesList.indexOf(name) == -1) {
+
+                val newCategory = IncomeCategory(name)
+                launch {
+
+                    transactionDetailViewModel.insertIncomeCategory(newCategory)
+                }
+                newCategoryName = name
+                madeNewCategory = true
+            } else {
+
+                incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))
+            }
         }
+    }
+
+    @ExperimentalStdlibApi
+    // AlertDialog to create new Category
+    private fun newCategoryDialog(categorySpinner : Spinner) {
+
+        // initialize instance of Builder
+        val builder = MaterialAlertDialogBuilder(context)
+        // set title of AlertDialog
+        builder.setTitle("Create new category")
+        // inflates view that holds EditText
+        val viewInflated: View = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_new_category, view as ViewGroup, false)
+        // the EditText to be used
+        val input: EditText = viewInflated.findViewById(R.id.category_Input)
+        // sets the view
+        builder.setView(viewInflated)
+        // set positive button and its click listener
+        builder.setPositiveButton("Save") { _, _ ->
+
+            insertCategory(input.text.toString())
+        }
+        // set negative button and its click listener
+        builder.setNegativeButton("Cancel") { _, _ ->
+
+            // users shouldn't be able to save on "Create New Category",
+            // this prevents that
+            categorySpinner.setSelection(0)
+        }
+        // make the AlertDialog using the builder
+        val categoryAlertDialog : androidx.appcompat.app.AlertDialog = builder.create()
+        // display AlertDialog
+        categoryAlertDialog.show()
     }
 
     companion object {

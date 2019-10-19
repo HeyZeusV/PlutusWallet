@@ -3,7 +3,7 @@ package com.heyzeusv.financeapplication.database
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
-import com.heyzeusv.financeapplication.ExpenseCategory
+import com.heyzeusv.financeapplication.IncomeCategory
 
 /*
     All the queries that can be applied to the database
@@ -13,13 +13,13 @@ import com.heyzeusv.financeapplication.ExpenseCategory
 */
 
 @Dao
-interface ExpenseCategoryDao : BaseDao<ExpenseCategory> {
+interface IncomeCategoryDao : BaseDao<IncomeCategory> {
 
     // return total number of categories
-    @Query("SELECT COUNT(*) FROM expensecategory")
-    fun getExpenseCategorySize() : Int?
+    @Query("SELECT COUNT(*) FROM incomecategory")
+    suspend fun getIncomeCategorySize() : Int?
 
     // return all the categories
-    @Query("SELECT category FROM expensecategory")
-    fun getExpenseCategoryNames() : LiveData<List<String>>
+    @Query("SELECT category FROM incomecategory")
+    fun getIncomeCategoryNames() : LiveData<List<String>>
 }

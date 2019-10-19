@@ -7,18 +7,20 @@ class TransactionDetailViewModel : ViewModel() {
 
     // stores handle to TransactionRepository
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
+
     // stores ID of transaction displayed
     private val transactionIdLiveData = MutableLiveData<Int>()
 
     val expenseCategoryNamesLiveData : LiveData<List<String>> = transactionRepository.getExpenseCategoryNames()
+    val incomeCategoryNamesLiveData  : LiveData<List<String>> = transactionRepository.getIncomeCategoryNames ()
 
     // value gets updated every time a new value gets set on the trigger LiveData instance
     var transactionLiveData : LiveData<Transaction?> =
     // sets up a trigger-response relationship
     // LiveData obj used as trigger and mapping function that must return LiveData obj
-    Transformations.switchMap(transactionIdLiveData) { transactionId ->
-        transactionRepository.getTransaction(transactionId)
-    }
+        Transformations.switchMap(transactionIdLiveData) { transactionId ->
+            transactionRepository.getTransaction(transactionId)
+        }
 
     fun loadTransaction(transactionId : Int) {
 
@@ -28,7 +30,6 @@ class TransactionDetailViewModel : ViewModel() {
     /*
         Transaction queries
      */
-
     suspend fun getMaxIdAsync() : Deferred<Int?> {
 
         return transactionRepository.getMaxIdAsync()
@@ -73,5 +74,13 @@ class TransactionDetailViewModel : ViewModel() {
     suspend fun insertExpenseCategory(expenseCategory : ExpenseCategory) {
 
         transactionRepository.insertExpenseCategory(expenseCategory)
+    }
+
+    /*
+        IncomeCategory queries
+     */
+    suspend fun insertIncomeCategory(incomeCategory : IncomeCategory) {
+
+        transactionRepository.insertIncomeCategory(incomeCategory)
     }
 }

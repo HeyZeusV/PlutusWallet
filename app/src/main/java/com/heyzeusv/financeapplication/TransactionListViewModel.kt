@@ -2,6 +2,7 @@ package com.heyzeusv.financeapplication
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.Deferred
 import java.util.*
 
 class TransactionListViewModel : ViewModel() {
@@ -10,18 +11,9 @@ class TransactionListViewModel : ViewModel() {
     // retrieves list of Transactions from database
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
-    val expenseCategorySizeLiveData : LiveData<Int?> = transactionRepository.getExpenseCategorySize()
-
-    suspend fun deleteTransaction(transaction : Transaction) {
-
-        transactionRepository.deleteTransaction(transaction)
-    }
-
-    fun insertExpenseCategories(expenseCategories : Array<ExpenseCategory>) {
-
-        transactionRepository.insertExpenseCategories(expenseCategories)
-    }
-
+    /*
+        Transaction queries
+     */
     // tells repository which query to run on Transaction and passes any arguments needed
     fun filteredTransactionList(category : Boolean?, date : Boolean?, categoryName : String?,
                                 start : Date?, end : Date?) : LiveData<List<Transaction>> {
@@ -39,5 +31,36 @@ class TransactionListViewModel : ViewModel() {
 
             transactionRepository.getTransactions()
         }
+    }
+
+    suspend fun deleteTransaction(transaction : Transaction) {
+
+        transactionRepository.deleteTransaction(transaction)
+    }
+
+    /*
+        ExpenseCategory queries
+     */
+    suspend fun getExpenseCategorySizeAsync() : Deferred<Int?> {
+
+        return transactionRepository.getExpenseCategorySizeAsync()
+    }
+
+    suspend fun insertExpenseCategories(expenseCategories : Array<ExpenseCategory>) {
+
+        transactionRepository.insertExpenseCategories(expenseCategories)
+    }
+
+    /*
+        IncomeCategory queries
+     */
+    suspend fun getIncomeCategorySizeAsync() : Deferred<Int?> {
+
+        return transactionRepository.getIncomeCategorySizeAsync()
+    }
+
+    suspend fun insertIncomeCategories(incomeCategories : Array<IncomeCategory>) {
+
+        transactionRepository.insertIncomeCategories(incomeCategories)
     }
 }

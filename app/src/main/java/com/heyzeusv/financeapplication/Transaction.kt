@@ -17,8 +17,9 @@ data class Transaction(
     var title     : String     = "",
     var date      : Date       = Date(),
     var total     : BigDecimal = BigDecimal("0"),
-    var memo      : String     = "",
+    var type      : String     = "Expense",
     var category  : String     = "Education",
+    var memo      : String     = "",
     var repeating : Boolean    = false,
     var frequency : Int        = 1,
     var period    : Int        = 0)

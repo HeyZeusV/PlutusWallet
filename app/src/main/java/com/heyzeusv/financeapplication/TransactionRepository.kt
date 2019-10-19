@@ -3,10 +3,7 @@ package com.heyzeusv.financeapplication
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
-import com.heyzeusv.financeapplication.database.ExpenseCategoryDao
-import com.heyzeusv.financeapplication.database.FutureTransactionDao
-import com.heyzeusv.financeapplication.database.TransactionDao
-import com.heyzeusv.financeapplication.database.TransactionDatabase
+import com.heyzeusv.financeapplication.database.*
 import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.Executors
@@ -24,12 +21,10 @@ class TransactionRepository private constructor(context : Context){
         .build()
 
     // DAOs
-    private val transactionDao       : TransactionDao       = database.transactionDao()
-    private val expenseCategoryDao   : ExpenseCategoryDao   = database.expenseCategoryDao()
+    private val transactionDao       : TransactionDao       = database.transactionDao      ()
     private val futureTransactionDao : FutureTransactionDao = database.futureTransactionDao()
-
-    // starts background thread to run update and insert
-    private val executor = Executors.newSingleThreadExecutor()
+    private val expenseCategoryDao   : ExpenseCategoryDao   = database.expenseCategoryDao  ()
+    private val incomeCategoryDao    : IncomeCategoryDao    = database.incomeCategoryDao   ()
 
     // Transaction
     fun getTransactions()                                                : LiveData<List<Transaction>>   = transactionDao.getTransactions()
@@ -38,34 +33,49 @@ class TransactionRepository private constructor(context : Context){
     fun getTransactions(                    start : Date?, end : Date?)  : LiveData<List<Transaction>>   = transactionDao.getTransactions(          start, end)
     fun getTransaction (id       : Int)                                  : LiveData<Transaction?>        = transactionDao.getTransaction (id)
     suspend fun getMaxIdAsync()                              : Deferred<Int?> = withContext(Dispatchers.IO) {
-        async {transactionDao.getMaxId()}}
-    suspend fun deleteTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
+        async  {transactionDao.getMaxId()}}
+    suspend fun deleteTransaction(transaction : Transaction) : Job            = withContext(Dispatchers.IO) {
         launch {transactionDao.delete(transaction)}}
-    suspend fun insertTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
+    suspend fun insertTransaction(transaction : Transaction) : Job            = withContext(Dispatchers.IO) {
         launch {transactionDao.insert(transaction)}}
-    suspend fun updateTransaction(transaction : Transaction) : Job = withContext(Dispatchers.IO) {
+    suspend fun updateTransaction(transaction : Transaction) : Job            = withContext(Dispatchers.IO) {
         launch {transactionDao.update(transaction)}}
 
-    // ExpenseCategory
-    fun getExpenseCategorySize()  : LiveData<Int?>                = expenseCategoryDao.getCategorySize()
-    fun getExpenseCategoryNames() : LiveData<List<String>>        = expenseCategoryDao.getCategoryNames()
-    fun insertExpenseCategories (expenseCategories : Array<ExpenseCategory>) {executor.execute {expenseCategoryDao.insert(expenseCategories)}}
-    suspend fun deleteExpenseCategory(expenseCategory : ExpenseCategory) : Job = withContext(Dispatchers.IO) {
-        launch {expenseCategoryDao.delete(expenseCategory)} }
-    suspend fun insertExpenseCategory(expenseCategory : ExpenseCategory) : Job = withContext(Dispatchers.IO) {
-        launch {expenseCategoryDao.insert(expenseCategory)}}
-    suspend fun updateExpenseCategory(expenseCategory : ExpenseCategory) : Job = withContext(Dispatchers.IO) {
-        launch {expenseCategoryDao.update(expenseCategory)}}
-
     // FutureTransaction
-    suspend fun getFutureTransactionAsync(transactionId : Int) : Deferred<FutureTransaction?> = withContext(Dispatchers.IO) {
+    suspend fun getFutureTransactionAsync(transactionId   : Int)               : Deferred<FutureTransaction?> = withContext(Dispatchers.IO) {
         async {futureTransactionDao.getFutureTransaction(transactionId)}}
-    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
+    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) : Job                          = withContext(Dispatchers.IO) {
         launch {futureTransactionDao.delete(futureTransaction)}}
-    suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
+    suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) : Job                          = withContext(Dispatchers.IO) {
         launch {futureTransactionDao.insert(futureTransaction)}}
-    suspend fun updateFutureTransaction(futureTransaction : FutureTransaction) : Job = withContext(Dispatchers.IO) {
+    suspend fun updateFutureTransaction(futureTransaction : FutureTransaction) : Job                          = withContext(Dispatchers.IO) {
         launch {futureTransactionDao.update(futureTransaction)}}
+
+    // ExpenseCategory
+    fun getExpenseCategoryNames() : LiveData<List<String>> = expenseCategoryDao.getExpenseCategoryNames()
+    suspend fun getExpenseCategorySizeAsync()                                       : Deferred<Int?> = withContext(Dispatchers.IO) {
+        async  {expenseCategoryDao.getExpenseCategorySize()}}
+    suspend fun deleteExpenseCategory(expenseCategory : ExpenseCategory)            : Job            = withContext(Dispatchers.IO) {
+        launch {expenseCategoryDao.delete(expenseCategory)}}
+    suspend fun insertExpenseCategory(expenseCategory : ExpenseCategory)            : Job            = withContext(Dispatchers.IO) {
+        launch {expenseCategoryDao.insert(expenseCategory)}}
+    suspend fun updateExpenseCategory(expenseCategory : ExpenseCategory)            : Job            = withContext(Dispatchers.IO) {
+        launch {expenseCategoryDao.update(expenseCategory)}}
+    suspend fun insertExpenseCategories(expenseCategories : Array<ExpenseCategory>) : Job            = withContext(Dispatchers.IO) {
+        launch {expenseCategoryDao.insert(expenseCategories)}}
+
+    // IncomeCategory
+    fun getIncomeCategoryNames() : LiveData<List<String>> = incomeCategoryDao.getIncomeCategoryNames()
+    suspend fun getIncomeCategorySizeAsync()                                     : Deferred<Int?> = withContext(Dispatchers.IO) {
+        async  {incomeCategoryDao.getIncomeCategorySize()}}
+    suspend fun deleteIncomeCategory(incomeCategory : IncomeCategory)            : Job = withContext(Dispatchers.IO) {
+        launch {incomeCategoryDao.delete(incomeCategory)}}
+    suspend fun insertIncomeCategory(incomeCategory : IncomeCategory)            : Job = withContext(Dispatchers.IO) {
+        launch {incomeCategoryDao.insert(incomeCategory)}}
+    suspend fun updateIncomeCategory(incomeCategory : IncomeCategory)            : Job = withContext(Dispatchers.IO) {
+        launch {incomeCategoryDao.update(incomeCategory)}}
+    suspend fun insertIncomeCategories(incomeCategories : Array<IncomeCategory>) : Job = withContext(Dispatchers.IO) {
+        launch {incomeCategoryDao.insert(incomeCategories)}}
 
     companion object {
 
@@ -83,8 +93,7 @@ class TransactionRepository private constructor(context : Context){
         fun get() : TransactionRepository {
 
             return INSTANCE ?:
-                    throw IllegalStateException("TransactionRepository must be " +
-                            "initialized")
+                    throw IllegalStateException("TransactionRepository must be initialized")
         }
     }
 }

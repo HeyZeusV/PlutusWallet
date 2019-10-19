@@ -102,7 +102,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         super.onViewCreated(view, savedInstanceState)
 
         // register an observer on LiveData instance and tie life to another component
-        filterViewModel.categoryNamesLiveData.observe(
+        filterViewModel.categoryExpenseNamesLiveData.observe(
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
