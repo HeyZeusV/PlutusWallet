@@ -15,15 +15,15 @@ class TransactionListViewModel : ViewModel() {
         Transaction queries
      */
     // tells repository which query to run on Transaction and passes any arguments needed
-    fun filteredTransactionList(category : Boolean?, date : Boolean?, categoryName : String?,
+    fun filteredTransactionList(category : Boolean?, date : Boolean?, type : String?, categoryName : String?,
                                 start : Date?, end : Date?) : LiveData<List<Transaction>> {
 
         return if (category == true && date == true) {
 
-            transactionRepository.getTransactions(categoryName, start, end)
+            transactionRepository.getTransactions(type, categoryName, start, end)
         } else if (category == true) {
 
-            transactionRepository.getTransactions(categoryName)
+            transactionRepository.getTransactions(type, categoryName)
         } else if (date == true) {
 
             transactionRepository.getTransactions(start, end)

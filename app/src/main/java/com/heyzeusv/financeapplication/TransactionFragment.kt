@@ -137,9 +137,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             updateUI()
         }
 
-        expenseChip.isChecked = expenseSelected
-        incomeChip .isChecked = incomeSelected
-
         return view
     }
 
@@ -206,7 +203,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     // sets up the categorySpinner
                     val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, incomeCategoryNamesList)
                     categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                incomeCategorySpinner.adapter = categorySpinnerAdapter
+                    incomeCategorySpinner.adapter = categorySpinnerAdapter
                     // if user made a new category, then sets the categorySpinner to new one
                     // else starts the spinner up to IncomeCategory saved
                     if (madeNewCategory) {
@@ -478,6 +475,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             incomeSelected  = false
             expenseCategorySpinner.isVisible = true
             incomeCategorySpinner .isVisible = false
+            // weird bug that only affected expenseChip where it was able to be
+            // deselected when Transaction is first started, this fixes it
+            expenseChip.isClickable = false
+            incomeChip .isClickable = true
         }
         expenseChip.isChecked = expenseSelected
         incomeChip .isChecked = incomeSelected

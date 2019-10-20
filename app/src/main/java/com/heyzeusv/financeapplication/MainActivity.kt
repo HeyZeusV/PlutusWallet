@@ -50,12 +50,12 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
     }
 
     // replaces TransactionListFragment with new TransactionListFragment with filters applied
-    override fun onFilterApplied(category : Boolean, date : Boolean, categoryName : String, start : Date, end : Date) {
+    override fun onFilterApplied(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) {
 
         Log.d(TAG, "onFilterApplied: ExpenseCategory: $category, Date: $date")
 
         val filteredTransactionListFragment : TransactionListFragment =
-            TransactionListFragment.newInstance(category, date, categoryName, start, end)
+            TransactionListFragment.newInstance(category, date, type, categoryName, start, end)
 
         // Create a new fragment transaction, add fragments,
         // and then commit it

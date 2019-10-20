@@ -1,12 +1,14 @@
 package com.heyzeusv.financeapplication
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.size
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -25,6 +27,7 @@ import java.util.*
 private const val TAG               = "TransactionListFragment"
 private const val ARG_CATEGORY      = "category"
 private const val ARG_DATE          = "date"
+private const val ARG_TYPE          = "type"
 private const val ARG_CATEGORY_NAME = "category_name"
 private const val ARG_START         = "start"
 private const val ARG_END           = "end"
@@ -99,13 +102,14 @@ class TransactionListFragment : BaseFragment() {
         // loading in arguments, if any
         val category     : Boolean? = arguments?.getBoolean     (ARG_CATEGORY)
         val date         : Boolean? = arguments?.getBoolean     (ARG_DATE)
+        val type         : String?  = arguments?.getString      (ARG_TYPE)
         val categoryName : String?  = arguments?.getString      (ARG_CATEGORY_NAME)
         val start        : Date?    = arguments?.getSerializable(ARG_START)         as Date?
         val end          : Date?    = arguments?.getSerializable(ARG_END)           as Date?
 
         // tells ViewModel which query to run on Transactions
         val transactionListLiveData : LiveData<List<Transaction>> =
-            transactionListViewModel.filteredTransactionList(category, date, categoryName, start, end)
+            transactionListViewModel.filteredTransactionList(category, date, type, categoryName, start, end)
 
         // register an observer on LiveData instance and tie life to another component
         transactionListLiveData.observe(
@@ -225,6 +229,16 @@ class TransactionListFragment : BaseFragment() {
             titleTextView.text = this.transaction.title
             dateTextView. text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
             totalTextView.text = String.format("$%.2f", this.transaction.total)
+            context?.let {
+
+                if (transaction.type == "Expense") {
+
+                    totalTextView.setTextColor(ContextCompat.getColor(it, android.R.color.holo_red_dark))
+                } else {
+
+                    totalTextView.setTextColor(ContextCompat.getColor(it, android.R.color.holo_green_dark))
+                }
+            }
         }
 
         override fun onClick(v : View?) {
@@ -299,12 +313,13 @@ class TransactionListFragment : BaseFragment() {
 
         // creates arguments bundle, creates a fragment instance,
         // and attaches the arguments to the fragment
-        fun newInstance(category : Boolean, date : Boolean, categoryName : String, start : Date, end : Date) : TransactionListFragment {
+        fun newInstance(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) : TransactionListFragment {
 
             val args : Bundle = Bundle().apply {
 
                 putBoolean     (ARG_CATEGORY     , category)
                 putBoolean     (ARG_DATE         , date)
+                putString      (ARG_TYPE         , type)
                 putString      (ARG_CATEGORY_NAME, categoryName)
                 putSerializable(ARG_START        , start)
                 putSerializable(ARG_END          , end)

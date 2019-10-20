@@ -8,5 +8,6 @@ class FilterViewModel : ViewModel() {
     // stores handle to TransactionRepository
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
-    val categoryExpenseNamesLiveData : LiveData<List<String>> = transactionRepository.getExpenseCategoryNames()
+    val expenseCategoryNamesLiveData : LiveData<List<String>> = transactionRepository.getExpenseCategoryNames()
+    val incomeCategoryNamesLiveData  : LiveData<List<String>> = transactionRepository.getIncomeCategoryNames ()
 }
