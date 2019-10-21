@@ -1,5 +1,6 @@
 package com.heyzeusv.financeapplication
 
+import android.animation.Animator
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
@@ -54,7 +55,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var transaction            : Transaction
 
     // arrays holding values for frequency spinner
-    private var frequencyArray : Array<String> = arrayOf("Day(s)", "Week(s)", "Month(s)", "Year(s)")
+    private var frequencySingleArray   : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.day) , FinanceApplication.context!!.getString(R.string.week) , FinanceApplication.context!!.getString(R.string.month) , FinanceApplication.context!!.getString(R.string.year))
+    private var frequencyMultipleArray : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.days), FinanceApplication.context!!.getString(R.string.weeks), FinanceApplication.context!!.getString(R.string.months), FinanceApplication.context!!.getString(R.string.years))
+    // false = Single, true = Multiple
+    private var frequencyStatus        : Boolean       = false
 
     // used with categories
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
@@ -66,8 +70,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
 
-    private var expenseSelected = true
-    private var incomeSelected  = false
+    // false = Expense, true = Income
+    private var typeSelected = false
 
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
@@ -104,7 +108,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         frequencyText          = view.findViewById(R.id.frequencyTextView)            as TextView
 
         // set up for the frequencyPeriodSpinner
-        val frequencyPeriodSpinnerAdapter = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyArray)
+        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencySingleArray)
         frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         frequencyPeriodSpinner.adapter = frequencyPeriodSpinnerAdapter
 
@@ -115,19 +119,16 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // animation that plays on user presses FAB
             view.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
 
-                override fun onLayoutChange(
-                    v: View, left: Int, top: Int, right: Int,
-                    bottom: Int, oldLeft: Int, oldTop: Int,
-                    oldRight: Int, oldButton: Int
-                ) {
+                override fun onLayoutChange(v : View, left : Int, top : Int, right : Int, bottom : Int, oldLeft : Int, oldTop : Int, oldRight : Int, oldButton : Int) {
 
                     v.removeOnLayoutChangeListener(this)
-                    val fabX: Int = arguments?.getInt(ARG_FAB_X) as Int
-                    val fabY: Int = arguments?.getInt(ARG_FAB_Y) as Int
-                    val finalRadius = hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
-                    val anim = ViewAnimationUtils.createCircularReveal(
-                        v, fabX, fabY, 10.0F, finalRadius)
-                    anim.duration = 1000
+                    val fabX        : Int      = arguments?.getInt(ARG_FAB_X) as Int
+                    val fabY        : Int      = arguments?.getInt(ARG_FAB_Y) as Int
+                    val finalRadius : Float    = hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
+                    // view, initialX, initialY, startingRadius, endRadius
+                    val anim        : Animator = ViewAnimationUtils.createCircularReveal(v, fabX, fabY, 10.0F, finalRadius)
+                    // time to complete animation
+                    anim.duration              = 1000
                     anim.start()
                     updateUI()
                 }
@@ -138,6 +139,249 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         return view
+    }
+
+    // will update date with the date selected from DatePickerFragment
+    override fun onDateSelected(date : Date) {
+
+        transaction.date = date
+        updateUI()
+    }
+
+    @ExperimentalStdlibApi
+    override fun onStart() {
+        super.onStart()
+
+        // placed in onStart due to being triggered when view state is restored
+        val titleWatcher = object : TextWatcher {
+
+            // not needed so blank
+            override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
+
+            // sequence is user's input which title is changed to
+            override fun onTextChanged(
+                sequence : CharSequence?, start : Int, before : Int, count : Int) {
+
+                transaction.title = sequence.toString()
+            }
+
+            // not needed so blank
+            override fun afterTextChanged(sequence : Editable?) {}
+        }
+
+        // placed in onStart due to being triggered when view state is restored
+        val memoWatcher = object : TextWatcher {
+
+            // not needed so blank
+            override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
+
+            // sequence is user's input which memo is changed to
+            override fun onTextChanged(
+                sequence : CharSequence?, start : Int, before : Int, count : Int) {
+
+                transaction.memo = sequence.toString()
+            }
+
+            // not needed so blank
+            override fun afterTextChanged(sequence : Editable?) {}
+        }
+
+        // placed in onStart due to being triggered when view state is restored
+        val frequencyWatcher = object : TextWatcher {
+
+            // not needed so blank
+            override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
+
+            // sequence is user's input which memo is changed to
+            override fun onTextChanged(
+                sequence : CharSequence?, start : Int, before : Int, count : Int) {
+
+                try {
+                    transaction.frequency = Integer.parseInt(sequence.toString())
+                    // changes the FrequencyPeriod array depending on what the user types for Frequency
+                    if (Integer.parseInt(sequence.toString()) > 1 && !frequencyStatus) {
+
+                        // set up for the frequencyPeriodSpinner
+                        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyMultipleArray)
+                        frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                        frequencyPeriodSpinner.adapter = frequencyPeriodSpinnerAdapter
+                        frequencyStatus = true
+                    } else if (Integer.parseInt(sequence.toString()) == 1 && frequencyStatus) {
+
+                        // set up for the frequencyPeriodSpinner
+                        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencySingleArray)
+                        frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                        frequencyPeriodSpinner.adapter = frequencyPeriodSpinnerAdapter
+                        frequencyStatus = false
+                    }
+                } catch (e : NumberFormatException) {
+
+                    transaction.frequency = 1
+                }
+            }
+
+            // not needed so blank
+            override fun afterTextChanged(sequence : Editable?) {}
+        }
+
+        titleField    .addTextChangedListener(titleWatcher)
+        memoField     .addTextChangedListener(memoWatcher)
+        frequencyField.addTextChangedListener(frequencyWatcher)
+
+        // OnClickListener not affected by state restoration,
+        // but nice to have listeners in one place
+        dateButton.setOnClickListener {
+
+            DatePickerFragment.newInstance(transaction.date).apply {
+
+                // fragment that will be target and request code
+                setTargetFragment(this@TransactionFragment, REQUEST_DATE)
+                // want requireFragmentManager from TransactionFragment, so need outer scope
+                show(this@TransactionFragment.requireFragmentManager(), DIALOG_DATE)
+            }
+        }
+
+        typeChipGroup.setOnCheckedChangeListener { group, checkedId ->
+
+            // prevents no chips being selected
+            for (i : Int in 0 until group.childCount) {
+
+                val chip : View = group.getChildAt(i)
+                chip.isClickable = chip.id != group.checkedChipId
+            }
+
+            when (checkedId) {
+
+                R.id.transaction_expense_chip -> {
+
+                    typeSelected = false
+                    expenseCategorySpinner.isVisible = true
+                    incomeCategorySpinner .isVisible = false
+                    transaction.type = "Expense"
+                }
+                R.id.transaction_income_chip -> {
+
+                    typeSelected = true
+                    expenseCategorySpinner.isVisible = false
+                    incomeCategorySpinner .isVisible = true
+                    transaction.type = "Income"
+                }
+            }
+        }
+
+        expenseCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
+
+                // only creates AlertDialog if user selects "Create New Category"
+                if (parent?.getItemAtPosition(position) == "Create New Category") {
+
+                    newCategoryDialog(expenseCategorySpinner)
+                }
+                // updates the category to selected one
+                transaction.category = parent?.getItemAtPosition(position) as String
+            }
+
+            override fun onNothingSelected(parent : AdapterView<*>?) {}
+        }
+
+        incomeCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
+
+                // only creates AlertDialog if user selects "Create New Category"
+                if (parent?.getItemAtPosition(position) == "Create New Category") {
+
+                    newCategoryDialog(incomeCategorySpinner)
+                }
+                // updates the category to selected one
+                transaction.category = parent?.getItemAtPosition(position) as String
+            }
+
+            override fun onNothingSelected(parent : AdapterView<*>?) {}
+        }
+
+        repeatingCheckBox.apply {
+
+            setOnCheckedChangeListener { _, isChecked ->
+                transaction.repeating = isChecked
+                if (isChecked) {
+
+                    frequencyText         .isVisible = true
+                    frequencyField        .isVisible = true
+                    frequencyPeriodSpinner.isVisible = true
+                } else {
+
+                    frequencyText         .isVisible = false
+                    frequencyField        .isVisible = false
+                    frequencyPeriodSpinner.isVisible = false
+                }
+            }
+        }
+
+        frequencyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
+
+                transaction.period = position
+            }
+
+            override fun onNothingSelected(parent : AdapterView<*>?) {}
+        }
+
+        saveFab.setOnClickListener {
+
+            // gives Transaction simple title if user doesn't enter any
+            if (transaction.title == "") {
+
+                transaction.title = getString(R.string.transaction_number) + transaction.id
+            }
+
+            // frequency must always be at least 1
+            if (transaction.frequency < 1) {
+
+                transaction.frequency = 1
+            }
+
+            // converts the totalField into BigDecimal
+            try {
+                transaction.total = BigDecimal(
+                    totalField.text.toString()
+                        .replace("$", "")
+                        .replace(",", "")
+                )
+            } catch (e : java.lang.NumberFormatException) {
+
+                transaction.total = BigDecimal("0.00")
+            }
+
+            // deals with either creating, updating, or deleting FutureTransaction
+            if (transaction.repeating) {
+
+                createFutureTransaction()
+            } else {
+
+                deleteFutureTransaction()
+            }
+
+            launch {
+
+                // will insert Transaction if it is new, else updates existing
+                if (newTransaction) {
+
+                    transactionDetailViewModel.insertTransaction(transaction)
+                    newTransaction = false
+                } else {
+
+                    transactionDetailViewModel.updateTransaction(transaction)
+                }
+            }
+
+            updateUI()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -237,296 +481,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
     }
 
-    @ExperimentalStdlibApi
-    override fun onStart() {
-        super.onStart()
-
-        // placed in onStart due to being triggered when view state is restored
-        val titleWatcher = object : TextWatcher {
-
-            // not needed so blank
-            override fun beforeTextChanged(sequence: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            // sequence is user's input which title is changed to
-            override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int) {
-
-                transaction.title = sequence.toString()
-            }
-
-            // not needed so blank
-            override fun afterTextChanged(sequence: Editable?) {}
-        }
-
-        // placed in onStart due to being triggered when view state is restored
-        val memoWatcher = object : TextWatcher {
-
-            // not needed so blank
-            override fun beforeTextChanged(sequence: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            // sequence is user's input which memo is changed to
-            override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int) {
-
-                transaction.memo = sequence.toString()
-            }
-
-            // not needed so blank
-            override fun afterTextChanged(sequence: Editable?) {}
-        }
-
-        // placed in onStart due to being triggered when view state is restored
-        val frequencyWatcher = object : TextWatcher {
-
-            // not needed so blank
-            override fun beforeTextChanged(sequence: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            // sequence is user's input which memo is changed to
-            override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int) {
-
-                try {
-                    transaction.frequency = Integer.parseInt(sequence.toString())
-                } catch (e : NumberFormatException) {
-
-                    transaction.frequency = 0
-                }
-            }
-
-            // not needed so blank
-            override fun afterTextChanged(sequence: Editable?) {}
-        }
-
-        titleField    .addTextChangedListener(titleWatcher)
-        memoField     .addTextChangedListener(memoWatcher)
-        frequencyField.addTextChangedListener(frequencyWatcher)
-
-        // OnClickListener not affected by state restoration,
-        // but nice to have listeners in one place
-        dateButton.setOnClickListener {
-
-            DatePickerFragment.newInstance(transaction.date).apply {
-
-                // fragment that will be target and request code
-                setTargetFragment(this@TransactionFragment, REQUEST_DATE)
-                // want requireFragmentManager from TransactionFragment, so need outer scope
-                show(this@TransactionFragment.requireFragmentManager(), DIALOG_DATE)
-            }
-        }
-
-        typeChipGroup.setOnCheckedChangeListener { group, checkedId ->
-
-            // prevents no chips being selected
-            for (i : Int in 0 until group.childCount) {
-
-                val chip = group.getChildAt(i)
-                chip.isClickable = chip.id != group.checkedChipId
-            }
-
-            when (checkedId) {
-
-                R.id.transaction_expense_chip -> {
-
-                    expenseSelected = true
-                    incomeSelected  = false
-                    expenseCategorySpinner.isVisible = true
-                    incomeCategorySpinner .isVisible = false
-                    transaction.type = "Expense"
-                }
-                R.id.transaction_income_chip -> {
-
-                    expenseSelected = false
-                    incomeSelected  = true
-                    expenseCategorySpinner.isVisible = false
-                    incomeCategorySpinner .isVisible = true
-                    transaction.type = "Income"
-                }
-            }
-        }
-
-        expenseCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
-                // only creates AlertDialog if user selects "Create New Category"
-                if (parent?.getItemAtPosition(position) == "Create New Category") {
-
-                     newCategoryDialog(expenseCategorySpinner)
-                }
-                // updates the category to selected one
-                transaction.category = parent?.getItemAtPosition(position) as String
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        incomeCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
-                // only creates AlertDialog if user selects "Create New Category"
-                if (parent?.getItemAtPosition(position) == "Create New Category") {
-
-                    newCategoryDialog(incomeCategorySpinner)
-                }
-                // updates the category to selected one
-                transaction.category = parent?.getItemAtPosition(position) as String
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        repeatingCheckBox.apply {
-
-            setOnCheckedChangeListener { _, isChecked ->
-                transaction.repeating = isChecked
-                if (isChecked) {
-
-                    frequencyText         .isVisible = true
-                    frequencyField        .isVisible = true
-                    frequencyPeriodSpinner.isVisible = true
-                } else {
-
-                    frequencyText         .isVisible = false
-                    frequencyField        .isVisible = false
-                    frequencyPeriodSpinner.isVisible = false
-                }
-            }
-        }
-
-        frequencyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
-                    transaction.period = position
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        saveFab.setOnClickListener {
-
-            // gives Transactions simple titles if user doesn't enter any
-            if (transaction.title == "") {
-
-                transaction.title = "Transaction #" + transaction.id
-            }
-
-            // frequency must always be at least 1
-            if (transaction.frequency < 1) {
-
-                transaction.frequency = 1
-            }
-
-            try {
-                transaction.total = BigDecimal(
-                    totalField.text.toString()
-                        .replace("$", "").replace(",", "")
-                )
-            } catch (e : java.lang.NumberFormatException) {
-
-                transaction.total = BigDecimal("0.00")
-            }
-
-            if (transaction.repeating) {
-
-                createFutureTransaction()
-            } else {
-
-                deleteFutureTransaction()
-            }
-
-            launch {
-
-                // will insert Transaction if it was new, else update existing
-                if (newTransaction) {
-
-                    transactionDetailViewModel.insertTransaction(transaction)
-                    newTransaction = false
-                } else {
-
-                    transactionDetailViewModel.updateTransaction(transaction)
-                }
-            }
-
-            updateUI()
-        }
-    }
-
-    private fun updateUI() {
-
-        titleField    .setText(transaction.title)
-        memoField     .setText(transaction.memo)
-        totalField    .setText("$" + String.format(transaction.total.toString()))
-        frequencyField.setText(transaction.frequency.toString())
-        dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
-        if (transaction.type == "Income") {
-
-            expenseSelected = false
-            incomeSelected  = true
-            expenseCategorySpinner.isVisible = false
-            incomeCategorySpinner .isVisible = true
-        } else {
-
-            expenseSelected = true
-            incomeSelected  = false
-            expenseCategorySpinner.isVisible = true
-            incomeCategorySpinner .isVisible = false
-            // weird bug that only affected expenseChip where it was able to be
-            // deselected when Transaction is first started, this fixes it
-            expenseChip.isClickable = false
-            incomeChip .isClickable = true
-        }
-        expenseChip.isChecked = expenseSelected
-        incomeChip .isChecked = incomeSelected
-        if (expenseSelected) {
-
-            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
-        } else {
-
-            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
-        }
-        repeatingCheckBox.apply {
-            isChecked = transaction.repeating
-            // skips animation
-            jumpDrawablesToCurrentState()
-        }
-        frequencyPeriodSpinner.setSelection(transaction.period)
-    }
-
-    // will update date with the date selected from DatePickerFragment
-    override fun onDateSelected(date : Date) {
-
-        transaction.date = date
-        updateUI()
-    }
-
-    // creates or updates FutureTransaction
-    private fun createFutureTransaction() {
-
-        val futureDate : Date = createFutureDate()
-        launch {
-
-            var futureTransaction : FutureTransaction? =
-                transactionDetailViewModel.getFutureTransactionAsync(transaction.id).await()
-
-            // means current Transaction has no FutureTransaction created for it
-            if (futureTransaction == null) {
-
-                futureTransaction = FutureTransaction(transaction.id, transaction.id, futureDate)
-                transactionDetailViewModel.insertFutureTransaction(futureTransaction)
-            // there is a FutureTransaction for current Transaction so update new futureDate
-            } else {
-
-                futureTransaction.futureDate = futureDate
-                transactionDetailViewModel.updateFutureTransaction(futureTransaction)
-            }
-        }
-    }
-
     // adds frequency * period to the date on Transaction
     private fun createFutureDate() : Date {
 
@@ -544,6 +498,29 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             3 -> calendar.add(Calendar.YEAR        , transaction.frequency)
         }
         return calendar.time
+    }
+
+    // creates or updates FutureTransaction
+    private fun createFutureTransaction() {
+
+        val futureDate : Date = createFutureDate()
+        launch {
+
+            var futureTransaction : FutureTransaction? =
+                transactionDetailViewModel.getFutureTransactionAsync(transaction.id).await()
+
+            // means current Transaction has no FutureTransaction created for it
+            if (futureTransaction == null) {
+
+                futureTransaction = FutureTransaction(transaction.id, transaction.id, futureDate)
+                transactionDetailViewModel.insertFutureTransaction(futureTransaction)
+                // there is a FutureTransaction for current Transaction so update new futureDate
+            } else {
+
+                futureTransaction.futureDate = futureDate
+                transactionDetailViewModel.updateFutureTransaction(futureTransaction)
+            }
+        }
     }
 
     // deletes FutureTransaction for this Transaction, if any
@@ -567,9 +544,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private fun insertCategory(input : String) {
 
         // makes first letter of every word capital and every other letter lower case
-        val name = input.split(" ").joinToString(" ") {it.toLowerCase(Locale.US).capitalize(Locale.US)  }
+        val name : String = input.split(" ").joinToString(" ") {it.toLowerCase(Locale.US).capitalize(Locale.US)}
 
-        if (expenseSelected) {
+        if (!typeSelected) {
 
             // -1 means it doesn't exist
             if (expenseCategoryNamesList.indexOf(name) == -1) {
@@ -585,7 +562,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                 expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
             }
-        } else if (incomeSelected) {
+        } else if (typeSelected) {
 
             // -1 means it doesn't exist
             if (incomeCategoryNamesList.indexOf(name) == -1) {
@@ -635,6 +612,53 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         val categoryAlertDialog : androidx.appcompat.app.AlertDialog = builder.create()
         // display AlertDialog
         categoryAlertDialog.show()
+    }
+
+    // ensures that the UI is up to date with all the correct information on Transaction
+    private fun updateUI() {
+
+        titleField    .setText(transaction.title)
+        memoField     .setText(transaction.memo)
+        totalField    .setText(getString(R.string.total_number, String.format(transaction.total.toString())))
+        frequencyField.setText(transaction.frequency.toString())
+        dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
+        if (transaction.type == "Income") {
+
+            typeSelected = true
+            expenseCategorySpinner.isVisible = false
+            incomeCategorySpinner .isVisible = true
+        } else {
+
+            typeSelected = false
+            expenseCategorySpinner.isVisible = true
+            incomeCategorySpinner .isVisible = false
+            // weird bug that only affected expenseChip where it was able to be
+            // deselected when Transaction is first started, this fixes it
+            expenseChip.isClickable = false
+            incomeChip .isClickable = true
+        }
+        if (!typeSelected) {
+
+            expenseChip.isChecked = true
+            incomeChip .isChecked = false
+        } else {
+
+            expenseChip.isChecked = false
+            incomeChip .isChecked = true
+        }
+        if (!typeSelected) {
+
+            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+        } else {
+
+            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
+        }
+        repeatingCheckBox.apply {
+            isChecked = transaction.repeating
+            // skips animation
+            jumpDrawablesToCurrentState()
+        }
+        frequencyPeriodSpinner.setSelection(transaction.period)
     }
 
     companion object {

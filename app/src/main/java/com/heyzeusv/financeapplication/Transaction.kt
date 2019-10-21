@@ -13,7 +13,7 @@ import java.util.*
 @Entity
 data class Transaction(
     @PrimaryKey
-    var id        : Int = 0,
+    var id        : Int        = 0,
     var title     : String     = "",
     var date      : Date       = Date(),
     var total     : BigDecimal = BigDecimal("0"),

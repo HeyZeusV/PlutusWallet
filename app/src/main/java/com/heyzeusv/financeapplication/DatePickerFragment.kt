@@ -36,13 +36,13 @@ class DatePickerFragment : DialogFragment() {
             }
         }
 
-        val date = arguments?.getSerializable(ARG_DATE) as Date
-        val calendar = Calendar.getInstance()
+        val date     : Date     = arguments?.getSerializable(ARG_DATE) as Date
+        val calendar : Calendar = Calendar.getInstance()
         // sets date if one existed already
         calendar.time = date
-        val initialYear = calendar.get(Calendar.YEAR)
-        val initialMonth = calendar.get(Calendar.MONTH)
-        val initialDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val initialYear  : Int = calendar.get(Calendar.YEAR)
+        val initialMonth : Int = calendar.get(Calendar.MONTH)
+        val initialDay   : Int = calendar.get(Calendar.DAY_OF_MONTH)
 
         return DatePickerDialog(
             // context object
@@ -62,7 +62,7 @@ class DatePickerFragment : DialogFragment() {
         // and attaches the arguments to the fragment
         fun newInstance(date : Date) : DatePickerFragment {
 
-            val args = Bundle().apply {
+            val args : Bundle = Bundle().apply {
                 putSerializable(ARG_DATE, date)
             }
 

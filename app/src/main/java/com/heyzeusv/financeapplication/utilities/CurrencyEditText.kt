@@ -26,8 +26,8 @@ import java.util.*
  */
 
 class CurrencyEditText @JvmOverloads constructor(
-    context: Context, attributeSet: AttributeSet,
-    defStyleAttr: Int = R.attr.editTextStyle) :
+    context : Context, attributeSet : AttributeSet,
+    defStyleAttr : Int = R.attr.editTextStyle) :
     androidx.appcompat.widget.AppCompatEditText(context, attributeSet, defStyleAttr) {
 
     private val currencyTextWatcher = CurrencyTextWatcher(this, prefix)
@@ -88,7 +88,7 @@ class CurrencyEditText @JvmOverloads constructor(
 
         override fun afterTextChanged(editable : Editable?) {
 
-            val string = editable.toString()
+            val string : String = editable.toString()
             // if EditText is empty
             if (string.length < prefix.length) {
 
@@ -102,7 +102,7 @@ class CurrencyEditText @JvmOverloads constructor(
                 return
             }
             // cleanString: doesn't contain prefix and ,
-            val cleanString = string.replace(prefix, "").replace(("[,]").toRegex(), "")
+            val cleanString : String = string.replace(prefix, "").replace(("[,]").toRegex(), "")
             // prevents afterTextChanged recursive call
             if (cleanString == previousCleanString || cleanString.isEmpty()) {
 
@@ -134,19 +134,18 @@ class CurrencyEditText @JvmOverloads constructor(
         private fun formatInteger(string : String ) : String {
 
             // BigDecimal cannot handle symbols other than "."
-            val editedString = string.removePrefix("$")
+            val editedString : String = string.removePrefix("$")
             val parsed = BigDecimal(editedString)
             // every three numbers, a symbol will be added, which is currently set to US
             // locale ",". Plan to make settings where user can select symbols
-            val formatter = DecimalFormat("$prefix#,###",
-                DecimalFormatSymbols.getInstance(Locale.US))
+            val formatter = DecimalFormat("$prefix#,###", DecimalFormatSymbols.getInstance(Locale.US))
             return formatter.format(parsed)
         }
 
         private fun formatDecimal(string : String) : String {
 
             // BigDecimal cannot handle symbols other than "."
-            val editedString = string.removePrefix("$")
+            val editedString : String = string.removePrefix("$")
             if (editedString == ".") {
 
                 return "$prefix."
@@ -154,8 +153,7 @@ class CurrencyEditText @JvmOverloads constructor(
             val parsed = BigDecimal(editedString)
             // every three numbers, a symbol will be added, which is currently set to US
             // locale ",". Plan to make settings where user can select symbols
-            val formatter = DecimalFormat(prefix + "#,###." + getDecimalPattern(string),
-                DecimalFormatSymbols.getInstance(Locale.US))
+            val formatter = DecimalFormat(prefix + "#,###." + getDecimalPattern(string), DecimalFormatSymbols.getInstance(Locale.US))
             formatter.roundingMode = RoundingMode.DOWN
             return formatter.format(parsed)
         }
@@ -166,7 +164,7 @@ class CurrencyEditText @JvmOverloads constructor(
          */
         private fun getDecimalPattern(string : String) : String {
 
-            val decimalCount = string.length - string.indexOf(".") - 1
+            val decimalCount : Int = string.length - string.indexOf(".") - 1
             val decimalPattern = StringBuilder()
             var i = 0
             while (i < decimalCount && i < MAX_DECIMAL) {

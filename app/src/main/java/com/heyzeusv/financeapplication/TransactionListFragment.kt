@@ -1,7 +1,6 @@
 package com.heyzeusv.financeapplication
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +21,8 @@ import com.heyzeusv.financeapplication.utilities.BaseFragment
 import kotlinx.coroutines.launch
 
 import java.text.DateFormat
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.*
 
 private const val TAG               = "TransactionListFragment"
@@ -46,14 +47,20 @@ class TransactionListFragment : BaseFragment() {
     private var callbacks : Callbacks? = null
 
     // views
+    private lateinit var transactionAddFab       : FloatingActionButton
     private lateinit var transactionRecyclerView : RecyclerView
-    private lateinit var transactionAddFab : FloatingActionButton
 
-    private var recyclerViewPosition : Int = 0
+    // used to tell if app is first starting up
     private var startUp : Boolean = true
+
+    // holds position of RecyclerView so that it doesn't reset when user returns
+    private var recyclerViewPosition : Int = 0
 
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
+
+    // formatter used for Total
+    val formatter = DecimalFormat("#,###.00", DecimalFormatSymbols.getInstance(Locale.US))
 
     // provides instance of ViewModel
     private val transactionListViewModel : TransactionListViewModel by lazy {
@@ -74,8 +81,9 @@ class TransactionListFragment : BaseFragment() {
         // layout resource id, view's parent, do not immediately add inflated view to parent
         val view : View = inflater.inflate(R.layout.fragment_transaction_list, container, false)
 
-        transactionRecyclerView =
-            view.findViewById(R.id.transaction_recycler_view) as RecyclerView
+        transactionAddFab       = view.findViewById(R.id.transaction_add_fab)       as FloatingActionButton
+        transactionRecyclerView = view.findViewById(R.id.transaction_recycler_view) as RecyclerView
+
         val linearLayoutManager = LinearLayoutManager(context)
         // newer items will be displayed at the top of RecyclerView
         linearLayoutManager.reverseLayout = true
@@ -90,13 +98,29 @@ class TransactionListFragment : BaseFragment() {
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(
             transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
-        transactionAddFab =
-            view.findViewById(R.id.transaction_add_fab) as FloatingActionButton
-
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onDetach() {
+        super.onDetach()
+
+        // afterward you cannot access the activity
+        // or count on the activity continuing to exist
+        callbacks = null
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        transactionAddFab.setOnClickListener {
+            callbacks?.onTransactionSelected(0, true)
+            // this will make it so the list will snap to the top after user
+            // creates a new Transaction
+            recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
+        }
+    }
+
+    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // loading in arguments, if any
@@ -125,6 +149,7 @@ class TransactionListFragment : BaseFragment() {
             }
         )
 
+        // gets the sizes of the Category tables and sends them to function
         launch {
 
             val expenseSize : Int? = transactionListViewModel.getExpenseCategorySizeAsync().await()
@@ -134,59 +159,43 @@ class TransactionListFragment : BaseFragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-
-        // afterward you cannot access the activity
-        // or count on the activity continuing to exist
-        callbacks = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        transactionAddFab.setOnClickListener {
-            val transaction = Transaction()
-            callbacks?.onTransactionSelected(transaction.id, true)
-            // this will make it so the list will snap to the top after user
-            // creates a new Transaction
-            recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
-        }
-    }
 
     // this should be run the very first time a user opens the app or if they delete
-    // all the categories in one table fills table with a few predetermined categories
+    // all the categories in one table, fills table with a few predetermined categories
     private fun initializeCategoryTables(expenseSize : Int?, incomeSize : Int?) {
 
         launch {
 
             if (expenseSize == 0 || expenseSize == null) {
 
-                val education = ExpenseCategory("Education")
-                val entertainment = ExpenseCategory("Entertainment")
-                val food = ExpenseCategory("Food")
-                val home = ExpenseCategory("Home")
-                val transportation = ExpenseCategory("Transportation")
-                val utilities = ExpenseCategory("Utilities")
-                val initialExpenseCategories: Array<ExpenseCategory> = arrayOf(
+                val education      = ExpenseCategory(getString(R.string.education))
+                val entertainment  = ExpenseCategory(getString(R.string.entertainment))
+                val food           = ExpenseCategory(getString(R.string.food))
+                val home           = ExpenseCategory(getString(R.string.home))
+                val transportation = ExpenseCategory(getString(R.string.transportation))
+                val utilities      = ExpenseCategory(getString(R.string.utilities))
+                val initialExpenseCategories : Array<ExpenseCategory> = arrayOf(
                     education, entertainment, food, home, transportation, utilities)
                 transactionListViewModel.insertExpenseCategories(initialExpenseCategories)
             }
 
             if (incomeSize == 0 || incomeSize == null) {
 
-                val cryptocurrency = IncomeCategory("Cryptocurrency")
-                val salary = IncomeCategory("Salary")
-                val savings = IncomeCategory("Savings")
-                val wages = IncomeCategory("Wages")
-                val initialIncomeCategories: Array<IncomeCategory> = arrayOf(
-                    cryptocurrency, salary, savings, wages)
+                val cryptocurrency = IncomeCategory(getString(R.string.cryptocurrency))
+                val investments    = IncomeCategory(getString(R.string.investments))
+                val salary         = IncomeCategory(getString(R.string.salary))
+                val savings        = IncomeCategory(getString(R.string.savings))
+                val stocks         = IncomeCategory(getString(R.string.stocks))
+                val wages          = IncomeCategory(getString(R.string.wages))
+                val initialIncomeCategories : Array<IncomeCategory> = arrayOf(
+                    cryptocurrency, investments, salary, savings, stocks, wages)
                 transactionListViewModel.insertIncomeCategories(initialIncomeCategories)
             }
         }
     }
 
-    private fun updateUI(transactions: List<Transaction>) {
+    // ensures the UI is up to date with correct information
+    private fun updateUI(transactions : List<Transaction>) {
 
         // creates CrimeAdapter to set with RecyclerView
         transactionAdapter              = TransactionAdapter(transactions)
@@ -202,6 +211,27 @@ class TransactionListFragment : BaseFragment() {
             // be the item at the top of the view since it will be reversed
             transactionRecyclerView.scrollToPosition(transactionRecyclerView.size - 1)
             startUp = false
+        }
+    }
+
+    // creates ViewHolder and binds ViewHolder to data from model layer
+    private inner class TransactionAdapter(var transactions : List<Transaction>)
+        : RecyclerView.Adapter<TransactionHolder>() {
+
+        // creates view to display, wraps the view in a ViewHolder and returns the result
+        override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : TransactionHolder {
+
+            val view : View = layoutInflater.inflate(R.layout.item_view_transaction, parent, false)
+            return TransactionHolder(view)
+        }
+
+        override fun getItemCount() = transactions.size
+
+        // populates given holder with transaction from the given position in TransactionList
+        override fun onBindViewHolder(holder : TransactionHolder, position : Int) {
+
+            val transaction : Transaction = transactions[position]
+            holder.bind(transaction)
         }
     }
 
@@ -225,12 +255,19 @@ class TransactionListFragment : BaseFragment() {
         // sets the views with transaction data
         fun bind(transaction : Transaction) {
 
-            this.transaction = transaction
-            titleTextView.text = this.transaction.title
+            this.transaction   = transaction
+            titleTextView.text = this      .transaction.title
             dateTextView. text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
-            totalTextView.text = String.format("$%.2f", this.transaction.total)
-            context?.let {
+            // formats the Total correctly
+            if (transaction.total.toString() == "0.00") {
 
+                totalTextView.text = getString(R.string.total_number, String.format("%.2f", this.transaction.total))
+            } else {
+
+                totalTextView.text = getString(R.string.total_number, formatter.format(this.transaction.total))
+            }
+            context?.let {
+                // changes the color depending on Type
                 if (transaction.type == "Expense") {
 
                     totalTextView.setTextColor(ContextCompat.getColor(it, android.R.color.holo_red_dark))
@@ -242,9 +279,6 @@ class TransactionListFragment : BaseFragment() {
         }
 
         override fun onClick(v : View?) {
-
-            // test to check if correct Transaction is pressed
-            // Toast.makeText(context, "${transaction.title} pressed!", Toast.LENGTH_SHORT).show()
 
             // the position that the user clicked on
             recyclerViewPosition = this.layoutPosition
@@ -278,28 +312,6 @@ class TransactionListFragment : BaseFragment() {
             alertDialog.show()
 
             return true
-        }
-    }
-
-    // creates ViewHolder and binds ViewHolder to data from model layer
-    private inner class TransactionAdapter(var transactions: List<Transaction>)
-        : RecyclerView.Adapter<TransactionHolder>() {
-
-        // creates view to display, wraps the view in a ViewHolder and returns the result
-        override fun onCreateViewHolder(parent : ViewGroup, viewType : Int)
-                : TransactionHolder {
-
-            val view : View = layoutInflater.inflate(R.layout.item_view_transaction, parent, false)
-            return TransactionHolder(view)
-        }
-
-        override fun getItemCount() = transactions.size
-
-        // populates given holder with transaction from the given position in TransactionList
-        override fun onBindViewHolder(holder : TransactionHolder, position : Int) {
-
-            val transaction : Transaction = transactions[position]
-            holder.bind(transaction)
         }
     }
 
