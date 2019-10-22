@@ -16,25 +16,29 @@ import java.util.*
 @Dao
 interface TransactionDao : BaseDao<Transaction> {
 
-    // returns all transactions
-    @Query("SELECT * FROM `transaction`")
-    fun getTransactions() : LiveData<List<Transaction>>
-
-    // returns all transactions with given category
-    @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category)")
-    fun getTransactions(type : String?, category : String?) : LiveData<List<Transaction>>
-
-    // returns all transactions within given dates
-    @Query("SELECT * FROM `transaction` WHERE date BETWEEN :start AND :end")
-    fun getTransactions(start : Date?, end : Date?) : LiveData<List<Transaction>>
-
-    // returns all transactions with given category and within given dates
-    @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end")
-    fun getTransactions(type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>
+    // returns transaction with specific id
+    @Query("SELECT * FROM `transaction` WHERE id=(:id)")
+    fun getTransaction(id : Int) : Transaction
 
     // returns transaction with specific id
     @Query("SELECT * FROM `transaction` WHERE id=(:id)")
-    fun getTransaction(id : Int) : LiveData<Transaction?>
+    fun getLDTransaction(id : Int) : LiveData<Transaction?>
+
+    // returns all transactions
+    @Query("SELECT * FROM `transaction`")
+    fun getLDTransactions() : LiveData<List<Transaction>>
+
+    // returns all transactions with given category
+    @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category)")
+    fun getLDTransactions(type : String?, category : String?) : LiveData<List<Transaction>>
+
+    // returns all transactions within given dates
+    @Query("SELECT * FROM `transaction` WHERE date BETWEEN :start AND :end")
+    fun getLDTransactions(start : Date?, end : Date?) : LiveData<List<Transaction>>
+
+    // returns all transactions with given category and within given dates
+    @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end")
+    fun getLDTransactions(type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>
 
     // returns the highest id in database
     @Query("SELECT MAX(id) FROM `transaction`")

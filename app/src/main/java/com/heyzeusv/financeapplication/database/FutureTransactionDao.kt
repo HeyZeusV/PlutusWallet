@@ -3,6 +3,7 @@ package com.heyzeusv.financeapplication.database
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.financeapplication.FutureTransaction
+import java.util.*
 
 /*
     All the queries that can be applied to the database
@@ -15,6 +16,9 @@ import com.heyzeusv.financeapplication.FutureTransaction
 interface FutureTransactionDao : BaseDao<FutureTransaction> {
 
     // returns FutureTransaction with specific transactionId
-    @Query("SELECT * FROM `futuretransaction` WHERE transactionId=(:transactionId)")
+    @Query("SELECT * FROM futuretransaction WHERE transactionId=(:transactionId)")
     suspend fun getFutureTransaction(transactionId : Int) : FutureTransaction?
+
+    @Query("SELECT * FROM futuretransaction WHERE futureDate < :currentDate")
+    suspend fun getFutureTransactions(currentDate : Date) : List<FutureTransaction>
 }

@@ -27,28 +27,32 @@ class TransactionRepository private constructor(context : Context){
     private val incomeCategoryDao    : IncomeCategoryDao    = database.incomeCategoryDao   ()
 
     // Transaction
-    fun getTransactions()                                                                : LiveData<List<Transaction>>   = transactionDao.getTransactions()
-    fun getTransactions(type : String?, category : String?)                              : LiveData<List<Transaction>>   = transactionDao.getTransactions(type, category)
-    fun getTransactions(type : String?, category : String?, start : Date?, end : Date?)  : LiveData<List<Transaction>>   = transactionDao.getTransactions(type, category, start, end)
-    fun getTransactions(                    start : Date?, end : Date?)                  : LiveData<List<Transaction>>   = transactionDao.getTransactions(                start, end)
-    fun getTransaction (id   : Int)                                                      : LiveData<Transaction?>        = transactionDao.getTransaction (id)
-    suspend fun getMaxIdAsync()                              : Deferred<Int?> = withContext(Dispatchers.IO) {
+    fun getLDTransaction (id   : Int)                                                      : LiveData<Transaction?>        = transactionDao.getLDTransaction (id)
+    fun getLDTransactions()                                                                : LiveData<List<Transaction>>   = transactionDao.getLDTransactions()
+    fun getLDTransactions(type : String?, category : String?)                              : LiveData<List<Transaction>>   = transactionDao.getLDTransactions(type, category)
+    fun getLDTransactions(type : String?, category : String?, start : Date?, end : Date?)  : LiveData<List<Transaction>>   = transactionDao.getLDTransactions(type, category, start, end)
+    fun getLDTransactions(                    start : Date?, end : Date?)                  : LiveData<List<Transaction>>   = transactionDao.getLDTransactions(                start, end)
+    suspend fun getMaxIdAsync      ()                          : Deferred<Int?>        = withContext(Dispatchers.IO) {
         async  {transactionDao.getMaxId()}}
-    suspend fun deleteTransaction(transaction : Transaction) : Job            = withContext(Dispatchers.IO) {
+    suspend fun getTransactionAsync(id          : Int)         : Deferred<Transaction> = withContext(Dispatchers.IO) {
+        async {transactionDao.getTransaction(id)}}
+    suspend fun deleteTransaction  (transaction : Transaction) : Job                   = withContext(Dispatchers.IO) {
         launch {transactionDao.delete(transaction)}}
-    suspend fun insertTransaction(transaction : Transaction) : Job            = withContext(Dispatchers.IO) {
+    suspend fun insertTransaction  (transaction : Transaction) : Job                   = withContext(Dispatchers.IO) {
         launch {transactionDao.insert(transaction)}}
-    suspend fun updateTransaction(transaction : Transaction) : Job            = withContext(Dispatchers.IO) {
+    suspend fun updateTransaction  (transaction : Transaction) : Job                   = withContext(Dispatchers.IO) {
         launch {transactionDao.update(transaction)}}
 
     // FutureTransaction
-    suspend fun getFutureTransactionAsync(transactionId   : Int)               : Deferred<FutureTransaction?> = withContext(Dispatchers.IO) {
+    suspend fun getFutureTransactionAsync (transactionId   : Int)              : Deferred<FutureTransaction?>      = withContext(Dispatchers.IO) {
         async {futureTransactionDao.getFutureTransaction(transactionId)}}
-    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) : Job                          = withContext(Dispatchers.IO) {
+    suspend fun getFutureTransactionsAsync(currentDate     : Date)             : Deferred<List<FutureTransaction>> = withContext(Dispatchers.IO) {
+        async {futureTransactionDao.getFutureTransactions(currentDate)}}
+    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) : Job                               = withContext(Dispatchers.IO) {
         launch {futureTransactionDao.delete(futureTransaction)}}
-    suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) : Job                          = withContext(Dispatchers.IO) {
+    suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) : Job                               = withContext(Dispatchers.IO) {
         launch {futureTransactionDao.insert(futureTransaction)}}
-    suspend fun updateFutureTransaction(futureTransaction : FutureTransaction) : Job                          = withContext(Dispatchers.IO) {
+    suspend fun updateFutureTransaction(futureTransaction : FutureTransaction) : Job                               = withContext(Dispatchers.IO) {
         launch {futureTransactionDao.update(futureTransaction)}}
 
     // ExpenseCategory

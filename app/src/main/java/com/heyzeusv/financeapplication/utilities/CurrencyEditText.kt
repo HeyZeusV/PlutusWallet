@@ -190,7 +190,7 @@ class CurrencyEditText @JvmOverloads constructor(
 
     companion object {
         private const val prefix = "$"
-        private const val MAX_LENGTH = 20
+        private const val MAX_LENGTH = 15
         private const val MAX_DECIMAL = 2
     }
 }

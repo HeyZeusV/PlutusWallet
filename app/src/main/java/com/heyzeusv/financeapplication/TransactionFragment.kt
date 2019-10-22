@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -379,7 +380,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     transactionDetailViewModel.updateTransaction(transaction)
                 }
             }
-
+            Log.d(TAG, "$transaction")
             updateUI()
         }
     }
@@ -489,7 +490,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // to select a Date in the past or future
         calendar.time = transaction.date
 
-        //0 = Day(s), 1 = Week(s), 2 = Month(s), 3 = Year(s)
+        //0 = Day, 1 = Week, 2 = Month, 3 = Year
         when (transaction.period) {
 
             0 -> calendar.add(Calendar.DAY_OF_MONTH, transaction.frequency)
@@ -497,6 +498,13 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             2 -> calendar.add(Calendar.MONTH       , transaction.frequency)
             3 -> calendar.add(Calendar.YEAR        , transaction.frequency)
         }
+
+        // reset hour, minutes, seconds and millis
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
         return calendar.time
     }
 
@@ -504,6 +512,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private fun createFutureTransaction() {
 
         val futureDate : Date = createFutureDate()
+        Log.d(TAG, "$futureDate")
         launch {
 
             var futureTransaction : FutureTransaction? =
@@ -622,6 +631,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         totalField    .setText(getString(R.string.total_number, String.format(transaction.total.toString())))
         frequencyField.setText(transaction.frequency.toString())
         dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
+
         if (transaction.type == "Income") {
 
             typeSelected = true
@@ -637,6 +647,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             expenseChip.isClickable = false
             incomeChip .isClickable = true
         }
+
         if (!typeSelected) {
 
             expenseChip.isChecked = true
@@ -646,6 +657,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             expenseChip.isChecked = false
             incomeChip .isChecked = true
         }
+
         if (!typeSelected) {
 
             expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
@@ -653,6 +665,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
         }
+
         repeatingCheckBox.apply {
             isChecked = transaction.repeating
             // skips animation

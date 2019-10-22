@@ -20,22 +20,50 @@ class TransactionListViewModel : ViewModel() {
 
         return if (category == true && date == true) {
 
-            transactionRepository.getTransactions(type, categoryName, start, end)
+            transactionRepository.getLDTransactions(type, categoryName, start, end)
         } else if (category == true) {
 
-            transactionRepository.getTransactions(type, categoryName)
+            transactionRepository.getLDTransactions(type, categoryName)
         } else if (date == true) {
 
-            transactionRepository.getTransactions(start, end)
+            transactionRepository.getLDTransactions(start, end)
         } else {
 
-            transactionRepository.getTransactions()
+            transactionRepository.getLDTransactions()
         }
+    }
+
+    suspend fun getMaxIdAsync() : Deferred<Int?> {
+
+        return transactionRepository.getMaxIdAsync()
+    }
+
+    suspend fun getTransactionAsync(id : Int) : Deferred<Transaction> {
+
+        return transactionRepository.getTransactionAsync(id)
     }
 
     suspend fun deleteTransaction(transaction : Transaction) {
 
         transactionRepository.deleteTransaction(transaction)
+    }
+
+    suspend fun insertTransaction(transaction : Transaction) {
+
+        transactionRepository.insertTransaction(transaction)
+    }
+
+    /*
+        FutureTransaction queries
+     */
+    suspend fun getFutureTransactionsAsync(currentDate : Date) : Deferred<List<FutureTransaction>> {
+
+        return transactionRepository.getFutureTransactionsAsync(currentDate)
+    }
+
+    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) {
+
+        transactionRepository.deleteFutureTransaction(futureTransaction)
     }
 
     /*

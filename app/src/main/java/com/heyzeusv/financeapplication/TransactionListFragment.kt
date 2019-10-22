@@ -157,8 +157,34 @@ class TransactionListFragment : BaseFragment() {
 
             initializeCategoryTables(expenseSize, incomeSize)
         }
+
+        checkForFutureTransactions()
     }
 
+    // adds any FutureTransactions that have reached their futureDate
+    private fun checkForFutureTransactions() {
+
+        launch {
+
+            // returns list of all FutureTransactions whose futureDate is before current date
+            val futureTransactionList : List<FutureTransaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await()
+
+            if (futureTransactionList.isNotEmpty()) {
+
+                futureTransactionList.forEach {
+
+                    // gets copy of Transaction attached to this FutureTransaction
+                    val transaction : Transaction   = transactionListViewModel.getTransactionAsync(it.transactionId).await()
+                    // sets new id since id is primary key and must be unique
+                    transaction             .id     = transactionListViewModel.getMaxIdAsync().await()!! + 1
+                    transaction             .date   = it.futureDate
+                    transaction             .title += " Repeat"
+                    transactionListViewModel.insertTransaction(transaction)
+                    transactionListViewModel.deleteFutureTransaction(it)
+                }
+            }
+        }
+    }
 
     // this should be run the very first time a user opens the app or if they delete
     // all the categories in one table, fills table with a few predetermined categories

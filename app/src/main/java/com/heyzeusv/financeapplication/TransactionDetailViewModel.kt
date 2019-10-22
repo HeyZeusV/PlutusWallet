@@ -19,7 +19,7 @@ class TransactionDetailViewModel : ViewModel() {
     // sets up a trigger-response relationship
     // LiveData obj used as trigger and mapping function that must return LiveData obj
         Transformations.switchMap(transactionIdLiveData) { transactionId ->
-            transactionRepository.getTransaction(transactionId)
+            transactionRepository.getLDTransaction(transactionId)
         }
 
     fun loadTransaction(transactionId : Int) {
