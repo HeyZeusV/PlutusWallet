@@ -56,6 +56,8 @@ class TransactionListFragment : BaseFragment() {
     // holds position of RecyclerView so that it doesn't reset when user returns
     private var recyclerViewPosition : Int = 0
 
+    private var maxId : Int = 0
+
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
@@ -149,6 +151,19 @@ class TransactionListFragment : BaseFragment() {
             }
         )
 
+        // register an observer on LiveData instance and tie life to another component
+        transactionListViewModel.transactionMaxIdLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { maxLDId ->
+                // if not null
+                maxLDId?.let {
+                    maxId = maxLDId + 1
+                }
+            }
+        )
+
         // gets the sizes of the Category tables and sends them to function
         launch {
 
@@ -157,33 +172,57 @@ class TransactionListFragment : BaseFragment() {
 
             initializeCategoryTables(expenseSize, incomeSize)
         }
-
-        checkForFutureTransactions()
     }
 
-    // adds any FutureTransactions that have reached their futureDate
+    // adds any Transactions that have reached their futureDate
     private fun checkForFutureTransactions() {
 
         launch {
 
-            // returns list of all FutureTransactions whose futureDate is before current date
-            val futureTransactionList : List<FutureTransaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await()
+            // returns list of all Transactions whose futureDate is before current date
+            val futureTransactionList : MutableList<Transaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
+            Log.d(TAG, "$futureTransactionList")
 
-            if (futureTransactionList.isNotEmpty()) {
+            futureTransactionList.forEach {
 
-                futureTransactionList.forEach {
-
-                    // gets copy of Transaction attached to this FutureTransaction
-                    val transaction : Transaction   = transactionListViewModel.getTransactionAsync(it.transactionId).await()
-                    // sets new id since id is primary key and must be unique
-                    transaction             .id     = transactionListViewModel.getMaxIdAsync().await()!! + 1
-                    transaction             .date   = it.futureDate
-                    transaction             .title += " Repeat"
-                    transactionListViewModel.insertTransaction(transaction)
-                    transactionListViewModel.deleteFutureTransaction(it)
-                }
+                // gets copy of Transaction attached to this FutureTransaction
+                val transaction: Transaction = it.copy()
+                // sets new id since id is primary key and must be unique
+                transaction.id         = maxId
+                transaction.date       = it.futureDate
+                transaction.title     += " Repeat"
+                transaction.futureDate = createFutureDate(transaction.date, transaction.period, transaction.frequency)
+                it.futureTCreated      = true
+                transactionListViewModel.insertTransaction(transaction)
+                transactionListViewModel.updateTransaction(it)
             }
         }
+    }
+
+    // adds frequency * period to the date on Transaction
+    private fun createFutureDate(date : Date, period : Int, frequency : Int) : Date {
+
+        val calendar : Calendar = Calendar.getInstance()
+        // set to Transaction date rather than current time due to Users being able
+        // to select a Date in the past or future
+        calendar.time = date
+
+        //0 = Day, 1 = Week, 2 = Month, 3 = Year
+        when (period) {
+
+            0 -> calendar.add(Calendar.DAY_OF_MONTH, frequency)
+            1 -> calendar.add(Calendar.WEEK_OF_YEAR, frequency)
+            2 -> calendar.add(Calendar.MONTH       , frequency)
+            3 -> calendar.add(Calendar.YEAR        , frequency)
+        }
+
+        // reset hour, minutes, seconds and millis
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
+        return calendar.time
     }
 
     // this should be run the very first time a user opens the app or if they delete
@@ -238,6 +277,7 @@ class TransactionListFragment : BaseFragment() {
             transactionRecyclerView.scrollToPosition(transactionRecyclerView.size - 1)
             startUp = false
         }
+        checkForFutureTransactions()
     }
 
     // creates ViewHolder and binds ViewHolder to data from model layer

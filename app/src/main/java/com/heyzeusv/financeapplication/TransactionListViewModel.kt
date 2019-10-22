@@ -14,6 +14,8 @@ class TransactionListViewModel : ViewModel() {
     /*
         Transaction queries
      */
+    val transactionMaxIdLiveData : LiveData<Int?> = transactionRepository.getMaxLDId()
+
     // tells repository which query to run on Transaction and passes any arguments needed
     fun filteredTransactionList(category : Boolean?, date : Boolean?, type : String?, categoryName : String?,
                                 start : Date?, end : Date?) : LiveData<List<Transaction>> {
@@ -33,14 +35,14 @@ class TransactionListViewModel : ViewModel() {
         }
     }
 
+    suspend fun getFutureTransactionsAsync(currentDate : Date) : Deferred<List<Transaction>> {
+
+        return transactionRepository.getFutureTransactionsAsync(currentDate)
+    }
+
     suspend fun getMaxIdAsync() : Deferred<Int?> {
 
         return transactionRepository.getMaxIdAsync()
-    }
-
-    suspend fun getTransactionAsync(id : Int) : Deferred<Transaction> {
-
-        return transactionRepository.getTransactionAsync(id)
     }
 
     suspend fun deleteTransaction(transaction : Transaction) {
@@ -53,17 +55,9 @@ class TransactionListViewModel : ViewModel() {
         transactionRepository.insertTransaction(transaction)
     }
 
-    /*
-        FutureTransaction queries
-     */
-    suspend fun getFutureTransactionsAsync(currentDate : Date) : Deferred<List<FutureTransaction>> {
+    suspend fun updateTransaction(transaction : Transaction) {
 
-        return transactionRepository.getFutureTransactionsAsync(currentDate)
-    }
-
-    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) {
-
-        transactionRepository.deleteFutureTransaction(futureTransaction)
+        transactionRepository.updateTransaction(transaction)
     }
 
     /*

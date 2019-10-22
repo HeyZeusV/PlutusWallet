@@ -13,13 +13,15 @@ import java.util.*
 @Entity
 data class Transaction(
     @PrimaryKey
-    var id        : Int        = 0,
-    var title     : String     = "",
-    var date      : Date       = Date(),
-    var total     : BigDecimal = BigDecimal("0"),
-    var type      : String     = "Expense",
-    var category  : String     = "Education",
-    var memo      : String     = "",
-    var repeating : Boolean    = false,
-    var frequency : Int        = 1,
-    var period    : Int        = 0)
+    var id             : Int        = 0,
+    var title          : String     = "",
+    var date           : Date       = Date(),
+    var total          : BigDecimal = BigDecimal("0"),
+    var type           : String     = "Expense",
+    var category       : String     = "Education",
+    var memo           : String     = "",
+    var repeating      : Boolean    = false,
+    var frequency      : Int        = 1,
+    var period         : Int        = 0,
+    var futureDate     : Date       = Date(Long.MAX_VALUE),
+    var futureTCreated : Boolean    = false)

@@ -46,29 +46,6 @@ class TransactionDetailViewModel : ViewModel() {
     }
 
     /*
-        FutureTransaction queries
-     */
-    suspend fun getFutureTransactionAsync(transactionId : Int) : Deferred<FutureTransaction?> {
-
-        return transactionRepository.getFutureTransactionAsync(transactionId)
-    }
-
-    suspend fun deleteFutureTransaction(futureTransaction : FutureTransaction) {
-
-        transactionRepository.deleteFutureTransaction(futureTransaction)
-    }
-
-    suspend fun insertFutureTransaction(futureTransaction : FutureTransaction) {
-
-        transactionRepository.insertFutureTransaction(futureTransaction)
-    }
-
-    suspend fun updateFutureTransaction(futureTransaction : FutureTransaction) {
-
-         transactionRepository.updateFutureTransaction(futureTransaction)
-    }
-
-    /*
         ExpenseCategory queries
      */
     suspend fun insertExpenseCategory(expenseCategory : ExpenseCategory) {

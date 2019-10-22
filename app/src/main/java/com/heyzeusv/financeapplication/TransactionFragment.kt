@@ -359,13 +359,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 transaction.total = BigDecimal("0.00")
             }
 
-            // deals with either creating, updating, or deleting FutureTransaction
+            // deals with either creating, updating, or deleting a future Transaction
             if (transaction.repeating) {
 
-                createFutureTransaction()
+                transaction.futureDate = createFutureDate()
             } else {
 
-                deleteFutureTransaction()
+                // essentially 'deletes' it since Long.MAX_VALUE is a VERY long time in the future
+                transaction.futureDate = Date(Long.MAX_VALUE)
             }
 
             launch {
@@ -506,45 +507,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         calendar.set(Calendar.MILLISECOND, 0)
 
         return calendar.time
-    }
-
-    // creates or updates FutureTransaction
-    private fun createFutureTransaction() {
-
-        val futureDate : Date = createFutureDate()
-        Log.d(TAG, "$futureDate")
-        launch {
-
-            var futureTransaction : FutureTransaction? =
-                transactionDetailViewModel.getFutureTransactionAsync(transaction.id).await()
-
-            // means current Transaction has no FutureTransaction created for it
-            if (futureTransaction == null) {
-
-                futureTransaction = FutureTransaction(transaction.id, transaction.id, futureDate)
-                transactionDetailViewModel.insertFutureTransaction(futureTransaction)
-                // there is a FutureTransaction for current Transaction so update new futureDate
-            } else {
-
-                futureTransaction.futureDate = futureDate
-                transactionDetailViewModel.updateFutureTransaction(futureTransaction)
-            }
-        }
-    }
-
-    // deletes FutureTransaction for this Transaction, if any
-    private fun deleteFutureTransaction() {
-
-        launch {
-
-            val futureTransaction : FutureTransaction? =
-                transactionDetailViewModel.getFutureTransactionAsync(transaction.id).await()
-
-            if (futureTransaction != null) {
-
-                transactionDetailViewModel.deleteFutureTransaction(futureTransaction)
-            }
-        }
     }
 
     @SuppressLint("DefaultLocale")

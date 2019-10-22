@@ -40,7 +40,15 @@ interface TransactionDao : BaseDao<Transaction> {
     @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end")
     fun getLDTransactions(type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>
 
+    // returns all transactions where futureDate is before currentDate and futureTCreated is false
+    @Query("SELECT * FROM `transaction` WHERE futureDate < :currentDate AND futureTCreated == 0")
+    suspend fun getFutureTransactions(currentDate : Date) : List<Transaction>
+
     // returns the highest id in database
     @Query("SELECT MAX(id) FROM `transaction`")
     suspend fun getMaxId() : Int?
+
+    // returns LiveData of highest id in database
+    @Query("SELECT MAX(id) from `transaction`")
+    fun getMaxLDId() : LiveData<Int?>
 }
