@@ -14,8 +14,6 @@ class TransactionListViewModel : ViewModel() {
     /*
         Transaction queries
      */
-    val transactionMaxIdLiveData : LiveData<Int?> = transactionRepository.getMaxLDId()
-
     // tells repository which query to run on Transaction and passes any arguments needed
     fun filteredTransactionList(category : Boolean?, date : Boolean?, type : String?, categoryName : String?,
                                 start : Date?, end : Date?) : LiveData<List<Transaction>> {
@@ -40,34 +38,14 @@ class TransactionListViewModel : ViewModel() {
         return transactionRepository.getFutureTransactionsAsync(currentDate)
     }
 
-    suspend fun getMaxIdAsync() : Deferred<Int?> {
-
-        return transactionRepository.getMaxIdAsync()
-    }
-
     suspend fun deleteTransaction(transaction : Transaction) {
 
         transactionRepository.deleteTransaction(transaction)
     }
 
-    suspend fun insertTransaction(transaction : Transaction) {
+    suspend fun upsertTransactions(transactions : List<Transaction>) {
 
-        transactionRepository.insertTransaction(transaction)
-    }
-
-    suspend fun updateTransaction(transaction : Transaction) {
-
-        transactionRepository.updateTransaction(transaction)
-    }
-
-    suspend fun insertTransactions(transactions : Array<Transaction>) {
-
-        transactionRepository.insertTransactions(transactions)
-    }
-
-    suspend fun updateTransactions(transactions : Array<Transaction>) {
-
-        transactionRepository.updateTransactions(transactions)
+        transactionRepository.upsertTransactions(transactions)
     }
 
     /*
@@ -78,7 +56,7 @@ class TransactionListViewModel : ViewModel() {
         return transactionRepository.getExpenseCategorySizeAsync()
     }
 
-    suspend fun insertExpenseCategories(expenseCategories : Array<ExpenseCategory>) {
+    suspend fun insertExpenseCategories(expenseCategories : List<ExpenseCategory>) {
 
         transactionRepository.insertExpenseCategories(expenseCategories)
     }
@@ -91,7 +69,7 @@ class TransactionListViewModel : ViewModel() {
         return transactionRepository.getIncomeCategorySizeAsync()
     }
 
-    suspend fun insertIncomeCategories(incomeCategories : Array<IncomeCategory>) {
+    suspend fun insertIncomeCategories(incomeCategories : List<IncomeCategory>) {
 
         transactionRepository.insertIncomeCategories(incomeCategories)
     }

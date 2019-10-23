@@ -1,33 +1,96 @@
 package com.heyzeusv.financeapplication.database
 
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Update
+import androidx.room.*
 
 /*
     DAO are used to interact with tables, essentially queries
     They support inheritance, so use this as a base
     Needed for every Entity
 */
-interface BaseDao<T> {
+@Dao
+abstract class BaseDao<T> {
 
-    // Insert an object in the database.
-    @Insert
-    suspend fun insert(obj : T)
+    /**
+     *  Insert an object in the database.
+     *
+     *  @param  obj the object to be inserted.
+     *  @return The SQLite row id
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun insert(obj : T) : Long
 
-    // Insert an array of objects in the database.
-    @Insert
-    suspend fun insert(obj : Array<T>)
+    /**
+     *  Insert an array of objects in the database.
+     *
+     *  @param  obj the objects to be inserted.
+     *  @return The SQLite row ids
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun insert(obj : List<T>) : List<Long>
 
-    // Update an object from the database.
+    /**
+     *  Update an object from the database.
+     *
+     *  @param obj the object to be updated
+     */
     @Update
-    suspend fun update(obj : T)
+    abstract suspend fun update(obj : T)
 
-    // Update an array of objects from the database
+    /**
+     *  Update an array of objects from the database.
+     *
+     *  @param obj the object to be updated
+     */
     @Update
-    suspend fun update(obj : Array<T>)
+    abstract suspend fun update(obj : List<T>)
 
-    // Delete an object from the database
+    /**
+     *  Delete an up from the database
+     *
+     *  @param obj the object to be deleted
+     */
     @Delete
-    suspend fun delete(obj : T)
+    abstract suspend fun delete(obj : T)
+
+    /**
+     *  Inserts object into database if it doesn't exist
+     *  Updates object from database if it does exist
+     *
+     *  @param obj the object to be inserted/updated
+     */
+    @Transaction
+    open suspend fun upsert(obj : T) {
+
+        val id : Long = insert(obj)
+        if (id == -1L) {
+
+            update(obj)
+        }
+    }
+
+    /**
+     *  Inserts objects from an array into database if they don't exist
+     *  Updates objects from an array from database if they do exist
+     *
+     *  @param obj the array of objects to be inserted/updated
+     */
+    @Transaction
+    open suspend fun upsert(obj : List<T>) {
+
+        val insertResult : List<Long> = insert(obj)
+        val updateList                = ArrayList<T>()
+
+        for (i : Int in insertResult.indices) {
+
+            if (insertResult[i] == -1L) {
+
+                updateList.add(obj[i])
+            }
+        }
+
+        if (updateList.isNotEmpty()) {
+
+            update(updateList)
+        }
+    }
 }

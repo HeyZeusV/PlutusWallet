@@ -19,14 +19,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
-import kotlin.collections.ArrayList
 
 private const val TAG               = "TransactionListFragment"
 private const val ARG_CATEGORY      = "category"
@@ -59,9 +56,6 @@ class TransactionListFragment : BaseFragment() {
 
     // used to tell if app is first starting up
     private var startUp : Boolean = true
-
-    private val readyToInsert : MutableList<Transaction> = mutableListOf()
-    private val readyToUpdate : MutableList<Transaction> = mutableListOf()
 
     // holds position of RecyclerView so that it doesn't reset when user returns
     private var recyclerViewPosition : Int = 0
@@ -110,6 +104,7 @@ class TransactionListFragment : BaseFragment() {
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(
             transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
+        // SharedPreferences
         sp    = activity!!.getSharedPreferences("FinanceApplicationPref", Context.MODE_PRIVATE)
         maxId = sp.getInt(KEY_MAX_ID, 0)
         Log.d(TAG, " MaxId: $maxId")
@@ -147,19 +142,6 @@ class TransactionListFragment : BaseFragment() {
             }
         )
 
-//        // register an observer on LiveData instance and tie life to another component
-//        transactionListViewModel.transactionMaxIdLiveData.observe(
-//            // view's lifecycle owner ensures that updates are only received when view is on screen
-//            viewLifecycleOwner,
-//            // executed whenever LiveData gets updated
-//            Observer { maxLDId ->
-//                // if not null
-//                maxLDId?.let {
-//                    maxId = maxLDId + 1
-//                }
-//            }
-//        )
-
         // gets the sizes of the Category tables and sends them to function
         launch {
 
@@ -184,22 +166,68 @@ class TransactionListFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        Log.d(TAG, "onRESUME")
-        checkForFutureTransactions()
+        futureTransactions()
+    }
+
+    // adds new Transactions depending on existing Transactions futureDate
+    private fun futureTransactions() {
+
         launch {
 
-            Log.d(TAG, "Insert: $readyToInsert")
-            Log.d(TAG, "Update: $readyToUpdate")
-            transactionListViewModel.insertTransactions(readyToInsert.toTypedArray())
-            transactionListViewModel.updateTransactions(readyToUpdate.toTypedArray())
-            readyToInsert.clear()
-            readyToUpdate.clear()
+            // used to tell if newly created Transaction's futureDate is before Date()
+            var moreToCreate = false
+            // returns list of all Transactions whose futureDate is before current date
+            val futureTransactionList : MutableList<Transaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
+
+            // co-routine is used in order to wait for entire forEach loop to complete
+            // without this, not all new Transactions created are saved correctly
+            val deferredList : Deferred<MutableList<Transaction>> = async(context = ioContext) {
+
+                // list that will be upserted into database
+                val readyToUpsert : MutableList<Transaction> = mutableListOf()
+
+                futureTransactionList.forEach {
+
+                    // id must be unique
+                    maxId += 1
+                    // gets copy of Transaction attached to this FutureTransaction
+                    val transaction : Transaction = it.copy()
+                    // changing new Transaction values to updated values
+                    transaction.id         = maxId
+                    transaction.date       = it.futureDate
+                    transaction.title     += " (R)"
+                    transaction.futureDate = createFutureDate(transaction.date, transaction.period, transaction.frequency)
+                    // if new futureDate is less than Date() then there are more Transactions to be added
+                    if (transaction.futureDate < Date()) {
+
+                        moreToCreate = true
+                    }
+                    // stops this Transaction from being repeated again if user switches its date
+                    it.futureTCreated      = true
+                    // transaction to be inserted
+                    readyToUpsert.add(transaction)
+                    // it to be updated
+                    readyToUpsert.add(it)
+                }
+
+                return@async readyToUpsert
+            }
+
+            transactionListViewModel.upsertTransactions(deferredList.await())
+            // RecyclerView will scroll to top of the list whenever a Transaction is added
+            recyclerViewPosition = maxId
+            // recursive call in order to create Transactions until all futureDates are past Date()
+            if (moreToCreate) {
+
+                futureTransactions()
+            }
         }
     }
 
     override fun onPause() {
         super.onPause()
 
+        // SharedPreferences
         editor = sp.edit()
         editor.putInt(KEY_MAX_ID, maxId)
         editor.apply()
@@ -213,32 +241,7 @@ class TransactionListFragment : BaseFragment() {
         callbacks = null
     }
 
-    // adds any Transactions that have reached their futureDate
-    private fun checkForFutureTransactions() {
 
-        launch {
-
-            // returns list of all Transactions whose futureDate is before current date
-            val futureTransactionList : MutableList<Transaction> =
-                transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
-            futureTransactionList.forEach {
-
-            maxId += 1
-            // gets copy of Transaction attached to this FutureTransaction
-            val transaction : Transaction = it.copy()
-            // sets new id since id is primary key and must be unique
-            transaction.id         = maxId
-            transaction.date       = it.futureDate
-            transaction.title     += " (R)"
-            transaction.futureDate = createFutureDate(transaction.date, transaction.period, transaction.frequency)
-            it.futureTCreated      = true
-            readyToInsert.add(transaction)
-            readyToUpdate.add(it)
-            }
-
-            Log.d(TAG, "$futureTransactionList")
-        }
-    }
 
     // adds frequency * period to the date on Transaction
     private fun createFutureDate(date : Date, period : Int, frequency : Int) : Date {
@@ -280,7 +283,7 @@ class TransactionListFragment : BaseFragment() {
                 val home           = ExpenseCategory(getString(R.string.home))
                 val transportation = ExpenseCategory(getString(R.string.transportation))
                 val utilities      = ExpenseCategory(getString(R.string.utilities))
-                val initialExpenseCategories : Array<ExpenseCategory> = arrayOf(
+                val initialExpenseCategories : List<ExpenseCategory> = listOf(
                     education, entertainment, food, home, transportation, utilities)
                 transactionListViewModel.insertExpenseCategories(initialExpenseCategories)
             }
@@ -293,7 +296,7 @@ class TransactionListFragment : BaseFragment() {
                 val savings        = IncomeCategory(getString(R.string.savings))
                 val stocks         = IncomeCategory(getString(R.string.stocks))
                 val wages          = IncomeCategory(getString(R.string.wages))
-                val initialIncomeCategories : Array<IncomeCategory> = arrayOf(
+                val initialIncomeCategories : List<IncomeCategory> = listOf(
                     cryptocurrency, investments, salary, savings, stocks, wages)
                 transactionListViewModel.insertIncomeCategories(initialIncomeCategories)
             }

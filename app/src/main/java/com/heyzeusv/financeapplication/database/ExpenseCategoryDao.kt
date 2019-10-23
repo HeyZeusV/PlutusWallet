@@ -13,13 +13,13 @@ import com.heyzeusv.financeapplication.ExpenseCategory
 */
 
 @Dao
-interface ExpenseCategoryDao : BaseDao<ExpenseCategory> {
+abstract class ExpenseCategoryDao : BaseDao<ExpenseCategory>() {
 
     // return total number of categories
     @Query("SELECT COUNT(*) FROM expensecategory")
-    fun getExpenseCategorySize() : Int?
+    abstract suspend fun getExpenseCategorySize() : Int?
 
     // return all the categories
     @Query("SELECT category FROM expensecategory")
-    fun getExpenseCategoryNames() : LiveData<List<String>>
+    abstract fun getExpenseCategoryNames() : LiveData<List<String>>
 }

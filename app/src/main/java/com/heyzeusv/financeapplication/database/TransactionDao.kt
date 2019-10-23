@@ -14,41 +14,37 @@ import java.util.*
 */
 
 @Dao
-interface TransactionDao : BaseDao<Transaction> {
+abstract class TransactionDao : BaseDao<Transaction>() {
 
     // returns transaction with specific id
     @Query("SELECT * FROM `transaction` WHERE id=(:id)")
-    fun getTransaction(id : Int) : Transaction
+    abstract fun getTransaction(id : Int) : Transaction
 
     // returns transaction with specific id
     @Query("SELECT * FROM `transaction` WHERE id=(:id)")
-    fun getLDTransaction(id : Int) : LiveData<Transaction?>
+    abstract fun getLDTransaction(id : Int) : LiveData<Transaction?>
 
     // returns all transactions
     @Query("SELECT * FROM `transaction`")
-    fun getLDTransactions() : LiveData<List<Transaction>>
+    abstract fun getLDTransactions() : LiveData<List<Transaction>>
 
     // returns all transactions with given category
     @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category)")
-    fun getLDTransactions(type : String?, category : String?) : LiveData<List<Transaction>>
+    abstract fun getLDTransactions(type : String?, category : String?) : LiveData<List<Transaction>>
 
     // returns all transactions within given dates
     @Query("SELECT * FROM `transaction` WHERE date BETWEEN :start AND :end")
-    fun getLDTransactions(start : Date?, end : Date?) : LiveData<List<Transaction>>
+    abstract fun getLDTransactions(start : Date?, end : Date?) : LiveData<List<Transaction>>
 
     // returns all transactions with given category and within given dates
     @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end")
-    fun getLDTransactions(type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>
+    abstract fun getLDTransactions(type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>
 
     // returns all transactions where futureDate is before currentDate and futureTCreated is false
     @Query("SELECT * FROM `transaction` WHERE futureDate < :currentDate AND futureTCreated == 0")
-    suspend fun getFutureTransactions(currentDate : Date) : List<Transaction>
+    abstract suspend fun getFutureTransactions(currentDate : Date) : List<Transaction>
 
     // returns the highest id in database
     @Query("SELECT MAX(id) FROM `transaction`")
-    suspend fun getMaxId() : Int?
-
-    // returns LiveData of highest id in database
-    @Query("SELECT MAX(id) from `transaction`")
-    fun getMaxLDId() : LiveData<Int?>
+    abstract suspend fun getMaxId() : Int?
 }
