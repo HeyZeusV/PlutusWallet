@@ -2,6 +2,8 @@ package com.heyzeusv.financeapplication
 
 import android.animation.Animator
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -34,6 +36,7 @@ private const val ARG_FAB_Y          = "fab_Y"
 private const val ARG_FROM_FAB       = "from_fab"
 private const val DIALOG_DATE        = "DialogDate"
 private const val REQUEST_DATE       = 0
+private const val KEY_MAX_ID         = "key_max_id"
 
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
@@ -142,11 +145,101 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         return view
     }
 
-    // will update date with the date selected from DatePickerFragment
-    override fun onDateSelected(date : Date) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        transaction.date = date
-        updateUI()
+        val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
+
+        // register an observer on LiveData instance and tie life to another component
+        transactionDetailViewModel.transactionLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { transaction ->
+                // if not null
+                transaction?.let {
+                    this.transaction = transaction
+                    updateUI()
+                }
+            }
+        )
+
+        // register an observer on LiveData instance and tie life to another component
+        transactionDetailViewModel.expenseCategoryNamesLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { expenseCategoryNames ->
+                // if not null
+                expenseCategoryNames?.let {
+                    expenseCategoryNamesList = expenseCategoryNames.toMutableList()
+                    // "Create New Category will always be at bottom of the list
+                    expenseCategoryNamesList.sort()
+                    expenseCategoryNamesList.add("Create New Category")
+                    // sets up the categorySpinner
+                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
+                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                    expenseCategorySpinner.adapter = categorySpinnerAdapter
+                    // if user made a new category, then sets the categorySpinner to new one
+                    // else starts the spinner up to ExpenseCategory saved
+                    if (madeNewCategory) {
+
+                        expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(newCategoryName))
+                    } else {
+
+                        expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+                    }
+                }
+            }
+        )
+
+        // register an observer on LiveData instance and tie life to another component
+        transactionDetailViewModel.incomeCategoryNamesLiveData.observe(
+            // view's lifecycle owner ensures that updates are only received when view is on screen
+            viewLifecycleOwner,
+            // executed whenever LiveData gets updated
+            Observer { incomeCategoryNames ->
+                // if not null
+                incomeCategoryNames?.let {
+                    incomeCategoryNamesList = incomeCategoryNames.toMutableList()
+                    // "Create New Category will always be at bottom of the list
+                    incomeCategoryNamesList.sort()
+                    incomeCategoryNamesList.add("Create New Category")
+                    // sets up the categorySpinner
+                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, incomeCategoryNamesList)
+                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                    incomeCategorySpinner.adapter = categorySpinnerAdapter
+                    // if user made a new category, then sets the categorySpinner to new one
+                    // else starts the spinner up to IncomeCategory saved
+                    if (madeNewCategory) {
+
+                        incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(newCategoryName))
+                    } else {
+
+                        incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
+                    }
+                }
+            }
+        )
+
+        // only occurs if user wants to create new Transaction
+        if (fromFab) {
+
+            launch {
+
+                // returns the highest id in Transaction table
+                var maxId : Int? = transactionDetailViewModel.getMaxIdAsync().await()
+                // should only run if Transaction table is empty
+                if (maxId == null) {
+
+                    maxId = 0
+                }
+                // id is primary key, so have to increase it
+                transaction.id = maxId.plus(1)
+            }
+            // used for saveFab
+            newTransaction = true
+        }
     }
 
     @ExperimentalStdlibApi
@@ -376,6 +469,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                     transactionDetailViewModel.insertTransaction(transaction)
                     newTransaction = false
+                    val sp                : SharedPreferences        = activity!!.getSharedPreferences("FinanceApplicationPref", Context.MODE_PRIVATE)
+                    val editor            : SharedPreferences.Editor = sp.edit()
+                    editor.putInt(KEY_MAX_ID, transaction.id)
+                    editor.apply()
                 } else {
 
                     transactionDetailViewModel.updateTransaction(transaction)
@@ -386,101 +483,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    // will update date with the date selected from DatePickerFragment
+    override fun onDateSelected(date : Date) {
 
-        val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
-
-        // register an observer on LiveData instance and tie life to another component
-        transactionDetailViewModel.transactionLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { transaction ->
-                // if not null
-                transaction?.let {
-                    this.transaction = transaction
-                    updateUI()
-                }
-            }
-        )
-
-        // register an observer on LiveData instance and tie life to another component
-        transactionDetailViewModel.expenseCategoryNamesLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { expenseCategoryNames ->
-                // if not null
-                expenseCategoryNames?.let {
-                    expenseCategoryNamesList = expenseCategoryNames.toMutableList()
-                    // "Create New Category will always be at bottom of the list
-                    expenseCategoryNamesList.sort()
-                    expenseCategoryNamesList.add("Create New Category")
-                    // sets up the categorySpinner
-                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
-                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    expenseCategorySpinner.adapter = categorySpinnerAdapter
-                    // if user made a new category, then sets the categorySpinner to new one
-                    // else starts the spinner up to ExpenseCategory saved
-                    if (madeNewCategory) {
-
-                        expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(newCategoryName))
-                    } else {
-
-                        expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
-                    }
-                }
-            }
-        )
-
-        // register an observer on LiveData instance and tie life to another component
-        transactionDetailViewModel.incomeCategoryNamesLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { incomeCategoryNames ->
-                // if not null
-                incomeCategoryNames?.let {
-                    incomeCategoryNamesList = incomeCategoryNames.toMutableList()
-                    // "Create New Category will always be at bottom of the list
-                    incomeCategoryNamesList.sort()
-                    incomeCategoryNamesList.add("Create New Category")
-                    // sets up the categorySpinner
-                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, incomeCategoryNamesList)
-                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    incomeCategorySpinner.adapter = categorySpinnerAdapter
-                    // if user made a new category, then sets the categorySpinner to new one
-                    // else starts the spinner up to IncomeCategory saved
-                    if (madeNewCategory) {
-
-                        incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(newCategoryName))
-                    } else {
-
-                        incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
-                    }
-                }
-            }
-        )
-
-        // only occurs if user wants to create new Transaction
-        if (fromFab) {
-
-            launch {
-
-                // returns the highest id in Transaction table
-                var maxId : Int? = transactionDetailViewModel.getMaxIdAsync().await()
-                // should only run if Transaction table is empty
-                if (maxId == null) {
-
-                    maxId = 0
-                }
-                // id is primary key, so have to increase it
-                transaction.id = maxId.plus(1)
-            }
-            // used for saveFab
-            newTransaction = true
-        }
+        transaction.date = date
+        updateUI()
     }
 
     // adds frequency * period to the date on Transaction

@@ -1,6 +1,7 @@
 package com.heyzeusv.financeapplication
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,12 +19,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
+import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
+import kotlin.collections.ArrayList
 
 private const val TAG               = "TransactionListFragment"
 private const val ARG_CATEGORY      = "category"
@@ -32,6 +35,7 @@ private const val ARG_TYPE          = "type"
 private const val ARG_CATEGORY_NAME = "category_name"
 private const val ARG_START         = "start"
 private const val ARG_END           = "end"
+private const val KEY_MAX_ID        = "key_max_id"
 
 class TransactionListFragment : BaseFragment() {
 
@@ -46,12 +50,18 @@ class TransactionListFragment : BaseFragment() {
 
     private var callbacks : Callbacks? = null
 
+    private lateinit var sp     : SharedPreferences
+    private lateinit var editor : SharedPreferences.Editor
+
     // views
     private lateinit var transactionAddFab       : FloatingActionButton
     private lateinit var transactionRecyclerView : RecyclerView
 
     // used to tell if app is first starting up
     private var startUp : Boolean = true
+
+    private val readyToInsert : MutableList<Transaction> = mutableListOf()
+    private val readyToUpdate : MutableList<Transaction> = mutableListOf()
 
     // holds position of RecyclerView so that it doesn't reset when user returns
     private var recyclerViewPosition : Int = 0
@@ -100,29 +110,15 @@ class TransactionListFragment : BaseFragment() {
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(
             transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
+        sp    = activity!!.getSharedPreferences("FinanceApplicationPref", Context.MODE_PRIVATE)
+        maxId = sp.getInt(KEY_MAX_ID, 0)
+        Log.d(TAG, " MaxId: $maxId")
+
         return view
     }
 
-    override fun onDetach() {
-        super.onDetach()
-
-        // afterward you cannot access the activity
-        // or count on the activity continuing to exist
-        callbacks = null
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        transactionAddFab.setOnClickListener {
-            callbacks?.onTransactionSelected(0, true)
-            // this will make it so the list will snap to the top after user
-            // creates a new Transaction
-            recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
-        }
-    }
-
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
 
         // loading in arguments, if any
@@ -151,18 +147,18 @@ class TransactionListFragment : BaseFragment() {
             }
         )
 
-        // register an observer on LiveData instance and tie life to another component
-        transactionListViewModel.transactionMaxIdLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { maxLDId ->
-                // if not null
-                maxLDId?.let {
-                    maxId = maxLDId + 1
-                }
-            }
-        )
+//        // register an observer on LiveData instance and tie life to another component
+//        transactionListViewModel.transactionMaxIdLiveData.observe(
+//            // view's lifecycle owner ensures that updates are only received when view is on screen
+//            viewLifecycleOwner,
+//            // executed whenever LiveData gets updated
+//            Observer { maxLDId ->
+//                // if not null
+//                maxLDId?.let {
+//                    maxId = maxLDId + 1
+//                }
+//            }
+//        )
 
         // gets the sizes of the Category tables and sends them to function
         launch {
@@ -174,28 +170,73 @@ class TransactionListFragment : BaseFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        transactionAddFab.setOnClickListener {
+            callbacks?.onTransactionSelected(0, true)
+            // this will make it so the list will snap to the top after user
+            // creates a new Transaction
+            recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Log.d(TAG, "onRESUME")
+        checkForFutureTransactions()
+        launch {
+
+            Log.d(TAG, "Insert: $readyToInsert")
+            Log.d(TAG, "Update: $readyToUpdate")
+            transactionListViewModel.insertTransactions(readyToInsert.toTypedArray())
+            transactionListViewModel.updateTransactions(readyToUpdate.toTypedArray())
+            readyToInsert.clear()
+            readyToUpdate.clear()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        editor = sp.edit()
+        editor.putInt(KEY_MAX_ID, maxId)
+        editor.apply()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+
+        // afterward you cannot access the activity
+        // or count on the activity continuing to exist
+        callbacks = null
+    }
+
     // adds any Transactions that have reached their futureDate
     private fun checkForFutureTransactions() {
 
         launch {
 
             // returns list of all Transactions whose futureDate is before current date
-            val futureTransactionList : MutableList<Transaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
-            Log.d(TAG, "$futureTransactionList")
-
+            val futureTransactionList : MutableList<Transaction> =
+                transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
             futureTransactionList.forEach {
 
-                // gets copy of Transaction attached to this FutureTransaction
-                val transaction: Transaction = it.copy()
-                // sets new id since id is primary key and must be unique
-                transaction.id         = maxId
-                transaction.date       = it.futureDate
-                transaction.title     += " Repeat"
-                transaction.futureDate = createFutureDate(transaction.date, transaction.period, transaction.frequency)
-                it.futureTCreated      = true
-                transactionListViewModel.insertTransaction(transaction)
-                transactionListViewModel.updateTransaction(it)
+            maxId += 1
+            // gets copy of Transaction attached to this FutureTransaction
+            val transaction : Transaction = it.copy()
+            // sets new id since id is primary key and must be unique
+            transaction.id         = maxId
+            transaction.date       = it.futureDate
+            transaction.title     += " (R)"
+            transaction.futureDate = createFutureDate(transaction.date, transaction.period, transaction.frequency)
+            it.futureTCreated      = true
+            readyToInsert.add(transaction)
+            readyToUpdate.add(it)
             }
+
+            Log.d(TAG, "$futureTransactionList")
         }
     }
 
@@ -277,7 +318,6 @@ class TransactionListFragment : BaseFragment() {
             transactionRecyclerView.scrollToPosition(transactionRecyclerView.size - 1)
             startUp = false
         }
-        checkForFutureTransactions()
     }
 
     // creates ViewHolder and binds ViewHolder to data from model layer

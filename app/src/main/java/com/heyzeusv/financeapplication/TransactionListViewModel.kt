@@ -60,6 +60,16 @@ class TransactionListViewModel : ViewModel() {
         transactionRepository.updateTransaction(transaction)
     }
 
+    suspend fun insertTransactions(transactions : Array<Transaction>) {
+
+        transactionRepository.insertTransactions(transactions)
+    }
+
+    suspend fun updateTransactions(transactions : Array<Transaction>) {
+
+        transactionRepository.updateTransactions(transactions)
+    }
+
     /*
         ExpenseCategory queries
      */
