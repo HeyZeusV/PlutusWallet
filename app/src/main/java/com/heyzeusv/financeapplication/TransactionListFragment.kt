@@ -169,61 +169,6 @@ class TransactionListFragment : BaseFragment() {
         futureTransactions()
     }
 
-    // adds new Transactions depending on existing Transactions futureDate
-    private fun futureTransactions() {
-
-        launch {
-
-            // used to tell if newly created Transaction's futureDate is before Date()
-            var moreToCreate = false
-            // returns list of all Transactions whose futureDate is before current date
-            val futureTransactionList : MutableList<Transaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
-
-            // co-routine is used in order to wait for entire forEach loop to complete
-            // without this, not all new Transactions created are saved correctly
-            val deferredList : Deferred<MutableList<Transaction>> = async(context = ioContext) {
-
-                // list that will be upserted into database
-                val readyToUpsert : MutableList<Transaction> = mutableListOf()
-
-                futureTransactionList.forEach {
-
-                    // id must be unique
-                    maxId += 1
-                    // gets copy of Transaction attached to this FutureTransaction
-                    val transaction : Transaction = it.copy()
-                    // changing new Transaction values to updated values
-                    transaction.id         = maxId
-                    transaction.date       = it.futureDate
-                    transaction.title     += " (R)"
-                    transaction.futureDate = createFutureDate(transaction.date, transaction.period, transaction.frequency)
-                    // if new futureDate is less than Date() then there are more Transactions to be added
-                    if (transaction.futureDate < Date()) {
-
-                        moreToCreate = true
-                    }
-                    // stops this Transaction from being repeated again if user switches its date
-                    it.futureTCreated      = true
-                    // transaction to be inserted
-                    readyToUpsert.add(transaction)
-                    // it to be updated
-                    readyToUpsert.add(it)
-                }
-
-                return@async readyToUpsert
-            }
-
-            transactionListViewModel.upsertTransactions(deferredList.await())
-            // RecyclerView will scroll to top of the list whenever a Transaction is added
-            recyclerViewPosition = maxId
-            // recursive call in order to create Transactions until all futureDates are past Date()
-            if (moreToCreate) {
-
-                futureTransactions()
-            }
-        }
-    }
-
     override fun onPause() {
         super.onPause()
 
@@ -267,6 +212,91 @@ class TransactionListFragment : BaseFragment() {
         calendar.set(Calendar.MILLISECOND, 0)
 
         return calendar.time
+    }
+
+    // adds new Transactions depending on existing Transactions futureDate
+    private fun futureTransactions() {
+
+        launch {
+
+            // used to tell if newly created Transaction's futureDate is before Date()
+            var moreToCreate = false
+            // returns list of all Transactions whose futureDate is before current date
+            val futureTransactionList : MutableList<Transaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
+
+            // co-routine is used in order to wait for entire forEach loop to complete
+            // without this, not all new Transactions created are saved correctly
+            val deferredList : Deferred<MutableList<Transaction>> = async(context = ioContext) {
+
+                // list that will be upserted into database
+                val readyToUpsert : MutableList<Transaction> = mutableListOf()
+
+                futureTransactionList.forEach {
+
+                    // id must be unique
+                    maxId += 1
+                    // gets copy of Transaction attached to this FutureTransaction
+                    val transaction : Transaction = it.copy()
+                    // changing new Transaction values to updated values
+                    transaction.id         = maxId
+                    transaction.date       = it.futureDate
+                    transaction.title      = incrementString (transaction.title)
+                    transaction.futureDate = createFutureDate(transaction.date, transaction.period, transaction.frequency)
+                    // if new futureDate is less than Date() then there are more Transactions to be added
+                    if (transaction.futureDate < Date()) {
+
+                        moreToCreate = true
+                    }
+                    // stops this Transaction from being repeated again if user switches its date
+                    it.futureTCreated      = true
+                    // transaction to be inserted
+                    readyToUpsert.add(transaction)
+                    // it to be updated
+                    readyToUpsert.add(it)
+                }
+
+                return@async readyToUpsert
+            }
+
+            transactionListViewModel.upsertTransactions(deferredList.await())
+            // RecyclerView will scroll to top of the list whenever a Transaction is added
+            recyclerViewPosition = maxId
+            // recursive call in order to create Transactions until all futureDates are past Date()
+            if (moreToCreate) {
+
+                futureTransactions()
+            }
+        }
+    }
+
+    // appends " (R)x####" to the end of Transaction title that has been repeated
+    private fun incrementString(title : String) : String {
+
+        val prefix                        = "(R)x"
+        // pattern: (R)x######
+        val regex                         = Regex("(\\(R\\)x)\\d+")
+        // will search for regex in title
+        val match          : MatchResult? = regex.find(title)
+        // string that match found, if any
+        val matchingString : String?      = match?.value
+        var newTitle       : String       = title
+
+        if (matchingString != null) {
+
+            // removes "(R)x###" as this will be updated
+            newTitle              = newTitle      .replace(regex         , "")
+            // returns only the Int and increments it by one
+            var noPrefixInt : Int = matchingString.replace("(R)x", "").toInt()
+            noPrefixInt          += 1
+            // appends the prefix and updated int onto the end of title
+            newTitle             += prefix + noPrefixInt
+        } else {
+
+            // first time being repeated
+            newTitle += " (R)x1"
+        }
+
+        return newTitle
     }
 
     // this should be run the very first time a user opens the app or if they delete
