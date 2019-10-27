@@ -19,14 +19,31 @@ private const val DIALOG_DATE    = "DialogDate"
 private const val REQUEST_DATE   = 0
 private const val MIDNIGHT_MILLI = 86399999
 
+/**
+ *  Used to apply filters and tell TransactionListFragment which Transaction list to load
+ */
 class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     /**
-     * Required interface for hosting activities
-     * defines work that the fragment needs done by hosting activity
+     *  Required interface for hosting fragments.
+     *
+     *  Defines work that the fragment needs done by hosting activity.
      */
     interface Callbacks {
 
+        /**
+         *  Tells Repository which Transaction list to return
+         *
+         *  Uses the values of category and date in order to determine which Transaction list is needed.
+         *
+         *  @param  category     boolean for category filter
+         *  @param  date         boolean for date filter
+         *  @param  type         either "Expense" or "Income"
+         *  @param  categoryName category name to be searched in table of type
+         *  @param  start        starting Date for date filter
+         *  @param  end          ending Date for date filter
+         *  @return LiveData object holding list of Transactions
+         */
         fun onFilterApplied(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date)
     }
 
@@ -43,8 +60,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var incomeCategorySpinner  : Spinner
 
     // booleans used to tell which DateButton was pressed
-    private var start = false
-    private var end   = false
+    private var startButton = false
+    private var endButton   = false
 
     // used to tell if app is starting up
     private var startUp = true
@@ -57,12 +74,13 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var categorySelected = false
     private var dateSelected     = false
 
+    // lists containing Category names
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
 
     // default strings used
     private var typeButtonText  : String = FinanceApplication.context!!.getString(R.string.expense)
-    private var categoryName    : String = "Education"
+    private var categoryName    : String = FinanceApplication.context!!.getString(R.string.education)
     private var applyButtonText : String = FinanceApplication.context!!.getString(R.string.reset)
 
     // provides instance of ViewModel
@@ -70,7 +88,6 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         ViewModelProviders.of(this).get(FilterViewModel::class.java)
     }
 
-    // called when fragment is attached to activity
     override fun onAttach(context : Context) {
         super.onAttach(context)
 
@@ -125,6 +142,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // if not null
                 expenseCategoryNames?.let {
                     expenseCategoryNamesList = expenseCategoryNames.toMutableList()
+                    // sorts list in alphabetical order
                     expenseCategoryNamesList.sort()
                     // sets up the categorySpinner
                     val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
@@ -212,7 +230,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 setTargetFragment(this@FilterFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
                 show(this@FilterFragment.requireFragmentManager(), DIALOG_DATE)
-                start = true
+                startButton = true
             }
         }
 
@@ -224,7 +242,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 setTargetFragment(this@FilterFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
                 show(this@FilterFragment.requireFragmentManager(), DIALOG_DATE)
-                end = true
+                endButton = true
             }
         }
 
@@ -252,7 +270,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         applyButton.setOnClickListener {
 
-            // startDate must be before endDate
+            // startDate must be before endDate else it displays Toast warning and doesn't apply filters
             if (startDate > endDate) {
 
                 Toast.makeText(it.context, getString(R.string.date_warning), Toast.LENGTH_LONG).show()
@@ -273,29 +291,34 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     override fun onDetach() {
         super.onDetach()
 
-        // afterward you cannot access the activity
-        // or count on the activity continuing to exist
+        // afterward you cannot access the activity or count on the activity continuing to exist
         callbacks = null
     }
 
-    // sets the Date selected on dateButtons and saves the Date to be used later in a query
+    /**
+     *  Sets the Date selected on dateButtons and saves the Date to be used later in a query.
+     *
+     *  @param date the date the user selected in DatePickerFragment
+     */
     override fun onDateSelected(date: Date) {
 
-        if (start) {
+        if (startButton) {
 
             startDateButton.text = DateFormat.getDateInstance(DateFormat.SHORT).format(date)
             startDate            = date
-            start                = false
+            startButton          = false
         }
-        if (end) {
+        if (endButton) {
 
             endDateButton.text = DateFormat.getDateInstance(DateFormat.SHORT).format(date)
             endDate            = date
-            end                = false
+            endButton          = false
         }
     }
 
-    // sets everything in filter as if app was first starting
+    /**
+     *  Sets everything in FilterFragment as if app was first starting.
+     */
     private fun resetFilter() {
 
         resetTime()
@@ -307,7 +330,9 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         startDateButton       .text            = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
     }
 
-    // sets the startDate to very start of current day and endDate to right before the next day
+    /**
+     *  Sets the startDate to very start of current day and endDate to right before the next day.
+     */
     private fun resetTime() {
 
         val date = GregorianCalendar()
@@ -320,7 +345,9 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         startUp = false
     }
 
-    // only thing to update at the moment is the applyButton text
+    /**
+     *  Only thing to update at the moment is the applyButton text.
+     */
     private fun updateUi() {
 
         if (!categorySelected && !dateSelected) {
@@ -336,7 +363,9 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     companion object {
 
-        // can be called by activities to get instance of fragment
+        /**
+         *  Initializes instance of FilterFragment
+         */
         fun newInstance() : FilterFragment {
 
             return FilterFragment()

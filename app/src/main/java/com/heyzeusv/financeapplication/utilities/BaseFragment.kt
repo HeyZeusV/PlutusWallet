@@ -7,6 +7,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
 
+/**
+ *  Base Fragment that all other Fragments will extend.
+ *
+ *  Contains variables needed to run CoRoutines on two different Contexts and to stop
+ *  any Jobs once Fragment is stopped.
+ */
 abstract class BaseFragment : Fragment(), CoroutineScope {
 
     private lateinit var job : Job

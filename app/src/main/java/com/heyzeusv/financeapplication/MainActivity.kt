@@ -10,10 +10,14 @@ import java.util.*
 
 private const val TAG = "MainActivity"
 
+/**
+ *  Handles the loading and replacement of fragments into their containers.
+ */
 class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, FilterFragment.Callbacks {
 
     private lateinit var fab : FloatingActionButton
 
+    // position of FAB, depends on device
     private var fabX = 0
     private var fabY = 0
 
@@ -28,7 +32,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
             supportFragmentManager.findFragmentById(R.id.fragment_transaction_list_container)
 
         // would not be null if activity is destroyed and recreated
-        // b/c FragmentManager saves list of frags
+        // because FragmentManager saves list of fragments
         if (currentFragment == null) {
 
             val transactionListFragment : TransactionListFragment = TransactionListFragment.newInstance()
@@ -49,7 +53,16 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
 
     }
 
-    // replaces TransactionListFragment with new TransactionListFragment with filters applied
+    /**
+     *  Replaces TransactionListFragment with new TransactionListFragment with filters applied.
+     *
+     *  @param  category     boolean for category filter
+     *  @param  date         boolean for date filter
+     *  @param  type         either "Expense" or "Income"
+     *  @param  categoryName category name to be searched in table of type
+     *  @param  start        starting Date for date filter
+     *  @param  end          ending Date for date filter
+     */
     override fun onFilterApplied(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) {
 
         Log.d(TAG, "onFilterApplied: ExpenseCategory: $category, Date: $date")
@@ -69,7 +82,12 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
             .commit()
     }
 
-    // replaces TransactionListFragment and FilterFragment with TransactionFragment selected
+    /**
+     *  Replaces TransactionListFragment, FilterFragment, and GraphFragment with TransactionFragment selected.
+     *
+     *  @param transactionId id of Transaction selected.
+     *  @param fromFab       true if user clicked on FAB to create Transaction.
+     */
     override fun onTransactionSelected(transactionId: Int, fromFab : Boolean) {
 
         Log.d(TAG, "onTransactionSelected: $transactionId")
@@ -95,7 +113,9 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
             .commit()
     }
 
-    // gets location of FAB button in order to start animation from correct location
+    /**
+     *  Gets location of FAB button in order to start animation from correct location.
+     */
     private fun getFabLocation() {
 
         val fabLocationArray = IntArray(2)

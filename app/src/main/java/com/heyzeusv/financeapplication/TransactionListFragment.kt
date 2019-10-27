@@ -34,19 +34,30 @@ private const val ARG_START         = "start"
 private const val ARG_END           = "end"
 private const val KEY_MAX_ID        = "key_max_id"
 
+/**
+ *  Will show list of Transactions depending on filters applied.
+ */
 class TransactionListFragment : BaseFragment() {
 
     /**
-     * Required interface for hosting activities
-     * defines work that the fragment needs done by hosting activity
+     *  Required interface for hosting fragments.
+     *
+     *  Defines work that the fragment needs done by hosting activity.
      */
     interface Callbacks {
 
+        /**
+         *  Replaces TransactionListFragment, FilterFragment, and GraphFragment with TransactionFragment selected.
+         *
+         *  @param transactionId id of Transaction selected.
+         *  @param fromFab       true if user clicked on FAB to create Transaction.
+         */
         fun onTransactionSelected(transactionId : Int, fromFab : Boolean)
     }
 
     private var callbacks : Callbacks? = null
 
+    // Shared Preferences
     private lateinit var sp     : SharedPreferences
     private lateinit var editor : SharedPreferences.Editor
 
@@ -73,7 +84,6 @@ class TransactionListFragment : BaseFragment() {
         ViewModelProviders.of(this).get(TransactionListViewModel::class.java)
     }
 
-    // called when fragment is attached to activity
     override fun onAttach(context : Context) {
         super.onAttach(context)
 
@@ -81,10 +91,8 @@ class TransactionListFragment : BaseFragment() {
         callbacks = context as Callbacks?
     }
 
-    // inflates the layout and returns the inflated view to hosting activity
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
 
-        // layout resource id, view's parent, do not immediately add inflated view to parent
         val view : View = inflater.inflate(R.layout.fragment_transaction_list, container, false)
 
         transactionAddFab       = view.findViewById(R.id.transaction_add_fab)       as FloatingActionButton
@@ -104,7 +112,7 @@ class TransactionListFragment : BaseFragment() {
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(
             transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
-        // SharedPreferences
+        // loads maxId from SharedPreferences
         sp    = activity!!.getSharedPreferences("FinanceApplicationPref", Context.MODE_PRIVATE)
         maxId = sp.getInt(KEY_MAX_ID, 0)
         Log.d(TAG, " MaxId: $maxId")
@@ -116,7 +124,7 @@ class TransactionListFragment : BaseFragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-        // loading in arguments, if any
+        // loads in arguments, if any
         val category     : Boolean? = arguments?.getBoolean     (ARG_CATEGORY)
         val date         : Boolean? = arguments?.getBoolean     (ARG_DATE)
         val type         : String?  = arguments?.getString      (ARG_TYPE)
@@ -142,7 +150,7 @@ class TransactionListFragment : BaseFragment() {
             }
         )
 
-        // gets the sizes of the Category tables and sends them to function
+        // gets the sizes of the Category tables and sends them to initializeCategoryTables()
         launch {
 
             val expenseSize : Int? = transactionListViewModel.getExpenseCategorySizeAsync().await()
@@ -172,7 +180,7 @@ class TransactionListFragment : BaseFragment() {
     override fun onPause() {
         super.onPause()
 
-        // SharedPreferences
+        // saves maxId into SharedPreferences
         editor = sp.edit()
         editor.putInt(KEY_MAX_ID, maxId)
         editor.apply()
@@ -188,7 +196,14 @@ class TransactionListFragment : BaseFragment() {
 
 
 
-    // adds frequency * period to the date on Transaction
+    /**
+     *  Adds frequency * period to the date on Transaction.
+     *
+     *  @param date      the date of Transaction.
+     *  @param period    how often Transaction repeats.
+     *  @param frequency how often Transaction repeats.
+     *
+     */
     private fun createFutureDate(date : Date, period : Int, frequency : Int) : Date {
 
         val calendar : Calendar = Calendar.getInstance()
@@ -196,7 +211,7 @@ class TransactionListFragment : BaseFragment() {
         // to select a Date in the past or future
         calendar.time = date
 
-        //0 = Day, 1 = Week, 2 = Month, 3 = Year
+        // 0 = Day, 1 = Week, 2 = Month, 3 = Year
         when (period) {
 
             0 -> calendar.add(Calendar.DAY_OF_MONTH, frequency)
@@ -205,7 +220,7 @@ class TransactionListFragment : BaseFragment() {
             3 -> calendar.add(Calendar.YEAR        , frequency)
         }
 
-        // reset hour, minutes, seconds and millis
+        // reset hour, minutes, seconds and millis to start of day
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
@@ -214,7 +229,9 @@ class TransactionListFragment : BaseFragment() {
         return calendar.time
     }
 
-    // adds new Transactions depending on existing Transactions futureDate
+    /**
+     *  Adds new Transactions depending on existing Transactions futureDate.
+     */
     private fun futureTransactions() {
 
         launch {
@@ -269,7 +286,11 @@ class TransactionListFragment : BaseFragment() {
         }
     }
 
-    // appends " (R)x####" to the end of Transaction title that has been repeated
+    /**
+     *  Appends " (R)x####" to the end of Transaction title that has been repeated.
+     *
+     *  @param title the title of Transaction.
+     */
     private fun incrementString(title : String) : String {
 
         val prefix                        = "(R)x"
@@ -299,8 +320,13 @@ class TransactionListFragment : BaseFragment() {
         return newTitle
     }
 
-    // this should be run the very first time a user opens the app or if they delete
-    // all the categories in one table, fills table with a few predetermined categories
+    /**
+     *  This should be run the very first time a user opens the app or if they delete
+     *  all the categories in one table, fills table with a few predetermined categories.
+     *
+     *  @param expenseSize size of ExpenseCategory Table.
+     *  @param incomeSize  size of IncomeCategory Table.
+     */
     private fun initializeCategoryTables(expenseSize : Int?, incomeSize : Int?) {
 
         launch {
@@ -333,7 +359,11 @@ class TransactionListFragment : BaseFragment() {
         }
     }
 
-    // ensures the UI is up to date with correct information
+    /**
+     *  Ensures the UI is up to date with correct information.
+     *
+     *  @param transactions the list of Transactions to be displayed.
+     */
     private fun updateUI(transactions : List<Transaction>) {
 
         // creates CrimeAdapter to set with RecyclerView
@@ -353,7 +383,11 @@ class TransactionListFragment : BaseFragment() {
         }
     }
 
-    // creates ViewHolder and binds ViewHolder to data from model layer
+    /**
+     *  Creates ViewHolder and binds ViewHolder to data from model layer.
+     *
+     *  @param transactions the list of Transactions.
+     */
     private inner class TransactionAdapter(var transactions : List<Transaction>)
         : RecyclerView.Adapter<TransactionHolder>() {
 
@@ -374,7 +408,9 @@ class TransactionListFragment : BaseFragment() {
         }
     }
 
-    // ViewHolder stores a reference to an item's view
+    /**
+     *  ViewHolder stores a reference to an item's view.
+     */
     private inner class TransactionHolder(view : View)
         : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnLongClickListener {
 
@@ -425,7 +461,9 @@ class TransactionListFragment : BaseFragment() {
             callbacks?.onTransactionSelected(transaction.id, false)
         }
 
-        // shows AlertDialog asking user if they want to delete Transaction
+        /**
+         *  Shows AlertDialog asking user if they want to delete Transaction.
+         */
         override fun onLongClick(v : View?) : Boolean {
 
             recyclerViewPosition = this.layoutPosition
@@ -456,14 +494,28 @@ class TransactionListFragment : BaseFragment() {
 
     companion object {
 
-        // can be called by activities to get instance of fragment
+        /**
+         *  Initializes instance of TransactionListFragment.
+         */
         fun newInstance() : TransactionListFragment {
 
             return TransactionListFragment()
         }
 
-        // creates arguments bundle, creates a fragment instance,
-        // and attaches the arguments to the fragment
+        /**
+         *  Initializes instance of TransactionListFragment.
+         *
+         *  Creates arguments Bundle, creates a Fragment instance, and attaches the
+         *  arguments to the Fragment.
+         *
+         *  @param  category     boolean for category filter.
+         *  @param  date         boolean for date filter.
+         *  @param  type         either "Expense" or "Income".
+         *  @param  categoryName category name to be searched in table of type.
+         *  @param  start        starting Date for date filter.
+         *  @param  end          ending Date for date filter.
+         *  @return TransactionListFragment instance.
+         */
         fun newInstance(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) : TransactionListFragment {
 
             val args : Bundle = Bundle().apply {

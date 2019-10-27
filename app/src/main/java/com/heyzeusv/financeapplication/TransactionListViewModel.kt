@@ -5,16 +5,35 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Deferred
 import java.util.*
 
+/**
+ *  Data manager for TransactionListFragments.
+ *
+ *  Stores and manages UI-related data in a lifecycle conscious way.
+ *  Data can survive configuration changes.
+ */
 class TransactionListViewModel : ViewModel() {
 
-    // gets instance of TransactionRepository and
-    // retrieves list of Transactions from database
+    /**
+     *  Stores handle to TransactionRepository.
+     */
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
-    /*
-        Transaction queries
+    /**
+     *  Transaction queries
      */
-    // tells repository which query to run on Transaction and passes any arguments needed
+    /**
+     *  Tells Repository which Transaction list to return.
+     *
+     *  Uses the values of category and date in order to determine which Transaction list is needed.
+     *
+     *  @param  category     boolean for category filter.
+     *  @param  date         boolean for date filter.
+     *  @param  type         either "Expense" or "Income".
+     *  @param  categoryName category name to be searched in table of type.
+     *  @param  start        starting Date for date filter.
+     *  @param  end          ending Date for date filter.
+     *  @return LiveData object holding list of Transactions.
+     */
     fun filteredTransactionList(category : Boolean?, date : Boolean?, type : String?, categoryName : String?,
                                 start : Date?, end : Date?) : LiveData<List<Transaction>> {
 
@@ -48,8 +67,8 @@ class TransactionListViewModel : ViewModel() {
         transactionRepository.upsertTransactions(transactions)
     }
 
-    /*
-        ExpenseCategory queries
+    /**
+     *  ExpenseCategory queries
      */
     suspend fun getExpenseCategorySizeAsync() : Deferred<Int?> {
 
@@ -61,8 +80,8 @@ class TransactionListViewModel : ViewModel() {
         transactionRepository.insertExpenseCategories(expenseCategories)
     }
 
-    /*
-        IncomeCategory queries
+    /**
+     *  IncomeCategory queries
      */
     suspend fun getIncomeCategorySizeAsync() : Deferred<Int?> {
 

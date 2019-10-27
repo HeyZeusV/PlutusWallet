@@ -5,11 +5,22 @@ import androidx.room.PrimaryKey
 import java.math.BigDecimal
 import java.util.*
 
-/*
-    Must be annotated with @Entity
-    if tableName not provided then class name is used as tableName
-*/
-
+/**
+ *  Representation of Transaction table.
+ *
+ *  @param id             unique id of Transaction.
+ *  @param title          title of Transaction.
+ *  @param date           Date of Transaction.
+ *  @param total          the total amount of Transaction.
+ *  @param type           either "Expense" or "Income".
+ *  @param category       the name of category selected.
+ *  @param memo           optional information.
+ *  @param repeating      true if Transaction is to occur again in the future.
+ *  @param frequency      how often Transaction repeats.
+ *  @param period         how often Transaction repeats.
+ *  @param futureDate     if repeating true, frequency * period + date.
+ *  @param futureTCreated true if this Transaction has had a future Transaction created for it.
+ */
 @Entity
 data class Transaction(
     @PrimaryKey

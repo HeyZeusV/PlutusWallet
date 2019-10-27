@@ -3,11 +3,11 @@ package com.heyzeusv.financeapplication
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/*
-    Must be annotated with @Entity
-    if tableName not provided then class name is used as tableName
-*/
-
+/**
+ *  Representation of ExpenseCategory table.
+ *
+ *  @param category the name of the category
+ */
 @Entity
 data class ExpenseCategory (
     @PrimaryKey

@@ -15,6 +15,9 @@ import com.heyzeusv.financeapplication.utilities.BaseFragment
 
 private const val  TAG = "GraphFragment"
 
+/**
+ *   Creates and populates charts with Transaction data depending on filter applied.
+ */
 class GraphFragment : BaseFragment() {
 
     private lateinit var pieChart : PieChart

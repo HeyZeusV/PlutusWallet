@@ -7,6 +7,7 @@ import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.R
 import java.lang.StringBuilder
@@ -21,10 +22,14 @@ import java.util.*
 // USED THIS: https://stackoverflow.com/a/45299775/9825089
 
 /**
- *  Always use locale US instead of default to make DecimalFormat
- *  work well in all language
+ *  Custom EditText to handle currency.
+ *
+ *  Adds currency symbol prefix, adds thousands separators automatically, and limits the
+ *  number of decimal places.
+ *  Always use locale US instead of default to make DecimalFormat work well in all language.
+ *
+ *  @constructor standard EditText constructor
  */
-
 class CurrencyEditText @JvmOverloads constructor(
     context : Context, attributeSet : AttributeSet,
     defStyleAttr : Int = R.attr.editTextStyle) :
@@ -37,28 +42,31 @@ class CurrencyEditText @JvmOverloads constructor(
         // numeric text class with decimal flag
         this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         this.hint      = prefix
-        // sets max length of EditText
+        // sets max length
         this.filters   = arrayOf<InputFilter>(InputFilter.LengthFilter(MAX_LENGTH))
     }
 
+    /**
+     *  Used to tell when this View is focused by user.
+     *
+     *  @param focused true when user selects this view, false when deselected.
+     */
     override fun onFocusChanged(focused : Boolean, direction : Int, previouslyFocusRect : Rect?) {
 
         super.onFocusChanged(focused, direction, previouslyFocusRect)
 
         if (focused) {
-
             this.addTextChangedListener(currencyTextWatcher)
         } else {
-
             this.removeTextChangedListener(currencyTextWatcher)
         }
         handleCaseCurrencyEmpty(focused)
     }
 
     /**
-     *  When currency empty
-     *  When focus EditText, set the default text = prefix (ex: $)
-     *  When EditText lose focus, set the default text = "", EditText will display hint (ex: $)
+     *  if EditText is focused
+     *      if EditText is empty, set the default text to prefix (ex: $)
+     *  else EditText loses focus and empty, set the default text to "", EditText will display hint (ex: $)
      */
     private fun handleCaseCurrencyEmpty(focused : Boolean) {
 
@@ -77,6 +85,12 @@ class CurrencyEditText @JvmOverloads constructor(
         }
     }
 
+    /**
+     *  Watches for when text is changed.
+     *
+     *  Also handles formatting the string and the cursor position.
+     *  @constructor sets EditText to be watched and its prefix.
+     */
     private class CurrencyTextWatcher
     internal constructor(private val editText : EditText, private val prefix : String) : TextWatcher {
 
@@ -86,38 +100,50 @@ class CurrencyEditText @JvmOverloads constructor(
 
         override fun onTextChanged(s : CharSequence?, start : Int, before : Int, count : Int) {}
 
+        /**
+         *  Notifies when there has ben a changed in editable.
+         *
+         *  Will react according to what the text is changed to.
+         *
+         *  @param editable the text to be changed.
+         */
         override fun afterTextChanged(editable : Editable?) {
 
             val string : String = editable.toString()
-            // if EditText is empty
+
+            // if EditText is shorter than prefix
             if (string.length < prefix.length) {
 
                 editText.setText(prefix)
                 editText.setSelection(prefix.length)
                 return
             }
+
             // do nothing if string is prefix
             if (string == prefix) {
 
                 return
             }
-            // cleanString: doesn't contain prefix and ,
+
+            // cleanString: doesn't contain prefix or ','
             val cleanString : String = string.replace(prefix, "").replace(("[,]").toRegex(), "")
+
             // prevents afterTextChanged recursive call
             if (cleanString == previousCleanString || cleanString.isEmpty()) {
 
                 return
             }
+
             previousCleanString = cleanString
-            val formattedString : String
+            // formats string depending if there is decimal places
+            val formattedString : String =
+                if (cleanString.contains(".")) {
 
-            formattedString = if (cleanString.contains(".")) {
+                    formatDecimal(cleanString)
+                } else {
 
-                formatDecimal(cleanString)
-            } else {
-
-                formatInteger(cleanString)
-            }
+                    formatInteger(cleanString)
+                }
             editText.removeTextChangedListener(this)
             editText.setText(formattedString)
             // sets location of cursor
@@ -125,11 +151,16 @@ class CurrencyEditText @JvmOverloads constructor(
             editText.addTextChangedListener(this)
         }
 
-        /*
+        /**
+         *  Will format string with thousands separators and prefix.
+         *
          *  Even though Totals will always be a decimal number, formatInteger is needed
          *  for when a user first creates a new Transaction. Without this, as soon as a
          *  user enters 1 number, a decimal point is added plus "00" and will move the
          *  cursor to the end of the EditText.
+         *
+         *  @param  string the string to be formatted .
+         *  @return the formatted string.
          */
         private fun formatInteger(string : String ) : String {
 
@@ -142,6 +173,12 @@ class CurrencyEditText @JvmOverloads constructor(
             return formatter.format(parsed)
         }
 
+        /**
+         *  Will format string with thousands separators and prefix.
+         *
+         *  @param  string the string to be formatted.
+         *  @return the formatted string.
+         */
         private fun formatDecimal(string : String) : String {
 
             // BigDecimal cannot handle symbols other than "."
@@ -159,13 +196,14 @@ class CurrencyEditText @JvmOverloads constructor(
         }
 
         /**
-         * It will return suitable pattern for format decimal
-         * For example: 10.2 -> return 0 | 10.23 -> return 00, | 10.235 -> return 000
+         *  It will return suitable pattern for format decimal.
+         *  For example: 10.2 -> return 0 | 10.23 -> return 00, | 10.235 -> return 000
          */
         private fun getDecimalPattern(string : String) : String {
 
+            // returns number of characters after decimal point
             val decimalCount : Int = string.length - string.indexOf(".") - 1
-            val decimalPattern = StringBuilder()
+            val decimalPattern     = StringBuilder()
             var i = 0
             while (i < decimalCount && i < MAX_DECIMAL) {
 
@@ -175,7 +213,11 @@ class CurrencyEditText @JvmOverloads constructor(
             return decimalPattern.toString()
         }
 
-        // handles where cursor goes after input
+        /**
+         *  Handles where cursor goes after input.
+         *
+         *  As long as length is less than MAX_LENGTH, cursor will move to the end of the string.
+         */
         private fun handleSelection() {
 
             if (editText.text.length <= MAX_LENGTH) {
@@ -189,6 +231,7 @@ class CurrencyEditText @JvmOverloads constructor(
     }
 
     companion object {
+
         private const val prefix = "$"
         private const val MAX_LENGTH = 15
         private const val MAX_DECIMAL = 2

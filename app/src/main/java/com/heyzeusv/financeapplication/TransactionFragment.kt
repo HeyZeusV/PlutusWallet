@@ -38,7 +38,14 @@ private const val DIALOG_DATE        = "DialogDate"
 private const val REQUEST_DATE       = 0
 private const val KEY_MAX_ID         = "key_max_id"
 
+/**
+ *  Shows all the information in database of one fragment and allows users to edit any field and save changes.
+ */
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
+
+    // SharedPreferences
+    private lateinit var sp     : SharedPreferences
+    private lateinit var editor : SharedPreferences.Editor
 
     // views
     private lateinit var repeatingCheckBox      : CheckBox
@@ -70,6 +77,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var newCategoryName                                = ""
     private var madeNewCategory                                = false
 
+    private var maxId : Int = 0
 
     // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
@@ -114,7 +122,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // set up for the frequencyPeriodSpinner
         val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencySingleArray)
         frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-        frequencyPeriodSpinner.adapter = frequencyPeriodSpinnerAdapter
+        frequencyPeriodSpinner       .adapter = frequencyPeriodSpinnerAdapter
 
         // checks to see how user arrived to TransactionFragment
         val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
@@ -141,6 +149,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             updateUI()
         }
+
+        // loads maxId from SharedPreferences
+        sp    = activity!!.getSharedPreferences("FinanceApplicationPref", Context.MODE_PRIVATE)
+        maxId = sp.getInt(KEY_MAX_ID, 0)
+        Log.d(TAG, " MaxId: $maxId")
 
         return view
     }
@@ -173,8 +186,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // if not null
                 expenseCategoryNames?.let {
                     expenseCategoryNamesList = expenseCategoryNames.toMutableList()
-                    // "Create New Category will always be at bottom of the list
+                    // sorts list in alphabetical order
                     expenseCategoryNamesList.sort()
+                    // "Create New Category" will always be at bottom of the list
                     expenseCategoryNamesList.add("Create New Category")
                     // sets up the categorySpinner
                     val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
@@ -202,8 +216,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // if not null
                 incomeCategoryNames?.let {
                     incomeCategoryNamesList = incomeCategoryNames.toMutableList()
-                    // "Create New Category will always be at bottom of the list
+                    // sorts list in alphabetical order
                     incomeCategoryNamesList.sort()
+                    // "Create New Category" will always be at bottom of the list
                     incomeCategoryNamesList.add("Create New Category")
                     // sets up the categorySpinner
                     val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, incomeCategoryNamesList)
@@ -225,18 +240,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // only occurs if user wants to create new Transaction
         if (fromFab) {
 
-            launch {
+            maxId += 1
+            transaction.id = maxId
 
-                // returns the highest id in Transaction table
-                var maxId : Int? = transactionDetailViewModel.getMaxIdAsync().await()
-                // should only run if Transaction table is empty
-                if (maxId == null) {
-
-                    maxId = 0
-                }
-                // id is primary key, so have to increase it
-                transaction.id = maxId.plus(1)
-            }
             // used for saveFab
             newTransaction = true
         }
@@ -249,44 +255,36 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // placed in onStart due to being triggered when view state is restored
         val titleWatcher = object : TextWatcher {
 
-            // not needed so blank
             override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
 
-            // sequence is user's input which title is changed to
             override fun onTextChanged(
                 sequence : CharSequence?, start : Int, before : Int, count : Int) {
 
                 transaction.title = sequence.toString()
             }
 
-            // not needed so blank
             override fun afterTextChanged(sequence : Editable?) {}
         }
 
         // placed in onStart due to being triggered when view state is restored
         val memoWatcher = object : TextWatcher {
 
-            // not needed so blank
             override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
 
-            // sequence is user's input which memo is changed to
             override fun onTextChanged(
                 sequence : CharSequence?, start : Int, before : Int, count : Int) {
 
                 transaction.memo = sequence.toString()
             }
 
-            // not needed so blank
             override fun afterTextChanged(sequence : Editable?) {}
         }
 
         // placed in onStart due to being triggered when view state is restored
         val frequencyWatcher = object : TextWatcher {
 
-            // not needed so blank
             override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
 
-            // sequence is user's input which memo is changed to
             override fun onTextChanged(
                 sequence : CharSequence?, start : Int, before : Int, count : Int) {
 
@@ -299,14 +297,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                         val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyMultipleArray)
                         frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
                         frequencyPeriodSpinner.adapter = frequencyPeriodSpinnerAdapter
-                        frequencyStatus = true
+                        frequencyStatus                = true
                     } else if (Integer.parseInt(sequence.toString()) == 1 && frequencyStatus) {
 
                         // set up for the frequencyPeriodSpinner
                         val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencySingleArray)
                         frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
                         frequencyPeriodSpinner.adapter = frequencyPeriodSpinnerAdapter
-                        frequencyStatus = false
+                        frequencyStatus                = false
                     }
                 } catch (e : NumberFormatException) {
 
@@ -314,7 +312,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
             }
 
-            // not needed so blank
             override fun afterTextChanged(sequence : Editable?) {}
         }
 
@@ -322,8 +319,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         memoField     .addTextChangedListener(memoWatcher)
         frequencyField.addTextChangedListener(frequencyWatcher)
 
-        // OnClickListener not affected by state restoration,
-        // but nice to have listeners in one place
+        // OnClickListener not affected by state restoration, but nice to have listeners in one place
         dateButton.setOnClickListener {
 
             DatePickerFragment.newInstance(transaction.date).apply {
@@ -469,9 +465,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                     transactionDetailViewModel.insertTransaction(transaction)
                     newTransaction = false
-                    val sp                : SharedPreferences        = activity!!.getSharedPreferences("FinanceApplicationPref", Context.MODE_PRIVATE)
-                    val editor            : SharedPreferences.Editor = sp.edit()
-                    editor.putInt(KEY_MAX_ID, transaction.id)
+                    // saves maxId into SharedPreferences
+                    editor = sp.edit()
+                    editor.putInt(KEY_MAX_ID, maxId)
                     editor.apply()
                 } else {
 
@@ -483,14 +479,20 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
     }
 
-    // will update date with the date selected from DatePickerFragment
+    /**
+     *  Will update Transaction date with date selected from DatePickerFragment.
+     *
+     *  @param date the date selected by the user.
+     */
     override fun onDateSelected(date : Date) {
 
         transaction.date = date
         updateUI()
     }
 
-    // adds frequency * period to the date on Transaction
+    /**
+     *  Adds frequency * period to the date on Transaction.
+     */
     private fun createFutureDate() : Date {
 
         val calendar : Calendar = Calendar.getInstance()
@@ -498,7 +500,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // to select a Date in the past or future
         calendar.time = transaction.date
 
-        //0 = Day, 1 = Week, 2 = Month, 3 = Year
+        // 0 = Day, 1 = Week, 2 = Month, 3 = Year
         when (transaction.period) {
 
             0 -> calendar.add(Calendar.DAY_OF_MONTH, transaction.frequency)
@@ -507,7 +509,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             3 -> calendar.add(Calendar.YEAR        , transaction.frequency)
         }
 
-        // reset hour, minutes, seconds and millis
+        // reset hour, minutes, seconds and millis to start of day
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
@@ -518,7 +520,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     @SuppressLint("DefaultLocale")
     @ExperimentalStdlibApi
-    // inserts new Category into database or selects it in categorySpinner if it exists already
+    /**
+     *  Inserts new Category into database or selects it in categorySpinner if it exists already.
+     *
+     *  @param input the category to be inserted/selected.
+     */
     private fun insertCategory(input : String) {
 
         // makes first letter of every word capital and every other letter lower case
@@ -529,6 +535,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // -1 means it doesn't exist
             if (expenseCategoryNamesList.indexOf(name) == -1) {
 
+                // creates new Category with name
                 val newCategory = ExpenseCategory(name)
                 launch {
 
@@ -545,6 +552,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // -1 means it doesn't exist
             if (incomeCategoryNamesList.indexOf(name) == -1) {
 
+                // creates new Category with name
                 val newCategory = IncomeCategory(name)
                 launch {
 
@@ -560,7 +568,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     }
 
     @ExperimentalStdlibApi
-    // AlertDialog to create new Category
+    /**
+     *  AlertDialog to create new Category.
+     *
+     *  @param categorySpinner the Spinner that that called this function.
+     */
     private fun newCategoryDialog(categorySpinner : Spinner) {
 
         // initialize instance of Builder
@@ -592,7 +604,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         categoryAlertDialog.show()
     }
 
-    // ensures that the UI is up to date with all the correct information on Transaction
+    /**
+     *  Ensures that the UI is up to date with all the correct information on Transaction.
+     */
     private fun updateUI() {
 
         titleField    .setText(transaction.title)
@@ -645,8 +659,17 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     companion object {
 
-        // creates arguments bundle, creates a fragment instance,
-        // and attaches the arguments to the fragment
+        /**
+         *  Initializes instance of TransactionFragment.
+         *
+         *  Creates arguments Bundle, creates a Fragment instance, and attaches the
+         *  arguments to the Fragment.
+         *
+         *  @param transactionId id of Transaction selected.
+         *  @param fabX          the x position of FAB
+         *  @param fabY          the y position of FAB
+         *  @param fromFab       true if user clicked on FAB to create Transaction.
+         */
         fun newInstance(transactionId : Int, fabX : Int, fabY : Int, fromFab : Boolean) : TransactionFragment {
 
             val args : Bundle = Bundle().apply {
