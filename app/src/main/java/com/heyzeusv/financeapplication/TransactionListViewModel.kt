@@ -40,13 +40,16 @@ class TransactionListViewModel : ViewModel() {
         return if (category == true && date == true) {
 
             transactionRepository.getLDTransactions(type, categoryName, start, end)
+        } else if (category == true && categoryName == FinanceApplication.context!!.getString(R.string.all)) {
+
+            transactionRepository.getLDTransactions(type)
         } else if (category == true) {
 
             transactionRepository.getLDTransactions(type, categoryName)
         } else if (date == true) {
 
             transactionRepository.getLDTransactions(start, end)
-        } else {
+        }  else {
 
             transactionRepository.getLDTransactions()
         }

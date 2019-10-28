@@ -68,6 +68,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // arrays holding values for frequency spinner
     private var frequencySingleArray   : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.day) , FinanceApplication.context!!.getString(R.string.week) , FinanceApplication.context!!.getString(R.string.month) , FinanceApplication.context!!.getString(R.string.year))
     private var frequencyMultipleArray : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.days), FinanceApplication.context!!.getString(R.string.weeks), FinanceApplication.context!!.getString(R.string.months), FinanceApplication.context!!.getString(R.string.years))
+
     // false = Single, true = Multiple
     private var frequencyStatus        : Boolean       = false
 

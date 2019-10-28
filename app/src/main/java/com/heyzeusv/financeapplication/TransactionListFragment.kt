@@ -366,7 +366,7 @@ class TransactionListFragment : BaseFragment() {
      */
     private fun updateUI(transactions : List<Transaction>) {
 
-        // creates CrimeAdapter to set with RecyclerView
+        // creates TransactionAdapter to set with RecyclerView
         transactionAdapter              = TransactionAdapter(transactions)
         transactionRecyclerView.adapter = transactionAdapter
 
@@ -400,7 +400,7 @@ class TransactionListFragment : BaseFragment() {
 
         override fun getItemCount() = transactions.size
 
-        // populates given holder with transaction from the given position in TransactionList
+        // populates given holder with Transaction from the given position in TransactionList
         override fun onBindViewHolder(holder : TransactionHolder, position : Int) {
 
             val transaction : Transaction = transactions[position]
@@ -427,14 +427,17 @@ class TransactionListFragment : BaseFragment() {
             itemView.setOnLongClickListener(this)
         }
 
-        // sets the views with transaction data
+        // sets the views with Transaction data
         fun bind(transaction : Transaction) {
 
             this.transaction   = transaction
             titleTextView.text = this      .transaction.title
             dateTextView. text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
+            val total      = transaction.total.toString()
+            // splits total into integer and fractional parts
+            val totalSplit = total.split(".")
             // formats the Total correctly
-            if (transaction.total.toString() == "0.00") {
+            if (totalSplit[0] == "0") {
 
                 totalTextView.text = getString(R.string.total_number, String.format("%.2f", this.transaction.total))
             } else {

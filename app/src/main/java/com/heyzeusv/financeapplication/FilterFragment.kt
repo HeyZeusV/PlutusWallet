@@ -2,6 +2,7 @@ package com.heyzeusv.financeapplication
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -80,7 +81,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // default strings used
     private var typeButtonText  : String = FinanceApplication.context!!.getString(R.string.expense)
-    private var categoryName    : String = FinanceApplication.context!!.getString(R.string.education)
+    private var categoryName    : String = FinanceApplication.context!!.getString(R.string.all)
     private var applyButtonText : String = FinanceApplication.context!!.getString(R.string.reset)
 
     // provides instance of ViewModel
@@ -144,6 +145,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     expenseCategoryNamesList = expenseCategoryNames.toMutableList()
                     // sorts list in alphabetical order
                     expenseCategoryNamesList.sort()
+                    // Category to show all of one type
+                    expenseCategoryNamesList.add(0, getString(R.string.all))
                     // sets up the categorySpinner
                     val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
                     categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
@@ -163,7 +166,10 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // if not null
                 incomeCategoryNames?.let {
                     incomeCategoryNamesList = incomeCategoryNames.toMutableList()
+                    // sorts list in alphabetical order
                     incomeCategoryNamesList.sort()
+                    // Category to show all of one type
+                    incomeCategoryNamesList.add(0, getString(R.string.all))
                     // sets up the categorySpinner
                     val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, incomeCategoryNamesList)
                     categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)

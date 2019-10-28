@@ -16,7 +16,7 @@ import com.heyzeusv.financeapplication.Transaction
  *                  types into those that database can store.
  */
 @Database(entities = [Transaction::class, ExpenseCategory::class, IncomeCategory::class],
-    version = 13, exportSchema = true)
+    version = 14, exportSchema = true)
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {
 

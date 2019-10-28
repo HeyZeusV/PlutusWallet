@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 
 /**
- *  Data manager for FilterFragments.
+ *  Data manager for GraphFragments.
  *
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class FilterViewModel : ViewModel() {
+class GraphViewModel : ViewModel() {
 
     /**
      *  Stores handle to TransactionRepository.
@@ -17,12 +17,10 @@ class FilterViewModel : ViewModel() {
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
     /**
-     *  ExpenseCategory queries.
+     *  Transaction queries
      */
-    val expenseCategoryNamesLiveData : LiveData<List<String>> = transactionRepository.getExpenseCategoryNames()
+    fun categoryTotals(type : String) : LiveData<List<CategoryTotals>> {
 
-    /**
-     *  IncomeCategory queries.
-     */
-    val incomeCategoryNamesLiveData : LiveData<List<String>> = transactionRepository.getIncomeCategoryNames ()
+        return transactionRepository.getLDCategoryTotals(type)
+    }
 }

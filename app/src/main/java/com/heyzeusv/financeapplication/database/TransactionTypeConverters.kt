@@ -29,15 +29,14 @@ class TransactionTypeConverters {
     }
 
     @TypeConverter
-    fun fromBigDecimal(total : BigDecimal?) : String? {
+    fun fromBigDecimal(total : BigDecimal?) : Float? {
 
-        return String.format("$%.2f", total)
+        return total?.toFloat()
     }
 
     @TypeConverter
-    fun toBigDecimal(total : String?) : BigDecimal? {
+    fun toBigDecimal(total : Float?) : BigDecimal? {
 
-
-        return BigDecimal(total?.replace("$", ""))
+        return BigDecimal(total.toString())
     }
 }
