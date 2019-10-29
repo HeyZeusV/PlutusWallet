@@ -43,4 +43,5 @@
     <string name="stocks">Stocks</string>
     <string name="wages">Wages</string>
     <string name="all">All</string>
+    <string name="emptyGraph">No transactions fulfill \nthe filters being applied!</string>
 </resources>

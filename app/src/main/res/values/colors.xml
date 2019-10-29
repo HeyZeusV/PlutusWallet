@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#4a148c</color>
+    <color name="colorPrimaryDark">#12005e</color>
+    <color name="colorPrimaryLight">#7c43bd</color>
+    <color name="colorSecondary">#33691e</color>
+    <color name="colorSecondaryDark">#003d00</color>
+    <color name="colorSecondaryLight">#629749</color>
+
+    <!-- Expense Chart Colors -->
+    <color name="expenseColor1">#d50000</color>
+    <color name="expenseColor2">#c51162</color>
+    <color name="expenseColor3">#ffff00</color>
+    <color name="expenseColor4">#ff6f00</color>
+
+    <!-- Income Chart Colors -->
+    <color name="incomeColor1">#76ff03</color>
+    <color name="incomeColor2">#00897b</color>
+    <color name="incomeColor3">#2196f3</color>
+    <color name="incomeColor4">#5e35b1</color>
 </resources>

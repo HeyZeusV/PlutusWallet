@@ -1,10 +1,13 @@
  package com.heyzeusv.financeapplication
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -34,7 +37,6 @@ class GraphFragment : BaseFragment() {
     // lists used to hold CategoryTotals
     private var emptyList        : List<CategoryTotals>              = emptyList()
     private var transactionLists : MutableList<List<CategoryTotals>> = mutableListOf(emptyList, emptyList)
-
 
     // provides instance of ViewModel
     private val graphViewModel : GraphViewModel by lazy {
@@ -137,37 +139,86 @@ class GraphFragment : BaseFragment() {
     private inner class GraphHolder(view : View) : RecyclerView.ViewHolder(view) {
 
         // views in the ItemView
-        private val pieChart : PieChart = itemView.findViewById(R.id.graph_pie)
+        private val pieChart      : PieChart = itemView.findViewById(R.id.graph_pie)
+        private val emptyTextView : TextView = itemView.findViewById(R.id.emptyTextView)
 
         // sets the views with CategoryTotal data
         fun bind(categoryTotals : List<CategoryTotals>, type : Int) {
 
-            // list of values to be displayed in PieChart
-            val pieEntries : MutableList<PieEntry> = mutableListOf()
+            // will display a message if there is no data to be displayed
+            if (categoryTotals.isNotEmpty()) {
 
-            // adds values in categoryTotals list into list holding chart data
-            categoryTotals.forEach() {
+                emptyTextView.isVisible = false
+                pieChart     .isVisible = true
 
-                pieEntries.add(PieEntry(it.total.toFloat(), it.category))
+                var typeName = ""
+
+                // list of values to be displayed in PieChart
+                val pieEntries: MutableList<PieEntry> = mutableListOf()
+
+                // adds values in categoryTotals list into list holding chart data
+                categoryTotals.forEach {
+
+                    pieEntries.add(PieEntry(it.total.toFloat(), it.category))
+                }
+
+                // PieDataSet set up
+                val dataSet = PieDataSet(pieEntries, "Transactions")
+                // distance between slices
+                dataSet.sliceSpace     = 2.0f
+                // size of highlighted area
+                dataSet.selectionShift = 3.0f
+                dataSet.valueTextSize  = 10f
+                // sets up the colors and typeName depending on type
+                if (type == 0) {
+
+                    typeName = getString(R.string.expense)
+                    context?.let {
+                        dataSet.setColors(intArrayOf(R.color.expenseColor1, R.color.expenseColor2,
+                            R.color.expenseColor3, R.color.expenseColor4), context)
+                    }
+                } else {
+
+                    typeName = getString(R.string.income)
+                    context?.let {
+                        dataSet.setColors(intArrayOf(R.color.incomeColor1, R.color.incomeColor2,
+                            R.color.incomeColor3, R.color.incomeColor4), context)
+                    }
+                }
+
+                // PieData set up
+                val data = PieData(dataSet)
+                // makes value in form of percentages
+                data.setValueFormatter(PercentFormatter(pieChart))
+
+                // Description set up
+                val description  = Description()
+                // don't want a description so make it blank
+                description.text = ""
+
+                // PieChart set up
+                // attach data
+                pieChart.data              = data
+                // displays type in center of chart
+                pieChart.centerText        = typeName
+                // attach description
+                pieChart.description       = description
+                // don't want legend so disable it
+                pieChart.legend.isEnabled  = false
+                // true = doughnut chart
+                pieChart.isDrawHoleEnabled = true
+                // color of label text
+                pieChart.setEntryLabelColor(Color.BLACK)
+                pieChart.setCenterTextSize(15f)
+                pieChart.setDrawCenterText(true)
+                pieChart.setUsePercentValues(true)
+                // givens chart animation on startup/change
+                pieChart.animateX(750, Easing.EaseInBack)
+            } else {
+
+                emptyTextView.isVisible = true
+                pieChart     .isVisible = false
             }
-
-            // will clean this up...
-            val dataSet = PieDataSet(pieEntries, "Testing")
-            dataSet.sliceSpace = 2.0f
-            dataSet.selectionShift = 5.0f
-
-            val data = PieData(dataSet)
-            data.setValueFormatter(PercentFormatter(pieChart))
-            pieChart.data = data
-            val description = Description()
-            description.text = ""
-            val legend = pieChart.legend
-            legend.isEnabled = false
-            pieChart.setTouchEnabled(false)
-            pieChart.isDrawHoleEnabled = true
-            pieChart.setUsePercentValues(true)
-            pieChart.description = description
-            pieChart.animateX(1000, Easing.EaseInBack)
         }
     }
 
