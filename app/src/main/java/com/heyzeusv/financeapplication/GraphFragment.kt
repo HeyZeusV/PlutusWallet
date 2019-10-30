@@ -2,7 +2,6 @@
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.PieData
@@ -21,9 +19,9 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.heyzeusv.financeapplication.utilities.BaseFragment
-import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+import me.relex.circleindicator.CircleIndicator3
 
- private const val  TAG = "GraphFragment"
+ private const val TAG = "GraphFragment"
 
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.
@@ -32,11 +30,14 @@ class GraphFragment : BaseFragment() {
 
     //views
     private lateinit var graphViewPager    : ViewPager2
-    private lateinit var wormDotsIndicator : WormDotsIndicator
+    private lateinit var wormDotsIndicator : CircleIndicator3
 
     // lists used to hold CategoryTotals
     private var emptyList        : List<CategoryTotals>              = emptyList()
     private var transactionLists : MutableList<List<CategoryTotals>> = mutableListOf(emptyList, emptyList)
+
+    // the graph being displayed
+    private var selectedGraph = 0
 
     // provides instance of ViewModel
     private val graphViewModel : GraphViewModel by lazy {
@@ -47,8 +48,8 @@ class GraphFragment : BaseFragment() {
 
         val view : View = inflater.inflate(R.layout.fragment_graph, container, false)
 
-        graphViewPager    = view.findViewById(R.id.graph_view_pager)          as ViewPager2
-        wormDotsIndicator = view.findViewById(R.id.graph_worm_dots_indicator) as WormDotsIndicator
+        graphViewPager    = view.findViewById(R.id.graph_view_pager)       as ViewPager2
+        wormDotsIndicator = view.findViewById(R.id.graph_circle_indicator) as CircleIndicator3
 
         // clears previous lists
         transactionLists = mutableListOf(emptyList, emptyList)
@@ -95,6 +96,23 @@ class GraphFragment : BaseFragment() {
         )
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        graphViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+
+            /**
+             *  Places selected page into selectedGraph
+             *
+             *  @param position the page that was selected
+             */
+            override fun onPageSelected(position : Int) {
+
+                selectedGraph = position
+            }
+        })
+    }
+
     /**
      *  Ensures the UI is up to date with correct information.
      *
@@ -103,9 +121,13 @@ class GraphFragment : BaseFragment() {
     private fun updateUI(transactionLists : MutableList<List<CategoryTotals>>) {
 
         // creates GraphAdapter to set with ViewPager2
-        graphViewPager   .adapter = GraphAdapter(transactionLists)
+        graphViewPager   .adapter     = GraphAdapter(transactionLists)
         // sets up Dots Indicator with ViewPager2
-        wormDotsIndicator.setViewPager2(graphViewPager)
+        wormDotsIndicator.setViewPager(graphViewPager)
+        // when user deletes Transaction or returns to this screen,
+        // this stops ViewPager2 from switching graphs
+        graphViewPager.setCurrentItem(selectedGraph, false)
+
     }
 
     /**
@@ -151,7 +173,7 @@ class GraphFragment : BaseFragment() {
                 emptyTextView.isVisible = false
                 pieChart     .isVisible = true
 
-                var typeName = ""
+                val typeName : String
 
                 // list of values to be displayed in PieChart
                 val pieEntries: MutableList<PieEntry> = mutableListOf()
@@ -212,8 +234,7 @@ class GraphFragment : BaseFragment() {
                 pieChart.setCenterTextSize(15f)
                 pieChart.setDrawCenterText(true)
                 pieChart.setUsePercentValues(true)
-                // givens chart animation on startup/change
-                pieChart.animateX(750, Easing.EaseInBack)
+                pieChart.invalidate()
             } else {
 
                 emptyTextView.isVisible = true

@@ -9,8 +9,8 @@
 
     <!-- Expense Chart Colors -->
     <color name="expenseColor1">#d50000</color>
-    <color name="expenseColor2">#c51162</color>
-    <color name="expenseColor3">#ffff00</color>
+    <color name="expenseColor2">#ffca28</color>
+    <color name="expenseColor3">#d500f9</color>
     <color name="expenseColor4">#ff6f00</color>
 
     <!-- Income Chart Colors -->
