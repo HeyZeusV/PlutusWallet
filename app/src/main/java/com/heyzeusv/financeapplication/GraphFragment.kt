@@ -29,8 +29,8 @@ import me.relex.circleindicator.CircleIndicator3
 class GraphFragment : BaseFragment() {
 
     //views
-    private lateinit var graphViewPager    : ViewPager2
-    private lateinit var wormDotsIndicator : CircleIndicator3
+    private lateinit var circleIndicator : CircleIndicator3
+    private lateinit var graphViewPager  : ViewPager2
 
     // lists used to hold CategoryTotals
     private var emptyList        : List<CategoryTotals>              = emptyList()
@@ -48,8 +48,8 @@ class GraphFragment : BaseFragment() {
 
         val view : View = inflater.inflate(R.layout.fragment_graph, container, false)
 
-        graphViewPager    = view.findViewById(R.id.graph_view_pager)       as ViewPager2
-        wormDotsIndicator = view.findViewById(R.id.graph_circle_indicator) as CircleIndicator3
+        circleIndicator = view.findViewById(R.id.graph_circle_indicator) as CircleIndicator3
+        graphViewPager  = view.findViewById(R.id.graph_view_pager)       as ViewPager2
 
         // clears previous lists
         transactionLists = mutableListOf(emptyList, emptyList)
@@ -123,7 +123,7 @@ class GraphFragment : BaseFragment() {
         // creates GraphAdapter to set with ViewPager2
         graphViewPager   .adapter     = GraphAdapter(transactionLists)
         // sets up Dots Indicator with ViewPager2
-        wormDotsIndicator.setViewPager(graphViewPager)
+        circleIndicator.setViewPager(graphViewPager)
         // when user deletes Transaction or returns to this screen,
         // this stops ViewPager2 from switching graphs
         graphViewPager.setCurrentItem(selectedGraph, false)

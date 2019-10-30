@@ -35,8 +35,11 @@ android {
     }
 }
 
-repositories {
+androidExtensions {
+    experimental = true
+}
 
+repositories {
     maven {url 'https://jitpack.io'}
 }
 
