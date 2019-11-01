@@ -2,6 +2,7 @@ package com.heyzeusv.financeapplication
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import java.util.*
 
 /**
  *  Data manager for GraphFragments.
@@ -19,8 +20,26 @@ class GraphViewModel : ViewModel() {
     /**
      *  Transaction queries
      */
-    fun categoryTotals(type : String) : LiveData<List<CategoryTotals>> {
+    /**
+     *  Tells Repository which CategoryTotals list to return.
+     *
+     *  Uses the values of date and type in order to determine which Transaction list is needed.
+     *
+     *  @param  date         boolean for date filter.
+     *  @param  type         either "Expense" or "Income".
+     *  @param  start        starting Date for date filter.
+     *  @param  end          ending Date for date filter.
+     *  @return LiveData object holding list of Transactions.
+     */
+    fun filteredCategoryTotals(date : Boolean?, type : String?, start : Date?, end : Date?)
+            : LiveData<List<CategoryTotals>> {
 
-        return transactionRepository.getLDCategoryTotals(type)
+        return if (date == true) {
+
+            transactionRepository.getLDCategoryTotals(type, start, end)
+        } else {
+
+            transactionRepository.getLDCategoryTotals(type)
+        }
     }
 }

@@ -21,7 +21,8 @@ abstract class ExpenseCategoryDao : BaseDao<ExpenseCategory>() {
      *
      *  @return the size of table.
      */
-    @Query("SELECT COUNT(*) FROM expensecategory")
+    @Query("""SELECT COUNT(*) 
+            FROM expensecategory""")
     abstract suspend fun getExpenseCategorySize() : Int?
 
     /**
@@ -29,6 +30,7 @@ abstract class ExpenseCategoryDao : BaseDao<ExpenseCategory>() {
      *
      *  @return LiveData object that holds List of all Categories.
      */
-    @Query("SELECT category FROM expensecategory")
+    @Query("""SELECT category 
+            FROM expensecategory""")
     abstract fun getExpenseCategoryNames() : LiveData<List<String>>
 }

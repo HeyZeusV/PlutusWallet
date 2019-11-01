@@ -2,6 +2,7 @@
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +21,15 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.heyzeusv.financeapplication.utilities.BaseFragment
 import me.relex.circleindicator.CircleIndicator3
+import java.util.*
 
  private const val TAG = "GraphFragment"
+ private const val ARG_CATEGORY      = "category"
+ private const val ARG_DATE          = "date"
+ private const val ARG_TYPE          = "type"
+ private const val ARG_CATEGORY_NAME = "category_name"
+ private const val ARG_START         = "start"
+ private const val ARG_END           = "end"
 
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.
@@ -32,9 +40,11 @@ class GraphFragment : BaseFragment() {
     private lateinit var circleIndicator : CircleIndicator3
     private lateinit var graphViewPager  : ViewPager2
 
-    // lists used to hold CategoryTotals
+    // lists used to hold CategoryTotals and Category names
     private var emptyList        : List<CategoryTotals>              = emptyList()
     private var transactionLists : MutableList<List<CategoryTotals>> = mutableListOf(emptyList, emptyList)
+    private var expenseNameList  : MutableList<String>               = mutableListOf()
+    private var incomeNameList   : MutableList<String>               = mutableListOf()
 
     // the graph being displayed
     private var selectedGraph = 0
@@ -60,12 +70,17 @@ class GraphFragment : BaseFragment() {
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // loads in arguments, if any
+        val date         : Boolean? = arguments?.getBoolean     (ARG_DATE)
+        val start        : Date?    = arguments?.getSerializable(ARG_START)         as Date?
+        val end          : Date?    = arguments?.getSerializable(ARG_END)           as Date?
+
         // LiveData of Expense Transactions
         val expenseTransactionListLiveData : LiveData<List<CategoryTotals>> =
-            graphViewModel.categoryTotals("Expense")
+            graphViewModel.filteredCategoryTotals(date, "Expense", start, end)
         // LiveData of Income Transactions
         val incomeTransactionListLiveData  : LiveData<List<CategoryTotals>> =
-            graphViewModel.categoryTotals("Income")
+            graphViewModel.filteredCategoryTotals(date, "Income", start, end)
 
         // register an observer on LiveData instance and tie life to another component
         expenseTransactionListLiveData.observe(
@@ -120,6 +135,17 @@ class GraphFragment : BaseFragment() {
      */
     private fun updateUI(transactionLists : MutableList<List<CategoryTotals>>) {
 
+        // clears Category name lists and re-adds new values
+        expenseNameList.clear()
+        incomeNameList .clear()
+        transactionLists[0].forEach {
+
+            expenseNameList.add(it.category)
+        }
+        transactionLists[1].forEach {
+
+            incomeNameList.add(it.category)
+        }
         // creates GraphAdapter to set with ViewPager2
         graphViewPager   .adapter     = GraphAdapter(transactionLists)
         // sets up Dots Indicator with ViewPager2
@@ -164,6 +190,15 @@ class GraphFragment : BaseFragment() {
         private val pieChart      : PieChart = itemView.findViewById(R.id.graph_pie)
         private val emptyTextView : TextView = itemView.findViewById(R.id.emptyTextView)
 
+        // load arguments if any
+        val category     : Boolean? = arguments?.getBoolean(ARG_CATEGORY)
+        val categoryName : String?  = arguments?.getString (ARG_CATEGORY_NAME)
+        val typeStored   : String?  = arguments?.getString (ARG_TYPE)
+
+        val expensePosition : Int = expenseNameList.indexOf(categoryName)
+        val incomePosition  : Int = incomeNameList .indexOf(categoryName)
+
+
         // sets the views with CategoryTotal data
         fun bind(categoryTotals : List<CategoryTotals>, type : Int) {
 
@@ -189,7 +224,7 @@ class GraphFragment : BaseFragment() {
                 // distance between slices
                 dataSet.sliceSpace     = 2.0f
                 // size of highlighted area
-                dataSet.selectionShift = 3.0f
+                dataSet.selectionShift = 0.0f
                 dataSet.valueTextSize  = 10f
                 // sets up the colors and typeName depending on type
                 if (type == 0) {
@@ -199,12 +234,38 @@ class GraphFragment : BaseFragment() {
                         dataSet.setColors(intArrayOf(R.color.expenseColor1, R.color.expenseColor2,
                             R.color.expenseColor3, R.color.expenseColor4), context)
                     }
+                    category?.let {
+                        if (category) {
+
+                            if (expensePosition != -1) {
+
+                                // size of highlighted area
+                                dataSet.selectionShift = 7.5f
+                            } else {
+
+                                dataSet.selectionShift = 0.0f
+                            }
+                        }
+                    }
                 } else {
 
                     typeName = getString(R.string.income)
                     context?.let {
                         dataSet.setColors(intArrayOf(R.color.incomeColor1, R.color.incomeColor2,
                             R.color.incomeColor3, R.color.incomeColor4), context)
+                    }
+                    category?.let {
+                        if (category) {
+
+                            if (incomePosition != -1) {
+
+                                // size of highlighted area
+                                dataSet.selectionShift = 7.5f
+                            } else {
+
+                                dataSet.selectionShift = 0.0f
+                            }
+                        }
                     }
                 }
 
@@ -234,6 +295,24 @@ class GraphFragment : BaseFragment() {
                 pieChart.setCenterTextSize(15f)
                 pieChart.setDrawCenterText(true)
                 pieChart.setUsePercentValues(true)
+                // highlights the category being searched on its respective PieChart
+                category?.let {
+
+                    if (category && typeStored == getString(R.string.expense)) {
+
+                        if (expensePosition != -1) {
+
+                            pieChart.highlightValue(expensePosition.toFloat(), 0)
+                        }
+                    }
+                    if (category && typeStored == getString(R.string.income)) {
+
+                        if (incomePosition != -1) {
+
+                            pieChart.highlightValue(incomePosition.toFloat(), 0)
+                        }
+                    }
+                }
                 pieChart.invalidate()
             } else {
 
@@ -251,6 +330,38 @@ class GraphFragment : BaseFragment() {
         fun newInstance() : GraphFragment {
 
             return GraphFragment()
+        }
+
+        /**
+         *  Initializes instance of GraphFragment.
+         *
+         *  Creates arguments Bundle, creates a Fragment instance, and attaches the
+         *  arguments to the Fragment.
+         *
+         *  @param  category     boolean for category filter.
+         *  @param  date         boolean for date filter.
+         *  @param  type         either "Expense" or "Income".
+         *  @param  categoryName category name to be searched in table of type.
+         *  @param  start        starting Date for date filter.
+         *  @param  end          ending Date for date filter.
+         *  @return TransactionListFragment instance.
+         */
+        fun newInstance(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) : GraphFragment {
+
+            val args : Bundle = Bundle().apply {
+
+                putBoolean     (ARG_CATEGORY     , category)
+                putBoolean     (ARG_DATE         , date)
+                putString      (ARG_TYPE         , type)
+                putString      (ARG_CATEGORY_NAME, categoryName)
+                putSerializable(ARG_START        , start)
+                putSerializable(ARG_END          , end)
+            }
+
+            return GraphFragment().apply {
+
+                arguments = args
+            }
         }
     }
 }

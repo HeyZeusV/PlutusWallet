@@ -24,7 +24,9 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param id id of Transaction to be returned.
      *  @return LiveData object that holds Transaction to be returned.
      */
-    @Query("SELECT * FROM `transaction` WHERE id=(:id)")
+    @Query("""SELECT * 
+            FROM `transaction` 
+            WHERE id=(:id)""")
     abstract fun getLDTransaction(id : Int) : LiveData<Transaction?>
 
     /**
@@ -32,7 +34,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *
      *  @return LiveData object that holds List of all Transactions.
      */
-    @Query("SELECT * FROM `transaction`")
+    @Query("""SELECT * 
+            FROM `transaction`""")
     abstract fun getLDTransactions() : LiveData<List<Transaction>>
 
     /**
@@ -41,7 +44,9 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  type either "Expense" or "Income"
      *  @return LiveData object that holds List of all Transactions with given Type
      */
-    @Query("SELECT * FROM `transaction` WHERE type=(:type)")
+    @Query("""SELECT * 
+            FROM `transaction` 
+            WHERE type=(:type)""")
     abstract fun getLDTransactions(type : String?) : LiveData<List<Transaction>>
 
     /**
@@ -51,7 +56,9 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  category the category to be matched against.
      *  @return LiveData object that holds List of all Transactions with given Type and category.
      */
-    @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category)")
+    @Query("""SELECT * 
+            FROM `transaction` 
+            WHERE type=(:type) AND category=(:category)""")
     abstract fun getLDTransactions(type : String?, category : String?) : LiveData<List<Transaction>>
 
     /**
@@ -61,7 +68,9 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  end   the end Date to be compared with.
      *  @return LiveData object that holds List of all Transactions within given Dates in table.
      */
-    @Query("SELECT * FROM `transaction` WHERE date BETWEEN :start AND :end")
+    @Query("""SELECT * 
+            FROM `transaction` 
+            WHERE date BETWEEN :start AND :end""")
     abstract fun getLDTransactions(start : Date?, end : Date?) : LiveData<List<Transaction>>
 
     /**
@@ -73,7 +82,9 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  end      the end Date to be compared with.
      *  @return LiveDate object that holds list of all Transactions with given Type and Category and within given Dates.
      */
-    @Query("SELECT * FROM `transaction` WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end")
+    @Query("""SELECT * 
+            FROM `transaction` 
+            WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end""")
     abstract fun getLDTransactions(type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>
 
     /**
@@ -82,8 +93,23 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  type the type of Transactions to be returned.
      *  @return CategoryTotal is helper object that holds Category and the sum of Totals
      */
-    @Query("SELECT category, SUM(total) AS total FROM `transaction` WHERE type=(:type) GROUP BY category")
-    abstract fun getLDCategoryTotals(type : String) : LiveData<List<CategoryTotals>>
+    @Query("""SELECT category, SUM(total) AS total 
+            FROM `transaction` 
+            WHERE type=(:type) 
+            GROUP BY category""")
+    abstract fun getLDCategoryTotals(type : String?) : LiveData<List<CategoryTotals>>
+
+    /**
+     *  Returns sum of Totals of each Category in said Type.
+     *
+     *  @param  type the type of Transactions to be returned.
+     *  @return CategoryTotal is helper object that holds Category and the sum of Totals
+     */
+    @Query("""SELECT category, SUM(total) AS total 
+            FROM `transaction` 
+            WHERE type=(:type) AND date BETWEEN :start AND :end
+            GROUP BY category""")
+    abstract fun getLDCategoryTotals(type : String?, start : Date?, end : Date?) : LiveData<List<CategoryTotals>>
 
     /**
      *  Returns all transactions where futureDate is before currentDate and futureTCreated is false.
@@ -91,7 +117,9 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  currentDate the Date at which this query is ran at.
      *  @return list of all Transactions with futureDate before currentDate and futureTCreated is false.
      */
-    @Query("SELECT * FROM `transaction` WHERE futureDate < :currentDate AND futureTCreated == 0")
+    @Query("""SELECT * 
+            FROM `transaction` 
+            WHERE futureDate < :currentDate AND futureTCreated == 0""")
     abstract suspend fun getFutureTransactions(currentDate : Date) : List<Transaction>
 
 }

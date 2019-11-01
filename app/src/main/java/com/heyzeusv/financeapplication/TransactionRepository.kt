@@ -49,7 +49,8 @@ class TransactionRepository private constructor(context : Context){
     fun getLDTransactions  (type : String?, category : String?)                             : LiveData<List<Transaction>>    = transactionDao.getLDTransactions  (type, category)
     fun getLDTransactions  (type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>    = transactionDao.getLDTransactions  (type, category, start, end)
     fun getLDTransactions  (                                    start : Date?, end : Date?) : LiveData<List<Transaction>>    = transactionDao.getLDTransactions  (                start, end)
-    fun getLDCategoryTotals(type : String)                                                  : LiveData<List<CategoryTotals>> = transactionDao.getLDCategoryTotals(type)
+    fun getLDCategoryTotals(type : String?)                                                 : LiveData<List<CategoryTotals>> = transactionDao.getLDCategoryTotals(type)
+    fun getLDCategoryTotals(type : String?,                     start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLDCategoryTotals(type,           start, end)
     suspend fun getFutureTransactionsAsync(currentDate  : Date)              : Deferred<List<Transaction>> = withContext(Dispatchers.IO) { async  {transactionDao.getFutureTransactions(currentDate)}}
     suspend fun deleteTransaction         (transaction  : Transaction)       : Job                         = withContext(Dispatchers.IO) { launch {transactionDao.delete(transaction)}}
     suspend fun insertTransaction         (transaction  : Transaction)       : Job                         = withContext(Dispatchers.IO) { launch {transactionDao.insert(transaction)}}

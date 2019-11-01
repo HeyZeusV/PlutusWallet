@@ -69,6 +69,8 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
 
         val filteredTransactionListFragment : TransactionListFragment =
             TransactionListFragment.newInstance(category, date, type, categoryName, start, end)
+        val filteredGraphFragment           : GraphFragment           =
+            GraphFragment          .newInstance(category, date, type, categoryName, start, end)
 
         // Create a new fragment transaction, add fragments,
         // and then commit it
@@ -77,6 +79,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
             // replace fragment hosted at location with new fragment provided
             // will add fragment even if there is none
             .replace(R.id.fragment_transaction_list_container, filteredTransactionListFragment)
+            .replace(R.id.fragment_graph_container           , filteredGraphFragment)
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
             .commit()
