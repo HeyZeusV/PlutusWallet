@@ -1,0 +1,23 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ListPreference
+        app:key="currencySymbol"
+        app:title="@string/preferences_currency_symbol"
+        app:entries="@array/currency_symbol_array"
+        app:entryValues="@array/currency_symbol_key_array"
+        app:useSimpleSummaryProvider="true"/>
+
+    <SwitchPreference
+        app:key="currencySymbolSide"
+        app:title="@string/preferences_symbol_side"
+        app:summary="@string/preferences_symbol_side_summary"/>
+
+    <SeekBarPreference
+        app:key="numberDecimal"
+        app:title="@string/preferences_number_decimal"
+        app:showSeekBarValue="true"
+        android:defaultValue="2"
+        android:max="4"/>
+</PreferenceScreen>

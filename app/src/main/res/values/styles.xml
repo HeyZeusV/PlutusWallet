@@ -5,11 +5,11 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorSecondary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <item name="windowActionBar">false</item>
+        <item name="windowActionBar">true</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -20,4 +20,16 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <!-- Icon only Material Button -->
+    <style name="Widget.MaterialComponents.Button.Icon.Custom" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="rippleColor">?colorOnBackground</item>
+        <item name="cornerRadius">100dp</item>
+    </style>
 </resources>

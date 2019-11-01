@@ -40,7 +40,7 @@ androidExtensions {
 }
 
 repositories {
-    maven {url 'https://jitpack.io'}
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -61,6 +61,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0-alpha01'
     // MPAndroidChart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    // Preferences
+    implementation 'androidx.preference:preference:1.1.0'
     // RecyclerView
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     // Room API

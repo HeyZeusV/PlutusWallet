@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="currency_symbol_array">
+        <item>$</item>
+        <item>€</item>
+        <item>£</item>
+        <item>¥</item>
+        <item>₹</item>
+        <item>₩</item>
+        <item>฿</item>
+    </string-array>
+    
+    <string-array name="currency_symbol_key_array">
+        <item>dollar</item>
+        <item>euro</item>
+        <item>pound</item>
+        <item>yen</item>
+        <item>rupee</item>
+        <item>won</item>
+        <item>baht</item>
+    </string-array>
+</resources>
