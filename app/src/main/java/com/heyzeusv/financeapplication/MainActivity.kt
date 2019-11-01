@@ -1,16 +1,14 @@
 package com.heyzeusv.financeapplication
 
-import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BlankFragment
-import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 private const val TAG = "MainActivity"
@@ -23,7 +21,6 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
     // views
     private lateinit var fab               : FloatingActionButton
     private lateinit var settingsButton    : MaterialButton
-    private lateinit var settingsContainer : FrameLayout
 
     // position of FAB, depends on device
     private var fabX = 0
@@ -33,13 +30,8 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // hides the ActionBar on this activity including all Fragments
-        supportActionBar!!.hide()
-
         fab               = findViewById(R.id.activity_fab)
         settingsButton    = findViewById(R.id.fragment_settings)
-        settingsContainer = findViewById(R.id.fragment_settings_container)
-
 
         // FragmentManager adds fragments to an activity
         val currentFragment : Fragment? =
@@ -53,7 +45,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
             val filterFragment          : FilterFragment          = FilterFragment         .newInstance()
             val graphFragment           : GraphFragment           = GraphFragment          .newInstance()
 
-            // Create a new fragment transaction, add fragments, and then commit it
+            // Create a new fragment transaction, adds fragments, and then commit it
             supportFragmentManager
                 .beginTransaction()
                 // container view ID (where fragment's view should appear)
@@ -69,43 +61,12 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
     override fun onStart() {
         super.onStart()
 
-        // clicking the settingsButton will start a SettingsFragment
+        // clicking the settingsButton will start SettingsActivity
         settingsButton.setOnClickListener {
 
-            val blankFragment                             = BlankFragment()
-            val blankFragment2                            = BlankFragment()
-            val blankFragment3                            = BlankFragment()
-
-            // Create a new fragment transaction, add fragments, and then commit it
-            supportFragmentManager
-                .beginTransaction()
-                // replace fragment hosted at location with new fragment provided
-                // will add fragment even if there is none
-                .replace(R.id.fragment_transaction_list_container, blankFragment)
-                .replace(R.id.fragment_filter_container          , blankFragment2)
-                .replace(R.id.fragment_graph_container           , blankFragment3)
-                .replace(R.id.fragment_settings_container        , SettingsFragment())
-                // pressing back button will go back to previous fragment (if any)
-                .addToBackStack(null)
-                .commit()
-
-            // makes only SettingsFragment visible
-            fragment_settings_container.visibility = View.VISIBLE
-            settingsButton             .visibility = View.INVISIBLE
+            val settingsIntent = Intent(this, SettingsActivity::class.java)
+            startActivity(settingsIntent)
         }
-    }
-
-    @SuppressLint("RestrictedApi")
-    override fun onBackPressed() {
-        super.onBackPressed()
-
-        // hides container holding SettingsFragment
-        fragment_settings_container.visibility = View.INVISIBLE
-        settingsButton             .visibility = View.VISIBLE
-        // stops animation of hiding ActionBar
-        supportActionBar!!.setShowHideAnimationEnabled(false)
-        // hides ActionBar
-        supportActionBar!!.hide()
     }
 
     /**
@@ -127,7 +88,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
         val filteredGraphFragment           : GraphFragment           =
             GraphFragment          .newInstance(category, date, type, categoryName, start, end)
 
-        // Create a new fragment transaction, add fragments, and then commit it
+        // Create a new fragment transaction, adds fragments, and then commit it
         supportFragmentManager
             .beginTransaction()
             // replace fragment hosted at location with new fragment provided
@@ -155,7 +116,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
         val blankFragment2                            = BlankFragment()
         val blankFragment3                            = BlankFragment()
 
-        // Create a new fragment transaction, add fragments,
+        // Create a new fragment transaction, adds fragments,
         // and then commit it
         supportFragmentManager
             .beginTransaction()

@@ -49,4 +49,5 @@
     <string name="preferences_symbol_side">Symbol Side</string>
     <string name="preferences_symbol_side_summary">On places symbol on left hand side.</string>
     <string name="preferences_number_decimal">Decimal Places</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>
