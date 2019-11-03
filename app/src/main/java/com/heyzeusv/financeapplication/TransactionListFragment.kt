@@ -13,12 +13,14 @@ import androidx.core.view.size
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
+import com.heyzeusv.financeapplication.utilities.Utils
 import kotlinx.coroutines.*
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -33,6 +35,9 @@ private const val ARG_CATEGORY_NAME = "category_name"
 private const val ARG_START         = "start"
 private const val ARG_END           = "end"
 private const val KEY_MAX_ID        = "key_max_id"
+private const val KEY_CURRENCY_SYMBOL = "key_currency_symbol"
+private const val KEY_DECIMAL_PLACES  = "key_decimal_places"
+private const val KEY_SYMBOL_SIDE     = "key_symbol_side"
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -71,7 +76,12 @@ class TransactionListFragment : BaseFragment() {
     // holds position of RecyclerView so that it doesn't reset when user returns
     private var recyclerViewPosition : Int = 0
 
-    private var maxId : Int = 0
+    // used for SharedPreferences
+    private var decimalPlaces : Boolean = true
+    private var maxId         : Int     = 0
+    private var symbolSide    : Boolean = true
+    private var symbolKey     : String  = "dollar"
+    private var symbol        : String  = "$"
 
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
@@ -112,10 +122,9 @@ class TransactionListFragment : BaseFragment() {
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(
             transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
-        // loads maxId from SharedPreferences
-        sp    = activity!!.getSharedPreferences("FinanceApplicationPref", Context.MODE_PRIVATE)
+        // retrieves any saved preferences
+        sp    = PreferenceManager.getDefaultSharedPreferences(activity)
         maxId = sp.getInt(KEY_MAX_ID, 0)
-        Log.d(TAG, " MaxId: $maxId")
 
         return view
     }
@@ -169,6 +178,16 @@ class TransactionListFragment : BaseFragment() {
             // creates a new Transaction
             recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
         }
+
+        // retrieves any saved preferences
+        decimalPlaces = sp.getBoolean(KEY_DECIMAL_PLACES, true)
+        symbolSide    = sp.getBoolean(KEY_SYMBOL_SIDE, true)
+        symbolKey     = sp.getString(KEY_CURRENCY_SYMBOL, "dollar")!!
+
+        // retrieves symbol to be used according to settings
+        symbol = Utils.getSymbol(symbolKey)
+        // tell RecyclerView that symbol has been changed
+        transactionAdapter?.notifyDataSetChanged()
     }
 
     override fun onResume() {
@@ -431,18 +450,30 @@ class TransactionListFragment : BaseFragment() {
         fun bind(transaction : Transaction) {
 
             this.transaction   = transaction
-            titleTextView.text = this      .transaction.title
-            dateTextView. text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
-            val total      = transaction.total.toString()
+            titleTextView.text = this       .transaction.title
+            dateTextView .text = DateFormat .getDateInstance(DateFormat.FULL).format(this.transaction.date)
+            val total      : String = transaction.total.toString()
             // splits total into integer and fractional parts
-            val totalSplit = total.split(".")
+            val totalSplit : List<String> = total.split(".")
             // formats the Total correctly
             if (totalSplit[0] == "0") {
 
-                totalTextView.text = getString(R.string.total_number, String.format("%.2f", this.transaction.total))
+                if (symbolSide) {
+
+                    totalTextView.text = getString(R.string.total_number_symbol, symbol, String.format("%.2f", this.transaction.total))
+                } else {
+
+                    totalTextView.text = getString(R.string.total_number_symbol, String.format("%.2f", this.transaction.total), symbol)
+                }
             } else {
 
-                totalTextView.text = getString(R.string.total_number, formatter.format(this.transaction.total))
+                if (symbolSide) {
+
+                    totalTextView.text = getString(R.string.total_number_symbol, symbol, formatter.format(this.transaction.total))
+                } else {
+
+                    totalTextView.text = getString(R.string.total_number_symbol, formatter.format(this.transaction.total), symbol)
+                }
             }
             context?.let {
                 // changes the color depending on Type

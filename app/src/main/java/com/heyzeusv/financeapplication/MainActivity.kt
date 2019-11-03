@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -98,6 +99,12 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
             .commit()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        settingsButton.isVisible = true
     }
 
     /**

@@ -2,10 +2,11 @@ package com.heyzeusv.financeapplication
 
 import android.animation.Animator
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
+import android.text.Spanned
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,9 +14,12 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
+import androidx.preference.PreferenceManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -23,20 +27,24 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
+import com.heyzeusv.financeapplication.utilities.Utils
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.*
 import kotlin.math.hypot
 
-private const val TAG                = "TransactionFragment"
-private const val ARG_TRANSACTION_ID = "transaction_id"
-private const val ARG_FAB_X          = "fab_X"
-private const val ARG_FAB_Y          = "fab_Y"
-private const val ARG_FROM_FAB       = "from_fab"
-private const val DIALOG_DATE        = "DialogDate"
-private const val REQUEST_DATE       = 0
-private const val KEY_MAX_ID         = "key_max_id"
+private const val TAG                 = "TransactionFragment"
+private const val ARG_TRANSACTION_ID  = "transaction_id"
+private const val ARG_FAB_X           = "fab_X"
+private const val ARG_FAB_Y           = "fab_Y"
+private const val ARG_FROM_FAB        = "from_fab"
+private const val DIALOG_DATE         = "DialogDate"
+private const val REQUEST_DATE        = 0
+private const val KEY_MAX_ID          = "key_max_id"
+private const val KEY_CURRENCY_SYMBOL = "key_currency_symbol"
+private const val KEY_DECIMAL_PLACES  = "key_decimal_places"
+private const val KEY_SYMBOL_SIDE     = "key_symbol_side"
 
 /**
  *  Shows all the information in database of one fragment and allows users to edit any field and save changes.
@@ -52,6 +60,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var expenseChip            : Chip
     private lateinit var incomeChip             : Chip
     private lateinit var typeChipGroup          : ChipGroup
+    private lateinit var transactionLayout      : ConstraintLayout
     private lateinit var totalField             : CurrencyEditText
     private lateinit var titleField             : EditText
     private lateinit var memoField              : EditText
@@ -62,7 +71,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var incomeCategorySpinner  : Spinner
     private lateinit var frequencyPeriodSpinner : Spinner
     private lateinit var frequencyText          : TextView
-
+    private lateinit var symbolLeftText         : TextView
+    private lateinit var symbolRightText        : TextView
     private lateinit var transaction            : Transaction
 
     // arrays holding values for frequency spinner
@@ -78,7 +88,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var newCategoryName                                = ""
     private var madeNewCategory                                = false
 
-    private var maxId : Int = 0
+    // used for SharedPreferences
+    private var maxId         : Int     = 0
+    private var decimalPlaces : Boolean = true
+    private var symbolSide    : Boolean = true
+    private var symbolKey     : String  = "dollar"
 
     // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
@@ -109,6 +123,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         expenseChip            = view.findViewById(R.id.transaction_expense_chip)     as Chip
         incomeChip             = view.findViewById(R.id.transaction_income_chip)      as Chip
         typeChipGroup          = view.findViewById(R.id.transaction_type_chips)       as ChipGroup
+        transactionLayout      = view.findViewById(R.id.transaction_constraint)       as ConstraintLayout
         totalField             = view.findViewById(R.id.transaction_total)            as CurrencyEditText
         titleField             = view.findViewById(R.id.transaction_title)            as EditText
         memoField              = view.findViewById(R.id.transaction_memo)             as EditText
@@ -119,6 +134,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         incomeCategorySpinner  = view.findViewById(R.id.transaction_income_category)  as Spinner
         frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
         frequencyText          = view.findViewById(R.id.frequencyTextView)            as TextView
+        symbolLeftText         = view.findViewById(R.id.symbolLeftTextView)           as TextView
+        symbolRightText        = view.findViewById(R.id.symbolRightTextView)          as TextView
 
         // set up for the frequencyPeriodSpinner
         val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencySingleArray)
@@ -151,10 +168,55 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             updateUI()
         }
 
-        // loads maxId from SharedPreferences
-        sp    = activity!!.getSharedPreferences("FinanceApplicationPref", Context.MODE_PRIVATE)
-        maxId = sp.getInt(KEY_MAX_ID, 0)
-        Log.d(TAG, " MaxId: $maxId")
+        // retrieves any saved preferences
+        sp            = PreferenceManager.getDefaultSharedPreferences(activity)
+        decimalPlaces = sp.getBoolean(KEY_DECIMAL_PLACES, true)
+        symbolSide    = sp.getBoolean(KEY_SYMBOL_SIDE, true)
+        symbolKey     = sp.getString (KEY_CURRENCY_SYMBOL, "dollar")!!
+        maxId         = sp.getInt    (KEY_MAX_ID, 0)
+
+        // retrieves symbol to be used according to settings
+        val symbol : String = Utils.getSymbol(symbolKey)
+        symbolLeftText  .text = symbol
+        symbolRightText .text = symbol
+
+        // if symbol on right side
+        if (!symbolSide) {
+
+            // used to change constraints
+            val totalConstraintSet = ConstraintSet()
+            totalConstraintSet.clone(transactionLayout)
+            totalConstraintSet.connect(R.id.transaction_total, ConstraintSet.START,
+                                       R.id.totalTextView, ConstraintSet.END, 0)
+            totalConstraintSet.connect(R.id.transaction_total, ConstraintSet.END,
+                                       R.id.symbolRightTextView, ConstraintSet.START, 0)
+            totalConstraintSet.applyTo(transactionLayout)
+            // text starts to right
+            totalField        .textDirection = View.TEXT_DIRECTION_RTL
+            symbolLeftText    .isVisible     = false
+            symbolRightText   .isVisible     = true
+        }
+
+        // user selects no decimal places
+        if (!decimalPlaces) {
+
+            // filter that prevents user from typing '.' thus only integers
+            val filter = object:InputFilter {
+
+                override fun filter(source : CharSequence?, start : Int, end : Int, dest : Spanned?, dstart : Int, dend : Int) : CharSequence? {
+
+                    for (i in start until end) {
+
+                        if (source != null && source == ".") {
+
+                            return ""
+                        }
+                    }
+                    return null
+                }
+            }
+            totalField.filters = arrayOf(filter)
+        }
 
         return view
     }
@@ -437,16 +499,26 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 transaction.frequency = 1
             }
 
-            // converts the totalField into BigDecimal
-            try {
-                transaction.total = BigDecimal(
-                    totalField.text.toString()
-                        .replace("$", "")
-                        .replace(",", "")
-                )
-            } catch (e : java.lang.NumberFormatException) {
+            // sets up Total and totalField
+            when {
+                totalField.text.toString() != "" -> {
 
-                transaction.total = BigDecimal("0.00")
+                    // converts the totalField into BigDecimal
+                    transaction.total = BigDecimal(
+                        totalField.text.toString()
+                            .replace(",", "")
+                    )
+                }
+                decimalPlaces -> {
+
+                    transaction.total = BigDecimal(0.00)
+                    totalField.setText("0.00")
+                }
+                else -> {
+
+                    transaction.total = BigDecimal(0)
+                    totalField.setText("0")
+                }
             }
 
             // deals with either creating, updating, or deleting a future Transaction
