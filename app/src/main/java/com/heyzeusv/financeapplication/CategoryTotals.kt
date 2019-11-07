@@ -10,6 +10,6 @@ import java.math.BigDecimal
  *  @param total    the total of all the Transactions of same Category.
  */
 data class CategoryTotals(
-    val category : String,
-    val total    : BigDecimal
+    var category : String,
+    var total    : BigDecimal
 )

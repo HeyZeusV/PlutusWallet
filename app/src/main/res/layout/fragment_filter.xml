@@ -42,10 +42,14 @@
 
                 <CheckBox
                     android:id="@+id/filter_category_check"
-                    android:layout_width="30dp"
-                    android:layout_height="27dp"
-                    android:layout_marginTop="7dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="0dp"
                     android:layout_marginEnd="3dp"
+                    android:translationY="-1dp"
+                    android:translationX="5dp"
+                    android:background="?android:attr/listChoiceIndicatorMultiple"
+                    android:button="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,7 +70,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:enabled="false"
                     android:insetTop="0dp"
@@ -80,7 +84,7 @@
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/typeTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/filter_category_check" />
+                    app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
 
                 <Spinner
                     android:id="@+id/filter_expense_category"
@@ -117,10 +121,13 @@
 
                 <CheckBox
                     android:id="@+id/filter_date_check"
-                    android:layout_width="30dp"
-                    android:layout_height="27dp"
-                    android:layout_marginTop="38dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="29dp"
                     android:layout_marginEnd="3dp"
+                    android:background="?android:attr/listChoiceIndicatorMultiple"
+                    android:button="@null"
+                    android:translationX="5dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
 

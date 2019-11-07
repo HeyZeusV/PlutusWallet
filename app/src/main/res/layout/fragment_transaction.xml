@@ -264,9 +264,11 @@
 
                 <CheckBox
                     android:id="@+id/transaction_repeating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="5dp"
+                    android:background="?android:attr/listChoiceIndicatorMultiple"
+                    android:button="@null"
                     android:paddingStart="8dip"
                     android:paddingEnd="8dip"
                     app:layout_constraintStart_toEndOf="@+id/repeatingTextView"

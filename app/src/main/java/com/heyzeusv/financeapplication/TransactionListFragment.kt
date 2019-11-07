@@ -86,8 +86,9 @@ class TransactionListFragment : BaseFragment() {
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
-    // formatter used for Total
-    val formatter = DecimalFormat("#,###.00", DecimalFormatSymbols.getInstance(Locale.US))
+    // formatters used for Total
+    val decimalFormatter = DecimalFormat("#,##0.00", DecimalFormatSymbols.getInstance(Locale.US))
+    val integerFormatter = DecimalFormat("#,###", DecimalFormatSymbols.getInstance(Locale.US))
 
     // provides instance of ViewModel
     private val transactionListViewModel : TransactionListViewModel by lazy {
@@ -141,6 +142,8 @@ class TransactionListFragment : BaseFragment() {
         val start        : Date?    = arguments?.getSerializable(ARG_START)         as Date?
         val end          : Date?    = arguments?.getSerializable(ARG_END)           as Date?
 
+        Log.d(TAG, "$category, $date, $type, $categoryName, $start, $end")
+
         // tells ViewModel which query to run on Transactions
         val transactionListLiveData : LiveData<List<Transaction>> =
             transactionListViewModel.filteredTransactionList(category, date, type, categoryName, start, end)
@@ -153,7 +156,8 @@ class TransactionListFragment : BaseFragment() {
             Observer { transactions ->
                 // if not null
                 transactions?.let {
-                    Log.i(TAG, "Got crimes ${transactions.size}")
+
+                    Log.i(TAG, "Got crimes $transactions")
                     updateUI(transactions)
                 }
             }
@@ -452,27 +456,24 @@ class TransactionListFragment : BaseFragment() {
             this.transaction   = transaction
             titleTextView.text = this       .transaction.title
             dateTextView .text = DateFormat .getDateInstance(DateFormat.FULL).format(this.transaction.date)
-            val total      : String = transaction.total.toString()
-            // splits total into integer and fractional parts
-            val totalSplit : List<String> = total.split(".")
             // formats the Total correctly
-            if (totalSplit[0] == "0") {
+            if (decimalPlaces) {
 
                 if (symbolSide) {
 
-                    totalTextView.text = getString(R.string.total_number_symbol, symbol, String.format("%.2f", this.transaction.total))
+                    totalTextView.text = getString(R.string.total_number_symbol, symbol, decimalFormatter.format(this.transaction.total))
                 } else {
 
-                    totalTextView.text = getString(R.string.total_number_symbol, String.format("%.2f", this.transaction.total), symbol)
+                    totalTextView.text = getString(R.string.total_number_symbol, decimalFormatter.format(this.transaction.total), symbol)
                 }
             } else {
 
                 if (symbolSide) {
 
-                    totalTextView.text = getString(R.string.total_number_symbol, symbol, formatter.format(this.transaction.total))
+                    totalTextView.text = getString(R.string.total_number_symbol, symbol, integerFormatter.format(this.transaction.total))
                 } else {
 
-                    totalTextView.text = getString(R.string.total_number_symbol, formatter.format(this.transaction.total), symbol)
+                    totalTextView.text = getString(R.string.total_number_symbol, integerFormatter.format(this.transaction.total), symbol)
                 }
             }
             context?.let {

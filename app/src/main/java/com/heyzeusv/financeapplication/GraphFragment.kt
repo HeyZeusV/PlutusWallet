@@ -21,9 +21,10 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.heyzeusv.financeapplication.utilities.BaseFragment
 import me.relex.circleindicator.CircleIndicator3
+import java.math.BigDecimal
 import java.util.*
 
- private const val TAG = "GraphFragment"
+ private const val TAG               = "GraphFragment"
  private const val ARG_CATEGORY      = "category"
  private const val ARG_DATE          = "date"
  private const val ARG_TYPE          = "type"
@@ -90,7 +91,7 @@ class GraphFragment : BaseFragment() {
             Observer { expenseList ->
                 // if not null
                 expenseList?.let {
-                    transactionLists[0] = expenseList
+                    transactionLists[0] = calculateTotals("Expense", expenseList)
                     updateUI(transactionLists)
                 }
             }
@@ -104,7 +105,7 @@ class GraphFragment : BaseFragment() {
             Observer { incomeList ->
                 // if not null
                 incomeList?.let {
-                    transactionLists[1] = incomeList
+                    transactionLists[1] = calculateTotals("Income", incomeList)
                     updateUI(transactionLists)
                 }
             }
@@ -129,23 +130,67 @@ class GraphFragment : BaseFragment() {
     }
 
     /**
+     *  Calculates the sum of all Totals of the same Category from given CategoryTotals list
+     *
+     *  @param  type              used to tell which Category name list to edit
+     *  @param  categoryTotalList list holding CategoryTotals to be summed up
+     *  @return list holding CategoryTotals with unique Category names totals summed up
+     */
+    private fun calculateTotals(type : String, categoryTotalList : List<CategoryTotals>) : List<CategoryTotals> {
+
+        // list holding unique Category names
+        val categoryList              : MutableList<String>         = mutableListOf()
+        // list holding CategoryTotals with unique Category names totals summed up
+        val updatedCategoryTotalsList : MutableList<CategoryTotals> = mutableListOf()
+
+        // used to get list of unique Category names
+        categoryTotalList.forEach {
+
+            if (!categoryList.contains(it.category)) {
+
+                categoryList.add(it.category)
+            }
+        }
+
+        // used to get CategoryTotals, 1 for each Category obtained above
+        categoryList.forEach { category : String ->
+
+            val categoryTotal = CategoryTotals(category, BigDecimal(0))
+            var total         = 0.0f
+            // calculates sum of all Totals with the same Category of this CategoryTotals
+            categoryTotalList.forEach {
+
+                if (it.category == category) {
+
+                    total += it.total.toFloat()
+                }
+            }
+            categoryTotal.total = BigDecimal(total.toString())
+            updatedCategoryTotalsList.add(categoryTotal)
+        }
+
+        // clears Category name lists and re-adds new values
+        if (type == "Expense") {
+
+            expenseNameList.clear()
+            expenseNameList = categoryList
+            Log.d(TAG, "EXPENSE: $expenseNameList")
+        } else {
+
+            incomeNameList.clear()
+            incomeNameList = categoryList
+            Log.d(TAG, "INCOME: $incomeNameList")
+        }
+
+        return updatedCategoryTotalsList
+    }
+    /**
      *  Ensures the UI is up to date with correct information.
      *
      *  @param transactionLists list of lists of CategoryTotals to be converted to graphs.
      */
     private fun updateUI(transactionLists : MutableList<List<CategoryTotals>>) {
 
-        // clears Category name lists and re-adds new values
-        expenseNameList.clear()
-        incomeNameList .clear()
-        transactionLists[0].forEach {
-
-            expenseNameList.add(it.category)
-        }
-        transactionLists[1].forEach {
-
-            incomeNameList.add(it.category)
-        }
         // creates GraphAdapter to set with ViewPager2
         graphViewPager   .adapter     = GraphAdapter(transactionLists)
         // sets up Dots Indicator with ViewPager2
@@ -216,13 +261,17 @@ class GraphFragment : BaseFragment() {
                 // adds values in categoryTotals list into list holding chart data
                 categoryTotals.forEach {
 
-                    pieEntries.add(PieEntry(it.total.toFloat(), it.category))
+                    // only adds values that are greater than 0
+                    if (it.total.toFloat() != 0.0f) {
+
+                        pieEntries.add(PieEntry(it.total.toFloat(), it.category))
+                    }
                 }
 
                 // PieDataSet set up
                 val dataSet = PieDataSet(pieEntries, "Transactions")
                 // distance between slices
-                dataSet.sliceSpace     = 2.0f
+                dataSet.sliceSpace     = 2.5f
                 // size of highlighted area
                 dataSet.selectionShift = 0.0f
                 dataSet.valueTextSize  = 10f
@@ -298,14 +347,14 @@ class GraphFragment : BaseFragment() {
                 // highlights the category being searched on its respective PieChart
                 category?.let {
 
-                    if (category && typeStored == getString(R.string.expense)) {
+                    if (it && typeStored == getString(R.string.expense) && typeName == getString(R.string.expense)) {
 
                         if (expensePosition != -1) {
 
                             pieChart.highlightValue(expensePosition.toFloat(), 0)
                         }
                     }
-                    if (category && typeStored == getString(R.string.income)) {
+                    if (it && typeStored == getString(R.string.income) && typeName == getString(R.string.income)) {
 
                         if (incomePosition != -1) {
 
