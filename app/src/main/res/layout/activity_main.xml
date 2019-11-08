@@ -60,10 +60,10 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/fragment_settings"
         style="@style/Widget.MaterialComponents.Button.Icon.Custom"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="4dp"
         android:clickable="true"
         android:focusable="true"
         app:icon="@drawable/ic_baseline_menu_30"

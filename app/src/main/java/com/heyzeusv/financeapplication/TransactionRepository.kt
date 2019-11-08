@@ -48,6 +48,7 @@ class TransactionRepository private constructor(context : Context){
     fun getLDTransactions  (type : String?)                                                 : LiveData<List<Transaction>>    = transactionDao.getLDTransactions  (type)
     fun getLDTransactions  (type : String?, category : String?)                             : LiveData<List<Transaction>>    = transactionDao.getLDTransactions  (type, category)
     fun getLDTransactions  (type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>    = transactionDao.getLDTransactions  (type, category, start, end)
+    fun getLDTransactions  (type : String?,                     start : Date?, end : Date?) : LiveData<List<Transaction>>    = transactionDao.getLDTransactions  (type,           start, end)
     fun getLDTransactions  (                                    start : Date?, end : Date?) : LiveData<List<Transaction>>    = transactionDao.getLDTransactions  (                start, end)
     fun getLDCategoryTotals(type : String?)                                                 : LiveData<List<CategoryTotals>> = transactionDao.getLDCategoryTotals(type)
     fun getLDCategoryTotals(type : String?,                     start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLDCategoryTotals(type,           start, end)

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.size
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -69,6 +70,7 @@ class TransactionListFragment : BaseFragment() {
     // views
     private lateinit var transactionAddFab       : FloatingActionButton
     private lateinit var transactionRecyclerView : RecyclerView
+    private lateinit var emptyListTextView       : TextView
 
     // used to tell if app is first starting up
     private var startUp : Boolean = true
@@ -108,6 +110,7 @@ class TransactionListFragment : BaseFragment() {
 
         transactionAddFab       = view.findViewById(R.id.transaction_add_fab)       as FloatingActionButton
         transactionRecyclerView = view.findViewById(R.id.transaction_recycler_view) as RecyclerView
+        emptyListTextView       = view.findViewById(R.id.emptyListTextView)         as TextView
 
         val linearLayoutManager = LinearLayoutManager(context)
         // newer items will be displayed at the top of RecyclerView
@@ -156,7 +159,8 @@ class TransactionListFragment : BaseFragment() {
             Observer { transactions ->
                 // if not null
                 transactions?.let {
-
+                    emptyListTextView.isVisible = transactions.isEmpty()
+                    Log.i(TAG, "EmptyList ${transactions.isEmpty()}")
                     Log.i(TAG, "Got crimes $transactions")
                     updateUI(transactions)
                 }
@@ -216,8 +220,6 @@ class TransactionListFragment : BaseFragment() {
         // or count on the activity continuing to exist
         callbacks = null
     }
-
-
 
     /**
      *  Adds frequency * period to the date on Transaction.
@@ -421,7 +423,7 @@ class TransactionListFragment : BaseFragment() {
             return TransactionHolder(view)
         }
 
-        override fun getItemCount() = transactions.size
+        override fun getItemCount() : Int = transactions.size
 
         // populates given holder with Transaction from the given position in TransactionList
         override fun onBindViewHolder(holder : TransactionHolder, position : Int) {

@@ -44,7 +44,7 @@
     <string name="stocks">Stocks</string>
     <string name="wages">Wages</string>
     <string name="all">All</string>
-    <string name="emptyGraph">No transactions fulfill \nthe filters being applied!</string>
+    <string name="empty_graph">No transactions fulfill \nthe filters being applied!</string>
     <string name="settings">Settings</string>
     <string name="preferences_currency_symbol">Currency Symbol</string>
     <string name="preferences_symbol_side">Symbol Side</string>
@@ -53,4 +53,6 @@
     <string name="title_activity_settings">Settings</string>
     <string name="transaction_total_hint">Enter transaction total</string>
     <string name="preferences_decimal_places_summary">On allows use of decimal places</string>
+    <string name="snackbar_saved">Transaction saved!</string>
+    <string name="empty_list">No transactions fulfill \nthe filters being applied! \nPress the button below \nto add a new transaction!</string>
 </resources>

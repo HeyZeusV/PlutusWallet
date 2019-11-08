@@ -37,7 +37,10 @@ class TransactionListViewModel : ViewModel() {
     fun filteredTransactionList(category : Boolean?, date : Boolean?, type : String?, categoryName : String?,
                                 start : Date?, end : Date?) : LiveData<List<Transaction>> {
 
-        return if (category == true && date == true) {
+        return if (category == true && date == true && categoryName == "All") {
+
+            transactionRepository.getLDTransactions(type, start, end)
+        } else if (category == true && date == true) {
 
             transactionRepository.getLDTransactions(type, categoryName, start, end)
         } else if (category == true && categoryName == FinanceApplication.context!!.getString(R.string.all)) {

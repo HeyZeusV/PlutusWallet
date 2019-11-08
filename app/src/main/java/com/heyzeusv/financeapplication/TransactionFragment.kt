@@ -25,6 +25,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.financeapplication.utilities.BaseFragment
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
 import com.heyzeusv.financeapplication.utilities.Utils
@@ -549,6 +550,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
             Log.d(TAG, "$transaction")
             updateUI()
+            val savedBar : Snackbar = Snackbar.make(it, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT)
+            savedBar.anchorView = it
+            savedBar.show()
         }
     }
 

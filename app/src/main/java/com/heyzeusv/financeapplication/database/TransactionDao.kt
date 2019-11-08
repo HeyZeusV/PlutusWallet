@@ -62,6 +62,19 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLDTransactions(type : String?, category : String?) : LiveData<List<Transaction>>
 
     /**
+     *  Returns all Transactions with given Type and within given Dates
+     *
+     *  @param  type     either "Expense" or "Income".
+     *  @param  start    the start Date to be compared with.
+     *  @param  end      the end Date to be compared with.
+     *  @return LiveData object that holds List of all Transactions with given Type and within given Dates.
+     */
+    @Query("""SELECT * 
+            FROM `transaction` 
+            WHERE type=(:type) AND date BETWEEN :start AND :end""")
+    abstract fun getLDTransactions(type : String?, start : Date?, end : Date?) : LiveData<List<Transaction>>
+
+    /**
      *  Returns all Transaction within given Dates.
      *
      *  @param  start the start Date to be compared with.
