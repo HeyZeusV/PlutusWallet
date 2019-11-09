@@ -5,23 +5,28 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.core.view.isVisible
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.financeapplication.utilities.BlankFragment
 import java.util.*
 
 private const val TAG = "MainActivity"
 
 /**
- *  Handles the loading and replacement of fragments into their containers.
+ *  Handles the loading and replacement of fragments into their containers, as well as
+ *  starting Settings/About Activities.
  */
 class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, FilterFragment.Callbacks {
 
     // views
+    private lateinit var drawerLayout      : DrawerLayout
     private lateinit var fab               : FloatingActionButton
-    private lateinit var settingsButton    : MaterialButton
+    private lateinit var menuButton        : MaterialButton
+    private lateinit var navigationView    : NavigationView
 
     // position of FAB, depends on device
     private var fabX = 0
@@ -31,8 +36,10 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fab               = findViewById(R.id.activity_fab)
-        settingsButton    = findViewById(R.id.fragment_settings)
+        drawerLayout   = findViewById(R.id.activity_drawer)
+        fab            = findViewById(R.id.activity_fab)
+        menuButton     = findViewById(R.id.fragment_settings)
+        navigationView = findViewById(R.id.activity_navigation_view)
 
         // FragmentManager adds fragments to an activity
         val currentFragment : Fragment? =
@@ -62,11 +69,36 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
     override fun onStart() {
         super.onStart()
 
-        // clicking the settingsButton will start SettingsActivity
-        settingsButton.setOnClickListener {
+        // Listener for NavigationDrawer
+        navigationView.setNavigationItemSelectedListener {
 
-            val settingsIntent = Intent(this, SettingsActivity::class.java)
-            startActivity(settingsIntent)
+            return@setNavigationItemSelectedListener when (it.itemId) {
+
+                // starts SettingsActivity
+                R.id.settings -> {
+
+                    Log.d(TAG, "SETTINGS")
+                    val settingsIntent = Intent(this, SettingsActivity::class.java)
+                    startActivity(settingsIntent)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                // starts AboutActivity
+                else -> {
+
+                    Log.d(TAG, "ABOUT")
+                    val aboutIntent = Intent(this, AboutActivity::class.java)
+                    startActivity(aboutIntent)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+            }
+        }
+
+        // clicking the menuButton will open drawer
+        menuButton.setOnClickListener {
+
+            drawerLayout.openDrawer(GravityCompat.START)
         }
     }
 
@@ -102,9 +134,16 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
 
-        settingsButton.isVisible = true
+        // close drawer if open else do regular behavior
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+
+            menuButton.visibility = View.VISIBLE
+            super.onBackPressed()
+        }
     }
 
     /**
@@ -137,7 +176,7 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
             .addToBackStack(null)
             .commit()
 
-        settingsButton             .visibility = View.INVISIBLE
+        menuButton.visibility = View.INVISIBLE
     }
 
     /**

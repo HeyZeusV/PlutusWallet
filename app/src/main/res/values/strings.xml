@@ -1,10 +1,9 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Finance Application</string>
     <string name="title">Title:</string>
     <string name="title_hint">Enter title such as location/website of purchase</string>
     <string name="date">Date:</string>
     <string name="total">Total:</string>
-    <string name="total_hint">Enter total of transaction</string>
     <string name="type">Type:</string>
     <string name="expense">Expense</string>
     <string name="income">Income</string>
@@ -55,4 +54,16 @@
     <string name="preferences_decimal_places_summary">On allows use of decimal places</string>
     <string name="snackbar_saved">Transaction saved!</string>
     <string name="empty_list">No transactions fulfill \nthe filters being applied! \nPress the button below \nto add a new transaction!</string>
+    <string name="about">About</string>
+    <string name="version">v1.0.0</string>
+    <string name="by_name">By Jesus E. Valdes</string>
+    <string name="special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
+    <string name="external_libraries">External Libraries Used:</string>
+    <string name="circleindicator">CircleIndicator</string>
+    <string name="circleIndicator_github"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
+    <string name="mpandroidchart" tools:ignore="ExtraTranslation">MPAndroidChart</string>
+    <string name="mpandroidchart_github"><![CDATA[<a href=\"https://github.com/PhilJay/MPAndroidChart\">GitHub</a>]]></string>
+    <string name="show_license">Show License</string>
+    <string name="hide_license">Hide License</string>
+    <string name="app_icon">App Icon</string>
 </resources>

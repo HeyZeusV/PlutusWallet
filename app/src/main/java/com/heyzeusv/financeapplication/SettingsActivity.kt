@@ -2,10 +2,12 @@ package com.heyzeusv.financeapplication
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
 
+/**
+ *  Activity that starts SettingsFragment
+ */
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

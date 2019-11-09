@@ -1,7 +1,9 @@
 package com.heyzeusv.financeapplication
 
-import androidx.lifecycle.*
-import kotlinx.coroutines.Deferred
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 
 /**
  *  Data manager for TransactionFragments.

@@ -17,8 +17,8 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.preference.PreferenceManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
@@ -193,9 +193,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                                        R.id.symbolRightTextView, ConstraintSet.START, 0)
             totalConstraintSet.applyTo(transactionLayout)
             // text starts to right
-            totalField        .textDirection = View.TEXT_DIRECTION_RTL
-            symbolLeftText    .isVisible     = false
-            symbolRightText   .isVisible     = true
+            totalField     .textDirection = View.TEXT_DIRECTION_RTL
+            symbolLeftText .isVisible     = false
+            symbolRightText.isVisible     = true
         }
 
         // user selects no decimal places
@@ -312,6 +312,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @ExperimentalStdlibApi
     override fun onStart() {
         super.onStart()
