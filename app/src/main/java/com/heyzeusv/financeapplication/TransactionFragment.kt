@@ -31,6 +31,7 @@ import com.heyzeusv.financeapplication.utilities.CurrencyEditText
 import com.heyzeusv.financeapplication.utilities.Utils
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DateFormat
 import java.util.*
 import kotlin.math.hypot
@@ -689,9 +690,16 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         titleField    .setText(transaction.title)
         memoField     .setText(transaction.memo)
-        totalField    .setText(getString(R.string.total_number, String.format(transaction.total.toString())))
         frequencyField.setText(transaction.frequency.toString())
         dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
+
+        if (decimalPlaces) {
+
+            totalField.setText(getString(R.string.total_number, String.format(transaction.total.toString())))
+        } else {
+
+            totalField.setText(getString(R.string.total_number, String.format(transaction.total.setScale(0, RoundingMode.HALF_UP).toString())))
+        }
 
         if (transaction.type == "Income") {
 

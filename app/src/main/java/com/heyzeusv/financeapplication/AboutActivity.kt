@@ -1,9 +1,10 @@
 package com.heyzeusv.financeapplication
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import android.view.MenuItem
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.text.HtmlCompat
@@ -138,5 +139,18 @@ class AboutActivity : AppCompatActivity() {
                 ciConstraintSet.applyTo(aboutLayout)
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item : MenuItem?) : Boolean {
+
+        when (item?.itemId) {
+
+            // returns user to previous activity if they select back arrow
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

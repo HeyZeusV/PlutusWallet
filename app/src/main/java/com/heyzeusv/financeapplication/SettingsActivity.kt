@@ -2,8 +2,14 @@ package com.heyzeusv.financeapplication
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
+private const val TAG = "SettingsFragment"
 
 /**
  *  Activity that starts SettingsFragment
@@ -41,6 +47,43 @@ class SettingsActivity : AppCompatActivity() {
     class SettingsFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState : Bundle?, rootKey : String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+            val dpPreference : SwitchPreference? = findPreference("key_decimal_places")
+            dpPreference!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
+
+                // asks the user if they do want to switch decimalPlacesPreference
+                if (dpPreference.isChecked) {
+
+                    // initialize and set up Builder
+                    val adBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+                        .setTitle(getString(R.string.ad_are_you_sure))
+                        .setMessage(getString(R.string.ad_decimal_place_warning))
+                        .setPositiveButton(getString(R.string.ad_switch)) { _, _ ->
+
+                        dpPreference.isChecked = false
+                    }
+                        .setNegativeButton(getString(R.string.ad_cancel)) { _, _ -> }
+                    // make AlertDialog using Builder
+                    val decimalAlertDialog : AlertDialog = adBuilder.create()
+                    // display AlertDialog
+                    decimalAlertDialog.show()
+                } else {
+
+                    // initialize and set up Builder
+                    val adBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+                        .setTitle(R.string.ad_are_you_sure)
+                        .setPositiveButton(getString(R.string.ad_switch)) {_, _ ->
+
+                        dpPreference.isChecked = true
+                    }
+                        .setNegativeButton(getString(R.string.ad_cancel)) {_, _ -> }
+                    // make AlertDialog using Builder
+                    val decimalAlertDialog : AlertDialog = adBuilder.create()
+                    // display AlertDialog
+                    decimalAlertDialog.show()
+                }
+                return@OnPreferenceChangeListener false
+            }
         }
     }
 }

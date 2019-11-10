@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Finance Application</string>
+    <string name="app_name">Plutus\' Wallet</string>
     <string name="title">Title:</string>
     <string name="title_hint">Enter title such as location/website of purchase</string>
     <string name="date">Date:</string>
@@ -66,4 +66,8 @@
     <string name="show_license">Show License</string>
     <string name="hide_license">Hide License</string>
     <string name="app_icon">App Icon</string>
+    <string name="ad_decimal_place_warning">This will cause existing transactions to be rounded depending on decimal value. Original value is restored ONLY IF transactions are not edited.</string>
+    <string name="ad_are_you_sure">Are you sure?</string>
+    <string name="ad_switch">Switch</string>
+    <string name="ad_cancel">Cancel</string>
 </resources>

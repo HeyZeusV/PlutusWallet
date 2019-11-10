@@ -17,6 +17,6 @@
     <objectAnimator
         android:propertyName="translationY"
         android:valueType="floatType"
-        android:valueFrom="-20"
-        android:valueTo="-12"/>
+        android:valueFrom="-45"
+        android:valueTo="-20"/>
 </set>

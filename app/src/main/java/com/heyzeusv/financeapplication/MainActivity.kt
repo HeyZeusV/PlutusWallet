@@ -1,10 +1,10 @@
 package com.heyzeusv.financeapplication
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
         fab            = findViewById(R.id.activity_fab)
         menuButton     = findViewById(R.id.fragment_settings)
         navigationView = findViewById(R.id.activity_navigation_view)
+
+        // disables swipe to open drawer
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         // FragmentManager adds fragments to an activity
         val currentFragment : Fragment? =
