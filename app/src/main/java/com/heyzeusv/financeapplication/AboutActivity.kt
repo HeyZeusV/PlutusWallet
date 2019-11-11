@@ -3,12 +3,12 @@ package com.heyzeusv.financeapplication
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.text.HtmlCompat
-import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.button.MaterialButton
 import java.io.BufferedReader
@@ -23,16 +23,21 @@ class AboutActivity : AppCompatActivity() {
     // views
     private lateinit var aboutLayout               : ConstraintLayout
     private lateinit var androidChartButton        : MaterialButton
+    private lateinit var changelogButton           : MaterialButton
     private lateinit var circleIndicatorButton     : MaterialButton
     private lateinit var androidChartScrollView    : NestedScrollView
+    private lateinit var changelogScrollView       : NestedScrollView
     private lateinit var circleIndicatorScrollView : NestedScrollView
     private lateinit var androidChartGitHub        : TextView
     private lateinit var androidChartLicense       : TextView
+    private lateinit var changelog                 : TextView
     private lateinit var circleIndicatorGitHub     : TextView
     private lateinit var circleIndicatorLicense    : TextView
+    private lateinit var email                     : TextView
 
     // used to tell state of LicenseButtons
     private var mpButton = false
+    private var clButton = false
     private var ciButton = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,32 +52,45 @@ class AboutActivity : AppCompatActivity() {
         androidChartGitHub        = findViewById(R.id.androidChartGitHubTextView)
         androidChartLicense       = findViewById(R.id.androidChartLicense)
         androidChartScrollView    = findViewById(R.id.androidChartScrollView)
+        changelogButton           = findViewById(R.id.changelogButton)
+        changelog                 = findViewById(R.id.changelogTextView)
+        changelogScrollView       = findViewById(R.id.changelogScrollView)
         circleIndicatorButton     = findViewById(R.id.circleIndicatorButton)
         circleIndicatorGitHub     = findViewById(R.id.circleIndicatorGitHubTextView)
         circleIndicatorLicense    = findViewById(R.id.circleIndicatorLicense)
         circleIndicatorScrollView = findViewById(R.id.circleIndicatorScrollView)
+        email                     = findViewById(R.id.emailTextView)
 
         // converts from HTML
         androidChartGitHub   .text = HtmlCompat.fromHtml(resources.getText(R.string.mpandroidchart_github ).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
         circleIndicatorGitHub.text = HtmlCompat.fromHtml(resources.getText(R.string.circleIndicator_github).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        // allows text to open link in browser
+        email                .text = HtmlCompat.fromHtml(resources.getText(R.string.email).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+        // allows text to open web link/email
         androidChartGitHub   .movementMethod = LinkMovementMethod.getInstance()
         circleIndicatorGitHub.movementMethod = LinkMovementMethod.getInstance()
+        email                .movementMethod = LinkMovementMethod.getInstance()
 
         // strings holding text file content
         var mpLicense                   = ""
+        var clFile                      = ""
         var ciLicense                   = ""
+
         // reads through files
         var mpReader  : BufferedReader? = null
+        var clReader  : BufferedReader? = null
         var ciReader  : BufferedReader? = null
 
         try {
 
             // opens files
             mpReader  = BufferedReader(InputStreamReader(assets.open("MPAndroidChartLicense.txt")))
+            clReader  = BufferedReader(InputStreamReader(assets.open("Changelog.txt")))
             ciReader  = BufferedReader(InputStreamReader(assets.open("CircleIndicatorLicense.txt")))
+
             // reads through file
             mpLicense = mpReader.readLines().joinToString("\n")
+            clFile    = clReader.readLines().joinToString("\n")
             ciLicense = ciReader.readLines().joinToString("\n")
         } catch (e : IOException) {
 
@@ -83,6 +101,7 @@ class AboutActivity : AppCompatActivity() {
 
                 // close readers
                 mpReader?.close()
+                clReader?.close()
                 ciReader?.close()
             } catch (e : IOException) {
 
@@ -91,6 +110,7 @@ class AboutActivity : AppCompatActivity() {
 
             // sets text to content from files
             androidChartLicense   .text = mpLicense
+            changelog             .text = clFile
             circleIndicatorLicense.text = ciLicense
         }
     }
@@ -103,14 +123,35 @@ class AboutActivity : AppCompatActivity() {
             // hides or displays license
             if (!mpButton) {
 
-                mpButton                         = true
-                androidChartButton    .text      = resources.getString(R.string.hide_license)
-                androidChartScrollView.isVisible = true
+                mpButton                          = true
+                androidChartScrollView.visibility = View.VISIBLE
             } else {
 
-                mpButton                         = false
-                androidChartButton    .text      = resources.getString(R.string.show_license)
-                androidChartScrollView.isVisible = false
+                mpButton                          = false
+                androidChartScrollView.visibility = View.GONE
+            }
+        }
+
+        changelogButton.setOnClickListener {
+
+            if (!clButton) {
+
+                clButton = true
+                changelogScrollView.visibility = View.VISIBLE
+                val clConstraintSet = ConstraintSet()
+                clConstraintSet.clone(aboutLayout)
+                clConstraintSet.connect(R.id.developerTextView, ConstraintSet.TOP,
+                                        R.id.spacer5, ConstraintSet.BOTTOM, 0)
+                clConstraintSet.applyTo(aboutLayout)
+            } else {
+
+                clButton = false
+                changelogScrollView.visibility = View.GONE
+                val clConstraintSet = ConstraintSet()
+                clConstraintSet.clone(aboutLayout)
+                clConstraintSet.connect(R.id.developerTextView, ConstraintSet.TOP,
+                                        R.id.spacer4, ConstraintSet.BOTTOM, 0)
+                clConstraintSet.applyTo(aboutLayout)
             }
         }
 
@@ -119,9 +160,8 @@ class AboutActivity : AppCompatActivity() {
             // hides or displays license
             if (!ciButton) {
 
-                ciButton                            = true
-                circleIndicatorButton    .text      = resources.getString(R.string.hide_license)
-                circleIndicatorScrollView.isVisible = true
+                ciButton                             = true
+                circleIndicatorScrollView.visibility = View.VISIBLE
                 val ciConstraintSet = ConstraintSet()
                 ciConstraintSet.clone(aboutLayout)
                 ciConstraintSet.connect(R.id.androidChartTextView, ConstraintSet.TOP,
@@ -129,9 +169,8 @@ class AboutActivity : AppCompatActivity() {
                 ciConstraintSet.applyTo(aboutLayout)
             } else {
 
-                ciButton                            = false
-                circleIndicatorButton    .text      = resources.getString(R.string.show_license)
-                circleIndicatorScrollView.isVisible = false
+                ciButton                             = false
+                circleIndicatorScrollView.visibility = View.GONE
                 val ciConstraintSet = ConstraintSet()
                 ciConstraintSet.clone(aboutLayout)
                 ciConstraintSet.connect(R.id.androidChartTextView, ConstraintSet.TOP,
