@@ -2,6 +2,7 @@ package com.heyzeusv.financeapplication
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.heyzeusv.financeapplication.utilities.Utils
 import java.math.BigDecimal
 import java.util.*
 
@@ -26,7 +27,7 @@ data class Transaction(
     @PrimaryKey
     var id             : Int        = 0,
     var title          : String     = "",
-    var date           : Date       = Date(),
+    var date           : Date       = Utils.startOfDay(),
     var total          : BigDecimal = BigDecimal("0"),
     var type           : String     = "Expense",
     var category       : String     = "Education",

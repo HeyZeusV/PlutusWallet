@@ -39,10 +39,10 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLDTransactions() : LiveData<List<Transaction>>
 
     /**
-     *  Returns all Transaction with given Type
+     *  Returns all Transaction with given Type.
      *
-     *  @param  type either "Expense" or "Income"
-     *  @return LiveData object that holds List of all Transactions with given Type
+     *  @param  type either "Expense" or "Income".
+     *  @return LiveData object that holds List of all Transactions with given Type.
      */
     @Query("""SELECT * 
             FROM `transaction` 
@@ -62,7 +62,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLDTransactions(type : String?, category : String?) : LiveData<List<Transaction>>
 
     /**
-     *  Returns all Transactions with given Type and within given Dates
+     *  Returns all Transactions with given Type and within given Dates.
      *
      *  @param  type     either "Expense" or "Income".
      *  @param  start    the start Date to be compared with.

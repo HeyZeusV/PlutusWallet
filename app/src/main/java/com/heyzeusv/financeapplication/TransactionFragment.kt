@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
@@ -102,6 +103,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // false = Expense, true = Income
     private var typeSelected = false
 
+    // used to tell if date has been edited for re-repeating Transactions
+    private var dateChanged    = false
+    private var transLoaded    = false
+    private var oldDate : Date = Utils.startOfDay()
+
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
         ViewModelProviders.of(this).get(TransactionDetailViewModel::class.java)
@@ -165,9 +171,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     updateUI()
                 }
             })
-        } else {
-
-            updateUI()
         }
 
         // retrieves any saved preferences
@@ -237,7 +240,13 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // if not null
                 transaction?.let {
                     this.transaction = transaction
+                    // only saves oldDate once rather than at every update
+                    if (!transLoaded) {
+
+                        oldDate = transaction.date
+                    }
                     updateUI()
+                    transLoaded = true
                 }
             }
         )
@@ -536,8 +545,38 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             launch {
 
+                // AlertDialog that asks user if they want Transaction to repeat again
+                if (transaction.futureTCreated && dateChanged && transaction.repeating) {
+
+                    // initialize instance of builder
+                    val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+                        // set title
+                        .setTitle("Future Transaction")
+                        // set message
+                        .setMessage("This transaction has been repeated before and the date has been edited. Would you like this transaction to be able to be repeated again?")
+                        // set positive button and click listener
+                        .setPositiveButton("Yes") { _, _ ->
+
+                        transaction.futureTCreated = false
+                        launch {
+
+                            transactionDetailViewModel.updateTransaction(transaction)
+                        }
+                    }
+                        // set negative button and click listener
+                        .setNegativeButton("No") { _, _ ->
+
+                        launch {
+
+                            transactionDetailViewModel.updateTransaction(transaction)
+                        }
+                    }
+                    // make AlertDialog using builder
+                    val alertDialog : AlertDialog = alertDialogBuilder.create()
+                    // display AlertDialog
+                    alertDialog.show()
                 // will insert Transaction if it is new, else updates existing
-                if (newTransaction) {
+                } else if (newTransaction) {
 
                     transactionDetailViewModel.insertTransaction(transaction)
                     newTransaction = false
@@ -566,6 +605,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     override fun onDateSelected(date : Date) {
 
         transaction.date = date
+        dateChanged = transaction.date != oldDate
+        Log.d(TAG, "dc: $dateChanged")
         updateUI()
     }
 
@@ -656,8 +697,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         // initialize instance of Builder
         val builder = MaterialAlertDialogBuilder(context)
-        // set title of AlertDialog
-        builder.setTitle("Create new category")
+            // set title of AlertDialog
+            .setTitle("Create new category")
         // inflates view that holds EditText
         val viewInflated: View = LayoutInflater.from(context)
             .inflate(R.layout.dialog_new_category, view as ViewGroup, false)
@@ -665,20 +706,20 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         val input: EditText = viewInflated.findViewById(R.id.category_Input)
         // sets the view
         builder.setView(viewInflated)
-        // set positive button and its click listener
-        builder.setPositiveButton("Save") { _, _ ->
+            // set positive button and its click listener
+            .setPositiveButton("Save") { _, _ ->
 
             insertCategory(input.text.toString())
         }
-        // set negative button and its click listener
-        builder.setNegativeButton("Cancel") { _, _ ->
+            // set negative button and its click listener
+            .setNegativeButton("Cancel") { _, _ ->
 
             // users shouldn't be able to save on "Create New Category",
             // this prevents that
             categorySpinner.setSelection(0)
         }
         // make the AlertDialog using the builder
-        val categoryAlertDialog : androidx.appcompat.app.AlertDialog = builder.create()
+        val categoryAlertDialog : AlertDialog = builder.create()
         // display AlertDialog
         categoryAlertDialog.show()
     }

@@ -134,6 +134,7 @@ class AboutActivity : AppCompatActivity() {
 
         changelogButton.setOnClickListener {
 
+            // hides or displays changelog
             if (!clButton) {
 
                 clButton = true

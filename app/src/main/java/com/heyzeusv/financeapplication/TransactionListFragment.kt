@@ -22,7 +22,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
 import com.heyzeusv.financeapplication.utilities.Utils
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -145,8 +147,6 @@ class TransactionListFragment : BaseFragment() {
         val start        : Date?    = arguments?.getSerializable(ARG_START)         as Date?
         val end          : Date?    = arguments?.getSerializable(ARG_END)           as Date?
 
-        Log.d(TAG, "$category, $date, $type, $categoryName, $start, $end")
-
         // tells ViewModel which query to run on Transactions
         val transactionListLiveData : LiveData<List<Transaction>> =
             transactionListViewModel.filteredTransactionList(category, date, type, categoryName, start, end)
@@ -160,7 +160,6 @@ class TransactionListFragment : BaseFragment() {
                 // if not null
                 transactions?.let {
                     emptyListTextView.isVisible = transactions.isEmpty()
-                    Log.i(TAG, "EmptyList ${transactions.isEmpty()}")
                     Log.i(TAG, "Got crimes $transactions")
                     updateUI(transactions)
                 }
@@ -504,22 +503,22 @@ class TransactionListFragment : BaseFragment() {
         override fun onLongClick(v : View?) : Boolean {
 
             recyclerViewPosition = this.layoutPosition
-            // initialize instance of Builder
-            val alertDialogBuilder = MaterialAlertDialogBuilder(context)
-            // set title of AlertDialog
-            alertDialogBuilder.setTitle("Delete Transaction")
-            // set message of AlertDialog
-            alertDialogBuilder.setMessage("Are you sure you want to delete ${transaction.title}?")
-            // set positive button and its click listener
-            alertDialogBuilder.setPositiveButton("YES") { _, _ ->
+            // initialize instance of builder
+            val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+                // set title of AlertDialog
+                .setTitle("Delete Transaction")
+                // set message of AlertDialog
+                .setMessage("Are you sure you want to delete ${transaction.title}?")
+                // set positive button and its click listener
+                .setPositiveButton("YES") { _, _ ->
 
                 launch {
 
                     transactionListViewModel.deleteTransaction(transaction)
                 }
             }
-            // set negative button and its click listener
-            alertDialogBuilder.setNegativeButton("NO") { _, _ ->  }
+                // set negative button and its click listener
+                .setNegativeButton("NO") { _, _ ->  }
             // make the AlertDialog using the builder
             val alertDialog : androidx.appcompat.app.AlertDialog = alertDialogBuilder.create()
             // display AlertDialog
