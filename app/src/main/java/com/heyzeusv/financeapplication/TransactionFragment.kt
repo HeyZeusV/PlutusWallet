@@ -261,9 +261,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     // "Create New Category" will always be at bottom of the list
                     expenseCategoryNamesList.add(getString(R.string.create_category))
                     // sets up the categorySpinner
-                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
-                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    expenseCategorySpinner.adapter = categorySpinnerAdapter
+                    val expenseCategorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
+                    expenseCategorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                    expenseCategorySpinner.adapter = expenseCategorySpinnerAdapter
                     // if user made a new category, then sets the categorySpinner to new one
                     // else starts the spinner up to ExpenseCategory saved
                     if (madeNewCategory) {
@@ -291,9 +291,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     // "Create New Category" will always be at bottom of the list
                     incomeCategoryNamesList.add(getString(R.string.create_category))
                     // sets up the categorySpinner
-                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, incomeCategoryNamesList)
-                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    incomeCategorySpinner.adapter = categorySpinnerAdapter
+                    val incomeCategorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
+                    incomeCategorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+                    incomeCategorySpinner.adapter = incomeCategorySpinnerAdapter
                     // if user made a new category, then sets the categorySpinner to new one
                     // else starts the spinner up to IncomeCategory saved
                     if (madeNewCategory) {
