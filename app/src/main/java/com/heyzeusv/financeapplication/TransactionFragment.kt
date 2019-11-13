@@ -78,12 +78,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var symbolRightText        : TextView
     private lateinit var transaction            : Transaction
 
-    // arrays holding values for frequency spinner
-    private var frequencySingleArray   : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.day) , FinanceApplication.context!!.getString(R.string.week) , FinanceApplication.context!!.getString(R.string.month) , FinanceApplication.context!!.getString(R.string.year))
-    private var frequencyMultipleArray : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.days), FinanceApplication.context!!.getString(R.string.weeks), FinanceApplication.context!!.getString(R.string.months), FinanceApplication.context!!.getString(R.string.years))
-
-    // false = Single, true = Multiple
-    private var frequencyStatus        : Boolean       = false
+    // array holding values for frequency spinner
+    private var frequencyArray : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.days), FinanceApplication.context!!.getString(R.string.weeks), FinanceApplication.context!!.getString(R.string.months), FinanceApplication.context!!.getString(R.string.years))
 
     // used with categories
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
@@ -146,7 +142,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         symbolRightText        = view.findViewById(R.id.symbolRightTextView)          as TextView
 
         // set up for the frequencyPeriodSpinner
-        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencySingleArray)
+        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, frequencyArray)
         frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         frequencyPeriodSpinner       .adapter = frequencyPeriodSpinnerAdapter
 
@@ -364,23 +360,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 sequence : CharSequence?, start : Int, before : Int, count : Int) {
 
                 try {
+
                     transaction.frequency = Integer.parseInt(sequence.toString())
-                    // changes the FrequencyPeriod array depending on what the user types for Frequency
-                    if (Integer.parseInt(sequence.toString()) > 1 && !frequencyStatus) {
-
-                        // set up for the frequencyPeriodSpinner
-                        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencyMultipleArray)
-                        frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                        frequencyPeriodSpinner       .adapter = frequencyPeriodSpinnerAdapter
-                        frequencyStatus                       = true
-                    } else if (Integer.parseInt(sequence.toString()) == 1 && frequencyStatus) {
-
-                        // set up for the frequencyPeriodSpinner
-                        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, frequencySingleArray)
-                        frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                        frequencyPeriodSpinner       .adapter = frequencyPeriodSpinnerAdapter
-                        frequencyStatus                       = false
-                    }
                 } catch (e : NumberFormatException) {
 
                     transaction.frequency = 1

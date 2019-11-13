@@ -3,7 +3,6 @@ package com.heyzeusv.financeapplication
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -167,7 +166,6 @@ class TransactionListFragment : BaseFragment() {
                 // if not null
                 transactions?.let {
                     emptyListTextView.isVisible = transactions.isEmpty()
-                    Log.i(TAG, "Got crimes $transactions")
                     updateUI(transactions)
                 }
             }

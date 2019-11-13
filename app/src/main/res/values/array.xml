@@ -31,4 +31,24 @@
         <item>period</item>
         <item>space</item>
     </string-array>
+
+    <string-array name="language_array">
+        <item>@string/language_en_english</item>
+        <item>@string/language_de_german</item>
+        <item>@string/language_es_spanish</item>
+        <item>@string/language_hi_hindi</item>
+        <item>@string/language_ja_japanese</item>
+        <item>@string/language_ko_korean</item>
+        <item>@string/language_th_thai</item>
+    </string-array>
+
+    <string-array name="language_key_array">
+        <item>english</item>
+        <item>german</item>
+        <item>spanish</item>
+        <item>hindi</item>
+        <item>japanese</item>
+        <item>korean</item>
+        <item>thai</item>
+    </string-array>
 </resources>

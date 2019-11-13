@@ -9,7 +9,7 @@
     <string name="income">Income</string>
     <string name="category">Category:</string>
     <string name="repeating_transaction">Repeating Transaction:</string>
-    <string name="frequency">Frequency: Every</string>
+    <string name="frequency">Frequency:</string>
     <string name="memo">Memo:</string>
     <string name="memo_hint">Enter any additional information needed</string>
     <string name="frequency_hint" translatable="false">1–99</string>
@@ -19,10 +19,6 @@
     <string name="apply">Apply</string>
     <string name="reset">Reset</string>
     <string name="date_warning">End date must be after start date!!</string>
-    <string name="day">Day</string>
-    <string name="week">Week</string>
-    <string name="month">Month</string>
-    <string name="year">Year</string>
     <string name="days">Days</string>
     <string name="weeks">Weeks</string>
     <string name="months">Months</string>
@@ -85,4 +81,12 @@
     <string name="preferences_symbol_side_summary_off">Currency symbol will appear on right side.</string>
     <string name="preferences_decimal_places_summary_on">Decimal places can be used.</string>
     <string name="preferences_decimal_places_summary_off">Decimal places cannot be used.</string>
+    <string name="language_en_english">English</string>
+    <string name="language_es_spanish">Spanish</string>
+    <string name="language_de_german">German</string>
+    <string name="language_hi_hindi">Hindi</string>
+    <string name="language_ja_japanese">Japanese</string>
+    <string name="language_ko_korean">Korean</string>
+    <string name="language_th_thai">Thai</string>
+    <string name="preferences_language">Language</string>
 </resources>

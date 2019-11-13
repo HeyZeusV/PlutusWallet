@@ -15,7 +15,8 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="88dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/transaction_constraint"
@@ -281,6 +282,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
+                    android:paddingStart="8dip"
+                    android:paddingEnd="8dip"
                     android:text="@string/frequency"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
@@ -289,32 +292,35 @@
                     app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
                     tools:visibility="visible" />
 
-                <EditText
-                    android:id="@+id/transaction_frequency"
+                <Spinner
+                    android:id="@+id/transaction_frequency_period"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@null"
+                    android:gravity="start|center_vertical"
+                    android:visibility="invisible"
+                    app:layout_constraintEnd_toStartOf="@+id/transaction_frequency"
+                    app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
+                    tools:visibility="visible" />
+
+                <EditText
+                    android:id="@+id/transaction_frequency"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:gravity="center_horizontal"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="start|center_horizontal"
                     android:hint="@string/frequency_hint"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="2"
                     android:textSize="18sp"
                     android:visibility="invisible"
-                    app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
-                    tools:visibility="visible" />
-
-                <Spinner
-                    android:id="@+id/transaction_frequency_period"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginEnd="16dp"
-                    android:gravity="start|center_vertical"
-                    android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/transaction_frequency"
+                    app:layout_constraintStart_toEndOf="@+id/transaction_frequency_period"
                     app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
                     tools:visibility="visible" />
 
@@ -335,7 +341,6 @@
             android:backgroundTint="@color/colorSecondary"
             android:clickable="true"
             android:focusable="true"
-            app:tint="#FFFFFF"
             app:fabSize="auto"
             app:srcCompat="@drawable/ic_round_save_24" />
 
