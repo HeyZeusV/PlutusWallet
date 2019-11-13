@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.Deferred
 
 /**
  *  Data manager for TransactionFragments.
@@ -65,7 +66,10 @@ class TransactionDetailViewModel : ViewModel() {
     /**
      *  ExpenseCategory queries.
      */
-    val expenseCategoryNamesLiveData : LiveData<List<String>> = transactionRepository.getExpenseCategoryNames()
+    suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> {
+
+        return transactionRepository.getExpenseCategoryNamesAsync()
+    }
 
     suspend fun insertExpenseCategory(expenseCategory : ExpenseCategory) {
 
@@ -75,7 +79,10 @@ class TransactionDetailViewModel : ViewModel() {
     /**
      *  IncomeCategory queries.
      */
-    val incomeCategoryNamesLiveData  : LiveData<List<String>> = transactionRepository.getIncomeCategoryNames ()
+    suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> {
+
+        return transactionRepository.getIncomeCategoryNamesAsync()
+    }
 
     suspend fun insertIncomeCategory(incomeCategory : IncomeCategory) {
 

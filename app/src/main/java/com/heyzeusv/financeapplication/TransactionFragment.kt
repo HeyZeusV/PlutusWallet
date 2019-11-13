@@ -84,8 +84,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // used with categories
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
-    private var newCategoryName                                = ""
-    private var madeNewCategory                                = false
 
     // used for SharedPreferences
     private var maxId         : Int     = 0
@@ -102,7 +100,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // used to tell if date has been edited for re-repeating Transactions
     private var dateChanged    = false
     private var transLoaded    = false
-    private var oldDate : Date = Utils.startOfDay()
+    private var oldDate : Date = Utils.startOfDay(Date())
+
+    // adapters to be used on Spinners
+    private var expenseSpinnerAdapter : ArrayAdapter<String>? = null
+    private var incomeSpinnerAdapter  : ArrayAdapter<String>? = null
 
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
@@ -247,65 +249,39 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
         )
 
-        // register an observer on LiveData instance and tie life to another component
-        transactionDetailViewModel.expenseCategoryNamesLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { expenseCategoryNames ->
-                // if not null
-                expenseCategoryNames?.let {
-                    expenseCategoryNamesList = expenseCategoryNames.toMutableList()
-                    // sorts list in alphabetical order
-                    expenseCategoryNamesList.sort()
-                    // "Create New Category" will always be at bottom of the list
-                    expenseCategoryNamesList.add(getString(R.string.create_category))
-                    // sets up the categorySpinner
-                    val expenseCategorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
-                    expenseCategorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    expenseCategorySpinner.adapter = expenseCategorySpinnerAdapter
-                    // if user made a new category, then sets the categorySpinner to new one
-                    // else starts the spinner up to ExpenseCategory saved
-                    if (madeNewCategory) {
+        launch {
 
-                        expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(newCategoryName))
-                    } else {
+            // retrieves list of Expense Categories from database
+            expenseCategoryNamesList = transactionDetailViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
+            // sorts list in alphabetical order
+            expenseCategoryNamesList.sort()
+            // "Create New Category" will always be at bottom of the list
+            expenseCategoryNamesList.add(getString(R.string.create_category))
+            // sets up the categorySpinner
+            expenseSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
+            expenseSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            expenseCategorySpinner .adapter = expenseSpinnerAdapter
 
-                        expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
-                    }
-                }
+            // retrieves list of Income Categories from database
+            incomeCategoryNamesList = transactionDetailViewModel.getIncomeCategoryNamesAsync().await().toMutableList()
+            // sorts list in alphabetical order
+            incomeCategoryNamesList.sort()
+            // "Create New Category" will always be at bottom of the list
+            incomeCategoryNamesList.add(getString(R.string.create_category))
+            // sets up the categorySpinner
+            incomeSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
+            incomeSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            incomeCategorySpinner .adapter = incomeSpinnerAdapter
+
+            // sets up correct Spinner to Category that is stored in Transaction (if any)
+            if (transaction.type == "Expense") {
+
+                expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+            } else {
+
+                incomeCategorySpinner .setSelection(incomeCategoryNamesList.indexOf(transaction.category))
             }
-        )
-
-        // register an observer on LiveData instance and tie life to another component
-        transactionDetailViewModel.incomeCategoryNamesLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { incomeCategoryNames ->
-                // if not null
-                incomeCategoryNames?.let {
-                    incomeCategoryNamesList = incomeCategoryNames.toMutableList()
-                    // sorts list in alphabetical order
-                    incomeCategoryNamesList.sort()
-                    // "Create New Category" will always be at bottom of the list
-                    incomeCategoryNamesList.add(getString(R.string.create_category))
-                    // sets up the categorySpinner
-                    val incomeCategorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
-                    incomeCategorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    incomeCategorySpinner.adapter = incomeCategorySpinnerAdapter
-                    // if user made a new category, then sets the categorySpinner to new one
-                    // else starts the spinner up to IncomeCategory saved
-                    if (madeNewCategory) {
-
-                        incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(newCategoryName))
-                    } else {
-
-                        incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
-                    }
-                }
-            }
-        )
+        }
 
         // only occurs if user wants to create new Transaction
         if (fromFab) {
@@ -609,13 +585,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             3 -> calendar.add(Calendar.YEAR        , transaction.frequency)
         }
 
-        // reset hour, minutes, seconds and millis to start of day
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-
-        return calendar.time
+        return Utils.startOfDay(calendar.time)
     }
 
     @SuppressLint("DefaultLocale")
@@ -641,8 +611,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                     transactionDetailViewModel.insertExpenseCategory(newCategory)
                 }
-                newCategoryName = name
-                madeNewCategory = true
+                // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
+                // updates SpinnerAdapter, and sets Spinner to new Category
+                expenseCategoryNamesList.remove(getString(R.string.create_category))
+                expenseCategoryNamesList.add(name)
+                expenseCategoryNamesList.sort()
+                expenseCategoryNamesList.add(getString(R.string.create_category))
+                expenseSpinnerAdapter!!.notifyDataSetChanged()
+                expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
             } else {
 
                 expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
@@ -658,8 +634,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                     transactionDetailViewModel.insertIncomeCategory(newCategory)
                 }
-                newCategoryName = name
-                madeNewCategory = true
+                // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
+                // updates SpinnerAdapter, and sets Spinner to new Category
+                incomeCategoryNamesList.remove(getString(R.string.create_category))
+                incomeCategoryNamesList.add(name)
+                incomeCategoryNamesList.sort()
+                incomeCategoryNamesList.add(getString(R.string.create_category))
+                incomeSpinnerAdapter!!.notifyDataSetChanged()
+                incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))
             } else {
 
                 incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))

@@ -131,8 +131,7 @@ class TransactionListFragment : BaseFragment() {
         // set adapter for RecyclerView
         transactionRecyclerView.adapter = transactionAdapter
         // adds horizontal divider between each item in RecyclerView
-        transactionRecyclerView.addItemDecoration(DividerItemDecoration(
-            transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
+        transactionRecyclerView.addItemDecoration(DividerItemDecoration(transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
         // retrieves any saved preferences
         sp    = PreferenceManager.getDefaultSharedPreferences(activity)

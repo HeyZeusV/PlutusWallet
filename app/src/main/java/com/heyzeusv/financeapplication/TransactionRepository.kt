@@ -3,7 +3,10 @@ package com.heyzeusv.financeapplication
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
-import com.heyzeusv.financeapplication.database.*
+import com.heyzeusv.financeapplication.database.ExpenseCategoryDao
+import com.heyzeusv.financeapplication.database.IncomeCategoryDao
+import com.heyzeusv.financeapplication.database.TransactionDao
+import com.heyzeusv.financeapplication.database.TransactionDatabase
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -61,7 +64,7 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  ExpenseCategory Queries
      */
-    fun getExpenseCategoryNames() : LiveData<List<String>> = expenseCategoryDao.getExpenseCategoryNames()
+    suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> = withContext(Dispatchers.IO){ async {expenseCategoryDao.getExpenseCategoryNames()}}
     suspend fun getExpenseCategorySizeAsync()                                               : Deferred<Int?> = withContext(Dispatchers.IO) { async  {expenseCategoryDao.getExpenseCategorySize()}}
     suspend fun deleteExpenseCategory      (expenseCategory   : ExpenseCategory)            : Job            = withContext(Dispatchers.IO) { launch {expenseCategoryDao.delete(expenseCategory)}}
     suspend fun insertExpenseCategory      (expenseCategory   : ExpenseCategory)            : Job            = withContext(Dispatchers.IO) { launch {expenseCategoryDao.insert(expenseCategory)}}
@@ -71,7 +74,7 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  IncomeCategory Queries
      */
-    fun getIncomeCategoryNames() : LiveData<List<String>> = incomeCategoryDao.getIncomeCategoryNames()
+    suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> = withContext(Dispatchers.IO){ async {incomeCategoryDao.getIncomeCategoryNames()}}
     suspend fun getIncomeCategorySizeAsync()                                             : Deferred<Int?> = withContext(Dispatchers.IO) { async  {incomeCategoryDao.getIncomeCategorySize()}}
     suspend fun deleteIncomeCategory      (incomeCategory   : IncomeCategory)            : Job            = withContext(Dispatchers.IO) { launch {incomeCategoryDao.delete(incomeCategory)}}
     suspend fun insertIncomeCategory      (incomeCategory   : IncomeCategory)            : Job            = withContext(Dispatchers.IO) { launch {incomeCategoryDao.insert(incomeCategory)}}

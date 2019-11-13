@@ -27,7 +27,7 @@ data class Transaction(
     @PrimaryKey
     var id             : Int        = 0,
     var title          : String     = "",
-    var date           : Date       = Utils.startOfDay(),
+    var date           : Date       = Utils.startOfDay(Date()),
     var total          : BigDecimal = BigDecimal("0"),
     var type           : String     = "Expense",
     var category       : String     = "Education",

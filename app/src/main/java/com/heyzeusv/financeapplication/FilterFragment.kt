@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.*
 
@@ -133,51 +133,34 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // register an observer on LiveData instance and tie life to another component
-        filterViewModel.expenseCategoryNamesLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { expenseCategoryNames ->
-                // if not null
-                expenseCategoryNames?.let {
-                    expenseCategoryNamesList = expenseCategoryNames.toMutableList()
-                    // sorts list in alphabetical order
-                    expenseCategoryNamesList.sort()
-                    // Category to show all of one type
-                    expenseCategoryNamesList.add(0, getString(R.string.all))
-                    // sets up the categorySpinner
-                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, expenseCategoryNamesList)
-                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    expenseCategorySpinner.adapter = categorySpinnerAdapter
-                    // starts the spinner up to ExpenseCategory saved
-                    expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(categoryName))
-                }
-            }
-        )
+        launch {
 
-        // register an observer on LiveData instance and tie life to another component
-        filterViewModel.incomeCategoryNamesLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { incomeCategoryNames ->
-                // if not null
-                incomeCategoryNames?.let {
-                    incomeCategoryNamesList = incomeCategoryNames.toMutableList()
-                    // sorts list in alphabetical order
-                    incomeCategoryNamesList.sort()
-                    // Category to show all of one type
-                    incomeCategoryNamesList.add(0, getString(R.string.all))
-                    // sets up the categorySpinner
-                    val categorySpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, android.R.layout.simple_spinner_item, incomeCategoryNamesList)
-                    categorySpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-                    incomeCategorySpinner.adapter = categorySpinnerAdapter
-                    // starts the spinner up to ExpenseCategory saved
-                    incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(categoryName))
-                }
-            }
-        )
+            // retrieves list of Expense Categories from database
+            expenseCategoryNamesList = filterViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
+            // sorts list in alphabetical order
+            expenseCategoryNamesList.sort()
+            // Category to show all of one type
+            expenseCategoryNamesList.add(0, getString(R.string.all))
+            // sets up the categorySpinner
+            val expenseSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
+            expenseSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            expenseCategorySpinner.adapter = expenseSpinnerAdapter
+            // starts the spinner up to ExpenseCategory saved
+            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(categoryName))
+
+            // retrieves list of Income Categories from database
+            incomeCategoryNamesList = filterViewModel.getIncomeCategoryNamesAsync().await().toMutableList()
+            // sorts list in alphabetical order
+            incomeCategoryNamesList.sort()
+            // Category to show all of one type
+            incomeCategoryNamesList.add(0, getString(R.string.all))
+            // sets up the categorySpinner
+            val incomeSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
+            incomeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            incomeCategorySpinner.adapter = incomeSpinnerAdapter
+            // starts the spinner up to ExpenseCategory saved
+            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(categoryName))
+        }
     }
 
     override fun onStart() {

@@ -1,6 +1,5 @@
 package com.heyzeusv.financeapplication.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.financeapplication.IncomeCategory
@@ -28,9 +27,9 @@ abstract class IncomeCategoryDao : BaseDao<IncomeCategory>() {
     /**
      *  Returns all categories in table.
      *
-     *  @return LiveData object that holds List of all categories.
+     *  @return List object that holds List of all categories.
      */
     @Query("""SELECT category 
             FROM incomecategory""")
-    abstract fun getIncomeCategoryNames() : LiveData<List<String>>
+    abstract fun getIncomeCategoryNames() : List<String>
 }

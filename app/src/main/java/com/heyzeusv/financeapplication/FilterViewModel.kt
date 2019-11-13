@@ -1,7 +1,7 @@
 package com.heyzeusv.financeapplication
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.Deferred
 
 /**
  *  Data manager for FilterFragments.
@@ -19,10 +19,14 @@ class FilterViewModel : ViewModel() {
     /**
      *  ExpenseCategory queries.
      */
-    val expenseCategoryNamesLiveData : LiveData<List<String>> = transactionRepository.getExpenseCategoryNames()
+    suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> {
 
+        return transactionRepository.getExpenseCategoryNamesAsync()
+    }
     /**
      *  IncomeCategory queries.
      */
-    val incomeCategoryNamesLiveData : LiveData<List<String>> = transactionRepository.getIncomeCategoryNames ()
-}
+    suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> {
+
+        return transactionRepository.getIncomeCategoryNamesAsync()
+    }}

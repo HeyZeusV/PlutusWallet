@@ -276,8 +276,8 @@ class GraphFragment : BaseFragment() {
 
                     typeName = getString(R.string.expense)
                     context?.let {
-                        dataSet.setColors(intArrayOf(R.color.expenseColor1, R.color.expenseColor2,
-                            R.color.expenseColor3, R.color.expenseColor4), context)
+                        dataSet.setColors(intArrayOf(R.color.colorExpense1, R.color.colorExpense2,
+                            R.color.colorExpense3, R.color.colorExpense4), context)
                     }
                     category?.let {
                         if (category) {
@@ -296,8 +296,8 @@ class GraphFragment : BaseFragment() {
 
                     typeName = getString(R.string.income)
                     context?.let {
-                        dataSet.setColors(intArrayOf(R.color.incomeColor1, R.color.incomeColor2,
-                            R.color.incomeColor3, R.color.incomeColor4), context)
+                        dataSet.setColors(intArrayOf(R.color.colorIncome1, R.color.colorIncome2,
+                            R.color.colorIncome3, R.color.colorIncome4), context)
                     }
                     category?.let {
                         if (category) {
