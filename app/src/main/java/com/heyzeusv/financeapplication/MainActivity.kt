@@ -2,7 +2,6 @@ package com.heyzeusv.financeapplication
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -80,7 +79,6 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
                 // starts SettingsActivity
                 R.id.settings -> {
 
-                    Log.d(TAG, "SETTINGS")
                     val settingsIntent = Intent(this, SettingsActivity::class.java)
                     startActivity(settingsIntent)
                     drawerLayout.closeDrawer(GravityCompat.START)
@@ -89,7 +87,6 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
                 // starts AboutActivity
                 else -> {
 
-                    Log.d(TAG, "ABOUT")
                     val aboutIntent = Intent(this, AboutActivity::class.java)
                     startActivity(aboutIntent)
                     drawerLayout.closeDrawer(GravityCompat.START)
@@ -116,8 +113,6 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
      *  @param  end          ending Date for date filter
      */
     override fun onFilterApplied(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) {
-
-        Log.d(TAG, "onFilterApplied: ExpenseCategory: $category, Date: $date")
 
         val filteredTransactionListFragment : TransactionListFragment =
             TransactionListFragment.newInstance(category, date, type, categoryName, start, end)
@@ -157,7 +152,6 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
      */
     override fun onTransactionSelected(transactionId: Int, fromFab : Boolean) {
 
-        Log.d(TAG, "onTransactionSelected: $transactionId")
         getFabLocation()
 
         val transactionFragment : TransactionFragment = TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
@@ -191,6 +185,5 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
         fab.getLocationOnScreen(fabLocationArray)
         fabX = fabLocationArray[0] + fab.width / 2
         fabY = fabLocationArray[1] - fab.height
-        Log.d(TAG, "fabX: $fabX fabY: $fabY")
     }
 }

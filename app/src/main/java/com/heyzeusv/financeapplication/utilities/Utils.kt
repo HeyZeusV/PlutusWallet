@@ -2,6 +2,9 @@ package com.heyzeusv.financeapplication.utilities
 
 import java.util.*
 
+/**
+ *  Functions used in multiple classes
+ */
 class Utils {
 
     companion object {
@@ -12,7 +15,7 @@ class Utils {
          *  @param  symbolKey taken from SettingsFragment.
          *  @return the symbol to be used.
          */
-        fun getSymbol(symbolKey : String) : String {
+        fun getCurrencySymbol(symbolKey : String) : String {
 
             return when (symbolKey) {
 
@@ -24,6 +27,16 @@ class Utils {
                 "won"    -> "₩"
                 "baht"   -> "฿"
                 else     -> "$"
+            }
+        }
+
+        fun getSeparatorSymbol(symbolKey : String) : Char {
+
+            return when (symbolKey) {
+
+                "comma"  -> ','
+                "period" -> '.'
+                else     -> ' '
             }
         }
 

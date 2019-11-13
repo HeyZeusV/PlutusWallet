@@ -2,7 +2,6 @@
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -172,14 +171,10 @@ class GraphFragment : BaseFragment() {
         // clears Category name lists and re-adds new values
         if (type == "Expense") {
 
-            expenseNameList.clear()
             expenseNameList = categoryList
-            Log.d(TAG, "EXPENSE: $expenseNameList")
         } else {
 
-            incomeNameList.clear()
             incomeNameList = categoryList
-            Log.d(TAG, "INCOME: $incomeNameList")
         }
 
         return updatedCategoryTotalsList
@@ -192,12 +187,12 @@ class GraphFragment : BaseFragment() {
     private fun updateUI(transactionLists : MutableList<List<CategoryTotals>>) {
 
         // creates GraphAdapter to set with ViewPager2
-        graphViewPager   .adapter     = GraphAdapter(transactionLists)
+        graphViewPager .adapter = GraphAdapter(transactionLists)
         // sets up Dots Indicator with ViewPager2
         circleIndicator.setViewPager(graphViewPager)
         // when user deletes Transaction or returns to this screen,
         // this stops ViewPager2 from switching graphs
-        graphViewPager.setCurrentItem(selectedGraph, false)
+        graphViewPager .setCurrentItem(selectedGraph, false)
 
     }
 
@@ -240,6 +235,7 @@ class GraphFragment : BaseFragment() {
         val categoryName : String?  = arguments?.getString (ARG_CATEGORY_NAME)
         val typeStored   : String?  = arguments?.getString (ARG_TYPE)
 
+        // one most likely to be -1, but will still be checked before being used
         val expensePosition : Int = expenseNameList.indexOf(categoryName)
         val incomePosition  : Int = incomeNameList .indexOf(categoryName)
 

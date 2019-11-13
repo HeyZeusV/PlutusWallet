@@ -3,22 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
-        app:key="key_currency_symbol"
-        app:title="@string/preferences_currency_symbol"
+        app:defaultValue="dollar"
         app:entries="@array/currency_symbol_array"
         app:entryValues="@array/currency_symbol_key_array"
-        app:useSimpleSummaryProvider="true"
-        app:defaultValue="dollar"/>
+        app:iconSpaceReserved="false"
+        app:key="key_currency_symbol"
+        app:title="@string/preferences_currency_symbol"
+        app:useSimpleSummaryProvider="true" />
 
     <SwitchPreference
         app:key="key_symbol_side"
         app:title="@string/preferences_symbol_side"
-        app:summary="@string/preferences_symbol_side_summary"
+        app:summaryOn="@string/preferences_symbol_side_summary_on"
+        app:summaryOff="@string/preferences_symbol_side_summary_off"
+        app:iconSpaceReserved="false"
         app:defaultValue="true" />
+
+    <ListPreference
+        app:key="key_thousands_symbol"
+        app:title="Thousands Separator Symbol"
+        app:entries="@array/separator_symbol_array"
+        app:entryValues="@array/separator_symbol_key_array"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true"
+        app:defaultValue="comma"/>
 
     <SwitchPreference
         app:key="key_decimal_places"
         app:title="@string/preferences_number_decimal"
-        app:summary="@string/preferences_decimal_places_summary"
+        app:summaryOn="@string/preferences_decimal_places_summary_on"
+        app:summaryOff="@string/preferences_decimal_places_summary_off"
+        app:iconSpaceReserved="false"
         android:defaultValue="true"/>
+
+    <ListPreference
+        app:key="key_decimal_symbol"
+        android:dependency="key_decimal_places"
+        app:title="@string/preferences_decimal_symbol"
+        app:entries="@array/separator_symbol_array"
+        app:entryValues="@array/separator_symbol_key_array"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true"
+        app:defaultValue="period"/>
+
 </PreferenceScreen>

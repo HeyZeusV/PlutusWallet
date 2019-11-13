@@ -212,7 +212,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         typeButton.setOnClickListener {
 
-            if (typeButtonText == "Expense") {
+            if (typeButtonText == getString(R.string.expense)) {
 
                 typeButtonText                   = getString(R.string.income)
                 typeButton            .text      = typeButtonText

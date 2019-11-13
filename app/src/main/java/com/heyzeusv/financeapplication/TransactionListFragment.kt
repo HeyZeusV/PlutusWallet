@@ -30,17 +30,19 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-private const val TAG               = "TransactionListFragment"
-private const val ARG_CATEGORY      = "category"
-private const val ARG_DATE          = "date"
-private const val ARG_TYPE          = "type"
-private const val ARG_CATEGORY_NAME = "category_name"
-private const val ARG_START         = "start"
-private const val ARG_END           = "end"
-private const val KEY_MAX_ID        = "key_max_id"
-private const val KEY_CURRENCY_SYMBOL = "key_currency_symbol"
-private const val KEY_DECIMAL_PLACES  = "key_decimal_places"
-private const val KEY_SYMBOL_SIDE     = "key_symbol_side"
+private const val TAG                  = "TransactionListFragment"
+private const val ARG_CATEGORY         = "category"
+private const val ARG_DATE             = "date"
+private const val ARG_TYPE             = "type"
+private const val ARG_CATEGORY_NAME    = "category_name"
+private const val ARG_START            = "start"
+private const val ARG_END              = "end"
+private const val KEY_MAX_ID           = "key_max_id"
+private const val KEY_CURRENCY_SYMBOL  = "key_currency_symbol"
+private const val KEY_DECIMAL_PLACES   = "key_decimal_places"
+private const val KEY_DECIMAL_SYMBOL   = "key_decimal_symbol"
+private const val KEY_SYMBOL_SIDE      = "key_symbol_side"
+private const val KEY_THOUSANDS_SYMBOL = "key_thousands_symbol"
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -81,18 +83,23 @@ class TransactionListFragment : BaseFragment() {
     private var recyclerViewPosition : Int = 0
 
     // used for SharedPreferences
-    private var decimalPlaces : Boolean = true
-    private var maxId         : Int     = 0
-    private var symbolSide    : Boolean = true
-    private var symbolKey     : String  = "dollar"
-    private var symbol        : String  = "$"
+    private var decimalPlaces   : Boolean = true
+    private var symbolSide      : Boolean = true
+    private var maxId           : Int     = 0
+    private var decimalSymbol   : String  = "."
+    private var symbolKey       : String  = "dollar"
+    private var symbol          : String  = "$"
+    private var thousandsSymbol : String  = ","
 
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
 
+    // used for formatters
+    private val customSymbols = DecimalFormatSymbols(Locale.US)
+
     // formatters used for Total
-    val decimalFormatter = DecimalFormat("#,##0.00", DecimalFormatSymbols.getInstance(Locale.US))
-    val integerFormatter = DecimalFormat("#,###", DecimalFormatSymbols.getInstance(Locale.US))
+    private var decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
+    private var integerFormatter = DecimalFormat("#,###", customSymbols)
 
     // provides instance of ViewModel
     private val transactionListViewModel : TransactionListViewModel by lazy {
@@ -185,22 +192,29 @@ class TransactionListFragment : BaseFragment() {
             // creates a new Transaction
             recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
         }
-
-        // retrieves any saved preferences
-        decimalPlaces = sp.getBoolean(KEY_DECIMAL_PLACES, true)
-        symbolSide    = sp.getBoolean(KEY_SYMBOL_SIDE, true)
-        symbolKey     = sp.getString(KEY_CURRENCY_SYMBOL, "dollar")!!
-
-        // retrieves symbol to be used according to settings
-        symbol = Utils.getSymbol(symbolKey)
-        // tell RecyclerView that symbol has been changed
-        transactionAdapter?.notifyDataSetChanged()
     }
 
     override fun onResume() {
         super.onResume()
 
         futureTransactions()
+
+        // retrieves any saved preferences
+        decimalPlaces   = sp.getBoolean(KEY_DECIMAL_PLACES, true)
+        symbolSide      = sp.getBoolean(KEY_SYMBOL_SIDE, true)
+        decimalSymbol   = sp.getString(KEY_DECIMAL_SYMBOL, ".")!!
+        symbolKey       = sp.getString(KEY_CURRENCY_SYMBOL, "dollar")!!
+        thousandsSymbol = sp.getString(KEY_THOUSANDS_SYMBOL, ",")!!
+
+        // sets the symbols to be used according to settings
+        symbol                          = Utils.getCurrencySymbol(symbolKey)
+        customSymbols.decimalSeparator  = Utils.getSeparatorSymbol(decimalSymbol)
+        customSymbols.groupingSeparator = Utils.getSeparatorSymbol(thousandsSymbol)
+        decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
+        integerFormatter = DecimalFormat("#,###", customSymbols)
+
+        // tell RecyclerView that symbol has been changed
+        transactionAdapter!!.notifyDataSetChanged()
     }
 
     override fun onPause() {
@@ -311,15 +325,15 @@ class TransactionListFragment : BaseFragment() {
     }
 
     /**
-     *  Appends " (R)x####" to the end of Transaction title that has been repeated.
+     *  Appends " x####" to the end of Transaction title that has been repeated.
      *
      *  @param title the title of Transaction.
      */
     private fun incrementString(title : String) : String {
 
-        val prefix                        = "(R)x"
-        // pattern: (R)x######
-        val regex                         = Regex("(\\(R\\)x)\\d+")
+        val prefix                        = "x"
+        // pattern: x######
+        val regex                         = Regex("(x)\\d+")
         // will search for regex in title
         val match          : MatchResult? = regex.find(title)
         // string that match found, if any
@@ -328,17 +342,17 @@ class TransactionListFragment : BaseFragment() {
 
         if (matchingString != null) {
 
-            // removes "(R)x###" as this will be updated
+            // removes "x###" as this will be updated
             newTitle              = newTitle      .replace(regex         , "")
             // returns only the Int and increments it by one
-            var noPrefixInt : Int = matchingString.replace("(R)x", "").toInt()
+            var noPrefixInt : Int = matchingString.replace("x", "").toInt()
             noPrefixInt          += 1
             // appends the prefix and updated int onto the end of title
             newTitle             += prefix + noPrefixInt
         } else {
 
             // first time being repeated
-            newTitle += " (R)x1"
+            newTitle += " x2"
         }
 
         return newTitle
@@ -506,11 +520,11 @@ class TransactionListFragment : BaseFragment() {
             // initialize instance of builder
             val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                 // set title of AlertDialog
-                .setTitle("Delete Transaction")
+                .setTitle(getString(R.string.delete_transaction))
                 // set message of AlertDialog
-                .setMessage("Are you sure you want to delete ${transaction.title}?")
+                .setMessage(getString(R.string.delete_transaction_warning, transaction.title))
                 // set positive button and its click listener
-                .setPositiveButton("YES") { _, _ ->
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
 
                 launch {
 
@@ -518,7 +532,7 @@ class TransactionListFragment : BaseFragment() {
                 }
             }
                 // set negative button and its click listener
-                .setNegativeButton("NO") { _, _ ->  }
+                .setNegativeButton(getString(R.string.no)) { _, _ ->  }
             // make the AlertDialog using the builder
             val alertDialog : androidx.appcompat.app.AlertDialog = alertDialogBuilder.create()
             // display AlertDialog
