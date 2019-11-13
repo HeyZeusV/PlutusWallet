@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.MaterialComponents.CardView"
@@ -36,7 +37,7 @@
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <EditText
                     android:id="@+id/transaction_title"
@@ -51,7 +52,7 @@
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/titleTextView"/>
 
                 <TextView
                     android:id="@+id/dateTextView"
@@ -66,7 +67,7 @@
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_title" />
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_title"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/transaction_date"
@@ -79,7 +80,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/dateTextView"
-                    tools:text="Wed Nov 14 11:56 EST 2018" />
+                    tools:text="Wed Nov 14 11:56 EST 2018"/>
 
                 <TextView
                     android:id="@+id/totalTextView"
@@ -94,7 +95,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_date"/>
 
                 <TextView
                     android:id="@+id/symbolLeftTextView"
@@ -104,7 +105,7 @@
                     android:layout_marginTop="8dp"
                     android:textSize="18sp"
                     app:layout_constraintStart_toEndOf="@+id/totalTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_date"/>
 
                 <com.heyzeusv.financeapplication.utilities.CurrencyEditText
                     android:id="@+id/transaction_total"
@@ -116,7 +117,7 @@
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="@+id/symbolRightTextView"
                     app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_date"/>
 
                 <TextView
                     android:id="@+id/symbolRightTextView"
@@ -128,7 +129,7 @@
                     android:textSize="18sp"
                     android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_date"/>
 
 
                 <TextView
@@ -142,10 +143,9 @@
                     android:paddingEnd="8dip"
                     android:text="@string/type"
                     android:textColor="@android:color/black"
-
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/totalTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/totalTextView"/>
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/transaction_type_chips"
@@ -167,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/expense"
                         android:textColor="@color/chip_text_color"
-                        app:chipBackgroundColor="@color/chip_bg_state_list" />
+                        app:chipBackgroundColor="@color/chip_bg_state_list"/>
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/transaction_income_chip"
@@ -176,7 +176,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/income"
                         android:textColor="@color/chip_text_color"
-                        app:chipBackgroundColor="@color/chip_bg_state_list" />
+                        app:chipBackgroundColor="@color/chip_bg_state_list"/>
                 </com.google.android.material.chip.ChipGroup>
 
                 <TextView
@@ -192,7 +192,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/typeTextView"/>
 
                 <Spinner
                     android:id="@+id/transaction_expense_category"
@@ -203,7 +203,7 @@
                     android:background="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/typeTextView"/>
 
                 <Spinner
                     android:id="@+id/transaction_income_category"
@@ -214,7 +214,7 @@
                     android:background="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/typeTextView"/>
 
                 <TextView
                     android:id="@+id/memoTextView"
@@ -229,7 +229,7 @@
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/categoryTextView"/>
 
                 <EditText
                     android:id="@+id/transaction_memo"
@@ -248,7 +248,7 @@
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/memoTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/memoTextView"/>
 
                 <TextView
                     android:id="@+id/repeatingTextView"
@@ -263,7 +263,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_memo" />
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_memo"/>
 
                 <CheckBox
                     android:id="@+id/transaction_repeating"
@@ -275,7 +275,7 @@
                     android:paddingStart="8dip"
                     android:paddingEnd="8dip"
                     app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_memo" />
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_memo"/>
 
                 <TextView
                     android:id="@+id/frequencyTextView"
@@ -292,7 +292,7 @@
                     android:visibility="invisible"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
-                    tools:visibility="visible" />
+                    tools:visibility="visible"/>
 
                 <Spinner
                     android:id="@+id/transaction_frequency_period"
@@ -306,7 +306,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/transaction_frequency"
                     app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
                     app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
-                    tools:visibility="visible" />
+                    tools:visibility="visible"/>
 
                 <EditText
                     android:id="@+id/transaction_frequency"
@@ -324,9 +324,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/transaction_frequency_period"
                     app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
-                    tools:visibility="visible" />
-
-
+                    tools:visibility="visible"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
 
@@ -344,7 +342,6 @@
             android:clickable="true"
             android:focusable="true"
             app:fabSize="auto"
-            app:srcCompat="@drawable/ic_round_save_24" />
-
+            app:srcCompat="@drawable/ic_round_save_24"/>
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

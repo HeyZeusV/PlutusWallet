@@ -5,13 +5,13 @@
     android:id="@+id/activity_drawer"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary" >
+        android:background="@color/colorPrimary">
 
         <FrameLayout
             android:id="@+id/fragment_graph_container"
@@ -20,7 +20,7 @@
             app:layout_constraintHeight_percent="0.35"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.60" />
+            app:layout_constraintWidth_percent="0.60"/>
 
         <FrameLayout
             android:id="@+id/fragment_filter_container"
@@ -29,7 +29,7 @@
             app:layout_constraintHeight_percent="0.35"
             app:layout_constraintStart_toEndOf="@id/fragment_graph_container"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.40" />
+            app:layout_constraintWidth_percent="0.40"/>
 
 
         <FrameLayout
@@ -38,14 +38,14 @@
             android:layout_height="0dp"
             app:layout_constraintHeight_percent="0.65"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/fragment_graph_container" />
+            app:layout_constraintTop_toBottomOf="@id/fragment_graph_container"/>
 
         <FrameLayout
             android:id="@+id/fragment_transaction_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/activity_fab"
@@ -57,7 +57,7 @@
             android:visibility="invisible"
             app:fabSize="auto"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/fragment_settings"
@@ -71,8 +71,7 @@
             app:icon="@drawable/ic_baseline_menu_30"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:rippleColor="?colorControlHighlight" />
-
+            app:rippleColor="?colorControlHighlight"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -82,5 +81,5 @@
         android:visibility="invisible"
         android:layout_gravity="start"
         app:menu="@menu/navigation_menu"
-        app:headerLayout="@layout/navigation_header" />
+        app:headerLayout="@layout/navigation_header"/>
 </androidx.drawerlayout.widget.DrawerLayout>

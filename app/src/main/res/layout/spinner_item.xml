@@ -9,4 +9,4 @@
     android:singleLine="true"
     android:textColor="@color/state_color"
     android:drawableRight="@drawable/ic_arrow_drop_down_24px"
-    tools:ignore="RtlHardcoded" />
+    tools:ignore="RtlHardcoded"/>

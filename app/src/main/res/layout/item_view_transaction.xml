@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,7 +18,7 @@
         app:layout_constraintEnd_toStartOf="@+id/transaction_total"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Transaction Title" />
+        tools:text="Transaction Title"/>
 
     <TextView
         android:id="@+id/transaction_date"
@@ -29,7 +30,7 @@
         app:layout_constraintEnd_toStartOf="@+id/transaction_total"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/transaction_title"
-        tools:text="Transaction Date" />
+        tools:text="Transaction Date"/>
 
     <TextView
         android:id="@+id/transaction_total"
@@ -42,5 +43,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/transaction_title"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Transaction Total" />
+        tools:text="Transaction Total"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
