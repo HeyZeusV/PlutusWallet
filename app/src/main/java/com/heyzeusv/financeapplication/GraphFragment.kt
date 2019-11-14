@@ -274,7 +274,7 @@ class GraphFragment : BaseFragment() {
                 // sets up the colors and typeName depending on type
                 if (type == 0) {
 
-                    typeName = getString(R.string.expense)
+                    typeName = getString(R.string.type_expense)
                     context?.let {
                         dataSet.setColors(intArrayOf(R.color.colorExpense1, R.color.colorExpense2,
                             R.color.colorExpense3, R.color.colorExpense4), context)
@@ -294,7 +294,7 @@ class GraphFragment : BaseFragment() {
                     }
                 } else {
 
-                    typeName = getString(R.string.income)
+                    typeName = getString(R.string.type_income)
                     context?.let {
                         dataSet.setColors(intArrayOf(R.color.colorIncome1, R.color.colorIncome2,
                             R.color.colorIncome3, R.color.colorIncome4), context)
@@ -343,14 +343,14 @@ class GraphFragment : BaseFragment() {
                 // highlights the category being searched on its respective PieChart
                 category?.let {
 
-                    if (it && typeStored == getString(R.string.expense) && typeName == getString(R.string.expense)) {
+                    if (it && typeStored == getString(R.string.type_expense) && typeName == getString(R.string.type_expense)) {
 
                         if (expensePosition != -1) {
 
                             pieChart.highlightValue(expensePosition.toFloat(), 0)
                         }
                     }
-                    if (it && typeStored == getString(R.string.income) && typeName == getString(R.string.income)) {
+                    if (it && typeStored == getString(R.string.type_income) && typeName == getString(R.string.type_income)) {
 
                         if (incomePosition != -1) {
 

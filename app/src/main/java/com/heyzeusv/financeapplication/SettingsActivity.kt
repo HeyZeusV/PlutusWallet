@@ -56,13 +56,13 @@ class SettingsActivity : AppCompatActivity() {
 
                     // initialize and set up Builder
                     val adBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-                        .setTitle(getString(R.string.ad_are_you_sure))
-                        .setMessage(getString(R.string.ad_decimal_place_warning))
-                        .setPositiveButton(getString(R.string.ad_switch)) { _, _ ->
+                        .setTitle(getString(R.string.alert_dialog_are_you_sure))
+                        .setMessage(getString(R.string.alert_dialog_decimal_place_warning))
+                        .setPositiveButton(getString(R.string.alert_dialog_switch)) { _, _ ->
 
                         dpPreference.isChecked = false
                     }
-                        .setNegativeButton(getString(R.string.ad_cancel)) { _, _ -> }
+                        .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _, _ -> }
                     // make AlertDialog using Builder
                     val decimalAlertDialog : AlertDialog = adBuilder.create()
                     // display AlertDialog
@@ -71,12 +71,12 @@ class SettingsActivity : AppCompatActivity() {
 
                     // initialize and set up Builder
                     val adBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-                        .setTitle(R.string.ad_are_you_sure)
-                        .setPositiveButton(getString(R.string.ad_switch)) {_, _ ->
+                        .setTitle(R.string.alert_dialog_are_you_sure)
+                        .setPositiveButton(getString(R.string.alert_dialog_switch)) { _, _ ->
 
                         dpPreference.isChecked = true
                     }
-                        .setNegativeButton(getString(R.string.ad_cancel)) {_, _ -> }
+                        .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _, _ -> }
                     // make AlertDialog using Builder
                     val decimalAlertDialog : AlertDialog = adBuilder.create()
                     // display AlertDialog

@@ -1,92 +1,91 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name" translatable="false">Plutus\' Wallet</string>
-    <string name="title">Title:</string>
-    <string name="title_hint">Enter title such as location/website of purchase</string>
-    <string name="date">Date:</string>
-    <string name="total">Total:</string>
-    <string name="type">Type:</string>
-    <string name="expense">Expense</string>
-    <string name="income">Income</string>
-    <string name="category">Category:</string>
-    <string name="repeating_transaction">Repeating Transaction:</string>
-    <string name="frequency">Frequency:</string>
-    <string name="memo">Memo:</string>
-    <string name="memo_hint">Enter any additional information needed</string>
-    <string name="frequency_hint" translatable="false">1–99</string>
-    <string name="category_hint">Category</string>
-    <string name="start">Start:</string>
-    <string name="end">End:</string>
-    <string name="apply">Apply</string>
-    <string name="reset">Reset</string>
-    <string name="date_warning">End date must be after start date!!</string>
-    <string name="days">Days</string>
-    <string name="weeks">Weeks</string>
-    <string name="months">Months</string>
-    <string name="years">Years</string>
-    <string name="transaction_number">Transaction #</string>
-    <string name="total_number" translatable="false">%1$s</string>
-    <string name="total_number_symbol" translatable="false">%1$s%2$s</string>
-    <string name="education">Education</string>
-    <string name="entertainment">Entertainment</string>
-    <string name="food">Food</string>
-    <string name="home">Home</string>
-    <string name="transportation">Transportation</string>
-    <string name="utilities">Utilities</string>
-    <string name="cryptocurrency">Cryptocurrency</string>
-    <string name="investments">Investments</string>
-    <string name="salary">Salary</string>
-    <string name="savings">Savings</string>
-    <string name="stocks">Stocks</string>
-    <string name="wages">Wages</string>
-    <string name="all">All</string>
-    <string name="empty_graph">No transactions fulfill \nthe filters being applied!</string>
-    <string name="settings">Settings</string>
-    <string name="preferences_currency_symbol">Currency Symbol</string>
-    <string name="preferences_symbol_side">Currency Symbol Side</string>
-    <string name="preferences_number_decimal">Decimal Places</string>
-    <string name="title_activity_settings">Settings</string>
-    <string name="transaction_total_hint">Enter transaction total</string>
-    <string name="snackbar_saved">Transaction saved!</string>
-    <string name="empty_list">No transactions fulfill \nthe filters being applied! \nPress the button below \nto add a new transaction!</string>
+<resources
+    xmlns:tools="http://schemas.android.com/tools">
     <string name="about">About</string>
-    <string name="version" translatable="false">v1.0.0</string>
-    <string name="by_name">By Jesus E. Valdes</string>
-    <string name="special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
-    <string name="external_libraries">External Libraries Used:</string>
-    <string name="circleindicator" translatable="false">CircleIndicator</string>
-    <string name="circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
-    <string name="mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>
-    <string name="mpandroidchart_github" translatable="false"><![CDATA[<a href=\"https://github.com/PhilJay/MPAndroidChart\">GitHub</a>]]></string>
-    <string name="license">License</string>
+    <string name="about_by_name">By Jesus E. Valdes</string>
+    <string name="about_changelog">Changelog</string>
+    <string name="about_contact_me">Questions, comments, or concerns? \nFeel free to email me at</string>
+    <string name="about_email" translatable="false"><![CDATA[<a href=\"mailto:heyzeusvapps@gmail.com?subject=Plutus\' Wallet\">heyzeusvapps@gmail.com</a>]]></string>
+    <string name="about_external_libraries">External Libraries Used:</string>
+    <string name="about_license">License</string>
+    <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
+    <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
+    <string name="about_version" translatable="false">v1.0.0</string>
+    <string name="alert_dialog_are_you_sure">Are you sure?</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_decimal_place_warning">This will cause existing transactions to be rounded depending on decimal value. Original value can be restored ONLY IF transactions are not edited.</string>
+    <string name="alert_dialog_delete_transaction">Delete Transaction</string>
+    <string name="alert_dialog_delete_transaction_warning">Are you sure you want to delete %1$s?</string>
+    <string name="alert_dialog_future_transaction">Future Transaction</string>
+    <string name="alert_dialog_future_transaction_warning">This transaction has been repeated before and the date has been edited. Would you like this transaction to be able to be repeated again?</string>
+    <string name="alert_dialog_no">No</string>
+    <string name="alert_dialog_save">Save</string>
+    <string name="alert_dialog_switch">Switch</string>
+    <string name="alert_dialog_yes">Yes</string>
     <string name="app_icon">App Icon</string>
-    <string name="ad_decimal_place_warning">This will cause existing transactions to be rounded depending on decimal value. Original value can be restored ONLY IF transactions are not edited.</string>
-    <string name="ad_are_you_sure">Are you sure?</string>
-    <string name="ad_switch">Switch</string>
-    <string name="ad_cancel">Cancel</string>
-    <string name="contact_me">Questions, comments, or concerns? \nFeel free to email me at</string>
-    <string name="email" translatable="false"><![CDATA[<a href=\"mailto:heyzeusvapps@gmail.com?subject=Plutus\' Wallet\">heyzeusvapps@gmail.com</a>]]></string>
-    <string name="translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="changelog">Changelog</string>
-    <string name="create_category">Create New Category</string>
-    <string name="future_transaction">Future Transaction</string>
-    <string name="future_transaction_warning">This transaction has been repeated before and the date has been edited. Would you like this transaction to be able to be repeated again?</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-    <string name="delete_transaction">Delete Transaction</string>
-    <string name="delete_transaction_warning">Are you sure you want to delete %1$s?</string>
-    <string name="preferences_decimal_symbol">Decimal Separator Symbol</string>
-    <string name="preferences_symbol_side_summary_on">Currency symbol will appear on left side.</string>
-    <string name="preferences_symbol_side_summary_off">Currency symbol will appear on right side.</string>
-    <string name="preferences_decimal_places_summary_on">Decimal places can be used.</string>
-    <string name="preferences_decimal_places_summary_off">Decimal places cannot be used.</string>
-    <string name="language_en_english">English</string>
-    <string name="language_es_spanish">Spanish</string>
+    <string name="app_name" translatable="false">Plutus\' Wallet</string>
+    <string name="category_all">All</string>
+    <string name="category_create">Create New Category</string>
+    <string name="category_cryptocurrency">Cryptocurrency</string>
+    <string name="category_education">Education</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_food">Food</string>
+    <string name="category_hint">Enter New Category</string>
+    <string name="category_home">Home</string>
+    <string name="category_investments">Investments</string>
+    <string name="category_salary">Salary</string>
+    <string name="category_savings">Savings</string>
+    <string name="category_stocks">Stocks</string>
+    <string name="category_transportation">Transportation</string>
+    <string name="category_utilities">Utilities</string>
+    <string name="category_wages">Wages</string>
+    <string name="empty_graph">No transactions fulfill \nthe filters being applied!</string>
+    <string name="empty_list">No transactions fulfill \nthe filters being applied! \nPress the button below \nto add a new transaction!</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_date_warning">End date must be after start date!!</string>
+    <string name="filter_end">End:</string>
+    <string name="filter_reset">Reset</string>
+    <string name="filter_start">Start:</string>
     <string name="language_de_german">German</string>
+    <string name="language_en_english">English</string>
+    <string name="language_es_spanish">Spanish (Latin American)</string>
     <string name="language_hi_hindi">Hindi</string>
     <string name="language_ja_japanese">Japanese</string>
     <string name="language_ko_korean">Korean</string>
     <string name="language_th_thai">Thai</string>
+    <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
+    <string name="library_circleindicator" translatable="false">CircleIndicator</string>
+    <string name="library_mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>
+    <string name="library_mpandroidchart_github" translatable="false"><![CDATA[<a href=\"https://github.com/PhilJay/MPAndroidChart\">GitHub</a>]]></string>
+    <string name="period_days">Days</string>
+    <string name="period_months">Months</string>
+    <string name="period_weeks">Weeks</string>
+    <string name="period_years">Years</string>
+    <string name="preferences_currency_symbol">Currency Symbol</string>
+    <string name="preferences_decimal_places_summary_off">Decimal places cannot be used.</string>
+    <string name="preferences_decimal_places_summary_on">Decimal places can be used.</string>
+    <string name="preferences_decimal_symbol">Decimal Separator Symbol</string>
     <string name="preferences_language">Language</string>
+    <string name="preferences_number_decimal">Decimal Places</string>
+    <string name="preferences_symbol_side">Currency Symbol Side</string>
+    <string name="preferences_symbol_side_summary_off">Currency symbol will appear on right side.</string>
+    <string name="preferences_symbol_side_summary_on">Currency symbol will appear on left side.</string>
+    <string name="settings">Settings</string>
+    <string name="snackbar_saved">Transaction saved!</string>
+    <string name="total_number" translatable="false">%1$s</string>
+    <string name="total_number_symbol" translatable="false">%1$s%2$s</string>
+    <string name="transaction_category">Category:</string>
+    <string name="transaction_date">Date:</string>
+    <string name="transaction_empty_title">Transaction #</string>
+    <string name="transaction_frequency">Frequency:</string>
+    <string name="transaction_frequency_hint" translatable="false">1–99</string>
+    <string name="transaction_memo">Memo:</string>
+    <string name="transaction_memo_hint">Enter any additional information needed</string>
+    <string name="transaction_repeating">Repeating Transaction:</string>
+    <string name="transaction_title">Title:</string>
+    <string name="transaction_title_hint">Enter title such as location/website of purchase</string>
+    <string name="transaction_total">Total:</string>
+    <string name="transaction_total_hint">Enter transaction total</string>
+    <string name="transaction_type">Type:</string>
+    <string name="type_expense">Expense</string>
+    <string name="type_income">Income</string>
 </resources>

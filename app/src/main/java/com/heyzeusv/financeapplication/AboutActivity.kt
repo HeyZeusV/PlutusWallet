@@ -62,9 +62,9 @@ class AboutActivity : AppCompatActivity() {
         email                     = findViewById(R.id.emailTextView)
 
         // converts from HTML
-        androidChartGitHub   .text = HtmlCompat.fromHtml(resources.getText(R.string.mpandroidchart_github ).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        circleIndicatorGitHub.text = HtmlCompat.fromHtml(resources.getText(R.string.circleIndicator_github).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        email                .text = HtmlCompat.fromHtml(resources.getText(R.string.email).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        androidChartGitHub   .text = HtmlCompat.fromHtml(resources.getText(R.string.library_mpandroidchart_github ).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        circleIndicatorGitHub.text = HtmlCompat.fromHtml(resources.getText(R.string.library_circleIndicator_github).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        email                .text = HtmlCompat.fromHtml(resources.getText(R.string.about_email).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         // allows text to open web link/email
         androidChartGitHub   .movementMethod = LinkMovementMethod.getInstance()

@@ -79,7 +79,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var transaction            : Transaction
 
     // array holding values for frequency spinner
-    private var frequencyArray : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.days), FinanceApplication.context!!.getString(R.string.weeks), FinanceApplication.context!!.getString(R.string.months), FinanceApplication.context!!.getString(R.string.years))
+    private var frequencyArray : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.period_days), FinanceApplication.context!!.getString(R.string.period_weeks), FinanceApplication.context!!.getString(R.string.period_months), FinanceApplication.context!!.getString(R.string.period_years))
 
     // used with categories
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
@@ -256,7 +256,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // sorts list in alphabetical order
             expenseCategoryNamesList.sort()
             // "Create New Category" will always be at bottom of the list
-            expenseCategoryNamesList.add(getString(R.string.create_category))
+            expenseCategoryNamesList.add(getString(R.string.category_create))
             // sets up the categorySpinner
             expenseSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
             expenseSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
@@ -267,7 +267,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // sorts list in alphabetical order
             incomeCategoryNamesList.sort()
             // "Create New Category" will always be at bottom of the list
-            incomeCategoryNamesList.add(getString(R.string.create_category))
+            incomeCategoryNamesList.add(getString(R.string.category_create))
             // sets up the categorySpinner
             incomeSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
             incomeSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
@@ -397,7 +397,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
 
                 // only creates AlertDialog if user selects "Create New Category"
-                if (parent?.getItemAtPosition(position) == getString(R.string.create_category)) {
+                if (parent?.getItemAtPosition(position) == getString(R.string.category_create)) {
 
                     newCategoryDialog(expenseCategorySpinner)
                 }
@@ -414,7 +414,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
 
                 // only creates AlertDialog if user selects "Create New Category"
-                if (parent?.getItemAtPosition(position) == getString(R.string.create_category)) {
+                if (parent?.getItemAtPosition(position) == getString(R.string.category_create)) {
 
                     newCategoryDialog(incomeCategorySpinner)
                 }
@@ -459,7 +459,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // gives Transaction simple title if user doesn't enter any
             if (transaction.title.trim().isEmpty()) {
 
-                transaction.title = getString(R.string.transaction_number) + transaction.id
+                transaction.title = getString(R.string.transaction_empty_title) + transaction.id
             }
 
             // frequency must always be at least 1
@@ -508,11 +508,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     // initialize instance of builder
                     val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                         // set title
-                        .setTitle(getString(R.string.future_transaction))
+                        .setTitle(getString(R.string.alert_dialog_future_transaction))
                         // set message
-                        .setMessage(getString(R.string.future_transaction_warning))
+                        .setMessage(getString(R.string.alert_dialog_future_transaction_warning))
                         // set positive button and click listener
-                        .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                        .setPositiveButton(getString(R.string.alert_dialog_yes)) { _, _ ->
 
                         transaction.futureTCreated = false
                         launch {
@@ -521,7 +521,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                         }
                     }
                         // set negative button and click listener
-                        .setNegativeButton(getString(R.string.no)) { _, _ ->
+                        .setNegativeButton(getString(R.string.alert_dialog_no)) { _, _ ->
 
                         launch {
 
@@ -613,10 +613,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
                 // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
                 // updates SpinnerAdapter, and sets Spinner to new Category
-                expenseCategoryNamesList.remove(getString(R.string.create_category))
+                expenseCategoryNamesList.remove(getString(R.string.category_create))
                 expenseCategoryNamesList.add(name)
                 expenseCategoryNamesList.sort()
-                expenseCategoryNamesList.add(getString(R.string.create_category))
+                expenseCategoryNamesList.add(getString(R.string.category_create))
                 expenseSpinnerAdapter!!.notifyDataSetChanged()
                 expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
             } else {
@@ -636,10 +636,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
                 // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
                 // updates SpinnerAdapter, and sets Spinner to new Category
-                incomeCategoryNamesList.remove(getString(R.string.create_category))
+                incomeCategoryNamesList.remove(getString(R.string.category_create))
                 incomeCategoryNamesList.add(name)
                 incomeCategoryNamesList.sort()
-                incomeCategoryNamesList.add(getString(R.string.create_category))
+                incomeCategoryNamesList.add(getString(R.string.category_create))
                 incomeSpinnerAdapter!!.notifyDataSetChanged()
                 incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))
             } else {
@@ -660,7 +660,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // initialize instance of Builder
         val builder = MaterialAlertDialogBuilder(context)
             // set title of AlertDialog
-            .setTitle(getString(R.string.create_category))
+            .setTitle(getString(R.string.category_create))
         // inflates view that holds EditText
         val viewInflated: View = LayoutInflater.from(context)
             .inflate(R.layout.dialog_new_category, view as ViewGroup, false)
@@ -669,12 +669,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // sets the view
         builder.setView(viewInflated)
             // set positive button and its click listener
-            .setPositiveButton(getString(R.string.save)) { _, _ ->
+            .setPositiveButton(getString(R.string.alert_dialog_save)) { _, _ ->
 
             insertCategory(input.text.toString())
         }
             // set negative button and its click listener
-            .setNegativeButton(getString(R.string.cancel)) { _, _ ->
+            .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _, _ ->
 
             // users shouldn't be able to save on "Create New Category",
             // this prevents that

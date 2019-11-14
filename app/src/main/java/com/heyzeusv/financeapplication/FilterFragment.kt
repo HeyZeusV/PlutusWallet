@@ -79,9 +79,9 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
 
     // default strings used
-    private var typeButtonText  : String = FinanceApplication.context!!.getString(R.string.expense)
-    private var categoryName    : String = FinanceApplication.context!!.getString(R.string.all)
-    private var applyButtonText : String = FinanceApplication.context!!.getString(R.string.reset)
+    private var typeButtonText  : String = FinanceApplication.context!!.getString(R.string.type_expense)
+    private var categoryName    : String = FinanceApplication.context!!.getString(R.string.category_all)
+    private var applyButtonText : String = FinanceApplication.context!!.getString(R.string.filter_reset)
 
     // provides instance of ViewModel
     private val filterViewModel : FilterViewModel by lazy {
@@ -124,8 +124,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         endDateButton         .text      = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
         startDateButton       .text      = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
         applyButton           .text      = applyButtonText
-        expenseCategorySpinner.isVisible = typeButtonText == getString(R.string.expense)
-        incomeCategorySpinner .isVisible = typeButtonText == getString(R.string.income)
+        expenseCategorySpinner.isVisible = typeButtonText == getString(R.string.type_expense)
+        incomeCategorySpinner .isVisible = typeButtonText == getString(R.string.type_income)
 
         return view
     }
@@ -140,7 +140,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // sorts list in alphabetical order
             expenseCategoryNamesList.sort()
             // Category to show all of one type
-            expenseCategoryNamesList.add(0, getString(R.string.all))
+            expenseCategoryNamesList.add(0, getString(R.string.category_all))
             // sets up the categorySpinner
             val expenseSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
             expenseSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
@@ -153,7 +153,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // sorts list in alphabetical order
             incomeCategoryNamesList.sort()
             // Category to show all of one type
-            incomeCategoryNamesList.add(0, getString(R.string.all))
+            incomeCategoryNamesList.add(0, getString(R.string.category_all))
             // sets up the categorySpinner
             val incomeSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
             incomeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
@@ -195,15 +195,15 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         typeButton.setOnClickListener {
 
-            if (typeButtonText == getString(R.string.expense)) {
+            if (typeButtonText == getString(R.string.type_expense)) {
 
-                typeButtonText                   = getString(R.string.income)
+                typeButtonText                   = getString(R.string.type_income)
                 typeButton            .text      = typeButtonText
                 expenseCategorySpinner.isVisible = false
                 incomeCategorySpinner .isVisible = true
             } else {
 
-                typeButtonText                   = getString(R.string.expense)
+                typeButtonText                   = getString(R.string.type_expense)
                 typeButton            .text      = typeButtonText
                 expenseCategorySpinner.isVisible = true
                 incomeCategorySpinner .isVisible = false
@@ -261,7 +261,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // startDate must be before endDate else it displays Toast warning and doesn't apply filters
             if (startDate > endDate) {
 
-                Toast.makeText(it.context, getString(R.string.date_warning), Toast.LENGTH_LONG).show()
+                Toast.makeText(it.context, getString(R.string.filter_date_warning), Toast.LENGTH_LONG).show()
             } else {
 
                 // adds time to endDate to make it right before midnight of next day
@@ -312,7 +312,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         resetTime()
         expenseCategorySpinner.setSelection(0)
         incomeCategorySpinner .setSelection(0)
-        typeButtonText                         = getString(R.string.expense)
+        typeButtonText                         = getString(R.string.type_expense)
         typeButton            .text            = typeButtonText
         endDateButton         .text            = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
         startDateButton       .text            = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
@@ -340,11 +340,11 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         if (!categorySelected && !dateSelected) {
 
-            applyButtonText  = getString(R.string.reset)
+            applyButtonText  = getString(R.string.filter_reset)
             applyButton.text = applyButtonText
         } else {
 
-            applyButtonText  = getString(R.string.apply)
+            applyButtonText  = getString(R.string.filter_apply)
             applyButton.text = applyButtonText
         }
     }

@@ -368,12 +368,12 @@ class TransactionListFragment : BaseFragment() {
 
             if (expenseSize == 0 || expenseSize == null) {
 
-                val education      = ExpenseCategory(getString(R.string.education))
-                val entertainment  = ExpenseCategory(getString(R.string.entertainment))
-                val food           = ExpenseCategory(getString(R.string.food))
-                val home           = ExpenseCategory(getString(R.string.home))
-                val transportation = ExpenseCategory(getString(R.string.transportation))
-                val utilities      = ExpenseCategory(getString(R.string.utilities))
+                val education      = ExpenseCategory(getString(R.string.category_education))
+                val entertainment  = ExpenseCategory(getString(R.string.category_entertainment))
+                val food           = ExpenseCategory(getString(R.string.category_food))
+                val home           = ExpenseCategory(getString(R.string.category_home))
+                val transportation = ExpenseCategory(getString(R.string.category_transportation))
+                val utilities      = ExpenseCategory(getString(R.string.category_utilities))
                 val initialExpenseCategories : List<ExpenseCategory> = listOf(
                     education, entertainment, food, home, transportation, utilities)
                 transactionListViewModel.insertExpenseCategories(initialExpenseCategories)
@@ -381,12 +381,12 @@ class TransactionListFragment : BaseFragment() {
 
             if (incomeSize == 0 || incomeSize == null) {
 
-                val cryptocurrency = IncomeCategory(getString(R.string.cryptocurrency))
-                val investments    = IncomeCategory(getString(R.string.investments))
-                val salary         = IncomeCategory(getString(R.string.salary))
-                val savings        = IncomeCategory(getString(R.string.savings))
-                val stocks         = IncomeCategory(getString(R.string.stocks))
-                val wages          = IncomeCategory(getString(R.string.wages))
+                val cryptocurrency = IncomeCategory(getString(R.string.category_cryptocurrency))
+                val investments    = IncomeCategory(getString(R.string.category_investments))
+                val salary         = IncomeCategory(getString(R.string.category_salary))
+                val savings        = IncomeCategory(getString(R.string.category_savings))
+                val stocks         = IncomeCategory(getString(R.string.category_stocks))
+                val wages          = IncomeCategory(getString(R.string.category_wages))
                 val initialIncomeCategories : List<IncomeCategory> = listOf(
                     cryptocurrency, investments, salary, savings, stocks, wages)
                 transactionListViewModel.insertIncomeCategories(initialIncomeCategories)
@@ -517,11 +517,11 @@ class TransactionListFragment : BaseFragment() {
             // initialize instance of builder
             val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                 // set title of AlertDialog
-                .setTitle(getString(R.string.delete_transaction))
+                .setTitle(getString(R.string.alert_dialog_delete_transaction))
                 // set message of AlertDialog
-                .setMessage(getString(R.string.delete_transaction_warning, transaction.title))
+                .setMessage(getString(R.string.alert_dialog_delete_transaction_warning, transaction.title))
                 // set positive button and its click listener
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                .setPositiveButton(getString(R.string.alert_dialog_yes)) { _, _ ->
 
                 launch {
 
@@ -529,7 +529,7 @@ class TransactionListFragment : BaseFragment() {
                 }
             }
                 // set negative button and its click listener
-                .setNegativeButton(getString(R.string.no)) { _, _ ->  }
+                .setNegativeButton(getString(R.string.alert_dialog_no)) { _, _ ->  }
             // make the AlertDialog using the builder
             val alertDialog : androidx.appcompat.app.AlertDialog = alertDialogBuilder.create()
             // display AlertDialog

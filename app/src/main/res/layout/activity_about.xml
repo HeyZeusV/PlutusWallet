@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@string/version"
+            android:text="@string/about_version"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/changelog"
+            android:text="@string/about_changelog"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/versionTextView"/>
@@ -72,7 +72,7 @@
                 android:layout_height="100dp"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/changelog"
+                android:text="@string/about_changelog"
                 android:textColor="@android:color/black"/>
         </androidx.core.widget.NestedScrollView>
 
@@ -89,7 +89,7 @@
             android:id="@+id/developerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/by_name"
+            android:text="@string/about_by_name"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -105,7 +105,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:gravity="center"
-            android:text="@string/special_thanks"
+            android:text="@string/about_special_thanks"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -120,7 +120,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:gravity="center"
-            android:text="@string/contact_me"
+            android:text="@string/about_contact_me"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -147,7 +147,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:gravity="center"
-            android:text="@string/translation_warning"
+            android:text="@string/about_translation_warning"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +160,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:gravity="center"
-            android:text="@string/external_libraries"
+            android:text="@string/about_external_libraries"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -172,7 +172,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/circleindicator"
+            android:text="@string/library_circleindicator"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -184,7 +184,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/circleindicator"
+            android:text="@string/library_circleindicator"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -196,7 +196,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/license"
+            android:text="@string/about_license"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/circleIndicatorGitHubTextView"/>
@@ -228,7 +228,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/circleindicator"
+                android:text="@string/library_circleindicator"
                 android:textColor="@android:color/black"/>
         </androidx.core.widget.NestedScrollView>
 
@@ -245,7 +245,7 @@
             android:id="@+id/androidChartTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/mpandroidchart"
+            android:text="@string/library_mpandroidchart"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -257,7 +257,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/mpandroidchart"
+            android:text="@string/library_mpandroidchart"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -269,7 +269,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/license"
+            android:text="@string/about_license"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/androidChartGitHubTextView"/>
@@ -303,7 +303,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/mpandroidchart"
+                android:text="@string/library_mpandroidchart"
                 android:textColor="@android:color/black"/>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
