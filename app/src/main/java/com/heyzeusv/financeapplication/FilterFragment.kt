@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
 import com.heyzeusv.financeapplication.utilities.BaseFragment
+import com.heyzeusv.financeapplication.utilities.Utils
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.*
@@ -78,10 +79,11 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
 
-    // default strings used
-    private var typeButtonText  : String = FinanceApplication.context!!.getString(R.string.type_expense)
-    private var categoryName    : String = FinanceApplication.context!!.getString(R.string.category_all)
-    private var applyButtonText : String = FinanceApplication.context!!.getString(R.string.filter_reset)
+    // strings for localization
+    private lateinit var applyButtonText : String
+    private lateinit var typeButtonText  : String
+    private lateinit var categoryName    : String
+    private lateinit var all             : String
 
     // provides instance of ViewModel
     private val filterViewModel : FilterViewModel by lazy {
@@ -93,6 +95,16 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         // stashing context into callbacks property which is the activity instance hosting fragment
         callbacks = context as Callbacks?
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // initializing strings for localization
+        applyButtonText = getString(R.string.filter_apply)
+        typeButtonText  = getString(R.string.type_expense)
+        categoryName    = getString(R.string.category_all)
+        all             = getString(R.string.category_all)
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
@@ -114,18 +126,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             resetTime()
         }
 
-        // restores state of views
-        typeButton            .isEnabled = categorySelected
-        expenseCategorySpinner.isEnabled = categorySelected
-        incomeCategorySpinner .isEnabled = categorySelected
-        startDateButton       .isEnabled = dateSelected
-        endDateButton         .isEnabled = dateSelected
-        typeButton            .text      = typeButtonText
-        endDateButton         .text      = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
-        startDateButton       .text      = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
-        applyButton           .text      = applyButtonText
-        expenseCategorySpinner.isVisible = typeButtonText == getString(R.string.type_expense)
-        incomeCategorySpinner .isVisible = typeButtonText == getString(R.string.type_income)
+        updateUi(true)
 
         return view
     }
@@ -140,7 +141,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // sorts list in alphabetical order
             expenseCategoryNamesList.sort()
             // Category to show all of one type
-            expenseCategoryNamesList.add(0, getString(R.string.category_all))
+            expenseCategoryNamesList.add(0, all)
             // sets up the categorySpinner
             val expenseSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
             expenseSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
@@ -153,7 +154,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // sorts list in alphabetical order
             incomeCategoryNamesList.sort()
             // Category to show all of one type
-            incomeCategoryNamesList.add(0, getString(R.string.category_all))
+            incomeCategoryNamesList.add(0, all)
             // sets up the categorySpinner
             val incomeSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
             incomeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
@@ -174,7 +175,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 typeButton            .isEnabled = isChecked
                 expenseCategorySpinner.isEnabled = isChecked
                 incomeCategorySpinner .isEnabled = isChecked
-                updateUi()
+                updateUi(false)
             }
             // skips animation
             jumpDrawablesToCurrentState()
@@ -187,7 +188,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 dateSelected              = isChecked
                 startDateButton.isEnabled = isChecked
                 endDateButton  .isEnabled = isChecked
-                updateUi()
+                updateUi(false)
             }
             // skips animation
             jumpDrawablesToCurrentState()
@@ -323,21 +324,35 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
      */
     private fun resetTime() {
 
-        val date = GregorianCalendar()
-        date.set(Calendar.HOUR_OF_DAY, 0)
-        date.set(Calendar.MINUTE     , 0)
-        date.set(Calendar.SECOND     , 0)
-        date.set(Calendar.MILLISECOND, 0)
-        startDate.time = date.timeInMillis
-        endDate  .time = startDate.time
-        startUp = false
+        startDate    = Utils.startOfDay(Date())
+        endDate.time = startDate.time + MIDNIGHT_MILLI
+        startUp      = false
     }
 
     /**
-     *  Only thing to update at the moment is the applyButton text.
+     *  Restores views and updates Reset/Apply buttons.
+     *
+     *  @param views true = views need to be restored.
      */
-    private fun updateUi() {
+    private fun updateUi(views : Boolean) {
 
+        if (views) {
+
+            // restores state of views
+            typeButton            .isEnabled = categorySelected
+            expenseCategorySpinner.isEnabled = categorySelected
+            incomeCategorySpinner .isEnabled = categorySelected
+            startDateButton       .isEnabled = dateSelected
+            endDateButton         .isEnabled = dateSelected
+            applyButton           .text      = applyButtonText
+            typeButton            .text      = typeButtonText
+            endDateButton         .text      = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
+            startDateButton       .text      = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
+            expenseCategorySpinner.isVisible = typeButtonText == getString(R.string.type_expense)
+            incomeCategorySpinner .isVisible = typeButtonText == getString(R.string.type_income)
+        }
+
+        // changes visibility of buttons depending if there are filters applied
         if (!categorySelected && !dateSelected) {
 
             applyButtonText  = getString(R.string.filter_reset)
@@ -352,7 +367,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     companion object {
 
         /**
-         *  Initializes instance of FilterFragment
+         *  Initializes instance of FilterFragment.
          */
         fun newInstance() : FilterFragment {
 

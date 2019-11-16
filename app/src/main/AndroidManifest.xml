@@ -17,15 +17,21 @@
             android:name=".AboutActivity"
             android:label="@string/about"
             android:theme="@style/AppTheme"
-            android:configChanges="locale|orientation"/>
+            android:screenOrientation="portrait"
+            android:configChanges="locale|orientation"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/settings"
             android:theme="@style/AppTheme"
-            android:configChanges="locale|orientation"/>
+            android:screenOrientation="portrait"
+            android:configChanges="locale|orientation"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".MainActivity"
-            android:configChanges="locale|orientation">
+            android:screenOrientation="portrait"
+            android:configChanges="locale|orientation"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action
                     android:name="android.intent.action.MAIN" />

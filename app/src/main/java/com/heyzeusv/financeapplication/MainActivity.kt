@@ -1,25 +1,32 @@
 package com.heyzeusv.financeapplication
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.heyzeusv.financeapplication.utilities.BaseActivity
 import com.heyzeusv.financeapplication.utilities.BlankFragment
 import java.util.*
 
 private const val TAG = "MainActivity"
+private const val KEY_LANGUAGE_CHANGED = "key_language_changed"
 
 /**
  *  Handles the loading and replacement of fragments into their containers, as well as
  *  starting Settings/About Activities.
  */
-class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, FilterFragment.Callbacks {
+class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFragment.Callbacks {
+
+    // SharedPreferences
+    private lateinit var sp     : SharedPreferences
+    private lateinit var editor : SharedPreferences.Editor
 
     // views
     private lateinit var drawerLayout      : DrawerLayout
@@ -34,6 +41,8 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        sp     = PreferenceManager.getDefaultSharedPreferences(this)
 
         drawerLayout   = findViewById(R.id.activity_drawer)
         fab            = findViewById(R.id.activity_fab)
@@ -99,6 +108,23 @@ class MainActivity : AppCompatActivity(), TransactionListFragment.Callbacks, Fil
         menuButton.setOnClickListener {
 
             drawerLayout.openDrawer(GravityCompat.START)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // loads if language changed
+        val languageChanged : Boolean = sp.getBoolean(KEY_LANGUAGE_CHANGED, false)
+        if (languageChanged) {
+
+            // saving into SharedPreferences
+            editor = sp.edit()
+            editor.putBoolean(KEY_LANGUAGE_CHANGED, false)
+            editor.apply()
+
+            // destroys then restarts Activity in order to have updated language
+            recreate()
         }
     }
 

@@ -21,7 +21,7 @@
 
     <ListPreference
         app:key="key_thousands_symbol"
-        app:title="Thousands Separator Symbol"
+        app:title="@string/preferences_thousands_symbol"
         app:entries="@array/separator_symbol_array"
         app:entryValues="@array/separator_symbol_key_array"
         app:iconSpaceReserved="false"

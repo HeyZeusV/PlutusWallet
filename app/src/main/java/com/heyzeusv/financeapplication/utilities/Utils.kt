@@ -1,5 +1,8 @@
 package com.heyzeusv.financeapplication.utilities
 
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.res.Configuration
 import java.util.*
 
 /**
@@ -8,6 +11,29 @@ import java.util.*
 class Utils {
 
     companion object {
+
+        /**
+         *  Changes locale depending on users selection.
+         *
+         *  @param  context      used to change configuration.
+         *  @param  languageCode string containing language code to be used. eg "en", "es".
+         *  @return holds context that contains updated locale.
+         */
+        fun changeLanguage(context : Context, languageCode : String) : ContextWrapper {
+
+            val config     : Configuration = context.resources.configuration
+            val newContext : Context
+            val newLocale                  = Locale(languageCode)
+
+            // sets locale for JVM
+            Locale.setDefault(newLocale)
+            // sets locale for context
+            config.setLocale(newLocale)
+            // new context needed since parameters are final
+            newContext = context.createConfigurationContext(config)
+
+            return ContextWrapper(newContext)
+        }
 
         /**
          *  Used to get Currency symbol to be displayed depending on users selection.

@@ -16,7 +16,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+        resConfigs "en", "es", "de", "hi", "ja", "ko", "th"
         javaCompileOptions {
             annotationProcessorOptions {
                 // location to save schemas to

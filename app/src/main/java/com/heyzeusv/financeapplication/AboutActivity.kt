@@ -5,12 +5,12 @@ import android.text.method.LinkMovementMethod
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.text.HtmlCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.button.MaterialButton
+import com.heyzeusv.financeapplication.utilities.BaseActivity
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -18,7 +18,7 @@ import java.io.InputStreamReader
 /**
  *  Displays information about Application such as version and external libraries used.
  */
-class AboutActivity : AppCompatActivity() {
+class AboutActivity : BaseActivity() {
 
     // views
     private lateinit var aboutLayout               : ConstraintLayout

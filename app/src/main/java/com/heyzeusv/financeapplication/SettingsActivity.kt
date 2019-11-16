@@ -1,20 +1,21 @@
 package com.heyzeusv.financeapplication
 
+import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
+import androidx.preference.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.heyzeusv.financeapplication.utilities.BaseActivity
 
 private const val TAG = "SettingsFragment"
+private const val KEY_LANGUAGE_CHANGED = "key_language_changed"
 
 /**
  *  Activity that starts SettingsFragment
  */
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,10 +46,21 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
+
         override fun onCreatePreferences(savedInstanceState : Bundle?, rootKey : String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
+            // SharedPreferences
+            val sp     : SharedPreferences        = PreferenceManager.getDefaultSharedPreferences(activity)
+            val editor : SharedPreferences.Editor = sp.edit()
+
+            // Preferences that need Listeners
             val dpPreference : SwitchPreference? = findPreference("key_decimal_places")
+            val lgPreference : ListPreference?   = findPreference("key_language")
+
+            // used to tell if a new language is set or if the same is re-selected
+            val languageSet : String = lgPreference!!.value
+
             dpPreference!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
 
                 // asks the user if they do want to switch decimalPlacesPreference
@@ -83,6 +95,28 @@ class SettingsActivity : AppCompatActivity() {
                     decimalAlertDialog.show()
                 }
                 return@OnPreferenceChangeListener false
+            }
+
+            // only works on API26 and higher
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+
+                lgPreference.isVisible = false
+            } else {
+
+                lgPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener {_, newValue ->
+
+                    // checks if a different language was selected
+                    if (languageSet != newValue.toString()) {
+
+                        // saving into SharedPreferences
+                        editor.putBoolean(KEY_LANGUAGE_CHANGED, true)
+                        editor.apply()
+
+                        // destroys then restarts Activity in order to have updated language
+                        activity!!.recreate()
+                    }
+                    return@OnPreferenceChangeListener true
+                }
             }
         }
     }
