@@ -9,8 +9,9 @@ import androidx.preference.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.heyzeusv.financeapplication.utilities.BaseActivity
 
-private const val TAG = "SettingsFragment"
+private const val TAG                  = "SettingsFragment"
 private const val KEY_LANGUAGE_CHANGED = "key_language_changed"
+private const val KEY_MANUAL_LANGUAGE  = "key_manual_language"
 
 /**
  *  Activity that starts SettingsFragment
@@ -110,6 +111,7 @@ class SettingsActivity : BaseActivity() {
 
                         // saving into SharedPreferences
                         editor.putBoolean(KEY_LANGUAGE_CHANGED, true)
+                        editor.putBoolean(KEY_MANUAL_LANGUAGE,  true)
                         editor.apply()
 
                         // destroys then restarts Activity in order to have updated language

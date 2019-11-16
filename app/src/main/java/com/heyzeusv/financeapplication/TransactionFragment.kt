@@ -79,7 +79,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var transaction            : Transaction
 
     // array holding values for frequency spinner
-    private var frequencyArray : Array<String> = arrayOf(FinanceApplication.context!!.getString(R.string.period_days), FinanceApplication.context!!.getString(R.string.period_weeks), FinanceApplication.context!!.getString(R.string.period_months), FinanceApplication.context!!.getString(R.string.period_years))
+    private lateinit var frequencyArray : Array<String>
 
     // used with categories
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
@@ -119,6 +119,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // retrieves arguments passed on (if any)
         val transactionId : Int = arguments?.getInt(ARG_TRANSACTION_ID) as Int
         transactionDetailViewModel.loadTransaction(transactionId)
+
+        // initialize array with Resource strings for localization
+        frequencyArray = arrayOf(getString(R.string.period_days), getString(R.string.period_weeks), getString(R.string.period_months), getString(R.string.period_years))
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
@@ -276,7 +279,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // sets up correct Spinner to Category that is stored in Transaction (if any)
             if (transaction.type == "Expense") {
 
-                expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+                // is -1 when user had language other than English at first run
+                if (expenseCategoryNamesList.indexOf(transaction.category) != -1) {
+
+                    expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
+                } else {
+
+                    expenseCategorySpinner.setSelection(0)
+                }
             } else {
 
                 incomeCategorySpinner .setSelection(incomeCategoryNamesList.indexOf(transaction.category))
@@ -722,19 +732,13 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         if (!typeSelected) {
 
-            expenseChip.isChecked = true
-            incomeChip .isChecked = false
-        } else {
-
-            expenseChip.isChecked = false
-            incomeChip .isChecked = true
-        }
-
-        if (!typeSelected) {
-
+            expenseChip           .isChecked = true
+            incomeChip            .isChecked = false
             expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
         } else {
 
+            expenseChip          .isChecked = false
+            incomeChip           .isChecked = true
             incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
         }
 

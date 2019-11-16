@@ -53,6 +53,6 @@
         app:entryValues="@array/language_key_array"
         app:iconSpaceReserved="false"
         app:useSimpleSummaryProvider="true"
-        app:defaultValue="english"/>
+        app:defaultValue="en"/>
 
 </PreferenceScreen>

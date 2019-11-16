@@ -148,9 +148,14 @@ class TransactionListFragment : BaseFragment() {
         val category     : Boolean? = arguments?.getBoolean     (ARG_CATEGORY)
         val date         : Boolean? = arguments?.getBoolean     (ARG_DATE)
         val type         : String?  = arguments?.getString      (ARG_TYPE)
-        val categoryName : String?  = arguments?.getString      (ARG_CATEGORY_NAME)
+        var categoryName : String?  = arguments?.getString      (ARG_CATEGORY_NAME)
         val start        : Date?    = arguments?.getSerializable(ARG_START)         as Date?
         val end          : Date?    = arguments?.getSerializable(ARG_END)           as Date?
+
+        if (categoryName == getString(R.string.category_all)) {
+
+            categoryName = "All"
+        }
 
         // tells ViewModel which query to run on Transactions
         val transactionListLiveData : LiveData<List<Transaction>> =

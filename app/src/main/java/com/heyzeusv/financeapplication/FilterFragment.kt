@@ -267,7 +267,14 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                 // adds time to endDate to make it right before midnight of next day
                 val endDateCorrected = Date(endDate.time + MIDNIGHT_MILLI)
-                callbacks?.onFilterApplied(categorySelected, dateSelected, typeButtonText, categoryName, startDate, endDateCorrected)
+                val type : String = if (typeButtonText == getString(R.string.type_expense)) {
+
+                    "Expense"
+                } else {
+
+                    "Income"
+                }
+                callbacks?.onFilterApplied(categorySelected, dateSelected, type, categoryName, startDate, endDateCorrected)
                 // if both filters are unchecked
                 if (!categorySelected && !dateSelected) {
 
@@ -300,7 +307,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         if (endButton) {
 
             endDateButton.text = DateFormat.getDateInstance(DateFormat.SHORT).format(date)
-            endDate            = date
+            endDate.time       = date.time
             endButton          = false
         }
     }
@@ -325,7 +332,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private fun resetTime() {
 
         startDate    = Utils.startOfDay(Date())
-        endDate.time = startDate.time + MIDNIGHT_MILLI
+        endDate.time = startDate.time
         startUp      = false
     }
 
