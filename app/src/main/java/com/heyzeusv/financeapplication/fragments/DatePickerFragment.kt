@@ -1,10 +1,11 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.fragments
 
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import java.util.*
 
 private const val ARG_DATE = "date"
@@ -41,7 +42,7 @@ class DatePickerFragment : DialogFragment() {
             val resultDate : Date = GregorianCalendar(year, month, day).time
 
             // targetFragment stores fragment instance that started DatePickerFragment
-            targetFragment?.let { fragment ->
+            targetFragment?.let { fragment : Fragment ->
                 // passes Date selected to TransactionFragment
                 (fragment as Callbacks).onDateSelected(resultDate)
             }
@@ -82,10 +83,12 @@ class DatePickerFragment : DialogFragment() {
         fun newInstance(date : Date) : DatePickerFragment {
 
             val args : Bundle = Bundle().apply {
+
                 putSerializable(ARG_DATE, date)
             }
 
             return DatePickerFragment().apply {
+
                 arguments = args
             }
         }

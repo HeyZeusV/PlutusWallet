@@ -1,8 +1,8 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.fragments
 
 import android.animation.Animator
 import android.annotation.SuppressLint
-import android.content.SharedPreferences
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
@@ -27,9 +27,13 @@ import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.heyzeusv.financeapplication.utilities.BaseFragment
+import com.heyzeusv.financeapplication.R
+import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
+import com.heyzeusv.financeapplication.database.entities.IncomeCategory
+import com.heyzeusv.financeapplication.database.entities.Transaction
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
 import com.heyzeusv.financeapplication.utilities.Utils
+import com.heyzeusv.financeapplication.viewmodels.TransactionDetailViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -44,19 +48,11 @@ private const val ARG_FAB_Y           = "fab_Y"
 private const val ARG_FROM_FAB        = "from_fab"
 private const val DIALOG_DATE         = "DialogDate"
 private const val REQUEST_DATE        = 0
-private const val KEY_MAX_ID          = "key_max_id"
-private const val KEY_CURRENCY_SYMBOL = "key_currency_symbol"
-private const val KEY_DECIMAL_PLACES  = "key_decimal_places"
-private const val KEY_SYMBOL_SIDE     = "key_symbol_side"
 
 /**
  *  Shows all the information in database of one fragment and allows users to edit any field and save changes.
  */
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
-
-    // SharedPreferences
-    private lateinit var sp     : SharedPreferences
-    private lateinit var editor : SharedPreferences.Editor
 
     // views
     private lateinit var repeatingCheckBox      : CheckBox
@@ -128,23 +124,23 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         val view : View = inflater.inflate(R.layout.fragment_transaction, container, false)
 
-        repeatingCheckBox      = view.findViewById(R.id.transaction_repeating)        as CheckBox
-        expenseChip            = view.findViewById(R.id.transaction_expense_chip)     as Chip
-        incomeChip             = view.findViewById(R.id.transaction_income_chip)      as Chip
-        typeChipGroup          = view.findViewById(R.id.transaction_type_chips)       as ChipGroup
-        transactionLayout      = view.findViewById(R.id.transaction_constraint)       as ConstraintLayout
-        totalField             = view.findViewById(R.id.transaction_total)            as CurrencyEditText
-        titleField             = view.findViewById(R.id.transaction_title)            as EditText
-        memoField              = view.findViewById(R.id.transaction_memo)             as EditText
-        frequencyField         = view.findViewById(R.id.transaction_frequency)        as EditText
-        saveFab                = view.findViewById(R.id.transaction_save_fab)         as FloatingActionButton
-        dateButton             = view.findViewById(R.id.transaction_date)             as MaterialButton
+        repeatingCheckBox      = view.findViewById(R.id.transaction_repeating       ) as CheckBox
+        expenseChip            = view.findViewById(R.id.transaction_expense_chip    ) as Chip
+        incomeChip             = view.findViewById(R.id.transaction_income_chip     ) as Chip
+        typeChipGroup          = view.findViewById(R.id.transaction_type_chips      ) as ChipGroup
+        transactionLayout      = view.findViewById(R.id.transaction_constraint      ) as ConstraintLayout
+        totalField             = view.findViewById(R.id.transaction_total           ) as CurrencyEditText
+        titleField             = view.findViewById(R.id.transaction_title           ) as EditText
+        memoField              = view.findViewById(R.id.transaction_memo            ) as EditText
+        frequencyField         = view.findViewById(R.id.transaction_frequency       ) as EditText
+        saveFab                = view.findViewById(R.id.transaction_save_fab        ) as FloatingActionButton
+        dateButton             = view.findViewById(R.id.transaction_date            ) as MaterialButton
         expenseCategorySpinner = view.findViewById(R.id.transaction_expense_category) as Spinner
-        incomeCategorySpinner  = view.findViewById(R.id.transaction_income_category)  as Spinner
+        incomeCategorySpinner  = view.findViewById(R.id.transaction_income_category ) as Spinner
         frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
-        frequencyText          = view.findViewById(R.id.frequencyTextView)            as TextView
-        symbolLeftText         = view.findViewById(R.id.symbolLeftTextView)           as TextView
-        symbolRightText        = view.findViewById(R.id.symbolRightTextView)          as TextView
+        frequencyText          = view.findViewById(R.id.frequencyTextView           ) as TextView
+        symbolLeftText         = view.findViewById(R.id.symbolLeftTextView          ) as TextView
+        symbolRightText        = view.findViewById(R.id.symbolRightTextView         ) as TextView
 
         // set up for the frequencyPeriodSpinner
         val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, frequencyArray)
@@ -175,16 +171,16 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         // retrieves any saved preferences
-        sp            = PreferenceManager.getDefaultSharedPreferences(activity)
-        decimalPlaces = sp.getBoolean(KEY_DECIMAL_PLACES, true)
-        symbolSide    = sp.getBoolean(KEY_SYMBOL_SIDE, true)
-        symbolKey     = sp.getString (KEY_CURRENCY_SYMBOL, "dollar")!!
-        maxId         = sp.getInt    (KEY_MAX_ID, 0)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
+        decimalPlaces     = sharedPreferences.getBoolean(KEY_DECIMAL_PLACES , true    )
+        symbolSide        = sharedPreferences.getBoolean(KEY_SYMBOL_SIDE    , true    )
+        symbolKey         = sharedPreferences.getString (KEY_CURRENCY_SYMBOL, "dollar")!!
+        maxId             = sharedPreferences.getInt    (KEY_MAX_ID         , 0       )
 
         // retrieves symbol to be used according to settings
         val symbol : String = Utils.getCurrencySymbol(symbolKey)
-        symbolLeftText  .text = symbol
-        symbolRightText .text = symbol
+        symbolLeftText .text = symbol
+        symbolRightText.text = symbol
 
         // if symbol on right side
         if (!symbolSide) {
@@ -192,10 +188,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // used to change constraints
             val totalConstraintSet = ConstraintSet()
             totalConstraintSet.clone(transactionLayout)
-            totalConstraintSet.connect(R.id.transaction_total, ConstraintSet.START,
-                                       R.id.totalTextView, ConstraintSet.END, 0)
-            totalConstraintSet.connect(R.id.transaction_total, ConstraintSet.END,
-                                       R.id.symbolRightTextView, ConstraintSet.START, 0)
+            totalConstraintSet.connect(
+                R.id.transaction_total, ConstraintSet.START,
+                R.id.totalTextView    , ConstraintSet.END  , 0)
+            totalConstraintSet.connect(
+                R.id.transaction_total  , ConstraintSet.END  ,
+                R.id.symbolRightTextView, ConstraintSet.START, 0)
             totalConstraintSet.applyTo(transactionLayout)
             // text starts to right
             totalField     .textDirection = View.TEXT_DIRECTION_RTL
@@ -548,9 +546,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     transactionDetailViewModel.insertTransaction(transaction)
                     newTransaction = false
                     // saves maxId into SharedPreferences
-                    editor = sp.edit()
-                    editor.putInt(KEY_MAX_ID, maxId)
-                    editor.apply()
+                    editor.putInt(KEY_MAX_ID, maxId).apply()
                 } else {
 
                     transactionDetailViewModel.updateTransaction(transaction)
@@ -668,7 +664,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private fun newCategoryDialog(categorySpinner : Spinner) {
 
         // initialize instance of Builder
-        val builder = MaterialAlertDialogBuilder(context)
+        val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
             // set title of AlertDialog
             .setTitle(getString(R.string.category_create))
         // inflates view that holds EditText
@@ -679,12 +675,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // sets the view
         builder.setView(viewInflated)
             // set positive button and its click listener
-            .setPositiveButton(getString(R.string.alert_dialog_save)) { _, _ ->
+            .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
 
             insertCategory(input.text.toString())
         }
             // set negative button and its click listener
-            .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _, _ ->
+            .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->
 
             // users shouldn't be able to save on "Create New Category",
             // this prevents that
@@ -768,9 +764,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             val args : Bundle = Bundle().apply {
 
                 putInt    (ARG_TRANSACTION_ID, transactionId)
-                putInt    (ARG_FAB_X         , fabX)
-                putInt    (ARG_FAB_Y         , fabY)
-                putBoolean(ARG_FROM_FAB      , fromFab)
+                putInt    (ARG_FAB_X         , fabX         )
+                putInt    (ARG_FAB_Y         , fabY         )
+                putBoolean(ARG_FROM_FAB      , fromFab      )
             }
 
             return TransactionFragment().apply {

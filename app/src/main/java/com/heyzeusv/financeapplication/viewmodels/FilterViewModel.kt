@@ -1,6 +1,7 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.heyzeusv.financeapplication.database.TransactionRepository
 import kotlinx.coroutines.Deferred
 
 /**

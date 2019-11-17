@@ -1,4 +1,4 @@
- package com.heyzeusv.financeapplication
+ package com.heyzeusv.financeapplication.fragments
 
 import android.graphics.Color
 import android.os.Bundle
@@ -18,7 +18,9 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
-import com.heyzeusv.financeapplication.utilities.BaseFragment
+import com.heyzeusv.financeapplication.R
+import com.heyzeusv.financeapplication.database.entities.CategoryTotals
+import com.heyzeusv.financeapplication.viewmodels.GraphViewModel
 import me.relex.circleindicator.CircleIndicator3
 import java.math.BigDecimal
 import java.util.*
@@ -59,7 +61,7 @@ class GraphFragment : BaseFragment() {
         val view : View = inflater.inflate(R.layout.fragment_graph, container, false)
 
         circleIndicator = view.findViewById(R.id.graph_circle_indicator) as CircleIndicator3
-        graphViewPager  = view.findViewById(R.id.graph_view_pager)       as ViewPager2
+        graphViewPager  = view.findViewById(R.id.graph_view_pager      ) as ViewPager2
 
         // clears previous lists
         transactionLists = mutableListOf(emptyList, emptyList)
@@ -277,7 +279,7 @@ class GraphFragment : BaseFragment() {
                     typeName = getString(R.string.type_expense)
                     context?.let {
                         dataSet.setColors(intArrayOf(R.color.colorExpense1, R.color.colorExpense2,
-                            R.color.colorExpense3, R.color.colorExpense4), context)
+                                                     R.color.colorExpense3, R.color.colorExpense4), context)
                     }
                     category?.let {
                         if (category) {
@@ -297,7 +299,7 @@ class GraphFragment : BaseFragment() {
                     typeName = getString(R.string.type_income)
                     context?.let {
                         dataSet.setColors(intArrayOf(R.color.colorIncome1, R.color.colorIncome2,
-                            R.color.colorIncome3, R.color.colorIncome4), context)
+                                                     R.color.colorIncome3, R.color.colorIncome4), context)
                     }
                     category?.let {
                         if (category) {
@@ -395,12 +397,12 @@ class GraphFragment : BaseFragment() {
 
             val args : Bundle = Bundle().apply {
 
-                putBoolean     (ARG_CATEGORY     , category)
-                putBoolean     (ARG_DATE         , date)
-                putString      (ARG_TYPE         , type)
+                putBoolean     (ARG_CATEGORY     , category    )
+                putBoolean     (ARG_DATE         , date        )
+                putString      (ARG_TYPE         , type        )
                 putString      (ARG_CATEGORY_NAME, categoryName)
-                putSerializable(ARG_START        , start)
-                putSerializable(ARG_END          , end)
+                putSerializable(ARG_START        , start       )
+                putSerializable(ARG_END          , end         )
             }
 
             return GraphFragment().apply {

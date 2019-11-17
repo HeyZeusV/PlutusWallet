@@ -3,9 +3,12 @@ package com.heyzeusv.financeapplication.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.heyzeusv.financeapplication.ExpenseCategory
-import com.heyzeusv.financeapplication.IncomeCategory
-import com.heyzeusv.financeapplication.Transaction
+import com.heyzeusv.financeapplication.database.daos.ExpenseCategoryDao
+import com.heyzeusv.financeapplication.database.daos.IncomeCategoryDao
+import com.heyzeusv.financeapplication.database.daos.TransactionDao
+import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
+import com.heyzeusv.financeapplication.database.entities.IncomeCategory
+import com.heyzeusv.financeapplication.database.entities.Transaction
 
 /**
  *  Database layer over the SQLite database.
@@ -20,7 +23,7 @@ import com.heyzeusv.financeapplication.Transaction
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {
 
-    abstract fun transactionDao      () : TransactionDao
-    abstract fun expenseCategoryDao  () : ExpenseCategoryDao
-    abstract fun incomeCategoryDao   () : IncomeCategoryDao
+    abstract fun transactionDao    () : TransactionDao
+    abstract fun expenseCategoryDao() : ExpenseCategoryDao
+    abstract fun incomeCategoryDao () : IncomeCategoryDao
 }

@@ -1,4 +1,4 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -9,8 +9,9 @@ import android.widget.*
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
-import com.heyzeusv.financeapplication.utilities.BaseFragment
+import com.heyzeusv.financeapplication.R
 import com.heyzeusv.financeapplication.utilities.Utils
+import com.heyzeusv.financeapplication.viewmodels.FilterViewModel
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.*
@@ -111,14 +112,14 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         val view : View = inflater.inflate(R.layout.fragment_filter, container, false)
 
-        categoryCheckBox       = view.findViewById(R.id.filter_category_check)   as CheckBox
-        dateCheckBox           = view.findViewById(R.id.filter_date_check)       as CheckBox
-        typeButton             = view.findViewById(R.id.filter_type)             as MaterialButton
-        startDateButton        = view.findViewById(R.id.filter_start_date)       as MaterialButton
-        endDateButton          = view.findViewById(R.id.filter_end_date)         as MaterialButton
-        applyButton            = view.findViewById(R.id.filter_apply)            as MaterialButton
+        categoryCheckBox       = view.findViewById(R.id.filter_category_check  ) as CheckBox
+        dateCheckBox           = view.findViewById(R.id.filter_date_check      ) as CheckBox
+        typeButton             = view.findViewById(R.id.filter_type            ) as MaterialButton
+        startDateButton        = view.findViewById(R.id.filter_start_date      ) as MaterialButton
+        endDateButton          = view.findViewById(R.id.filter_end_date        ) as MaterialButton
+        applyButton            = view.findViewById(R.id.filter_apply           ) as MaterialButton
         expenseCategorySpinner = view.findViewById(R.id.filter_expense_category) as Spinner
-        incomeCategorySpinner  = view.findViewById(R.id.filter_income_category)  as Spinner
+        incomeCategorySpinner  = view.findViewById(R.id.filter_income_category ) as Spinner
 
         // will only run when app is first started
         if (startUp) {
@@ -143,7 +144,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // Category to show all of one type
             expenseCategoryNamesList.add(0, all)
             // sets up the categorySpinner
-            val expenseSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
+            val expenseSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!,
+                R.layout.spinner_item, expenseCategoryNamesList)
             expenseSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
             expenseCategorySpinner.adapter = expenseSpinnerAdapter
             // starts the spinner up to ExpenseCategory saved
@@ -156,7 +158,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // Category to show all of one type
             incomeCategoryNamesList.add(0, all)
             // sets up the categorySpinner
-            val incomeSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
+            val incomeSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!,
+                R.layout.spinner_item, incomeCategoryNamesList)
             incomeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
             incomeCategorySpinner.adapter = incomeSpinnerAdapter
             // starts the spinner up to ExpenseCategory saved

@@ -5,7 +5,7 @@
     package="com.heyzeusv.financeapplication">
 
     <application
-        android:name=".FinanceApplication"
+        android:name=".utilities.FinanceApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,21 +14,21 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".AboutActivity"
+            android:name=".activities.AboutActivity"
             android:label="@string/about"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
             android:configChanges="locale|orientation"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/settings"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
             android:configChanges="locale|orientation"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:screenOrientation="portrait"
             android:configChanges="locale|orientation"
             tools:ignore="LockedOrientationActivity">

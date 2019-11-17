@@ -1,6 +1,7 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.utilities
 
 import android.app.Application
+import com.heyzeusv.financeapplication.database.TransactionRepository
 
 /**
  *  Maintains global application state and used to call one-time operations.

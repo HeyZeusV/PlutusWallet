@@ -1,4 +1,4 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.activities
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -10,7 +10,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.text.HtmlCompat
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.button.MaterialButton
-import com.heyzeusv.financeapplication.utilities.BaseActivity
+import com.heyzeusv.financeapplication.R
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -47,24 +47,24 @@ class AboutActivity : BaseActivity() {
         // displays back button
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        aboutLayout               = findViewById(R.id.about_constraint)
-        androidChartButton        = findViewById(R.id.androidChartButton)
-        androidChartGitHub        = findViewById(R.id.androidChartGitHubTextView)
-        androidChartLicense       = findViewById(R.id.androidChartLicense)
-        androidChartScrollView    = findViewById(R.id.androidChartScrollView)
-        changelogButton           = findViewById(R.id.changelogButton)
-        changelog                 = findViewById(R.id.changelogTextView)
-        changelogScrollView       = findViewById(R.id.changelogScrollView)
-        circleIndicatorButton     = findViewById(R.id.circleIndicatorButton)
+        aboutLayout               = findViewById(R.id.about_constraint             )
+        androidChartButton        = findViewById(R.id.androidChartButton           )
+        androidChartGitHub        = findViewById(R.id.androidChartGitHubTextView   )
+        androidChartLicense       = findViewById(R.id.androidChartLicense          )
+        androidChartScrollView    = findViewById(R.id.androidChartScrollView       )
+        changelogButton           = findViewById(R.id.changelogButton              )
+        changelog                 = findViewById(R.id.changelogTextView            )
+        changelogScrollView       = findViewById(R.id.changelogScrollView          )
+        circleIndicatorButton     = findViewById(R.id.circleIndicatorButton        )
         circleIndicatorGitHub     = findViewById(R.id.circleIndicatorGitHubTextView)
-        circleIndicatorLicense    = findViewById(R.id.circleIndicatorLicense)
-        circleIndicatorScrollView = findViewById(R.id.circleIndicatorScrollView)
-        email                     = findViewById(R.id.emailTextView)
+        circleIndicatorLicense    = findViewById(R.id.circleIndicatorLicense       )
+        circleIndicatorScrollView = findViewById(R.id.circleIndicatorScrollView    )
+        email                     = findViewById(R.id.emailTextView                )
 
         // converts from HTML
         androidChartGitHub   .text = HtmlCompat.fromHtml(resources.getText(R.string.library_mpandroidchart_github ).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
         circleIndicatorGitHub.text = HtmlCompat.fromHtml(resources.getText(R.string.library_circleIndicator_github).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        email                .text = HtmlCompat.fromHtml(resources.getText(R.string.about_email).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        email                .text = HtmlCompat.fromHtml(resources.getText(R.string.about_email                   ).toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         // allows text to open web link/email
         androidChartGitHub   .movementMethod = LinkMovementMethod.getInstance()
@@ -72,9 +72,9 @@ class AboutActivity : BaseActivity() {
         email                .movementMethod = LinkMovementMethod.getInstance()
 
         // strings holding text file content
-        var mpLicense                   = ""
-        var clFile                      = ""
-        var ciLicense                   = ""
+        var mpLicense = ""
+        var clFile    = ""
+        var ciLicense = ""
 
         // reads through files
         var mpReader  : BufferedReader? = null
@@ -141,8 +141,9 @@ class AboutActivity : BaseActivity() {
                 changelogScrollView.visibility = View.VISIBLE
                 val clConstraintSet = ConstraintSet()
                 clConstraintSet.clone(aboutLayout)
-                clConstraintSet.connect(R.id.developerTextView, ConstraintSet.TOP,
-                                        R.id.spacer5, ConstraintSet.BOTTOM, 0)
+                clConstraintSet.connect(
+                    R.id.developerTextView, ConstraintSet.TOP   ,
+                    R.id.spacer5          , ConstraintSet.BOTTOM, 0)
                 clConstraintSet.applyTo(aboutLayout)
             } else {
 
@@ -150,8 +151,9 @@ class AboutActivity : BaseActivity() {
                 changelogScrollView.visibility = View.GONE
                 val clConstraintSet = ConstraintSet()
                 clConstraintSet.clone(aboutLayout)
-                clConstraintSet.connect(R.id.developerTextView, ConstraintSet.TOP,
-                                        R.id.spacer4, ConstraintSet.BOTTOM, 0)
+                clConstraintSet.connect(
+                    R.id.developerTextView, ConstraintSet.TOP   ,
+                    R.id.spacer4          , ConstraintSet.BOTTOM, 0)
                 clConstraintSet.applyTo(aboutLayout)
             }
         }
@@ -165,8 +167,9 @@ class AboutActivity : BaseActivity() {
                 circleIndicatorScrollView.visibility = View.VISIBLE
                 val ciConstraintSet = ConstraintSet()
                 ciConstraintSet.clone(aboutLayout)
-                ciConstraintSet.connect(R.id.androidChartTextView, ConstraintSet.TOP,
-                                        R.id.spacer2, ConstraintSet.BOTTOM, 0)
+                ciConstraintSet.connect(
+                    R.id.androidChartTextView, ConstraintSet.TOP   ,
+                    R.id.spacer2             , ConstraintSet.BOTTOM, 0)
                 ciConstraintSet.applyTo(aboutLayout)
             } else {
 
@@ -174,8 +177,9 @@ class AboutActivity : BaseActivity() {
                 circleIndicatorScrollView.visibility = View.GONE
                 val ciConstraintSet = ConstraintSet()
                 ciConstraintSet.clone(aboutLayout)
-                ciConstraintSet.connect(R.id.androidChartTextView, ConstraintSet.TOP,
-                                        R.id.spacer1, ConstraintSet.BOTTOM, 0)
+                ciConstraintSet.connect(
+                    R.id.androidChartTextView, ConstraintSet.TOP   ,
+                    R.id.spacer1             , ConstraintSet.BOTTOM, 0)
                 ciConstraintSet.applyTo(aboutLayout)
             }
         }

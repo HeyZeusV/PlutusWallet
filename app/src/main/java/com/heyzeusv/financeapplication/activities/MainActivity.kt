@@ -1,9 +1,7 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.activities
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -11,22 +9,17 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
-import com.heyzeusv.financeapplication.utilities.BaseActivity
-import com.heyzeusv.financeapplication.utilities.BlankFragment
+import com.heyzeusv.financeapplication.R
+import com.heyzeusv.financeapplication.fragments.*
 import java.util.*
 
 private const val TAG = "MainActivity"
-private const val KEY_LANGUAGE_CHANGED = "key_language_changed"
 
 /**
  *  Handles the loading and replacement of fragments into their containers, as well as
  *  starting Settings/About Activities.
  */
 class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFragment.Callbacks {
-
-    // SharedPreferences
-    private lateinit var sp     : SharedPreferences
-    private lateinit var editor : SharedPreferences.Editor
 
     // views
     private lateinit var drawerLayout      : DrawerLayout
@@ -42,11 +35,9 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sp     = PreferenceManager.getDefaultSharedPreferences(this)
-
-        drawerLayout   = findViewById(R.id.activity_drawer)
-        fab            = findViewById(R.id.activity_fab)
-        menuButton     = findViewById(R.id.fragment_settings)
+        drawerLayout   = findViewById(R.id.activity_drawer         )
+        fab            = findViewById(R.id.activity_fab            )
+        menuButton     = findViewById(R.id.fragment_settings       )
         navigationView = findViewById(R.id.activity_navigation_view)
 
         // disables swipe to open drawer
@@ -70,8 +61,8 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
                 // container view ID (where fragment's view should appear)
                 // fragment to be added
                 .add(R.id.fragment_transaction_list_container, transactionListFragment)
-                .add(R.id.fragment_filter_container          , filterFragment)
-                .add(R.id.fragment_graph_container           , graphFragment)
+                .add(R.id.fragment_filter_container          , filterFragment         )
+                .add(R.id.fragment_graph_container           , graphFragment          )
                 .commit()
         }
 
@@ -115,13 +106,11 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
         super.onResume()
 
         // loads if language changed
-        val languageChanged : Boolean = sp.getBoolean(KEY_LANGUAGE_CHANGED, false)
+        val languageChanged : Boolean = sharedPreferences.getBoolean(KEY_LANGUAGE_CHANGED, false)
         if (languageChanged) {
 
             // saving into SharedPreferences
-            editor = sp.edit()
-            editor.putBoolean(KEY_LANGUAGE_CHANGED, false)
-            editor.apply()
+            editor.putBoolean(KEY_LANGUAGE_CHANGED, false).apply()
 
             // destroys then restarts Activity in order to have updated language
             recreate()
@@ -151,7 +140,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
             // replace fragment hosted at location with new fragment provided
             // will add fragment even if there is none
             .replace(R.id.fragment_transaction_list_container, filteredTransactionListFragment)
-            .replace(R.id.fragment_graph_container           , filteredGraphFragment)
+            .replace(R.id.fragment_graph_container           , filteredGraphFragment          )
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
             .commit()
@@ -192,9 +181,9 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
             // replace fragment hosted at location with new fragment provided
             // will add fragment even if there is none
             .add(R.id.fragment_transaction_container         , transactionFragment)
-            .replace(R.id.fragment_transaction_list_container, blankFragment)
-            .replace(R.id.fragment_filter_container          , blankFragment2)
-            .replace(R.id.fragment_graph_container           , blankFragment3)
+            .replace(R.id.fragment_transaction_list_container, blankFragment      )
+            .replace(R.id.fragment_filter_container          , blankFragment2     )
+            .replace(R.id.fragment_graph_container           , blankFragment3     )
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
             .commit()

@@ -1,9 +1,13 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.heyzeusv.financeapplication.database.TransactionRepository
+import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
+import com.heyzeusv.financeapplication.database.entities.IncomeCategory
+import com.heyzeusv.financeapplication.database.entities.Transaction
 import kotlinx.coroutines.Deferred
 
 /**

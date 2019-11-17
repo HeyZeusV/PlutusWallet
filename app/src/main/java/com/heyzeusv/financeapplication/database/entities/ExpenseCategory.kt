@@ -1,4 +1,4 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

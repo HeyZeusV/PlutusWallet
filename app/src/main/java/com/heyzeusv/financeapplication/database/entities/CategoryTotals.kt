@@ -1,4 +1,4 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.database.entities
 
 import java.math.BigDecimal
 

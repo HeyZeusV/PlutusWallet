@@ -1,4 +1,4 @@
-package com.heyzeusv.financeapplication.database
+package com.heyzeusv.financeapplication.database.daos
 
 import androidx.room.*
 
@@ -62,7 +62,7 @@ abstract class BaseDao<T> {
      *
      *  @param obj the object to be inserted/updated.
      */
-    @Transaction
+    @androidx.room.Transaction
     open suspend fun upsert(obj : T) {
 
         val id : Long = insert(obj)

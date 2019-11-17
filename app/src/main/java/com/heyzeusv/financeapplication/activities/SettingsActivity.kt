@@ -1,5 +1,6 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.activities
 
+import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
@@ -7,11 +8,9 @@ import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.heyzeusv.financeapplication.utilities.BaseActivity
+import com.heyzeusv.financeapplication.R
 
-private const val TAG                  = "SettingsFragment"
-private const val KEY_LANGUAGE_CHANGED = "key_language_changed"
-private const val KEY_MANUAL_LANGUAGE  = "key_manual_language"
+private const val TAG = "SettingsFragment"
 
 /**
  *  Activity that starts SettingsFragment
@@ -52,8 +51,8 @@ class SettingsActivity : BaseActivity() {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
             // SharedPreferences
-            val sp     : SharedPreferences        = PreferenceManager.getDefaultSharedPreferences(activity)
-            val editor : SharedPreferences.Editor = sp.edit()
+            val sharedPreferences : SharedPreferences        = PreferenceManager.getDefaultSharedPreferences(activity)
+            val editor            : SharedPreferences.Editor = sharedPreferences.edit()
 
             // Preferences that need Listeners
             val dpPreference : SwitchPreference? = findPreference("key_decimal_places")
@@ -71,11 +70,11 @@ class SettingsActivity : BaseActivity() {
                     val adBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                         .setTitle(getString(R.string.alert_dialog_are_you_sure))
                         .setMessage(getString(R.string.alert_dialog_decimal_place_warning))
-                        .setPositiveButton(getString(R.string.alert_dialog_switch)) { _, _ ->
+                        .setPositiveButton(getString(R.string.alert_dialog_switch)) { _ : DialogInterface, _ : Int ->
 
                         dpPreference.isChecked = false
                     }
-                        .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _, _ -> }
+                        .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int -> }
                     // make AlertDialog using Builder
                     val decimalAlertDialog : AlertDialog = adBuilder.create()
                     // display AlertDialog
@@ -85,11 +84,11 @@ class SettingsActivity : BaseActivity() {
                     // initialize and set up Builder
                     val adBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                         .setTitle(R.string.alert_dialog_are_you_sure)
-                        .setPositiveButton(getString(R.string.alert_dialog_switch)) { _, _ ->
+                        .setPositiveButton(getString(R.string.alert_dialog_switch)) { _ : DialogInterface, _ : Int ->
 
                         dpPreference.isChecked = true
                     }
-                        .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _, _ -> }
+                        .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int -> }
                     // make AlertDialog using Builder
                     val decimalAlertDialog : AlertDialog = adBuilder.create()
                     // display AlertDialog

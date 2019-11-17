@@ -1,8 +1,9 @@
-package com.heyzeusv.financeapplication.database
+package com.heyzeusv.financeapplication.database.daos
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.heyzeusv.financeapplication.IncomeCategory
+import com.heyzeusv.financeapplication.database.daos.BaseDao
+import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 
 /**
  *  Queries that can be applied to IncomeCategory table.

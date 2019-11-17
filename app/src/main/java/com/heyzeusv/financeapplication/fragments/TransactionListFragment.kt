@@ -1,7 +1,6 @@
-package com.heyzeusv.financeapplication
+package com.heyzeusv.financeapplication.fragments
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +12,16 @@ import androidx.core.view.size
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.heyzeusv.financeapplication.utilities.BaseFragment
+import com.heyzeusv.financeapplication.R
+import com.heyzeusv.financeapplication.viewmodels.TransactionListViewModel
+import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
+import com.heyzeusv.financeapplication.database.entities.IncomeCategory
+import com.heyzeusv.financeapplication.database.entities.Transaction
 import com.heyzeusv.financeapplication.utilities.Utils
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -29,19 +31,13 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-private const val TAG                  = "TransactionListFragment"
-private const val ARG_CATEGORY         = "category"
-private const val ARG_DATE             = "date"
-private const val ARG_TYPE             = "type"
-private const val ARG_CATEGORY_NAME    = "category_name"
-private const val ARG_START            = "start"
-private const val ARG_END              = "end"
-private const val KEY_MAX_ID           = "key_max_id"
-private const val KEY_CURRENCY_SYMBOL  = "key_currency_symbol"
-private const val KEY_DECIMAL_PLACES   = "key_decimal_places"
-private const val KEY_DECIMAL_SYMBOL   = "key_decimal_symbol"
-private const val KEY_SYMBOL_SIDE      = "key_symbol_side"
-private const val KEY_THOUSANDS_SYMBOL = "key_thousands_symbol"
+private const val TAG               = "TransactionListFragment"
+private const val ARG_CATEGORY      = "category"
+private const val ARG_DATE          = "date"
+private const val ARG_TYPE          = "type"
+private const val ARG_CATEGORY_NAME = "category_name"
+private const val ARG_START         = "start"
+private const val ARG_END           = "end"
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -65,10 +61,6 @@ class TransactionListFragment : BaseFragment() {
     }
 
     private var callbacks : Callbacks? = null
-
-    // Shared Preferences
-    private lateinit var sp     : SharedPreferences
-    private lateinit var editor : SharedPreferences.Editor
 
     // views
     private lateinit var transactionAddFab       : FloatingActionButton
@@ -116,9 +108,9 @@ class TransactionListFragment : BaseFragment() {
 
         val view : View = inflater.inflate(R.layout.fragment_transaction_list, container, false)
 
-        transactionAddFab       = view.findViewById(R.id.transaction_add_fab)       as FloatingActionButton
+        transactionAddFab       = view.findViewById(R.id.transaction_add_fab      ) as FloatingActionButton
         transactionRecyclerView = view.findViewById(R.id.transaction_recycler_view) as RecyclerView
-        emptyListTextView       = view.findViewById(R.id.emptyListTextView)         as TextView
+        emptyListTextView       = view.findViewById(R.id.emptyListTextView        ) as TextView
 
         val linearLayoutManager = LinearLayoutManager(context)
         // newer items will be displayed at the top of RecyclerView
@@ -133,9 +125,7 @@ class TransactionListFragment : BaseFragment() {
         // adds horizontal divider between each item in RecyclerView
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
-        // retrieves any saved preferences
-        sp    = PreferenceManager.getDefaultSharedPreferences(activity)
-        maxId = sp.getInt(KEY_MAX_ID, 0)
+        maxId = sharedPreferences.getInt(KEY_MAX_ID, 0)
 
         return view
     }
@@ -145,12 +135,12 @@ class TransactionListFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // loads in arguments, if any
-        val category     : Boolean? = arguments?.getBoolean     (ARG_CATEGORY)
-        val date         : Boolean? = arguments?.getBoolean     (ARG_DATE)
-        val type         : String?  = arguments?.getString      (ARG_TYPE)
+        val category     : Boolean? = arguments?.getBoolean     (ARG_CATEGORY     )
+        val date         : Boolean? = arguments?.getBoolean     (ARG_DATE         )
+        val type         : String?  = arguments?.getString      (ARG_TYPE         )
         var categoryName : String?  = arguments?.getString      (ARG_CATEGORY_NAME)
-        val start        : Date?    = arguments?.getSerializable(ARG_START)         as Date?
-        val end          : Date?    = arguments?.getSerializable(ARG_END)           as Date?
+        val start        : Date?    = arguments?.getSerializable(ARG_START        ) as Date?
+        val end          : Date?    = arguments?.getSerializable(ARG_END          ) as Date?
 
         if (categoryName == getString(R.string.category_all)) {
 
@@ -202,11 +192,11 @@ class TransactionListFragment : BaseFragment() {
         futureTransactions()
 
         // retrieves any saved preferences
-        decimalPlaces   = sp.getBoolean(KEY_DECIMAL_PLACES, true)
-        symbolSide      = sp.getBoolean(KEY_SYMBOL_SIDE, true)
-        decimalSymbol   = sp.getString(KEY_DECIMAL_SYMBOL, ".")!!
-        symbolKey       = sp.getString(KEY_CURRENCY_SYMBOL, "dollar")!!
-        thousandsSymbol = sp.getString(KEY_THOUSANDS_SYMBOL, ",")!!
+        decimalPlaces   = sharedPreferences.getBoolean(KEY_DECIMAL_PLACES  , true    )
+        symbolSide      = sharedPreferences.getBoolean(KEY_SYMBOL_SIDE     , true    )
+        decimalSymbol   = sharedPreferences.getString (KEY_DECIMAL_SYMBOL  , "."     )!!
+        symbolKey       = sharedPreferences.getString (KEY_CURRENCY_SYMBOL , "dollar")!!
+        thousandsSymbol = sharedPreferences.getString (KEY_THOUSANDS_SYMBOL, ","     )!!
 
         // sets the symbols to be used according to settings
         symbol                          = Utils.getCurrencySymbol(symbolKey)
@@ -223,9 +213,7 @@ class TransactionListFragment : BaseFragment() {
         super.onPause()
 
         // saves maxId into SharedPreferences
-        editor = sp.edit()
-        editor.putInt(KEY_MAX_ID, maxId)
-        editor.apply()
+        editor.putInt(KEY_MAX_ID, maxId).apply()
     }
 
     override fun onDetach() {
@@ -239,10 +227,10 @@ class TransactionListFragment : BaseFragment() {
     /**
      *  Adds frequency * period to the date on Transaction.
      *
-     *  @param date      the date of Transaction.
-     *  @param period    how often Transaction repeats.
-     *  @param frequency how often Transaction repeats.
-     *
+     *  @param  date      the date of Transaction.
+     *  @param  period    how often Transaction repeats.
+     *  @param  frequency how often Transaction repeats.
+     *  @return the FutureDate set at the beginning of day.
      */
     private fun createFutureDate(date : Date, period : Int, frequency : Int) : Date {
 
@@ -260,13 +248,7 @@ class TransactionListFragment : BaseFragment() {
             3 -> calendar.add(Calendar.YEAR        , frequency)
         }
 
-        // reset hour, minutes, seconds and millis to start of day
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-
-        return calendar.time
+        return Utils.startOfDay(calendar.time)
     }
 
     /**
@@ -572,12 +554,12 @@ class TransactionListFragment : BaseFragment() {
 
             val args : Bundle = Bundle().apply {
 
-                putBoolean     (ARG_CATEGORY     , category)
-                putBoolean     (ARG_DATE         , date)
-                putString      (ARG_TYPE         , type)
+                putBoolean     (ARG_CATEGORY     , category    )
+                putBoolean     (ARG_DATE         , date        )
+                putString      (ARG_TYPE         , type        )
                 putString      (ARG_CATEGORY_NAME, categoryName)
-                putSerializable(ARG_START        , start)
-                putSerializable(ARG_END          , end)
+                putSerializable(ARG_START        , start       )
+                putSerializable(ARG_END          , end         )
             }
 
             return TransactionListFragment().apply {

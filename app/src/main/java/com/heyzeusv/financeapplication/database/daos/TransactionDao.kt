@@ -1,10 +1,10 @@
-package com.heyzeusv.financeapplication.database
+package com.heyzeusv.financeapplication.database.daos
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
-import com.heyzeusv.financeapplication.CategoryTotals
-import com.heyzeusv.financeapplication.Transaction
+import com.heyzeusv.financeapplication.database.entities.CategoryTotals
+import com.heyzeusv.financeapplication.database.entities.Transaction
 import java.util.*
 
 /**
