@@ -1,5 +1,6 @@
 package com.heyzeusv.financeapplication.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,11 +19,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.financeapplication.R
-import com.heyzeusv.financeapplication.viewmodels.TransactionListViewModel
 import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 import com.heyzeusv.financeapplication.database.entities.IncomeCategory
+import com.heyzeusv.financeapplication.database.entities.ItemViewTransaction
 import com.heyzeusv.financeapplication.database.entities.Transaction
 import com.heyzeusv.financeapplication.utilities.Utils
+import com.heyzeusv.financeapplication.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -148,7 +150,7 @@ class TransactionListFragment : BaseFragment() {
         }
 
         // tells ViewModel which query to run on Transactions
-        val transactionListLiveData : LiveData<List<Transaction>> =
+        val transactionListLiveData : LiveData<List<ItemViewTransaction>> =
             transactionListViewModel.filteredTransactionList(category, date, type, categoryName, start, end)
 
         // register an observer on LiveData instance and tie life to another component
@@ -156,7 +158,7 @@ class TransactionListFragment : BaseFragment() {
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
-            Observer { transactions ->
+            Observer { transactions : List<ItemViewTransaction>? ->
                 // if not null
                 transactions?.let {
                     emptyListTextView.isVisible = transactions.isEmpty()
@@ -199,11 +201,13 @@ class TransactionListFragment : BaseFragment() {
         thousandsSymbol = sharedPreferences.getString (KEY_THOUSANDS_SYMBOL, ","     )!!
 
         // sets the symbols to be used according to settings
-        symbol                          = Utils.getCurrencySymbol(symbolKey)
-        customSymbols.decimalSeparator  = Utils.getSeparatorSymbol(decimalSymbol)
+        symbol                          = Utils.getCurrencySymbol (symbolKey      )
+        customSymbols.decimalSeparator  = Utils.getSeparatorSymbol(decimalSymbol  )
         customSymbols.groupingSeparator = Utils.getSeparatorSymbol(thousandsSymbol)
+
+        // formatter depending on settings
         decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
-        integerFormatter = DecimalFormat("#,###", customSymbols)
+        integerFormatter = DecimalFormat("#,###"   , customSymbols)
 
         // tell RecyclerView that symbol has been changed
         transactionAdapter!!.notifyDataSetChanged()
@@ -386,7 +390,7 @@ class TransactionListFragment : BaseFragment() {
      *
      *  @param transactions the list of Transactions to be displayed.
      */
-    private fun updateUI(transactions : List<Transaction>) {
+    private fun updateUI(transactions : List<ItemViewTransaction>) {
 
         // creates TransactionAdapter to set with RecyclerView
         transactionAdapter              = TransactionAdapter(transactions)
@@ -410,7 +414,7 @@ class TransactionListFragment : BaseFragment() {
      *
      *  @param transactions the list of Transactions.
      */
-    private inner class TransactionAdapter(var transactions : List<Transaction>)
+    private inner class TransactionAdapter(var transactions : List<ItemViewTransaction>)
         : RecyclerView.Adapter<TransactionHolder>() {
 
         // creates view to display, wraps the view in a ViewHolder and returns the result
@@ -425,7 +429,7 @@ class TransactionListFragment : BaseFragment() {
         // populates given holder with Transaction from the given position in TransactionList
         override fun onBindViewHolder(holder : TransactionHolder, position : Int) {
 
-            val transaction : Transaction = transactions[position]
+            val transaction : ItemViewTransaction = transactions[position]
             holder.bind(transaction)
         }
     }
@@ -436,12 +440,13 @@ class TransactionListFragment : BaseFragment() {
     private inner class TransactionHolder(view : View)
         : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnLongClickListener {
 
-        private lateinit var transaction : Transaction
+        private lateinit var transaction : ItemViewTransaction
 
         // views in the ItemView
-        private val titleTextView : TextView = itemView.findViewById(R.id.transaction_title)
-        private val dateTextView  : TextView = itemView.findViewById(R.id.transaction_date)
-        private val totalTextView : TextView = itemView.findViewById(R.id.transaction_total)
+        private val titleTextView    : TextView = itemView.findViewById(R.id.transaction_title   )
+        private val dateTextView     : TextView = itemView.findViewById(R.id.transaction_date    )
+        private val totalTextView    : TextView = itemView.findViewById(R.id.transaction_total   )
+        private val categoryTextView : TextView = itemView.findViewById(R.id.transaction_category)
 
         init {
 
@@ -450,11 +455,13 @@ class TransactionListFragment : BaseFragment() {
         }
 
         // sets the views with Transaction data
-        fun bind(transaction : Transaction) {
+        fun bind(transaction : ItemViewTransaction) {
 
-            this.transaction   = transaction
-            titleTextView.text = this       .transaction.title
-            dateTextView .text = DateFormat .getDateInstance(DateFormat.FULL).format(this.transaction.date)
+            this.transaction      = transaction
+            titleTextView.text    = this       .transaction.title
+            categoryTextView.text = this       .transaction.category
+            dateTextView .text    = DateFormat .getDateInstance(DateFormat.FULL).format(this.transaction.date)
+
             // formats the Total correctly
             if (decimalPlaces) {
 
@@ -477,7 +484,7 @@ class TransactionListFragment : BaseFragment() {
             }
             context?.let {
                 // changes the color depending on Type
-                if (transaction.type == "Expense") {
+                if (this.transaction.type == "Expense") {
 
                     totalTextView.setTextColor(ContextCompat.getColor(it, android.R.color.holo_red_dark))
                 } else {
@@ -498,6 +505,7 @@ class TransactionListFragment : BaseFragment() {
         /**
          *  Shows AlertDialog asking user if they want to delete Transaction.
          */
+        @SuppressLint("StringFormatInvalid")
         override fun onLongClick(v : View?) : Boolean {
 
             recyclerViewPosition = this.layoutPosition
@@ -512,7 +520,7 @@ class TransactionListFragment : BaseFragment() {
 
                 launch {
 
-                    transactionListViewModel.deleteTransaction(transaction)
+                    transactionListViewModel.deleteTransaction(transactionListViewModel.getTransactionAsync(transaction.id).await())
                 }
             }
                 // set negative button and its click listener

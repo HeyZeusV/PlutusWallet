@@ -219,7 +219,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     return null
                 }
             }
-            totalField.filters = arrayOf(filter)
+            totalField.filters += filter
         }
 
         return view
@@ -235,7 +235,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
-            Observer { transaction ->
+            Observer { transaction : Transaction? ->
                 // if not null
                 transaction?.let {
                     this.transaction = transaction

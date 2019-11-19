@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.heyzeusv.financeapplication.utilities.Utils
 import java.util.*
 
+// SharedPreferences Keys
 const val KEY_LANGUAGE         = "key_language"
 const val KEY_MANUAL_LANGUAGE  = "key_manual_language"
 const val KEY_LANGUAGE_CHANGED = "key_language_changed"

@@ -89,7 +89,7 @@ class GraphFragment : BaseFragment() {
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
-            Observer { expenseList ->
+            Observer { expenseList : List<CategoryTotals>? ->
                 // if not null
                 expenseList?.let {
                     transactionLists[0] = calculateTotals("Expense", expenseList)
@@ -103,7 +103,7 @@ class GraphFragment : BaseFragment() {
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
-            Observer { incomeList ->
+            Observer { incomeList : List<CategoryTotals>? ->
                 // if not null
                 incomeList?.let {
                     transactionLists[1] = calculateTotals("Income", incomeList)

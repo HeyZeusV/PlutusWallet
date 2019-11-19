@@ -112,12 +112,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:ems="10"
                     android:importantForAutofill="no"
+                    android:maxLength="15"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="@+id/symbolRightTextView"
                     app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date"/>
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
 
                 <TextView
                     android:id="@+id/symbolRightTextView"

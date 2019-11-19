@@ -54,14 +54,35 @@ class SettingsActivity : BaseActivity() {
             val sharedPreferences : SharedPreferences        = PreferenceManager.getDefaultSharedPreferences(activity)
             val editor            : SharedPreferences.Editor = sharedPreferences.edit()
 
-            // Preferences that need Listeners
-            val dpPreference : SwitchPreference? = findPreference("key_decimal_places")
-            val lgPreference : ListPreference?   = findPreference("key_language")
+            // Preferences
+            val tsPreference : ListPreference?   = findPreference("key_thousands_symbol")
+            val dpPreference : SwitchPreference? = findPreference("key_decimal_places"  )
+            val dsPreference : ListPreference?   = findPreference("key_decimal_symbol"  )
+            val lgPreference : ListPreference?   = findPreference("key_language"        )
 
             // used to tell if a new language is set or if the same is re-selected
-            val languageSet : String = lgPreference!!.value
+            val languageSet : String  = lgPreference!!.value
+            val thousands   : String  = tsPreference!!.value
+            val decimalOn   : Boolean = dpPreference!!.isChecked
+            val decimal     : String  = dsPreference!!.value
 
-            dpPreference!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
+//            tsPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, newValue : Any ->
+//
+//                when (newValue) {
+//
+//                    newValue != decimal -> return@OnPreferenceChangeListener true
+//                    newValue == decimal && decimalOn -> {
+//
+//                        val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+//                            .setTitle("Duplicate Symbols")
+//                            .setMessage("")
+//                        return@OnPreferenceChangeListener false
+//                    }
+//                }
+//
+//            }
+
+            dpPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, _ : Any ->
 
                 // asks the user if they do want to switch decimalPlacesPreference
                 if (dpPreference.isChecked) {
@@ -103,7 +124,7 @@ class SettingsActivity : BaseActivity() {
                 lgPreference.isVisible = false
             } else {
 
-                lgPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener {_, newValue ->
+                lgPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener {_ : Preference, newValue : Any ->
 
                     // checks if a different language was selected
                     if (languageSet != newValue.toString()) {

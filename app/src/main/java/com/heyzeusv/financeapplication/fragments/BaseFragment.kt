@@ -10,11 +10,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
 
-const val KEY_CURRENCY_SYMBOL = "key_currency_symbol"
-const val KEY_DECIMAL_PLACES  = "key_decimal_places"
+// SharedPreferences keys
+const val KEY_CURRENCY_SYMBOL  = "key_currency_symbol"
+const val KEY_DECIMAL_PLACES   = "key_decimal_places"
 const val KEY_DECIMAL_SYMBOL   = "key_decimal_symbol"
-const val KEY_MAX_ID          = "key_max_id"
-const val KEY_SYMBOL_SIDE     = "key_symbol_side"
+const val KEY_MAX_ID           = "key_max_id"
+const val KEY_SYMBOL_SIDE      = "key_symbol_side"
 const val KEY_THOUSANDS_SYMBOL = "key_thousands_symbol"
 
 /**

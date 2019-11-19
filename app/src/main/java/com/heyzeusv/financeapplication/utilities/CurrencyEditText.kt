@@ -1,15 +1,15 @@
 package com.heyzeusv.financeapplication.utilities
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Rect
+import android.preference.PreferenceManager
 import android.text.Editable
-import android.text.InputFilter
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.widget.EditText
 import androidx.appcompat.R
-import java.lang.StringBuilder
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -20,11 +20,14 @@ import java.util.*
 
 // USED THIS: https://stackoverflow.com/a/45299775/9825089
 
+// SharedPreferences Keys
+private const val KEY_DECIMAL_SYMBOL   = "key_decimal_symbol"
+private const val KEY_THOUSANDS_SYMBOL = "key_thousands_symbol"
+
 /**
  *  Custom EditText to handle currency.
  *
- *  Adds currency symbol prefix, adds thousands separators automatically, and limits the
- *  number of decimal places.
+ *  Adds thousands separators automatically, and limits the number of decimal places.
  *  Always use locale US instead of default to make DecimalFormat work well in all language.
  *
  *  @constructor standard EditText constructor
@@ -36,13 +39,19 @@ class CurrencyEditText @JvmOverloads constructor(
 
     private val currencyTextWatcher = CurrencyTextWatcher(this)
 
+    private val sharedPreferences : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+    private val decimalSymbol   : String = sharedPreferences.getString(KEY_DECIMAL_SYMBOL  , "period")!!
+    private val thousandsSymbol : String = sharedPreferences.getString(KEY_THOUSANDS_SYMBOL, "comma" )!!
+
     init {
 
         // numeric text class with decimal flag
         this.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         this.hint      = context.getString(com.heyzeusv.financeapplication.R.string.transaction_total_hint)
-        // sets max length
-        this.filters   = arrayOf<InputFilter>(InputFilter.LengthFilter(MAX_LENGTH))
+
+        customSymbols.decimalSeparator  = Utils.getSeparatorSymbol(decimalSymbol)
+        customSymbols.groupingSeparator = Utils.getSeparatorSymbol(thousandsSymbol)
     }
 
     /**
@@ -66,7 +75,7 @@ class CurrencyEditText @JvmOverloads constructor(
      *  Watches for when text is changed.
      *
      *  Also handles formatting the string and the cursor position.
-     *  @constructor sets EditText to be watched and its prefix.
+     *  @constructor sets EditText to be watched.
      */
     private class CurrencyTextWatcher
     internal constructor(private val editText : EditText) : TextWatcher {
@@ -89,7 +98,7 @@ class CurrencyEditText @JvmOverloads constructor(
             val string : String = editable.toString()
 
             // cleanString: doesn't contain ','
-            val cleanString : String = string.replace(("[,]").toRegex(), "")
+            val cleanString : String = string.replace(("[" + customSymbols.groupingSeparator +"]").toRegex(), "")
 
             // prevents afterTextChanged recursive call
             if (cleanString == previousCleanString || cleanString.isEmpty()) {
@@ -100,7 +109,7 @@ class CurrencyEditText @JvmOverloads constructor(
             previousCleanString = cleanString
             // formats string depending if there is decimal places
             val formattedString : String =
-                if (cleanString.contains(".")) {
+                if (cleanString.contains(customSymbols.decimalSeparator)) {
 
                     formatDecimal(cleanString)
                 } else {
@@ -115,7 +124,7 @@ class CurrencyEditText @JvmOverloads constructor(
         }
 
         /**
-         *  Will format string with thousands separators and prefix.
+         *  Will format string with thousands separators.
          *
          *  Even though Totals will always be a decimal number, formatInteger is needed
          *  for when a user first creates a new Transaction. Without this, as soon as a
@@ -130,26 +139,26 @@ class CurrencyEditText @JvmOverloads constructor(
             val parsed = BigDecimal(string)
             // every three numbers, a symbol will be added, which is currently set to US
             // locale ",". Plan to make settings where user can select symbols
-            val formatter = DecimalFormat("#,###", DecimalFormatSymbols.getInstance(Locale.US))
+            val formatter = DecimalFormat("#,###", customSymbols)
             return formatter.format(parsed)
         }
 
         /**
-         *  Will format string with thousands separators and prefix.
+         *  Will format string with thousands separators.
          *
          *  @param  string the string to be formatted.
          *  @return the formatted string.
          */
         private fun formatDecimal(string : String) : String {
 
-            if (string == ".") {
+            if (string == customSymbols.decimalSeparator.toString()) {
 
-                return "."
+                return customSymbols.decimalSeparator.toString()
             }
             val parsed = BigDecimal(string)
             // every three numbers, a symbol will be added, which is currently set to US
             // locale ",". Plan to make settings where user can select symbols
-            val formatter = DecimalFormat("#,###." + getDecimalPattern(string), DecimalFormatSymbols.getInstance(Locale.US))
+            val formatter = DecimalFormat("#,###." + getDecimalPattern(string), customSymbols)
             formatter.roundingMode = RoundingMode.DOWN
             return formatter.format(parsed)
         }
@@ -161,7 +170,7 @@ class CurrencyEditText @JvmOverloads constructor(
         private fun getDecimalPattern(string : String) : String {
 
             // returns number of characters after decimal point
-            val decimalCount : Int = string.length - string.indexOf(".") - 1
+            val decimalCount : Int = string.length - string.indexOf(customSymbols.decimalSeparator) - 1
             val decimalPattern     = StringBuilder()
             var i = 0
             while (i < decimalCount && i < 2) {
@@ -192,5 +201,6 @@ class CurrencyEditText @JvmOverloads constructor(
     companion object {
 
         private const val MAX_LENGTH = 15
+        private val customSymbols    = DecimalFormatSymbols(Locale.US)
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.heyzeusv.financeapplication.database.TransactionRepository
 import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 import com.heyzeusv.financeapplication.database.entities.IncomeCategory
+import com.heyzeusv.financeapplication.database.entities.ItemViewTransaction
 import com.heyzeusv.financeapplication.database.entities.Transaction
 import kotlinx.coroutines.Deferred
 import java.util.*
@@ -39,7 +40,7 @@ class TransactionListViewModel : ViewModel() {
      *  @return LiveData object holding list of Transactions.
      */
     fun filteredTransactionList(category : Boolean?, date : Boolean?, type : String?, categoryName : String?,
-                                start : Date?, end : Date?) : LiveData<List<Transaction>> {
+                                start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> {
 
         return if (category == true && date == true && categoryName == "All") {
 
@@ -60,6 +61,11 @@ class TransactionListViewModel : ViewModel() {
 
             transactionRepository.getLDTransactions()
         }
+    }
+
+    suspend fun getTransactionAsync(id : Int) : Deferred<Transaction> {
+
+        return transactionRepository.getTransactionAsync(id)
     }
 
     suspend fun getFutureTransactionsAsync(currentDate : Date) : Deferred<List<Transaction>> {
