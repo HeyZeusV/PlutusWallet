@@ -22,10 +22,10 @@ private const val TAG = "MainActivity"
 class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFragment.Callbacks {
 
     // views
-    private lateinit var drawerLayout      : DrawerLayout
-    private lateinit var fab               : FloatingActionButton
-    private lateinit var menuButton        : MaterialButton
-    private lateinit var navigationView    : NavigationView
+    private lateinit var drawerLayout   : DrawerLayout
+    private lateinit var fab            : FloatingActionButton
+    private lateinit var menuButton     : MaterialButton
+    private lateinit var navigationView : NavigationView
 
     // position of FAB, depends on device
     private var fabX = 0
@@ -65,7 +65,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
                 .add(R.id.fragment_graph_container           , graphFragment          )
                 .commit()
         }
-
     }
 
     override fun onStart() {

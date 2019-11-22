@@ -45,13 +45,6 @@
     <string name="filter_end">End:</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_start">Start:</string>
-    <string name="language_de_german" translatable="false">Deutsche</string>
-    <string name="language_en_english" translatable="false">English</string>
-    <string name="language_es_spanish" translatable="false">Español (latinoamericano)</string>
-    <string name="language_hi_hindi" translatable="false">हिंदी</string>
-    <string name="language_ja_japanese" translatable="false">日本語</string>
-    <string name="language_ko_korean" translatable="false">한국어</string>
-    <string name="language_th_thai" translatable="false">ไทย</string>
     <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
     <string name="library_circleindicator" translatable="false">CircleIndicator</string>
     <string name="library_mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>

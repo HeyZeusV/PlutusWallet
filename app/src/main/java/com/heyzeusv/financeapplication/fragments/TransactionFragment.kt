@@ -8,7 +8,6 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -20,7 +19,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.preference.PreferenceManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -36,7 +34,6 @@ import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.TransactionDetailViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.text.DateFormat
 import java.util.*
 import kotlin.math.hypot
@@ -50,7 +47,7 @@ private const val DIALOG_DATE         = "DialogDate"
 private const val REQUEST_DATE        = 0
 
 /**
- *  Shows all the information in database of one fragment and allows users to edit any field and save changes.
+ *  Shows all the information in database of one Transaction and allows users to edit any field and save changes.
  */
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
@@ -82,10 +79,13 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
 
     // used for SharedPreferences
-    private var maxId         : Int     = 0
-    private var decimalPlaces : Boolean = true
-    private var symbolSide    : Boolean = true
-    private var symbolKey     : String  = "dollar"
+    private var maxId              : Int     = 0
+    private var decimalPlaces      : Boolean = true
+    private var currencySymbolSide : Boolean = true
+
+    // separator symbols
+    private var decimalSymbol      : Char    = '.'
+    private var thousandsSymbol    : Char    = ','
 
     // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
@@ -124,6 +124,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         val view : View = inflater.inflate(R.layout.fragment_transaction, container, false)
 
+        // initialize views
         repeatingCheckBox      = view.findViewById(R.id.transaction_repeating       ) as CheckBox
         expenseChip            = view.findViewById(R.id.transaction_expense_chip    ) as Chip
         incomeChip             = view.findViewById(R.id.transaction_income_chip     ) as Chip
@@ -171,19 +172,23 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         // retrieves any saved preferences
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
-        decimalPlaces     = sharedPreferences.getBoolean(KEY_DECIMAL_PLACES , true    )
-        symbolSide        = sharedPreferences.getBoolean(KEY_SYMBOL_SIDE    , true    )
-        symbolKey         = sharedPreferences.getString (KEY_CURRENCY_SYMBOL, "dollar")!!
-        maxId             = sharedPreferences.getInt    (KEY_MAX_ID         , 0       )
+        decimalPlaces      = sharedPreferences.getBoolean(KEY_DECIMAL_PLACES, true    )
+        currencySymbolSide = sharedPreferences.getBoolean(KEY_SYMBOL_SIDE   , true    )
+        maxId              = sharedPreferences.getInt    (KEY_MAX_ID        , 0       )
+        val currencySymbolKey  : String = sharedPreferences.getString(KEY_CURRENCY_SYMBOL , "dollar")!!
+        val decimalSymbolKey   : String = sharedPreferences.getString(KEY_DECIMAL_SYMBOL  , "period")!!
+        val thousandsSymbolKey : String = sharedPreferences.getString(KEY_THOUSANDS_SYMBOL, "comma" )!!
 
-        // retrieves symbol to be used according to settings
-        val symbol : String = Utils.getCurrencySymbol(symbolKey)
-        symbolLeftText .text = symbol
-        symbolRightText.text = symbol
+        // retrieves symbols to be used according to settings
+        val currencySymbol : String = Utils.getCurrencySymbol(currencySymbolKey)
+        decimalSymbol   = Utils.getSeparatorSymbol(decimalSymbolKey)
+        thousandsSymbol = Utils.getSeparatorSymbol(thousandsSymbolKey)
+
+        symbolLeftText .text = currencySymbol
+        symbolRightText.text = currencySymbol
 
         // if symbol on right side
-        if (!symbolSide) {
+        if (!currencySymbolSide) {
 
             // used to change constraints
             val totalConstraintSet = ConstraintSet()
@@ -204,14 +209,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // user selects no decimal places
         if (!decimalPlaces) {
 
-            // filter that prevents user from typing '.' thus only integers
-            val filter = object:InputFilter {
+            // filter that prevents user from typing decimalSymbol thus only integers
+            val filter = object : InputFilter {
 
                 override fun filter(source : CharSequence?, start : Int, end : Int, dest : Spanned?, dstart : Int, dend : Int) : CharSequence? {
 
-                    for (i in start until end) {
+                    for (i : Int in start until end) {
 
-                        if (source != null && source == ".") {
+                        if (source != null && source == decimalSymbol.toString()) {
 
                             return ""
                         }
@@ -477,26 +482,16 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
 
             // sets up Total and totalField
-            when {
-                totalField.text.toString() != "" -> {
+            if (totalField.text.toString() != "") {
 
-                    // converts the totalField into BigDecimal
-                    transaction.total = BigDecimal(
-                        totalField.text.toString()
-                            .replace(",", "")
-                    )
-                }
-                decimalPlaces -> {
-
-                    transaction.total = BigDecimal(0.00)
-                    totalField.setText("0.00")
-                }
-                else -> {
-
-                    transaction.total = BigDecimal(0)
-                    totalField.setText("0")
-                }
+                // need to save to separate string or else format will be ruined after saving
+                var savedTotal : String = totalField.text.toString()
+                savedTotal = savedTotal.replace(thousandsSymbol.toString(), "" )
+                                       .replace(decimalSymbol  .toString(), ".")
+                // converts the totalField into BigDecimal
+                transaction.total = BigDecimal(savedTotal)
             }
+
 
             // deals with either creating, updating, or deleting a future Transaction
             if (transaction.repeating) {
@@ -552,7 +547,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     transactionDetailViewModel.updateTransaction(transaction)
                 }
             }
-            Log.d(TAG, "$transaction")
             updateUI()
             val savedBar : Snackbar = Snackbar.make(it, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT)
             savedBar.anchorView = it
@@ -702,22 +696,24 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         frequencyField.setText(transaction.frequency.toString())
         dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
 
-        if (decimalPlaces) {
+        // formats Total depending on decimalPlaces and if decimal separator is present
+        totalField.setText(getString(R.string.total_number, if (decimalPlaces && transaction.total.toString().contains(".")) {
 
-            totalField.setText(getString(R.string.total_number, String.format(transaction.total.toString())))
-        } else {
+                Utils.formatDecimal(transaction.total.toString(), thousandsSymbol, decimalSymbol)
+            } else {
 
-            totalField.setText(getString(R.string.total_number, String.format(transaction.total.setScale(0, RoundingMode.HALF_UP).toString())))
-        }
+                Utils.formatInteger(transaction.total.toString(), thousandsSymbol)
+            }))
+
 
         if (transaction.type == "Income") {
 
-            typeSelected = true
+            typeSelected                     = true
             expenseCategorySpinner.isVisible = false
             incomeCategorySpinner .isVisible = true
         } else {
 
-            typeSelected = false
+            typeSelected                     = false
             expenseCategorySpinner.isVisible = true
             incomeCategorySpinner .isVisible = false
             // weird bug that only affected expenseChip where it was able to be

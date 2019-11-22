@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.size
@@ -110,6 +111,7 @@ class TransactionListFragment : BaseFragment() {
 
         val view : View = inflater.inflate(R.layout.fragment_transaction_list, container, false)
 
+        // initialize views
         transactionAddFab       = view.findViewById(R.id.transaction_add_fab      ) as FloatingActionButton
         transactionRecyclerView = view.findViewById(R.id.transaction_recycler_view) as RecyclerView
         emptyListTextView       = view.findViewById(R.id.emptyListTextView        ) as TextView
@@ -526,7 +528,7 @@ class TransactionListFragment : BaseFragment() {
                 // set negative button and its click listener
                 .setNegativeButton(getString(R.string.alert_dialog_no)) { _, _ ->  }
             // make the AlertDialog using the builder
-            val alertDialog : androidx.appcompat.app.AlertDialog = alertDialogBuilder.create()
+            val alertDialog : AlertDialog = alertDialogBuilder.create()
             // display AlertDialog
             alertDialog.show()
 
