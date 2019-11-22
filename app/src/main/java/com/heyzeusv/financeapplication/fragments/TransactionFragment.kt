@@ -8,11 +8,17 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
 import android.text.TextWatcher
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -29,13 +35,23 @@ import com.heyzeusv.financeapplication.R
 import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 import com.heyzeusv.financeapplication.database.entities.Transaction
+import com.heyzeusv.financeapplication.utilities.KEY_CURRENCY_SYMBOL
+import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_PLACES
+import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_SYMBOL
+import com.heyzeusv.financeapplication.utilities.KEY_MAX_ID
+import com.heyzeusv.financeapplication.utilities.KEY_SYMBOL_SIDE
+import com.heyzeusv.financeapplication.utilities.KEY_THOUSANDS_SYMBOL
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.set
 import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.TransactionDetailViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
-import java.util.*
+import java.util.Date
+import java.util.Calendar
+import java.util.Locale
 import kotlin.math.hypot
 
 private const val TAG                 = "TransactionFragment"
@@ -120,6 +136,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         frequencyArray = arrayOf(getString(R.string.period_days), getString(R.string.period_weeks), getString(R.string.period_months), getString(R.string.period_years))
     }
 
+    @SuppressLint("RtlHardcoded")
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
 
         val view : View = inflater.inflate(R.layout.fragment_transaction, container, false)
@@ -172,12 +189,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         // retrieves any saved preferences
-        decimalPlaces      = sharedPreferences.getBoolean(KEY_DECIMAL_PLACES, true    )
-        currencySymbolSide = sharedPreferences.getBoolean(KEY_SYMBOL_SIDE   , true    )
-        maxId              = sharedPreferences.getInt    (KEY_MAX_ID        , 0       )
-        val currencySymbolKey  : String = sharedPreferences.getString(KEY_CURRENCY_SYMBOL , "dollar")!!
-        val decimalSymbolKey   : String = sharedPreferences.getString(KEY_DECIMAL_SYMBOL  , "period")!!
-        val thousandsSymbolKey : String = sharedPreferences.getString(KEY_THOUSANDS_SYMBOL, "comma" )!!
+        decimalPlaces      = sharedPreferences[KEY_DECIMAL_PLACES, true]!!
+        currencySymbolSide = sharedPreferences[KEY_SYMBOL_SIDE   , true]!!
+        maxId              = sharedPreferences[KEY_MAX_ID        , 0   ]!!
+        val currencySymbolKey  : String = sharedPreferences[KEY_CURRENCY_SYMBOL , "dollar"]!!
+        val decimalSymbolKey   : String = sharedPreferences[KEY_DECIMAL_SYMBOL  , "period"]!!
+        val thousandsSymbolKey : String = sharedPreferences[KEY_THOUSANDS_SYMBOL, "comma" ]!!
 
         // retrieves symbols to be used according to settings
         val currencySymbol : String = Utils.getCurrencySymbol(currencySymbolKey)
@@ -201,9 +218,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 R.id.symbolRightTextView, ConstraintSet.START, 0)
             totalConstraintSet.applyTo(transactionLayout)
             // text starts to right
-            totalField     .textDirection = View.TEXT_DIRECTION_RTL
-            symbolLeftText .isVisible     = false
-            symbolRightText.isVisible     = true
+            totalField     .gravity    = Gravity.RIGHT
+            symbolLeftText .isVisible  = false
+            symbolRightText.isVisible  = true
         }
 
         // user selects no decimal places
@@ -541,7 +558,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     transactionDetailViewModel.insertTransaction(transaction)
                     newTransaction = false
                     // saves maxId into SharedPreferences
-                    editor.putInt(KEY_MAX_ID, maxId).apply()
+                    sharedPreferences[KEY_MAX_ID] = maxId
                 } else {
 
                     transactionDetailViewModel.updateTransaction(transaction)

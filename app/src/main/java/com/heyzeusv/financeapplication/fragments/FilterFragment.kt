@@ -112,6 +112,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         val view : View = inflater.inflate(R.layout.fragment_filter, container, false)
 
+        // initialize views
         categoryCheckBox       = view.findViewById(R.id.filter_category_check  ) as CheckBox
         dateCheckBox           = view.findViewById(R.id.filter_date_check      ) as CheckBox
         typeButton             = view.findViewById(R.id.filter_type            ) as MaterialButton

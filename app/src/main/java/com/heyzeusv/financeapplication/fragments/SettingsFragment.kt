@@ -6,11 +6,16 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
-import androidx.preference.*
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.heyzeusv.financeapplication.R
-import com.heyzeusv.financeapplication.activities.KEY_LANGUAGE_CHANGED
-import com.heyzeusv.financeapplication.activities.KEY_MANUAL_LANGUAGE
+import com.heyzeusv.financeapplication.utilities.KEY_LANGUAGE_CHANGED
+import com.heyzeusv.financeapplication.utilities.KEY_MANUAL_LANGUAGE
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.set
 
 /**
  *  Shows different options users can change to better their experience
@@ -19,7 +24,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     // SharedPreferences
     private lateinit var sharedPreferences : SharedPreferences
-    private lateinit var editor            : SharedPreferences.Editor
 
     // Preferences
     private lateinit var tsPreference : ListPreference
@@ -39,8 +43,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
         // initialize SharedPreferences
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity)
-        editor            = sharedPreferences.edit()
+        sharedPreferences = PreferenceHelper.sharedPrefs(activity!!)
 
         // initialize Preferences
         tsPreference = findPreference("key_thousands_symbol")!!
@@ -120,9 +123,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 if (languageSet != newValue.toString()) {
 
                     // saving into SharedPreferences
-                    editor.putBoolean(KEY_LANGUAGE_CHANGED, true)
-                    editor.putBoolean(KEY_MANUAL_LANGUAGE , true)
-                    editor.apply()
+                    sharedPreferences[KEY_LANGUAGE_CHANGED] = true
+                    sharedPreferences[KEY_MANUAL_LANGUAGE ] = true
 
                     // destroys then restarts Activity in order to have updated language
                     activity!!.recreate()

@@ -24,6 +24,13 @@ import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 import com.heyzeusv.financeapplication.database.entities.ItemViewTransaction
 import com.heyzeusv.financeapplication.database.entities.Transaction
+import com.heyzeusv.financeapplication.utilities.KEY_CURRENCY_SYMBOL
+import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_PLACES
+import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_SYMBOL
+import com.heyzeusv.financeapplication.utilities.KEY_MAX_ID
+import com.heyzeusv.financeapplication.utilities.KEY_SYMBOL_SIDE
+import com.heyzeusv.financeapplication.utilities.KEY_THOUSANDS_SYMBOL
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
 import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.Deferred
@@ -32,7 +39,9 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 private const val TAG               = "TransactionListFragment"
 private const val ARG_CATEGORY      = "category"
@@ -129,7 +138,7 @@ class TransactionListFragment : BaseFragment() {
         // adds horizontal divider between each item in RecyclerView
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
-        maxId = sharedPreferences.getInt(KEY_MAX_ID, 0)
+        maxId = sharedPreferences[KEY_MAX_ID, 0]!!
 
         return view
     }
@@ -196,11 +205,11 @@ class TransactionListFragment : BaseFragment() {
         futureTransactions()
 
         // retrieves any saved preferences
-        decimalPlaces   = sharedPreferences.getBoolean(KEY_DECIMAL_PLACES  , true    )
-        symbolSide      = sharedPreferences.getBoolean(KEY_SYMBOL_SIDE     , true    )
-        decimalSymbol   = sharedPreferences.getString (KEY_DECIMAL_SYMBOL  , "."     )!!
-        symbolKey       = sharedPreferences.getString (KEY_CURRENCY_SYMBOL , "dollar")!!
-        thousandsSymbol = sharedPreferences.getString (KEY_THOUSANDS_SYMBOL, ","     )!!
+        decimalPlaces   = sharedPreferences[KEY_DECIMAL_PLACES  , true    ]!!
+        symbolSide      = sharedPreferences[KEY_SYMBOL_SIDE     , true    ]!!
+        decimalSymbol   = sharedPreferences[KEY_DECIMAL_SYMBOL  , "."     ]!!
+        symbolKey       = sharedPreferences[KEY_CURRENCY_SYMBOL , "dollar"]!!
+        thousandsSymbol = sharedPreferences[KEY_THOUSANDS_SYMBOL, ","     ]!!
 
         // sets the symbols to be used according to settings
         symbol                          = Utils.getCurrencySymbol (symbolKey      )
@@ -219,7 +228,7 @@ class TransactionListFragment : BaseFragment() {
         super.onPause()
 
         // saves maxId into SharedPreferences
-        editor.putInt(KEY_MAX_ID, maxId).apply()
+        sharedPreferences[KEY_MAX_ID, maxId]
     }
 
     override fun onDetach() {

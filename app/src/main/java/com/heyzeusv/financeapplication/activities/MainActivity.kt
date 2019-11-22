@@ -10,7 +10,14 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.financeapplication.R
-import com.heyzeusv.financeapplication.fragments.*
+import com.heyzeusv.financeapplication.fragments.BlankFragment
+import com.heyzeusv.financeapplication.fragments.FilterFragment
+import com.heyzeusv.financeapplication.fragments.GraphFragment
+import com.heyzeusv.financeapplication.fragments.TransactionFragment
+import com.heyzeusv.financeapplication.fragments.TransactionListFragment
+import com.heyzeusv.financeapplication.utilities.KEY_LANGUAGE_CHANGED
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.set
 import java.util.*
 
 private const val TAG = "MainActivity"
@@ -35,6 +42,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // initialize views
         drawerLayout   = findViewById(R.id.activity_drawer         )
         fab            = findViewById(R.id.activity_fab            )
         menuButton     = findViewById(R.id.fragment_settings       )
@@ -105,11 +113,11 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
         super.onResume()
 
         // loads if language changed
-        val languageChanged : Boolean = sharedPreferences.getBoolean(KEY_LANGUAGE_CHANGED, false)
+        val languageChanged : Boolean = sharedPreferences[KEY_LANGUAGE_CHANGED, false]!!
         if (languageChanged) {
 
             // saving into SharedPreferences
-            editor.putBoolean(KEY_LANGUAGE_CHANGED, false).apply()
+            sharedPreferences[KEY_LANGUAGE_CHANGED] = false
 
             // destroys then restarts Activity in order to have updated language
             recreate()

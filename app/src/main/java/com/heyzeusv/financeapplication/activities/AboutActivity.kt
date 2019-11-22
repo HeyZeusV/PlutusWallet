@@ -47,6 +47,7 @@ class AboutActivity : BaseActivity() {
         // displays back button
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // initializing views
         aboutLayout               = findViewById(R.id.about_constraint             )
         androidChartButton        = findViewById(R.id.androidChartButton           )
         androidChartGitHub        = findViewById(R.id.androidChartGitHubTextView   )

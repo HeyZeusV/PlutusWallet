@@ -4,21 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Rect
-import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.widget.EditText
 import androidx.appcompat.R
-
-// for future localization use: https://stackoverflow.com/a/33496285/9825089
-
-// USED THIS: https://stackoverflow.com/a/45299775/9825089
-
-// SharedPreferences Keys
-private const val KEY_DECIMAL_SYMBOL   = "key_decimal_symbol"
-private const val KEY_THOUSANDS_SYMBOL = "key_thousands_symbol"
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
 
 /**
  *  Custom EditText to handle currency.
@@ -36,11 +28,11 @@ class CurrencyEditText @JvmOverloads constructor(
     private val currencyTextWatcher = CurrencyTextWatcher(this)
 
     // SharedPreference
-    private val sharedPreferences  : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val sharedPreferences  : SharedPreferences = PreferenceHelper.sharedPrefs(context)
 
     // keys from separator symbols
-    private var decimalSymbolKey   : String = sharedPreferences.getString(KEY_DECIMAL_SYMBOL  , "period")!!
-    private var thousandsSymbolKey : String = sharedPreferences.getString(KEY_THOUSANDS_SYMBOL, "comma" )!!
+    private var decimalSymbolKey   : String = sharedPreferences[KEY_DECIMAL_SYMBOL  , "period"]!!
+    private var thousandsSymbolKey : String = sharedPreferences[KEY_THOUSANDS_SYMBOL, "comma" ]!!
 
     init {
 

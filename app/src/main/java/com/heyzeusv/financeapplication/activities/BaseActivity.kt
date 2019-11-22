@@ -5,15 +5,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.os.Build
-import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
+import com.heyzeusv.financeapplication.utilities.KEY_LANGUAGE
+import com.heyzeusv.financeapplication.utilities.KEY_MANUAL_LANGUAGE
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
 import com.heyzeusv.financeapplication.utilities.Utils
 import java.util.*
-
-// SharedPreferences Keys
-const val KEY_LANGUAGE         = "key_language"
-const val KEY_MANUAL_LANGUAGE  = "key_manual_language"
-const val KEY_LANGUAGE_CHANGED = "key_language_changed"
 
 /**
  *  Base Activity that all Activities will extend
@@ -23,7 +21,6 @@ const val KEY_LANGUAGE_CHANGED = "key_language_changed"
 abstract class BaseActivity : AppCompatActivity() {
 
     protected lateinit var sharedPreferences : SharedPreferences
-    protected lateinit var editor            : SharedPreferences.Editor
 
     // array of languages supported
     private val languages : Array<String> = arrayOf("en", "es", "de", "hi", "ja", "ko", "th")
@@ -32,10 +29,9 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context?) {
 
         // SharedPreference/Editor will be available to all Activities that inherit this class
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(newBase)
-        editor            = sharedPreferences.edit()
+        sharedPreferences = PreferenceHelper.sharedPrefs(newBase!!)
 
-        val manualChange : Boolean = sharedPreferences.getBoolean(KEY_MANUAL_LANGUAGE, false)
+        val manualChange : Boolean = sharedPreferences[KEY_MANUAL_LANGUAGE, false]!!
 
         // API 24 or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -54,9 +50,9 @@ abstract class BaseActivity : AppCompatActivity() {
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && manualChange) {
 
                 // retrieves language selected
-                val languageCode : String  = sharedPreferences.getString(KEY_LANGUAGE, "en")!!
+                val languageCode : String  = sharedPreferences[KEY_LANGUAGE, "en"]!!
                 // sets context with language
-                val context : Context = Utils.changeLanguage(newBase!!, languageCode)
+                val context : Context = Utils.changeLanguage(newBase, languageCode)
 
                 super.attachBaseContext(context)
 
