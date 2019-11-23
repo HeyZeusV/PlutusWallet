@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.R
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
@@ -39,13 +40,13 @@ class CurrencyEditText @JvmOverloads constructor(
         // retrieves separator symbols from keys
         decimalSymbol   = Utils.getSeparatorSymbol(decimalSymbolKey)
         thousandsSymbol = Utils.getSeparatorSymbol(thousandsSymbolKey)
-        // chars that this will accept
-        var accepted = "0123456789"
-        accepted += decimalSymbol
+
+        acceptedDecimal = accepted + decimalSymbol
+
         // forces numpad
         this.setRawInputType(Configuration.KEYBOARD_QWERTY)
         // only allows char in accepted to be pressed
-        this.keyListener = DigitsKeyListener.getInstance(accepted)
+        this.keyListener = DigitsKeyListener.getInstance(acceptedDecimal)
         // numeric text class with decimal flag
         this.hint      = context.getString(com.heyzeusv.financeapplication.R.string.transaction_total_hint)
     }
@@ -106,9 +107,13 @@ class CurrencyEditText @JvmOverloads constructor(
             val formattedString : String =
                 if (cleanString.contains(decimalSymbol)) {
 
+                    // this will prevent users from entering 2 decimal symbols causing a crash
+                    editText.keyListener = DigitsKeyListener.getInstance(accepted)
                     Utils.formatDecimal(cleanString, thousandsSymbol, decimalSymbol)
                 } else {
 
+                    // allows user to enter any integer or decimalSymbol
+                    editText.keyListener = DigitsKeyListener.getInstance(acceptedDecimal)
                     Utils.formatInteger(cleanString, thousandsSymbol)
                 }
             editText.removeTextChangedListener(this)
@@ -139,7 +144,14 @@ class CurrencyEditText @JvmOverloads constructor(
     companion object {
 
         private const val MAX_LENGTH = 15
+
+        // symbols used
         private var decimalSymbol   : Char = '.'
         private var thousandsSymbol : Char = ','
+
+        // only accepts numbers
+        private var accepted = "0123456789"
+        // accepts numbers and decimalSymbol
+        private var acceptedDecimal : String = accepted
     }
 }
