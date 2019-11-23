@@ -532,22 +532,19 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                         // set message
                         .setMessage(getString(R.string.alert_dialog_future_transaction_warning))
                         // set positive button and click listener
-                        .setPositiveButton(getString(R.string.alert_dialog_yes)) { _, _ ->
+                        .setPositiveButton(getString(R.string.alert_dialog_yes)) { _ : DialogInterface, _ : Int ->
 
-                        transaction.futureTCreated = false
-                        launch {
-
-                            transactionDetailViewModel.updateTransaction(transaction)
+                            transaction.futureTCreated = false
+                            updateTransaction(transaction)
+                            createSnackbar(it)
                         }
-                    }
                         // set negative button and click listener
-                        .setNegativeButton(getString(R.string.alert_dialog_no)) { _, _ ->
+                        .setNegativeButton(getString(R.string.alert_dialog_no)) { _ : DialogInterface, _ : Int ->
 
-                        launch {
-
-                            transactionDetailViewModel.updateTransaction(transaction)
+                            dateChanged = false
+                            updateTransaction(transaction)
+                            createSnackbar(it)
                         }
-                    }
                     // make AlertDialog using builder
                     val alertDialog : AlertDialog = alertDialogBuilder.create()
                     // display AlertDialog
@@ -559,15 +556,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     newTransaction = false
                     // saves maxId into SharedPreferences
                     sharedPreferences[KEY_MAX_ID] = maxId
+                    createSnackbar(it)
                 } else {
 
                     transactionDetailViewModel.updateTransaction(transaction)
+                    createSnackbar(it)
                 }
             }
             updateUI()
-            val savedBar : Snackbar = Snackbar.make(it, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT)
-            savedBar.anchorView = it
-            savedBar.show()
         }
     }
 
@@ -580,7 +576,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         transaction.date = date
         dateChanged = transaction.date != oldDate
-        updateUI()
+        dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
     }
 
     /**
@@ -603,6 +599,18 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         return Utils.startOfDay(calendar.time)
+    }
+
+    /**
+     *  Snackbar alerting user that Transaction has been saved.
+     *
+     *  @param view the view that Snackbar will be anchored to.
+     */
+    private fun createSnackbar(view : View) {
+
+        val savedBar : Snackbar = Snackbar.make(view, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT)
+        savedBar.anchorView = view
+        savedBar.show()
     }
 
     @SuppressLint("DefaultLocale")
@@ -701,6 +709,20 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         val categoryAlertDialog : AlertDialog = builder.create()
         // display AlertDialog
         categoryAlertDialog.show()
+    }
+
+    /**
+     *  Used in AlertDialog that appears after user switches date of Transaction
+     *  that has been repeated. It appears CoRoutines do not work directly in AlertDialog.
+     *
+     *  @param transaction The Transaction to be updated.
+     */
+    private fun updateTransaction(transaction : Transaction) {
+
+        launch {
+
+            transactionDetailViewModel.updateTransaction(transaction)
+        }
     }
 
     /**

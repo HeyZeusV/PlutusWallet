@@ -11,7 +11,7 @@ import com.heyzeusv.financeapplication.utilities.KEY_MANUAL_LANGUAGE
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
 import com.heyzeusv.financeapplication.utilities.Utils
-import java.util.*
+import java.util.Locale
 
 /**
  *  Base Activity that all Activities will extend

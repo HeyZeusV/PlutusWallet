@@ -2,7 +2,6 @@ package com.heyzeusv.financeapplication.database.daos
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.heyzeusv.financeapplication.database.daos.BaseDao
 import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 
 /**

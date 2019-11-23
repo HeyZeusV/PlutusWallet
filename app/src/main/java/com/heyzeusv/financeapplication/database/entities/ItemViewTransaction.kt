@@ -1,7 +1,7 @@
 package com.heyzeusv.financeapplication.database.entities
 
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
 /**
  *  Not exactly an entity, but more of a helper object to hold Transaction data that

@@ -6,7 +6,7 @@ import androidx.room.Query
 import com.heyzeusv.financeapplication.database.entities.CategoryTotals
 import com.heyzeusv.financeapplication.database.entities.ItemViewTransaction
 import com.heyzeusv.financeapplication.database.entities.Transaction
-import java.util.*
+import java.util.Date
 
 /**
  *  Queries that can be applied to Transaction table.

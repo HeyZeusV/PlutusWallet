@@ -18,7 +18,7 @@ import com.heyzeusv.financeapplication.fragments.TransactionListFragment
 import com.heyzeusv.financeapplication.utilities.KEY_LANGUAGE_CHANGED
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.set
-import java.util.*
+import java.util.Date
 
 private const val TAG = "MainActivity"
 

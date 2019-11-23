@@ -31,6 +31,7 @@ import com.heyzeusv.financeapplication.utilities.KEY_MAX_ID
 import com.heyzeusv.financeapplication.utilities.KEY_SYMBOL_SIDE
 import com.heyzeusv.financeapplication.utilities.KEY_THOUSANDS_SYMBOL
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
+import com.heyzeusv.financeapplication.utilities.PreferenceHelper.set
 import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.Deferred
@@ -228,7 +229,7 @@ class TransactionListFragment : BaseFragment() {
         super.onPause()
 
         // saves maxId into SharedPreferences
-        sharedPreferences[KEY_MAX_ID, maxId]
+        sharedPreferences[KEY_MAX_ID] = maxId
     }
 
     override fun onDetach() {

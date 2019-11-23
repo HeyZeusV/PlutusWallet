@@ -23,15 +23,15 @@ import com.heyzeusv.financeapplication.database.entities.CategoryTotals
 import com.heyzeusv.financeapplication.viewmodels.GraphViewModel
 import me.relex.circleindicator.CircleIndicator3
 import java.math.BigDecimal
-import java.util.*
+import java.util.Date
 
- private const val TAG               = "GraphFragment"
- private const val ARG_CATEGORY      = "category"
- private const val ARG_DATE          = "date"
- private const val ARG_TYPE          = "type"
- private const val ARG_CATEGORY_NAME = "category_name"
- private const val ARG_START         = "start"
- private const val ARG_END           = "end"
+private const val TAG               = "GraphFragment"
+private const val ARG_CATEGORY      = "category"
+private const val ARG_DATE          = "date"
+private const val ARG_TYPE          = "type"
+private const val ARG_CATEGORY_NAME = "category_name"
+private const val ARG_START         = "start"
+private const val ARG_END           = "end"
 
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.

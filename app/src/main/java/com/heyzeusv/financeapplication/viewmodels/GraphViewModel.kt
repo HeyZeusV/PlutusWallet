@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.financeapplication.database.TransactionRepository
 import com.heyzeusv.financeapplication.database.entities.CategoryTotals
-import java.util.*
+import java.util.Date
 
 /**
  *  Data manager for GraphFragments.

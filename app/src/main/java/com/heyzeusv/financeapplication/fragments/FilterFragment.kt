@@ -5,16 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.Spinner
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.financeapplication.R
 import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.FilterViewModel
 import kotlinx.coroutines.launch
 import java.text.DateFormat
-import java.util.*
+import java.util.Date
 
 private const val TAG            = "FilterFragment"
 private const val DIALOG_DATE    = "DialogDate"
@@ -266,7 +270,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // startDate must be before endDate else it displays Toast warning and doesn't apply filters
             if (startDate > endDate) {
 
-                Toast.makeText(it.context, getString(R.string.filter_date_warning), Toast.LENGTH_LONG).show()
+                val dateBar : Snackbar = Snackbar.make(it, getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT)
+                dateBar.show()
             } else {
 
                 // adds time to endDate to make it right before midnight of next day

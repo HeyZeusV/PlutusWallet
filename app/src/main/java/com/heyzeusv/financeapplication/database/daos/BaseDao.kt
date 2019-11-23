@@ -1,6 +1,11 @@
 package com.heyzeusv.financeapplication.database.daos
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Transaction
+import androidx.room.Update
 
 /**
  *  Queries that can be applied to all tables

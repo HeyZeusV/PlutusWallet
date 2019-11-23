@@ -8,7 +8,7 @@ import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 import com.heyzeusv.financeapplication.database.entities.ItemViewTransaction
 import com.heyzeusv.financeapplication.database.entities.Transaction
 import kotlinx.coroutines.Deferred
-import java.util.*
+import java.util.Date
 
 /**
  *  Data manager for TransactionListFragments.
