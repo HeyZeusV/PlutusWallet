@@ -38,12 +38,10 @@ import com.heyzeusv.financeapplication.database.entities.Transaction
 import com.heyzeusv.financeapplication.utilities.KEY_CURRENCY_SYMBOL
 import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_PLACES
 import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_SYMBOL
-import com.heyzeusv.financeapplication.utilities.KEY_MAX_ID
 import com.heyzeusv.financeapplication.utilities.KEY_SYMBOL_SIDE
 import com.heyzeusv.financeapplication.utilities.KEY_THOUSANDS_SYMBOL
 import com.heyzeusv.financeapplication.utilities.CurrencyEditText
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
-import com.heyzeusv.financeapplication.utilities.PreferenceHelper.set
 import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.TransactionDetailViewModel
 import kotlinx.coroutines.launch
@@ -191,7 +189,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // retrieves any saved preferences
         decimalPlaces      = sharedPreferences[KEY_DECIMAL_PLACES, true]!!
         currencySymbolSide = sharedPreferences[KEY_SYMBOL_SIDE   , true]!!
-        maxId              = sharedPreferences[KEY_MAX_ID        , 0   ]!!
         val currencySymbolKey  : String = sharedPreferences[KEY_CURRENCY_SYMBOL , "dollar"]!!
         val decimalSymbolKey   : String = sharedPreferences[KEY_DECIMAL_SYMBOL  , "period"]!!
         val thousandsSymbolKey : String = sharedPreferences[KEY_THOUSANDS_SYMBOL, "comma" ]!!
@@ -309,18 +306,21 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
             } else {
 
-                incomeCategorySpinner .setSelection(incomeCategoryNamesList.indexOf(transaction.category))
+                incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
             }
-        }
 
-        // only occurs if user wants to create new Transaction
-        if (fromFab) {
+            // retrieves maxId or 0 if null
+            maxId = transactionDetailViewModel.getMaxIdAsync().await() ?: 0
 
-            maxId += 1
-            transaction.id = maxId
+            // only occurs if user wants to create new Transaction
+            if (fromFab) {
 
-            // used for saveFab
-            newTransaction = true
+                maxId += 1
+                transaction.id = maxId
+
+                // used for saveFab
+                newTransaction = true
+            }
         }
     }
 
@@ -554,8 +554,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                     transactionDetailViewModel.insertTransaction(transaction)
                     newTransaction = false
-                    // saves maxId into SharedPreferences
-                    sharedPreferences[KEY_MAX_ID] = maxId
                     createSnackbar(it)
                 } else {
 

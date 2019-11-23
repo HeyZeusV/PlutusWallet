@@ -16,6 +16,15 @@ import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 abstract class IncomeCategoryDao : BaseDao<IncomeCategory>() {
 
     /**
+     *  Returns all categories in table.
+     *
+     *  @return List object that holds List of all categories.
+     */
+    @Query("""SELECT category 
+            FROM incomecategory""")
+    abstract suspend fun getIncomeCategoryNames() : List<String>
+
+    /**
      *  Returns the size of table.
      *
      *  @return the size of table.
@@ -23,13 +32,4 @@ abstract class IncomeCategoryDao : BaseDao<IncomeCategory>() {
     @Query("""SELECT COUNT(*) 
             FROM incomecategory""")
     abstract suspend fun getIncomeCategorySize() : Int?
-
-    /**
-     *  Returns all categories in table.
-     *
-     *  @return List object that holds List of all categories.
-     */
-    @Query("""SELECT category 
-            FROM incomecategory""")
-    abstract fun getIncomeCategoryNames() : List<String>
 }

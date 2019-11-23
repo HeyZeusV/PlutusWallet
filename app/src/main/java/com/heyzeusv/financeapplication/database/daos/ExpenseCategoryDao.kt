@@ -16,6 +16,15 @@ import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 abstract class ExpenseCategoryDao : BaseDao<ExpenseCategory>() {
 
     /**
+     *  Returns all Categories.
+     *
+     *  @return List object that holds List of all Categories.
+     */
+    @Query("""SELECT category 
+            FROM expensecategory""")
+    abstract suspend fun getExpenseCategoryNames() : List<String>
+
+    /**
      *  Returns the size of table.
      *
      *  @return the size of table.
@@ -23,13 +32,4 @@ abstract class ExpenseCategoryDao : BaseDao<ExpenseCategory>() {
     @Query("""SELECT COUNT(*) 
             FROM expensecategory""")
     abstract suspend fun getExpenseCategorySize() : Int?
-
-    /**
-     *  Returns all Categories.
-     *
-     *  @return List object that holds List of all Categories.
-     */
-    @Query("""SELECT category 
-            FROM expensecategory""")
-    abstract fun getExpenseCategoryNames() : List<String>
 }

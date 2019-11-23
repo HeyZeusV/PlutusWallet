@@ -3,6 +3,7 @@ package com.heyzeusv.financeapplication.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,11 +28,9 @@ import com.heyzeusv.financeapplication.database.entities.Transaction
 import com.heyzeusv.financeapplication.utilities.KEY_CURRENCY_SYMBOL
 import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_PLACES
 import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_SYMBOL
-import com.heyzeusv.financeapplication.utilities.KEY_MAX_ID
 import com.heyzeusv.financeapplication.utilities.KEY_SYMBOL_SIDE
 import com.heyzeusv.financeapplication.utilities.KEY_THOUSANDS_SYMBOL
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
-import com.heyzeusv.financeapplication.utilities.PreferenceHelper.set
 import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.Deferred
@@ -139,8 +138,6 @@ class TransactionListFragment : BaseFragment() {
         // adds horizontal divider between each item in RecyclerView
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
-        maxId = sharedPreferences[KEY_MAX_ID, 0]!!
-
         return view
     }
 
@@ -223,14 +220,14 @@ class TransactionListFragment : BaseFragment() {
 
         // tell RecyclerView that symbol has been changed
         transactionAdapter!!.notifyDataSetChanged()
+
+        launch {
+
+            // retrieves maxId or 0 if null
+            maxId = transactionListViewModel.getMaxIdAsync().await() ?: 0
+        }
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        // saves maxId into SharedPreferences
-        sharedPreferences[KEY_MAX_ID] = maxId
-    }
 
     override fun onDetach() {
         super.onDetach()

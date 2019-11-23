@@ -26,9 +26,7 @@ class TransactionDetailViewModel : ViewModel() {
     /**
      *  Transaction queries.
      */
-    /**
-     *  stores ID of Transaction displayed.
-     */
+    // stores ID of Transaction displayed.
     private val transactionIdLiveData = MutableLiveData<Int>()
 
     /**
@@ -55,6 +53,11 @@ class TransactionDetailViewModel : ViewModel() {
     fun loadTransaction(transactionId : Int) {
 
         transactionIdLiveData.value = transactionId
+    }
+
+    suspend fun getMaxIdAsync() : Deferred<Int?> {
+
+        return transactionRepository.getMaxIdAsync()
     }
 
     suspend fun insertTransaction(transaction : Transaction) {

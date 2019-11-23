@@ -63,14 +63,19 @@ class TransactionListViewModel : ViewModel() {
         }
     }
 
-    suspend fun getTransactionAsync(id : Int) : Deferred<Transaction> {
-
-        return transactionRepository.getTransactionAsync(id)
-    }
-
     suspend fun getFutureTransactionsAsync(currentDate : Date) : Deferred<List<Transaction>> {
 
         return transactionRepository.getFutureTransactionsAsync(currentDate)
+    }
+
+    suspend fun getMaxIdAsync() : Deferred<Int?> {
+
+        return transactionRepository.getMaxIdAsync()
+    }
+
+    suspend fun getTransactionAsync(id : Int) : Deferred<Transaction> {
+
+        return transactionRepository.getTransactionAsync(id)
     }
 
     suspend fun deleteTransaction(transaction : Transaction) {
