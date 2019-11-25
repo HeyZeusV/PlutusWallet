@@ -3,7 +3,7 @@
     <string name="about_by_name">イエス・E・バルデス</string>
     <string name="about_changelog">変更ログ</string>
     <string name="about_contact_me">質問、コメント、または懸念？\nで私にメールしてください</string>
-    <string name="about_external_libraries">使用される外部ライブラリ：</string>
+    <string name="about_external_libraries">使用される外部ライブラリ:</string>
     <string name="about_license">ライセンス</string>
     <string name="about_special_thanks">家族、友人、ペットのサポートに感謝し、アイコンにHadia A.に感謝します！</string>
     <string name="about_translation_warning">ローカライズにはGoogle翻訳が使用されました。間違いを教えてください、ありがとう！</string>
@@ -37,10 +37,13 @@
     <string name="empty_graph">適用されるフィルターを満たすトランザクションはありません！</string>
     <string name="empty_list">適用されるフィルターを満たすトランザクションはありません！\n下のボタンを押して、新しいトランザクションを追加してください！</string>
     <string name="filter_apply">適用する</string>
+    <string name="filter_category">カテゴリ:</string>
+    <string name="filter_date">日付:</string>
     <string name="filter_date_warning">終了日は開始日より後でなければなりません!!</string>
-    <string name="filter_end">終わり：</string>
+    <string name="filter_end">終わり:</string>
     <string name="filter_reset">リセットする</string>
-    <string name="filter_start">開始：</string>
+    <string name="filter_start">開始:</string>
+    <string name="filter_type">タイプ:</string>
     <string name="period_days">日々</string>
     <string name="period_months">ヶ月</string>
     <string name="period_weeks">週間</string>

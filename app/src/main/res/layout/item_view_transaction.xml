@@ -13,20 +13,22 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:singleLine="true"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/transaction_total"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Transaction Title"/>
+        tools:text="Transaction Title" />
 
     <TextView
         android:id="@+id/transaction_date"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:singleLine="true"
         app:layout_constraintEnd_toStartOf="@+id/transaction_category"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/transaction_title"
@@ -38,6 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:singleLine="true"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,9 +56,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:gravity="right"
+        android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/transaction_date"
         app:layout_constraintTop_toBottomOf="@+id/transaction_total"
-        tools:text="Category"
-        tools:ignore="RtlHardcoded" />
+        tools:ignore="RtlHardcoded"
+        tools:text="Category" />
 </androidx.constraintlayout.widget.ConstraintLayout>

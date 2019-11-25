@@ -7,7 +7,7 @@
         android:propertyName="alpha"
         android:valueType="floatType"
         android:valueFrom="1.0"
-        android:valueTo="0.2"/>
+        android:valueTo="0.3"/>
 
     <objectAnimator
         android:propertyName="rotation"
@@ -18,6 +18,6 @@
     <objectAnimator
         android:propertyName="translationY"
         android:valueType="floatType"
-        android:valueFrom="-45"
-        android:valueTo="-20"/>
+        android:valueFrom="-20dp"
+        android:valueTo="-5dp"/>
 </set>

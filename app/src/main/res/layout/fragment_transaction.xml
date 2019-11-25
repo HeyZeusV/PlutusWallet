@@ -112,9 +112,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
+                    android:layout_marginBottom="1dp"
                     android:importantForAutofill="no"
                     android:maxLength="15"
                     android:textSize="18sp"
+                    app:layout_constraintBottom_toTopOf="@+id/transaction_type_chips"
                     app:layout_constraintEnd_toEndOf="@+id/symbolRightTextView"
                     app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
                     app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
@@ -152,12 +154,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
                     app:chipSpacingHorizontal="24dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/typeTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_total"
+                    app:layout_constraintTop_toBottomOf="@+id/totalTextView"
                     app:singleSelection="true">
 
                     <com.google.android.material.chip.Chip
@@ -167,7 +169,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/type_expense"
                         android:textColor="@color/chip_text_color"
-                        app:chipBackgroundColor="@color/chip_bg_state_list"/>
+                        app:chipBackgroundColor="@color/chip_bg_state_list" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/transaction_income_chip"
@@ -176,7 +178,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/type_income"
                         android:textColor="@color/chip_text_color"
-                        app:chipBackgroundColor="@color/chip_bg_state_list"/>
+                        app:chipBackgroundColor="@color/chip_bg_state_list" />
                 </com.google.android.material.chip.ChipGroup>
 
                 <TextView

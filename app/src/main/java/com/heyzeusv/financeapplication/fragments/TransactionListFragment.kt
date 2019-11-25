@@ -3,7 +3,6 @@ package com.heyzeusv.financeapplication.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -467,9 +466,9 @@ class TransactionListFragment : BaseFragment() {
         fun bind(transaction : ItemViewTransaction) {
 
             this.transaction      = transaction
-            titleTextView.text    = this       .transaction.title
+            titleTextView   .text = this       .transaction.title
             categoryTextView.text = this       .transaction.category
-            dateTextView .text    = DateFormat .getDateInstance(DateFormat.FULL).format(this.transaction.date)
+            dateTextView    .text = DateFormat .getDateInstance(DateFormat.FULL).format(this.transaction.date)
 
             // formats the Total correctly
             if (decimalPlaces) {

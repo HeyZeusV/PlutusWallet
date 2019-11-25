@@ -41,8 +41,11 @@
     <string name="empty_graph">No transactions fulfill the filters being applied!</string>
     <string name="empty_list">No transactions fulfill the filters being applied! \nPress the button below to add a new transaction!</string>
     <string name="filter_apply">Apply</string>
+    <string name="filter_category">Category:</string>
+    <string name="filter_date">Date:</string>
     <string name="filter_date_warning">End date must be after start date!!</string>
     <string name="filter_end">End:</string>
+    <string name="filter_type">Type:</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_start">Start:</string>
     <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>

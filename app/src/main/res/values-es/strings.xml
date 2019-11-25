@@ -37,10 +37,13 @@
     <string name="empty_graph">¡Ninguna transacción para realizar el filtro aplicado!</string>
     <string name="empty_list">¡Ninguna transacción cumple con los filtros que se aplican!\n¡Presione el botón a continuación para agregar una nueva transacción!</string>
     <string name="filter_apply">Aplicar</string>
+    <string name="filter_category">Categoría:</string>
+    <string name="filter_date">Fecha:</string>
     <string name="filter_date_warning">¡La fecha de finalización debe ser posterior a la fecha de inicio!</string>
     <string name="filter_end">Fin:</string>
     <string name="filter_reset">Reiniciar</string>
     <string name="filter_start">Comienzo:</string>
+    <string name="filter_type">Tipo:</string>
     <string name="period_days">Días</string>
     <string name="period_months">Meses</string>
     <string name="period_weeks">Semanas</string>

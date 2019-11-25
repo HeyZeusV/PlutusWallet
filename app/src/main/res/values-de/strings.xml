@@ -37,10 +37,13 @@
     <string name="empty_graph">Keine Transaktionen erfüllen die angewendeten Filter!</string>
     <string name="empty_list">Keine Transaktionen erfüllen die angewendeten Filter!\nDrücken Sie die Taste unten, um eine neue Transaktion hinzuzufügen!</string>
     <string name="filter_apply">Anwenden</string>
+    <string name="filter_category">Kategorie:</string>
+    <string name="filter_date">Datum:</string>
     <string name="filter_date_warning">Das Enddatum muss nach dem Startdatum liegen !!</string>
     <string name="filter_end">Ende:</string>
-    <string name="filter_reset">Zurücksetzen</string>
+    <string name="filter_reset">Rücksetzen</string>
     <string name="filter_start">Anfang:</string>
+    <string name="filter_type">Art:</string>
     <string name="period_days">Tage</string>
     <string name="period_months">Monate</string>
     <string name="period_weeks">Wochen</string>

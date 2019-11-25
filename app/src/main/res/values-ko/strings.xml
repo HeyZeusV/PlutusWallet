@@ -37,10 +37,13 @@
     <string name="empty_graph">적용된 필터를 수행하는 트랜잭션이 없습니다!</string>
     <string name="empty_list">적용된 필터를 수행하는 트랜잭션이 없습니다!\n새 거래를 추가하려면 아래 버튼을 누르십시오!</string>
     <string name="filter_apply">대다</string>
+    <string name="filter_category">범주:</string>
+    <string name="filter_date">데이트:</string>
     <string name="filter_date_warning">종료일은 시작일 이후 여야합니다 !!</string>
     <string name="filter_end">종료:</string>
     <string name="filter_reset">초기화</string>
     <string name="filter_start">스타트:</string>
+    <string name="filter_type">유형:</string>
     <string name="period_days">일</string>
     <string name="period_months">개월</string>
     <string name="period_weeks">주</string>

@@ -37,10 +37,13 @@
     <string name="empty_graph">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!</string>
     <string name="empty_list">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!\nनया लेनदेन जोड़ने के लिए नीचे दिया गया बटन दबाएं!</string>
     <string name="filter_apply">लागू</string>
+    <string name="filter_category">वर्ग:</string>
+    <string name="filter_date">दिनांक:</string>
     <string name="filter_date_warning">अंतिम तिथि प्रारंभ तिथि के बाद होनी चाहिए !!</string>
     <string name="filter_end">समाप्त:</string>
     <string name="filter_reset">रीसेट</string>
     <string name="filter_start">शुरू:</string>
+    <string name="filter_type">प्रकार:</string>
     <string name="period_days">दिन</string>
     <string name="period_months">महीने</string>
     <string name="period_weeks">सप्ताह</string>
