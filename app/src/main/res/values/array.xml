@@ -34,6 +34,20 @@
         <item>space</item>
     </string-array>
 
+    <string-array name="date_format_array">
+        <item>@string/preferences_date_short</item>
+        <item>@string/preferences_date_medium</item>
+        <item>@string/preferences_date_long</item>
+        <item>@string/preferences_date_full</item>
+    </string-array>
+
+    <string-array name="date_format_key_array">
+        <item>3</item>
+        <item>2</item>
+        <item>1</item>
+        <item>0</item>
+    </string-array>
+
     <string-array name="language_array">
         <item>English</item>
         <item>Deutsche</item>

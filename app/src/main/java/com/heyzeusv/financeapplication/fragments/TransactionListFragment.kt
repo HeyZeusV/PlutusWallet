@@ -25,6 +25,7 @@ import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 import com.heyzeusv.financeapplication.database.entities.ItemViewTransaction
 import com.heyzeusv.financeapplication.database.entities.Transaction
 import com.heyzeusv.financeapplication.utilities.KEY_CURRENCY_SYMBOL
+import com.heyzeusv.financeapplication.utilities.KEY_DATE_FORMAT
 import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_PLACES
 import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_SYMBOL
 import com.heyzeusv.financeapplication.utilities.KEY_SYMBOL_SIDE
@@ -85,13 +86,12 @@ class TransactionListFragment : BaseFragment() {
     private var recyclerViewPosition : Int = 0
 
     // used for SharedPreferences
-    private var decimalPlaces   : Boolean = true
-    private var symbolSide      : Boolean = true
+    private var decimalPlaces     : Boolean = true
+    private var symbolSide        : Boolean = true
+    private var dateFormat        : Int     = 0
+    private var currencySymbol    : String  = "$"
+
     private var maxId           : Int     = 0
-    private var decimalSymbol   : String  = "."
-    private var symbolKey       : String  = "dollar"
-    private var symbol          : String  = "$"
-    private var thousandsSymbol : String  = ","
 
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
@@ -202,16 +202,18 @@ class TransactionListFragment : BaseFragment() {
         futureTransactions()
 
         // retrieves any saved preferences
-        decimalPlaces   = sharedPreferences[KEY_DECIMAL_PLACES  , true    ]!!
-        symbolSide      = sharedPreferences[KEY_SYMBOL_SIDE     , true    ]!!
-        decimalSymbol   = sharedPreferences[KEY_DECIMAL_SYMBOL  , "."     ]!!
-        symbolKey       = sharedPreferences[KEY_CURRENCY_SYMBOL , "dollar"]!!
-        thousandsSymbol = sharedPreferences[KEY_THOUSANDS_SYMBOL, ","     ]!!
+        val currencySymbolKey  : String = sharedPreferences[KEY_CURRENCY_SYMBOL , "dollar"]!!
+        val dateFormatKey      : String = sharedPreferences[KEY_DATE_FORMAT     , "0"     ]!!
+        val decimalSymbolKey   : String = sharedPreferences[KEY_DECIMAL_SYMBOL  , "."     ]!!
+        val thousandsSymbolKey : String = sharedPreferences[KEY_THOUSANDS_SYMBOL, ","     ]!!
+        decimalPlaces = sharedPreferences[KEY_DECIMAL_PLACES  , true    ]!!
+        symbolSide    = sharedPreferences[KEY_SYMBOL_SIDE     , true    ]!!
 
         // sets the symbols to be used according to settings
-        symbol                          = Utils.getCurrencySymbol (symbolKey      )
-        customSymbols.decimalSeparator  = Utils.getSeparatorSymbol(decimalSymbol  )
-        customSymbols.groupingSeparator = Utils.getSeparatorSymbol(thousandsSymbol)
+        dateFormat                      = Utils.getDateFormat     (dateFormatKey     )
+        currencySymbol                  = Utils.getCurrencySymbol (currencySymbolKey )
+        customSymbols.decimalSeparator  = Utils.getSeparatorSymbol(decimalSymbolKey  )
+        customSymbols.groupingSeparator = Utils.getSeparatorSymbol(thousandsSymbolKey)
 
         // formatter depending on settings
         decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
@@ -468,26 +470,26 @@ class TransactionListFragment : BaseFragment() {
             this.transaction      = transaction
             titleTextView   .text = this       .transaction.title
             categoryTextView.text = this       .transaction.category
-            dateTextView    .text = DateFormat .getDateInstance(DateFormat.FULL).format(this.transaction.date)
+            dateTextView    .text = DateFormat .getDateInstance(dateFormat).format(this.transaction.date)
 
             // formats the Total correctly
             if (decimalPlaces) {
 
                 if (symbolSide) {
 
-                    totalTextView.text = getString(R.string.total_number_symbol, symbol, decimalFormatter.format(this.transaction.total))
+                    totalTextView.text = getString(R.string.total_number_symbol, currencySymbol, decimalFormatter.format(this.transaction.total))
                 } else {
 
-                    totalTextView.text = getString(R.string.total_number_symbol, decimalFormatter.format(this.transaction.total), symbol)
+                    totalTextView.text = getString(R.string.total_number_symbol, decimalFormatter.format(this.transaction.total), currencySymbol)
                 }
             } else {
 
                 if (symbolSide) {
 
-                    totalTextView.text = getString(R.string.total_number_symbol, symbol, integerFormatter.format(this.transaction.total))
+                    totalTextView.text = getString(R.string.total_number_symbol, currencySymbol, integerFormatter.format(this.transaction.total))
                 } else {
 
-                    totalTextView.text = getString(R.string.total_number_symbol, integerFormatter.format(this.transaction.total), symbol)
+                    totalTextView.text = getString(R.string.total_number_symbol, integerFormatter.format(this.transaction.total), currencySymbol)
                 }
             }
             context?.let {

@@ -48,6 +48,15 @@
         app:defaultValue="period"/>
 
     <ListPreference
+        app:key="key_date_format"
+        app:title="Date Format"
+        app:entries="@array/date_format_array"
+        app:entryValues="@array/date_format_key_array"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true"
+        app:defaultValue="0"/>
+
+    <ListPreference
         app:key="key_language"
         app:title="@string/preferences_language"
         app:entries="@array/language_array"

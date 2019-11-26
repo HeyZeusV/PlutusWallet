@@ -58,39 +58,28 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
-                <TextView
-                    android:id="@+id/typeTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/filter_type"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/categoryTextView"/>
-
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/filter_type"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="6dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="6dp"
                     android:enabled="false"
                     android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minHeight="3dp"
+                    android:insetBottom="0dp "
+                    android:minHeight="2dp"
                     android:paddingStart="0dp"
                     android:paddingTop="3dp"
                     android:paddingEnd="0dp"
                     android:paddingBottom="3dp"
                     android:singleLine="true"
                     android:text="@string/type_expense"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/typeTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/categoryTextView"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
 
                 <Spinner
                     android:id="@+id/filter_expense_category"
@@ -102,7 +91,7 @@
                     android:background="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/typeTextView"/>
+                    app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
                 <Spinner
                     android:id="@+id/filter_income_category"
@@ -114,14 +103,14 @@
                     android:background="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/typeTextView"/>
+                    app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
                 <TextView
                     android:id="@+id/dateTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:layout_marginTop="39dp"
+                    android:layout_marginTop="37dp"
                     android:layout_marginEnd="35dp"
                     android:text="@string/transaction_date"
                     android:textColor="@android:color/black"
@@ -129,83 +118,65 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
                 <CheckBox
                     android:id="@+id/filter_date_check"
                     android:layout_width="42dp"
                     android:layout_height="42dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="27dp"
                     android:layout_marginEnd="3dp"
                     android:background="?android:attr/listChoiceIndicatorMultiple"
                     android:button="@null"
                     android:translationX="5dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/typeTextView"/>
-
-                <TextView
-                    android:id="@+id/startTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/filter_start"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/dateTextView"/>
+                    app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/filter_start_date"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="60dp"
+                    android:layout_marginStart="6dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="6dp"
                     android:enabled="false"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:minHeight="2dp"
-                    android:paddingStart="2dp"
+                    android:paddingStart="0dp"
                     android:paddingTop="3dp"
-                    android:paddingEnd="2dp"
+                    android:paddingEnd="0dp"
                     android:paddingBottom="3dp"
                     android:singleLine="true"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/dateTextView"
-                    tools:text="Start Date"/>
-
-                <TextView
-                    android:id="@+id/endTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/filter_end"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/startTextView"/>
+                    tools:text="Start Date" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/filter_end_date"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="60dp"
+                    android:layout_marginStart="6dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="6dp"
                     android:enabled="false"
                     android:insetTop="0dp"
                     android:insetBottom="0dp "
-                    android:minHeight="0dp"
-                    android:paddingStart="2dp"
-                    android:paddingEnd="2dp"
+                    android:minHeight="2dp"
+                    android:paddingStart="0dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="3dp"
                     android:singleLine="true"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/filter_start_date"
-                    tools:text="End Date"/>
+                    tools:text="End Date" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
 

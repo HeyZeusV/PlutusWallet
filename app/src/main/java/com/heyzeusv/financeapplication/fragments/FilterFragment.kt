@@ -331,8 +331,6 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         incomeCategorySpinner .setSelection(0)
         typeButtonText                         = getString(R.string.type_expense)
         typeButton            .text            = typeButtonText
-        endDateButton         .text            = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
-        startDateButton       .text            = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
     }
 
     /**
@@ -361,9 +359,6 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             startDateButton       .isEnabled = dateSelected
             endDateButton         .isEnabled = dateSelected
             applyButton           .text      = applyButtonText
-            typeButton            .text      = typeButtonText
-            endDateButton         .text      = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
-            startDateButton       .text      = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
             expenseCategorySpinner.isVisible = typeButtonText == getString(R.string.type_expense)
             incomeCategorySpinner .isVisible = typeButtonText == getString(R.string.type_income)
         }
@@ -377,6 +372,26 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             applyButtonText  = getString(R.string.filter_apply)
             applyButton.text = applyButtonText
+        }
+
+        // changes text on typeButton depending on categorySelected
+        if (categorySelected) {
+
+            typeButton.text = typeButtonText
+        } else {
+
+            typeButton.text = getString(R.string.filter_type)
+        }
+
+        // changes text on dateButtons depending on dateSelected
+        if (dateSelected) {
+
+            startDateButton.text = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
+            endDateButton  .text = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
+        } else {
+
+            startDateButton.text = getString(R.string.filter_start)
+            endDateButton  .text = getString(R.string.filter_end)
         }
     }
 

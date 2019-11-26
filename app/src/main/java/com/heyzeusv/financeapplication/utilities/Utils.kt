@@ -127,6 +127,23 @@ class Utils {
         }
 
         /**
+         *  Used to get which format to display the Date in
+         *
+         *  @param  dateFormat taken from Settings Fragment.
+         *  @return int used DateFormat: 0 = FULL, 1 = LONG, 2 = MEDIUM, 3 = SHORT
+         */
+        fun getDateFormat(dateFormat : String) : Int {
+
+            return when (dateFormat) {
+
+                "0"  -> 0
+                "1"  -> 1
+                "2"  -> 2
+                else -> 3
+            }
+        }
+
+        /**
          *  Used to get Separator symbol to be displayed depending on users selection.
          *
          *  @param  symbolKey taken from SettingsFragment.

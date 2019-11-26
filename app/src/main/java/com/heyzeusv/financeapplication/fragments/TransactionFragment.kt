@@ -35,14 +35,8 @@ import com.heyzeusv.financeapplication.R
 import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 import com.heyzeusv.financeapplication.database.entities.Transaction
-import com.heyzeusv.financeapplication.utilities.KEY_CURRENCY_SYMBOL
-import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_PLACES
-import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_SYMBOL
-import com.heyzeusv.financeapplication.utilities.KEY_SYMBOL_SIDE
-import com.heyzeusv.financeapplication.utilities.KEY_THOUSANDS_SYMBOL
-import com.heyzeusv.financeapplication.utilities.CurrencyEditText
+import com.heyzeusv.financeapplication.utilities.*
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
-import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.TransactionDetailViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -93,9 +87,11 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
 
     // used for SharedPreferences
-    private var maxId              : Int     = 0
+    private var dateFormat         : Int     = 0
     private var decimalPlaces      : Boolean = true
     private var currencySymbolSide : Boolean = true
+
+    private var maxId              : Int     = 0
 
     // separator symbols
     private var decimalSymbol      : Char    = '.'
@@ -187,15 +183,17 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         // retrieves any saved preferences
-        decimalPlaces      = sharedPreferences[KEY_DECIMAL_PLACES, true]!!
-        currencySymbolSide = sharedPreferences[KEY_SYMBOL_SIDE   , true]!!
         val currencySymbolKey  : String = sharedPreferences[KEY_CURRENCY_SYMBOL , "dollar"]!!
+        val dateFormatKey      : String = sharedPreferences[KEY_DATE_FORMAT     , "0"     ]!!
         val decimalSymbolKey   : String = sharedPreferences[KEY_DECIMAL_SYMBOL  , "period"]!!
         val thousandsSymbolKey : String = sharedPreferences[KEY_THOUSANDS_SYMBOL, "comma" ]!!
+        decimalPlaces      = sharedPreferences[KEY_DECIMAL_PLACES, true]!!
+        currencySymbolSide = sharedPreferences[KEY_SYMBOL_SIDE   , true]!!
 
         // retrieves symbols to be used according to settings
         val currencySymbol : String = Utils.getCurrencySymbol(currencySymbolKey)
-        decimalSymbol   = Utils.getSeparatorSymbol(decimalSymbolKey)
+        dateFormat      = Utils.getDateFormat     (dateFormatKey     )
+        decimalSymbol   = Utils.getSeparatorSymbol(decimalSymbolKey  )
         thousandsSymbol = Utils.getSeparatorSymbol(thousandsSymbolKey)
 
         symbolLeftText .text = currencySymbol
@@ -573,8 +571,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     override fun onDateSelected(date : Date) {
 
         transaction.date = date
-        dateChanged = transaction.date != oldDate
-        dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
+        dateButton .text = DateFormat.getDateInstance(dateFormat).format(this.transaction.date)
+        dateChanged      = transaction.date != oldDate
     }
 
     /**
@@ -731,7 +729,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         titleField    .setText(transaction.title)
         memoField     .setText(transaction.memo)
         frequencyField.setText(transaction.frequency.toString())
-        dateButton.text = DateFormat.getDateInstance(DateFormat.FULL).format(this.transaction.date)
+        dateButton.text = DateFormat.getDateInstance(dateFormat).format(this.transaction.date)
 
         // formats Total depending on decimalPlaces and if decimal separator is present
         totalField.setText(getString(R.string.total_number, if (decimalPlaces && transaction.total.toString().contains(".")) {

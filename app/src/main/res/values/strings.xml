@@ -44,10 +44,10 @@
     <string name="filter_category">Category:</string>
     <string name="filter_date">Date:</string>
     <string name="filter_date_warning">End date must be after start date!!</string>
-    <string name="filter_end">End:</string>
-    <string name="filter_type">Type:</string>
+    <string name="filter_end">End</string>
+    <string name="filter_type">Type</string>
     <string name="filter_reset">Reset</string>
-    <string name="filter_start">Start:</string>
+    <string name="filter_start">Start</string>
     <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
     <string name="library_circleindicator" translatable="false">CircleIndicator</string>
     <string name="library_mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>
@@ -57,6 +57,10 @@
     <string name="period_weeks">Weeks</string>
     <string name="period_years">Years</string>
     <string name="preferences_currency_symbol">Currency Symbol</string>
+    <string name="preferences_date_full">Monday, April 19, 1993</string>
+    <string name="preferences_date_long">April 19, 1993</string>
+    <string name="preferences_date_medium">Apr 19, 1993</string>
+    <string name="preferences_date_short">4/19/93</string>
     <string name="preferences_decimal_places_summary_off">Decimal places cannot be used.</string>
     <string name="preferences_decimal_places_summary_on">Decimal places can be used.</string>
     <string name="preferences_decimal_symbol">Decimal Separator Symbol</string>
@@ -77,7 +81,7 @@
     <string name="transaction_frequency_hint" translatable="false">1–99</string>
     <string name="transaction_memo">Memo:</string>
     <string name="transaction_memo_hint">Enter any additional information needed</string>
-    <string name="transaction_repeating">Repeating Transaction:</string>
+    <string name="transaction_repeating">Repeating:</string>
     <string name="transaction_title">Title:</string>
     <string name="transaction_title_hint">Enter title such as location/website of purchase</string>
     <string name="transaction_total">Total:</string>
