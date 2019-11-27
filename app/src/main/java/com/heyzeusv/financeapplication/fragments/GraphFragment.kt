@@ -25,7 +25,7 @@ import me.relex.circleindicator.CircleIndicator3
 import java.math.BigDecimal
 import java.util.Date
 
-private const val TAG               = "GraphFragment"
+ private const val TAG               = "GraphFragment"
 private const val ARG_CATEGORY      = "category"
 private const val ARG_DATE          = "date"
 private const val ARG_TYPE          = "type"
@@ -130,6 +130,14 @@ class GraphFragment : BaseFragment() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        // notify that a setting might have been changed
+        // that causes graphTotal to change
+        graphViewPager.adapter?.notifyDataSetChanged()
+    }
+
     /**
      *  Calculates the sum of all Totals of the same Category from given CategoryTotals list
      *
@@ -231,6 +239,7 @@ class GraphFragment : BaseFragment() {
         // views in the ItemView
         private val pieChart      : PieChart = itemView.findViewById(R.id.graph_pie)
         private val emptyTextView : TextView = itemView.findViewById(R.id.emptyTextView)
+        private val graphTotal    : TextView = itemView.findViewById(R.id.graph_total)
 
         // load arguments if any
         val category     : Boolean? = arguments?.getBoolean(ARG_CATEGORY)
@@ -240,7 +249,6 @@ class GraphFragment : BaseFragment() {
         // one most likely to be -1, but will still be checked before being used
         val expensePosition : Int = expenseNameList.indexOf(categoryName)
         val incomePosition  : Int = incomeNameList .indexOf(categoryName)
-
 
         // sets the views with CategoryTotal data
         fun bind(categoryTotals : List<CategoryTotals>, type : Int) {
@@ -252,6 +260,7 @@ class GraphFragment : BaseFragment() {
                 pieChart     .isVisible = true
 
                 val typeName : String
+                var total = BigDecimal("0")
 
                 // list of values to be displayed in PieChart
                 val pieEntries: MutableList<PieEntry> = mutableListOf()
@@ -263,6 +272,39 @@ class GraphFragment : BaseFragment() {
                     if (it.total.toFloat() != 0.0f) {
 
                         pieEntries.add(PieEntry(it.total.toFloat(), it.category))
+                    }
+                    // adds to total
+                    if (category != true || categoryName == getString(R.string.category_all)) {
+
+                        total += it.total
+                    } else {
+
+                        // if a Category is selected in FilterFragment
+                        if (it.category == categoryName) {
+
+                            total = it.total
+                        }
+                    }
+                }
+
+                // sets text based on decimalPlaces and symbolSide
+                graphTotal.text = if (decimalPlaces) {
+
+                    if (symbolSide) {
+
+                        getString(R.string.graph_total, currencySymbol, decimalFormatter.format(total))
+                    } else {
+
+                        getString(R.string.graph_total, decimalFormatter.format(total), currencySymbol)
+                    }
+                } else {
+
+                    if (symbolSide) {
+
+                        getString(R.string.graph_total, currencySymbol, integerFormatter.format(total))
+                    } else {
+
+                        getString(R.string.graph_total, integerFormatter.format(total), currencySymbol)
                     }
                 }
 
@@ -364,6 +406,7 @@ class GraphFragment : BaseFragment() {
             } else {
 
                 emptyTextView.isVisible = true
+                graphTotal   .isVisible = false
                 pieChart     .isVisible = false
             }
         }

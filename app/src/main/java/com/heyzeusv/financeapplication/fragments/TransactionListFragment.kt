@@ -24,24 +24,14 @@ import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 import com.heyzeusv.financeapplication.database.entities.ItemViewTransaction
 import com.heyzeusv.financeapplication.database.entities.Transaction
-import com.heyzeusv.financeapplication.utilities.KEY_CURRENCY_SYMBOL
-import com.heyzeusv.financeapplication.utilities.KEY_DATE_FORMAT
-import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_PLACES
-import com.heyzeusv.financeapplication.utilities.KEY_DECIMAL_SYMBOL
-import com.heyzeusv.financeapplication.utilities.KEY_SYMBOL_SIDE
-import com.heyzeusv.financeapplication.utilities.KEY_THOUSANDS_SYMBOL
-import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
 import com.heyzeusv.financeapplication.utilities.Utils
 import com.heyzeusv.financeapplication.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.text.DateFormat
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 private const val TAG               = "TransactionListFragment"
 private const val ARG_CATEGORY      = "category"
@@ -85,23 +75,10 @@ class TransactionListFragment : BaseFragment() {
     // holds position of RecyclerView so that it doesn't reset when user returns
     private var recyclerViewPosition : Int = 0
 
-    // used for SharedPreferences
-    private var decimalPlaces     : Boolean = true
-    private var symbolSide        : Boolean = true
-    private var dateFormat        : Int     = 0
-    private var currencySymbol    : String  = "$"
-
     private var maxId           : Int     = 0
 
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
-
-    // used for formatters
-    private val customSymbols = DecimalFormatSymbols(Locale.US)
-
-    // formatters used for Total
-    private var decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
-    private var integerFormatter = DecimalFormat("#,###", customSymbols)
 
     // provides instance of ViewModel
     private val transactionListViewModel : TransactionListViewModel by lazy {
@@ -200,24 +177,6 @@ class TransactionListFragment : BaseFragment() {
         super.onResume()
 
         futureTransactions()
-
-        // retrieves any saved preferences
-        val currencySymbolKey  : String = sharedPreferences[KEY_CURRENCY_SYMBOL , "dollar"]!!
-        val dateFormatKey      : String = sharedPreferences[KEY_DATE_FORMAT     , "0"     ]!!
-        val decimalSymbolKey   : String = sharedPreferences[KEY_DECIMAL_SYMBOL  , "."     ]!!
-        val thousandsSymbolKey : String = sharedPreferences[KEY_THOUSANDS_SYMBOL, ","     ]!!
-        decimalPlaces = sharedPreferences[KEY_DECIMAL_PLACES  , true    ]!!
-        symbolSide    = sharedPreferences[KEY_SYMBOL_SIDE     , true    ]!!
-
-        // sets the symbols to be used according to settings
-        dateFormat                      = Utils.getDateFormat     (dateFormatKey     )
-        currencySymbol                  = Utils.getCurrencySymbol (currencySymbolKey )
-        customSymbols.decimalSeparator  = Utils.getSeparatorSymbol(decimalSymbolKey  )
-        customSymbols.groupingSeparator = Utils.getSeparatorSymbol(thousandsSymbolKey)
-
-        // formatter depending on settings
-        decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
-        integerFormatter = DecimalFormat("#,###"   , customSymbols)
 
         // tell RecyclerView that symbol has been changed
         transactionAdapter!!.notifyDataSetChanged()
