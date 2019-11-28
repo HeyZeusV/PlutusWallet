@@ -18,7 +18,6 @@ import com.heyzeusv.financeapplication.fragments.TransactionListFragment
 import com.heyzeusv.financeapplication.utilities.KEY_LANGUAGE_CHANGED
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.get
 import com.heyzeusv.financeapplication.utilities.PreferenceHelper.set
-import java.util.Date
 
 private const val TAG = "MainActivity"
 
@@ -26,7 +25,7 @@ private const val TAG = "MainActivity"
  *  Handles the loading and replacement of fragments into their containers, as well as
  *  starting Settings/About Activities.
  */
-class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFragment.Callbacks {
+class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
     // views
     private lateinit var drawerLayout   : DrawerLayout
@@ -122,35 +121,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks, FilterFr
             // destroys then restarts Activity in order to have updated language
             recreate()
         }
-    }
-
-    /**
-     *  Replaces TransactionListFragment with new TransactionListFragment with filters applied.
-     *
-     *  @param  category     boolean for category filter
-     *  @param  date         boolean for date filter
-     *  @param  type         either "Expense" or "Income"
-     *  @param  categoryName category name to be searched in table of type
-     *  @param  start        starting Date for date filter
-     *  @param  end          ending Date for date filter
-     */
-    override fun onFilterApplied(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) {
-
-        val filteredTransactionListFragment : TransactionListFragment =
-            TransactionListFragment.newInstance(category, date, type, categoryName, start, end)
-        val filteredGraphFragment           : GraphFragment           =
-            GraphFragment          .newInstance(category, date, type, categoryName, start, end)
-
-        // Create a new fragment transaction, adds fragments, and then commit it
-        supportFragmentManager
-            .beginTransaction()
-            // replace fragment hosted at location with new fragment provided
-            // will add fragment even if there is none
-            .replace(R.id.fragment_transaction_list_container, filteredTransactionListFragment)
-            .replace(R.id.fragment_graph_container           , filteredGraphFragment          )
-            // pressing back button will go back to previous fragment (if any)
-            .addToBackStack(null)
-            .commit()
     }
 
     override fun onBackPressed() {

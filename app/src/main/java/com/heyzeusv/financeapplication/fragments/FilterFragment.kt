@@ -1,6 +1,5 @@
 package com.heyzeusv.financeapplication.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,9 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.financeapplication.R
+import com.heyzeusv.financeapplication.utilities.TransactionInfo
 import com.heyzeusv.financeapplication.utilities.Utils
+import com.heyzeusv.financeapplication.viewmodels.FGLViewModel
 import com.heyzeusv.financeapplication.viewmodels.FilterViewModel
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -29,31 +30,6 @@ private const val MIDNIGHT_MILLI = 86399999
  *  Used to apply filters and tell TransactionListFragment which Transaction list to load
  */
 class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
-
-    /**
-     *  Required interface for hosting fragments.
-     *
-     *  Defines work that the fragment needs done by hosting activity.
-     */
-    interface Callbacks {
-
-        /**
-         *  Tells Repository which Transaction list to return
-         *
-         *  Uses the values of category and date in order to determine which Transaction list is needed.
-         *
-         *  @param  category     boolean for category filter
-         *  @param  date         boolean for date filter
-         *  @param  type         either "Expense" or "Income"
-         *  @param  categoryName category name to be searched in table of type
-         *  @param  start        starting Date for date filter
-         *  @param  end          ending Date for date filter
-         *  @return LiveData object holding list of Transactions
-         */
-        fun onFilterApplied(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date)
-    }
-
-    private var callbacks : Callbacks? = null
 
     // views
     private lateinit var categoryCheckBox       : CheckBox
@@ -90,17 +66,12 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var categoryName    : String
     private lateinit var all             : String
 
-    // provides instance of ViewModel
+    // provides instance of FilterViewModel
     private val filterViewModel : FilterViewModel by lazy {
         ViewModelProviders.of(this).get(FilterViewModel::class.java)
     }
 
-    override fun onAttach(context : Context) {
-        super.onAttach(context)
-
-        // stashing context into callbacks property which is the activity instance hosting fragment
-        callbacks = context as Callbacks?
-    }
+    private lateinit var fglViewModel : FGLViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,6 +104,12 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         updateUi(true)
+
+        // this ensures that this is same FGLViewModel as Graph/ListFragment use
+        fglViewModel = activity!!.let {
+
+            ViewModelProviders.of(it).get(FGLViewModel::class.java)
+        }
 
         return view
     }
@@ -268,7 +245,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         applyButton.setOnClickListener {
 
             // startDate must be before endDate else it displays Toast warning and doesn't apply filters
-            if (startDate > endDate) {
+            if (startDate > endDate && dateSelected) {
 
                 val dateBar : Snackbar = Snackbar.make(it, getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT)
                 dateBar.show()
@@ -276,14 +253,16 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                 // adds time to endDate to make it right before midnight of next day
                 val endDateCorrected = Date(endDate.time + MIDNIGHT_MILLI)
-                val type : String = if (typeButtonText == getString(R.string.type_expense)) {
+                val type : String    = if (typeButtonText == getString(R.string.type_expense)) {
 
                     "Expense"
                 } else {
 
                     "Income"
                 }
-                callbacks?.onFilterApplied(categorySelected, dateSelected, type, categoryName, startDate, endDateCorrected)
+                // updating MutableLiveData value in ViewModel
+                val tInfo = TransactionInfo(categorySelected, dateSelected, type, categoryName, startDate, endDateCorrected)
+                fglViewModel.updateTInfo(tInfo)
                 // if both filters are unchecked
                 if (!categorySelected && !dateSelected) {
 
@@ -291,13 +270,6 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
             }
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-
-        // afterward you cannot access the activity or count on the activity continuing to exist
-        callbacks = null
     }
 
     /**

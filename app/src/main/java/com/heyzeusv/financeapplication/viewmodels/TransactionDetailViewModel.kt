@@ -38,7 +38,7 @@ class TransactionDetailViewModel : ViewModel() {
      *          new value gets set on the trigger LiveData instance.
      */
     var transactionLiveData : LiveData<Transaction?> =
-        Transformations.switchMap(transactionIdLiveData) { transactionId ->
+        Transformations.switchMap(transactionIdLiveData) { transactionId : Int ->
             transactionRepository.getLDTransaction(transactionId)
         }
 

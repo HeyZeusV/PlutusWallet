@@ -1,7 +1,8 @@
- package com.heyzeusv.financeapplication.fragments
+package com.heyzeusv.financeapplication.fragments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,18 +21,14 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.heyzeusv.financeapplication.R
 import com.heyzeusv.financeapplication.database.entities.CategoryTotals
+import com.heyzeusv.financeapplication.utilities.TransactionInfo
+import com.heyzeusv.financeapplication.viewmodels.FGLViewModel
 import com.heyzeusv.financeapplication.viewmodels.GraphViewModel
 import me.relex.circleindicator.CircleIndicator3
 import java.math.BigDecimal
 import java.util.Date
 
- private const val TAG               = "GraphFragment"
-private const val ARG_CATEGORY      = "category"
-private const val ARG_DATE          = "date"
-private const val ARG_TYPE          = "type"
-private const val ARG_CATEGORY_NAME = "category_name"
-private const val ARG_START         = "start"
-private const val ARG_END           = "end"
+private const val TAG = "GraphFragment"
 
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.
@@ -51,10 +48,12 @@ class GraphFragment : BaseFragment() {
     // the graph being displayed
     private var selectedGraph = 0
 
-    // provides instance of ViewModel
+    // provides instance of GraphViewModel
     private val graphViewModel : GraphViewModel by lazy {
         ViewModelProviders.of(this).get(GraphViewModel::class.java)
     }
+
+    private lateinit var fglViewModel : FGLViewModel
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
 
@@ -66,49 +65,72 @@ class GraphFragment : BaseFragment() {
         // clears previous lists
         transactionLists = mutableListOf(emptyList, emptyList)
 
+        // this ensures that this is same FGLViewModel as Filter/ListFragment use
+        fglViewModel = activity!!.let {
+
+            ViewModelProviders.of(it).get(FGLViewModel::class.java)
+        }
+
         return view
     }
 
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // loads in arguments, if any
-        val date         : Boolean? = arguments?.getBoolean     (ARG_DATE)
-        val start        : Date?    = arguments?.getSerializable(ARG_START)         as Date?
-        val end          : Date?    = arguments?.getSerializable(ARG_END)           as Date?
-
-        // LiveData of Expense Transactions
-        val expenseTransactionListLiveData : LiveData<List<CategoryTotals>> =
-            graphViewModel.filteredCategoryTotals(date, "Expense", start, end)
-        // LiveData of Income Transactions
-        val incomeTransactionListLiveData  : LiveData<List<CategoryTotals>> =
-            graphViewModel.filteredCategoryTotals(date, "Income", start, end)
+        // values sent to ViewModels
+        var date  : Boolean?
+        var start : Date?
+        var end   : Date?
 
         // register an observer on LiveData instance and tie life to another component
-        expenseTransactionListLiveData.observe(
+        fglViewModel.tInfoLiveData.observe(
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
-            Observer { expenseList : List<CategoryTotals>? ->
-                // if not null
-                expenseList?.let {
-                    transactionLists[0] = calculateTotals("Expense", expenseList)
-                    updateUI(transactionLists)
-                }
-            }
-        )
+            Observer { newInfo : TransactionInfo ->
+                // never null
+                newInfo.let {
 
-        // register an observer on LiveData instance and tie life to another component
-        incomeTransactionListLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { incomeList : List<CategoryTotals>? ->
-                // if not null
-                incomeList?.let {
-                    transactionLists[1] = calculateTotals("Income", incomeList)
-                    updateUI(transactionLists)
+                    // updating values for ViewModels
+                    date  = newInfo.date
+                    start = newInfo.start
+                    end   = newInfo.end
                 }
+
+                // LiveData of Expense Transactions
+                val expenseTransactionListLiveData : LiveData<List<CategoryTotals>> =
+                    graphViewModel.filteredCategoryTotals(date, "Expense", start, end)
+                // LiveData of Income Transactions
+                val incomeTransactionListLiveData  : LiveData<List<CategoryTotals>> =
+                    graphViewModel.filteredCategoryTotals(date, "Income", start, end)
+
+                // register an observer on LiveData instance and tie life to another component
+                expenseTransactionListLiveData.observe(
+                    // view's lifecycle owner ensures that updates are only received when view is on screen
+                    viewLifecycleOwner,
+                    // executed whenever LiveData gets updated
+                    Observer { expenseList : List<CategoryTotals> ->
+                        // never null
+                        expenseList.let {
+                            transactionLists[0] = calculateTotals("Expense", expenseList)
+                            updateUI(transactionLists)
+                        }
+                    }
+                )
+
+                // register an observer on LiveData instance and tie life to another component
+                incomeTransactionListLiveData.observe(
+                    // view's lifecycle owner ensures that updates are only received when view is on screen
+                    viewLifecycleOwner,
+                    // executed whenever LiveData gets updated
+                    Observer { incomeList : List<CategoryTotals> ->
+                        // never null
+                        incomeList.let {
+                            transactionLists[1] = calculateTotals("Income", incomeList)
+                            updateUI(transactionLists)
+                        }
+                    }
+                )
             }
         )
     }
@@ -241,10 +263,10 @@ class GraphFragment : BaseFragment() {
         private val emptyTextView : TextView = itemView.findViewById(R.id.emptyTextView)
         private val graphTotal    : TextView = itemView.findViewById(R.id.graph_total)
 
-        // load arguments if any
-        val category     : Boolean? = arguments?.getBoolean(ARG_CATEGORY)
-        val categoryName : String?  = arguments?.getString (ARG_CATEGORY_NAME)
-        val typeStored   : String?  = arguments?.getString (ARG_TYPE)
+        // values from FGLViewModel
+        val category     : Boolean? = fglViewModel.tInfoLiveData.value?.category
+        val categoryName : String?  = fglViewModel.tInfoLiveData.value?.categoryName
+        val typeStored   : String?  = fglViewModel.tInfoLiveData.value?.type
 
         // one most likely to be -1, but will still be checked before being used
         val expensePosition : Int = expenseNameList.indexOf(categoryName)
@@ -420,38 +442,6 @@ class GraphFragment : BaseFragment() {
         fun newInstance() : GraphFragment {
 
             return GraphFragment()
-        }
-
-        /**
-         *  Initializes instance of GraphFragment.
-         *
-         *  Creates arguments Bundle, creates a Fragment instance, and attaches the
-         *  arguments to the Fragment.
-         *
-         *  @param  category     boolean for category filter.
-         *  @param  date         boolean for date filter.
-         *  @param  type         either "Expense" or "Income".
-         *  @param  categoryName category name to be searched in table of type.
-         *  @param  start        starting Date for date filter.
-         *  @param  end          ending Date for date filter.
-         *  @return TransactionListFragment instance.
-         */
-        fun newInstance(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) : GraphFragment {
-
-            val args : Bundle = Bundle().apply {
-
-                putBoolean     (ARG_CATEGORY     , category    )
-                putBoolean     (ARG_DATE         , date        )
-                putString      (ARG_TYPE         , type        )
-                putString      (ARG_CATEGORY_NAME, categoryName)
-                putSerializable(ARG_START        , start       )
-                putSerializable(ARG_END          , end         )
-            }
-
-            return GraphFragment().apply {
-
-                arguments = args
-            }
         }
     }
 }

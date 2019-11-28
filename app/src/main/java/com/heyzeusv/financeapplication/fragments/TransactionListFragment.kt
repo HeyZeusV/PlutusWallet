@@ -2,6 +2,7 @@ package com.heyzeusv.financeapplication.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +25,9 @@ import com.heyzeusv.financeapplication.database.entities.ExpenseCategory
 import com.heyzeusv.financeapplication.database.entities.IncomeCategory
 import com.heyzeusv.financeapplication.database.entities.ItemViewTransaction
 import com.heyzeusv.financeapplication.database.entities.Transaction
+import com.heyzeusv.financeapplication.utilities.TransactionInfo
 import com.heyzeusv.financeapplication.utilities.Utils
+import com.heyzeusv.financeapplication.viewmodels.FGLViewModel
 import com.heyzeusv.financeapplication.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -33,13 +36,7 @@ import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
 
-private const val TAG               = "TransactionListFragment"
-private const val ARG_CATEGORY      = "category"
-private const val ARG_DATE          = "date"
-private const val ARG_TYPE          = "type"
-private const val ARG_CATEGORY_NAME = "category_name"
-private const val ARG_START         = "start"
-private const val ARG_END           = "end"
+private const val TAG = "TransactionListFragment"
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -85,6 +82,8 @@ class TransactionListFragment : BaseFragment() {
         ViewModelProviders.of(this).get(TransactionListViewModel::class.java)
     }
 
+    private lateinit var fglViewModel : FGLViewModel
+
     override fun onAttach(context : Context) {
         super.onAttach(context)
 
@@ -114,6 +113,12 @@ class TransactionListFragment : BaseFragment() {
         // adds horizontal divider between each item in RecyclerView
         transactionRecyclerView.addItemDecoration(DividerItemDecoration(transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
+        // this ensures that this is same FGLViewModel as Filter/GraphFragment use
+        fglViewModel = activity!!.let {
+
+            ViewModelProviders.of(it).get(FGLViewModel::class.java)
+        }
+
         return view
     }
 
@@ -121,34 +126,56 @@ class TransactionListFragment : BaseFragment() {
 
         super.onViewCreated(view, savedInstanceState)
 
-        // loads in arguments, if any
-        val category     : Boolean? = arguments?.getBoolean     (ARG_CATEGORY     )
-        val date         : Boolean? = arguments?.getBoolean     (ARG_DATE         )
-        val type         : String?  = arguments?.getString      (ARG_TYPE         )
-        var categoryName : String?  = arguments?.getString      (ARG_CATEGORY_NAME)
-        val start        : Date?    = arguments?.getSerializable(ARG_START        ) as Date?
-        val end          : Date?    = arguments?.getSerializable(ARG_END          ) as Date?
-
-        if (categoryName == getString(R.string.category_all)) {
-
-            categoryName = "All"
-        }
-
-        // tells ViewModel which query to run on Transactions
-        val transactionListLiveData : LiveData<List<ItemViewTransaction>> =
-            transactionListViewModel.filteredTransactionList(category, date, type, categoryName, start, end)
+        // values sent to ViewModels
+        var category     : Boolean?
+        var date         : Boolean?
+        var type         : String?
+        var categoryName : String?
+        var start        : Date?
+        var end          : Date?
 
         // register an observer on LiveData instance and tie life to another component
-        transactionListLiveData.observe(
+        fglViewModel.tInfoLiveData.observe(
             // view's lifecycle owner ensures that updates are only received when view is on screen
             viewLifecycleOwner,
             // executed whenever LiveData gets updated
-            Observer { transactions : List<ItemViewTransaction>? ->
-                // if not null
-                transactions?.let {
-                    emptyListTextView.isVisible = transactions.isEmpty()
-                    updateUI(transactions)
+            Observer { newInfo : TransactionInfo ->
+                // never null
+                newInfo.let {
+
+                    // updating values for ViewModels
+                    category     = newInfo.category
+                    date         = newInfo.date
+                    type         = newInfo.type
+                    start        = newInfo.start
+                    end          = newInfo.end
+                    categoryName = if (newInfo.categoryName == getString(R.string.category_all)) {
+
+                        "All"
+                    } else {
+
+                        newInfo.categoryName
+                    }
                 }
+
+                // tells ViewModel which query to run on Transactions
+                val transactionListLiveData : LiveData<List<ItemViewTransaction>> =
+                    transactionListViewModel.filteredTransactionList(category, date, type, categoryName, start, end)
+
+                // register an observer on LiveData instance and tie life to another component
+                transactionListLiveData.observe(
+                    // view's lifecycle owner ensures that updates are only received when view is on screen
+                    viewLifecycleOwner,
+                    // executed whenever LiveData gets updated
+                    Observer { transactions : List<ItemViewTransaction> ->
+                        // never null
+                        transactions.let {
+                            emptyListTextView.isVisible = transactions.isEmpty()
+                            updateUI(transactions)
+                        }
+                    }
+                )
+
             }
         )
 
@@ -485,15 +512,15 @@ class TransactionListFragment : BaseFragment() {
                 // set message of AlertDialog
                 .setMessage(getString(R.string.alert_dialog_delete_transaction_warning, transaction.title))
                 // set positive button and its click listener
-                .setPositiveButton(getString(R.string.alert_dialog_yes)) { _, _ ->
+                .setPositiveButton(getString(R.string.alert_dialog_yes)) { _ : DialogInterface, _ : Int ->
 
-                launch {
+                    launch {
 
-                    transactionListViewModel.deleteTransaction(transactionListViewModel.getTransactionAsync(transaction.id).await())
+                        transactionListViewModel.deleteTransaction(transactionListViewModel.getTransactionAsync(transaction.id).await())
+                    }
                 }
-            }
                 // set negative button and its click listener
-                .setNegativeButton(getString(R.string.alert_dialog_no)) { _, _ ->  }
+                .setNegativeButton(getString(R.string.alert_dialog_no)) { _ : DialogInterface, _ : Int ->  }
             // make the AlertDialog using the builder
             val alertDialog : AlertDialog = alertDialogBuilder.create()
             // display AlertDialog
@@ -511,38 +538,6 @@ class TransactionListFragment : BaseFragment() {
         fun newInstance() : TransactionListFragment {
 
             return TransactionListFragment()
-        }
-
-        /**
-         *  Initializes instance of TransactionListFragment.
-         *
-         *  Creates arguments Bundle, creates a Fragment instance, and attaches the
-         *  arguments to the Fragment.
-         *
-         *  @param  category     boolean for category filter.
-         *  @param  date         boolean for date filter.
-         *  @param  type         either "Expense" or "Income".
-         *  @param  categoryName category name to be searched in table of type.
-         *  @param  start        starting Date for date filter.
-         *  @param  end          ending Date for date filter.
-         *  @return TransactionListFragment instance.
-         */
-        fun newInstance(category : Boolean, date : Boolean, type : String, categoryName : String, start : Date, end : Date) : TransactionListFragment {
-
-            val args : Bundle = Bundle().apply {
-
-                putBoolean     (ARG_CATEGORY     , category    )
-                putBoolean     (ARG_DATE         , date        )
-                putString      (ARG_TYPE         , type        )
-                putString      (ARG_CATEGORY_NAME, categoryName)
-                putSerializable(ARG_START        , start       )
-                putSerializable(ARG_END          , end         )
-            }
-
-            return TransactionListFragment().apply {
-
-                arguments = args
-            }
         }
     }
 }

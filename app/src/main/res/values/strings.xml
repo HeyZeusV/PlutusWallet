@@ -5,7 +5,7 @@
     <string name="about_changelog">Changelog</string>
     <string name="about_contact_me">Questions, comments, or concerns? \nFeel free to email me at</string>
     <string name="about_email" translatable="false"><![CDATA[<a href=\"mailto:heyzeusvapps@gmail.com?subject=Plutus\' Wallet\">heyzeusvapps@gmail.com</a>]]></string>
-    <string name="about_external_libraries">External Libraries Used:</string>
+    <string name="about_external_libraries">External Libraries Used</string>
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
