@@ -95,7 +95,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @return LiveData object that holds List of all Transactions.
      */
     @Query("""SELECT id, title, date, total, type, category 
-            FROM `transaction`""")
+            FROM `transaction`
+            ORDER BY date ASC""")
     abstract fun getLDTransactions() : LiveData<List<ItemViewTransaction>>
 
     /**
@@ -106,7 +107,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT id, title, date, total, type, category  
             FROM `transaction` 
-            WHERE type=(:type)""")
+            WHERE type=(:type)
+            ORDER BY date ASC""")
     abstract fun getLDTransactions(type : String?) : LiveData<List<ItemViewTransaction>>
 
     /**
@@ -118,7 +120,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT id, title, date, total, type, category  
             FROM `transaction` 
-            WHERE type=(:type) AND category=(:category)""")
+            WHERE type=(:type) AND category=(:category)
+            ORDER BY date ASC""")
     abstract fun getLDTransactions(type : String?, category : String?) : LiveData<List<ItemViewTransaction>>
 
     /**
@@ -131,7 +134,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT id, title, date, total, type, category  
             FROM `transaction` 
-            WHERE type=(:type) AND date BETWEEN :start AND :end""")
+            WHERE type=(:type) AND date BETWEEN :start AND :end
+            ORDER BY date ASC""")
     abstract fun getLDTransactions(type : String?, start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>>
 
     /**
@@ -143,7 +147,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT id, title, date, total, type, category  
             FROM `transaction` 
-            WHERE date BETWEEN :start AND :end""")
+            WHERE date BETWEEN :start AND :end
+            ORDER BY date ASC""")
     abstract fun getLDTransactions(start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>>
 
     /**
@@ -157,6 +162,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT id, title, date, total, type, category  
             FROM `transaction` 
-            WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end""")
+            WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end
+            ORDER BY date ASC""")
     abstract fun getLDTransactions(type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>>
 }

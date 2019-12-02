@@ -30,7 +30,7 @@ data class Transaction(
     var date           : Date       = Utils.startOfDay(Date()),
     var total          : BigDecimal = BigDecimal("0"),
     var type           : String     = "Expense",
-    var category       : String     = "Education",
+    var category       : String     = "",
     var memo           : String     = "",
     var repeating      : Boolean    = false,
     var frequency      : Int        = 1,

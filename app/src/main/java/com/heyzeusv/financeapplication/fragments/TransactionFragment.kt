@@ -278,7 +278,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
             } else {
 
-                incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
+                // is -1 when user had language other than English at first run
+                if (incomeCategoryNamesList.indexOf(transaction.category) != -1) {
+
+                    incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
+                } else {
+
+                    incomeCategorySpinner.setSelection(0)
+                }
             }
 
             // retrieves maxId or 0 if null
@@ -683,6 +690,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // this prevents that
             categorySpinner.setSelection(0)
         }
+            .setOnDismissListener {
+
+                categorySpinner.setSelection(0)
+            }
         // make the AlertDialog using the builder
         val categoryAlertDialog : AlertDialog = builder.create()
         // display AlertDialog

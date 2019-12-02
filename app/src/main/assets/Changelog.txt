@@ -1,3 +1,7 @@
+v1.0.1
+-Category Spinners now start at first word in list rather than "Education."
+-Category Spinners will no longer stay on "Create New Category" if user dismisses Dialog by pressing outside of it.
+
 v1.0.0
 -Initial release!! Woohoo!!!
 
