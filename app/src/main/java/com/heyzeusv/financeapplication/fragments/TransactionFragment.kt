@@ -681,16 +681,16 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // set positive button and its click listener
             .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
 
-            insertCategory(input.text.toString())
+                insertCategory(input.text.toString())
         }
             // set negative button and its click listener
             .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->
 
-            // users shouldn't be able to save on "Create New Category",
-            // this prevents that
-            categorySpinner.setSelection(0)
+                // users shouldn't be able to save on "Create New Category",
+                // this prevents that
+                categorySpinner.setSelection(0)
         }
-            .setOnDismissListener {
+            .setOnCancelListener {
 
                 categorySpinner.setSelection(0)
             }

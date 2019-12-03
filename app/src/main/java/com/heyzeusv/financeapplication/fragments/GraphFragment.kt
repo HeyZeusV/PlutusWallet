@@ -305,11 +305,7 @@ class GraphFragment : BaseFragment() {
                 // adds values in categoryTotals list into list holding chart data
                 categoryTotals.forEach {
 
-                    // only adds values that are greater than 0
-                    if (it.total.toFloat() != 0.0f) {
-
-                        pieEntries.add(PieEntry(it.total.toFloat(), it.category))
-                    }
+                    pieEntries.add(PieEntry(it.total.toFloat(), it.category))
                     // adds to total
                     if (category != true || categoryName == getString(R.string.category_all)) {
 
