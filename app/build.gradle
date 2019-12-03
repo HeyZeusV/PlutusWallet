@@ -13,7 +13,7 @@ android {
         applicationId "com.heyzeusv.financeapplication"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 2
+        versionCode 3
         versionName "1.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en", "es", "de", "hi", "ja", "ko", "th"

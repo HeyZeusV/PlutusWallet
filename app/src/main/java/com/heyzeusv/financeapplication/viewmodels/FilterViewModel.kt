@@ -30,4 +30,5 @@ class FilterViewModel : ViewModel() {
     suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> {
 
         return transactionRepository.getIncomeCategoryNamesAsync()
-    }}
+    }
+}

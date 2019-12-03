@@ -2,7 +2,6 @@ package com.heyzeusv.financeapplication.fragments
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -173,6 +172,8 @@ class GraphFragment : BaseFragment() {
         val categoryList              : MutableList<String>         = mutableListOf()
         // list holding CategoryTotals with unique Category names totals summed up
         val updatedCategoryTotalsList : MutableList<CategoryTotals> = mutableListOf()
+        // list holding Categories with 0 total
+        val removeList                : MutableList<String>         = mutableListOf()
 
         // used to get list of unique Category names
         categoryTotalList.forEach {
@@ -197,7 +198,21 @@ class GraphFragment : BaseFragment() {
                 }
             }
             categoryTotal.total = BigDecimal(total.toString())
-            updatedCategoryTotalsList.add(categoryTotal)
+
+            // adds category to removeList if total is 0
+            if (categoryTotal.total.toString() != "0.0") {
+                updatedCategoryTotalsList.add(categoryTotal)
+            } else {
+
+                removeList.add(categoryTotal.category)
+            }
+        }
+
+        // need to remove them because they will cause ArrayIndex error if user applies
+        // filter to Category with 0 total
+        removeList.forEach {
+
+            categoryList.remove(it)
         }
 
         // clears Category name lists and re-adds new values
