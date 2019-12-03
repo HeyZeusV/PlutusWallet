@@ -10,7 +10,7 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.heyzeusv.financeapplication"
+        applicationId "com.heyzeusv.plutuswallet"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 4

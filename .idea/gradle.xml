@@ -10,8 +10,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$USER_HOME$/LinuxDrive/Repos/FinanceApplication" />
-            <option value="$USER_HOME$/LinuxDrive/Repos/FinanceApplication/app" />
+            <option value="$USER_HOME$/LinuxDrive/Repos/PlutusWallet" />
+            <option value="$USER_HOME$/LinuxDrive/Repos/PlutusWallet/app" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name='Finance Application'
+rootProject.name='Plutus Wallet'
