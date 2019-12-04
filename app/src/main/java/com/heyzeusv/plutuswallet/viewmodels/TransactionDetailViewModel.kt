@@ -18,6 +18,17 @@ import kotlinx.coroutines.Deferred
  */
 class TransactionDetailViewModel : ViewModel() {
 
+    // true = Expense, false = Income
+    val spinVisibility : MutableLiveData<Boolean> = MutableLiveData(true)
+    val title : MutableLiveData<String> = MutableLiveData("")
+    val memo  : MutableLiveData<String> = MutableLiveData("")
+    val frequency : MutableLiveData<String> = MutableLiveData("1")
+    val type : MutableLiveData<String> = MutableLiveData("Expense")
+    val chipSelected : MutableLiveData<Int> = MutableLiveData()
+
+    /**
+     *  Repository/Queries
+     */
     /**
      *  Stores handle to TransactionRepository.
      */
