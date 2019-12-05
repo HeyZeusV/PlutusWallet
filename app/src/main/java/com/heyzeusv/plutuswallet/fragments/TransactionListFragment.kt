@@ -355,12 +355,12 @@ class TransactionListFragment : BaseFragment() {
 
             if (expenseSize == 0 || expenseSize == null) {
 
-                val education      = ExpenseCategory(getString(R.string.category_education))
-                val entertainment  = ExpenseCategory(getString(R.string.category_entertainment))
-                val food           = ExpenseCategory(getString(R.string.category_food))
-                val home           = ExpenseCategory(getString(R.string.category_home))
-                val transportation = ExpenseCategory(getString(R.string.category_transportation))
-                val utilities      = ExpenseCategory(getString(R.string.category_utilities))
+                val education      = ExpenseCategory("Education")
+                val entertainment  = ExpenseCategory("Entertainment")
+                val food           = ExpenseCategory("Food")
+                val home           = ExpenseCategory("Home")
+                val transportation = ExpenseCategory("Transportation")
+                val utilities      = ExpenseCategory("Utilities")
                 val initialExpenseCategories : List<ExpenseCategory> = listOf(
                     education, entertainment, food, home, transportation, utilities)
                 transactionListViewModel.insertExpenseCategories(initialExpenseCategories)
@@ -368,12 +368,12 @@ class TransactionListFragment : BaseFragment() {
 
             if (incomeSize == 0 || incomeSize == null) {
 
-                val cryptocurrency = IncomeCategory(getString(R.string.category_cryptocurrency))
-                val investments    = IncomeCategory(getString(R.string.category_investments))
-                val salary         = IncomeCategory(getString(R.string.category_salary))
-                val savings        = IncomeCategory(getString(R.string.category_savings))
-                val stocks         = IncomeCategory(getString(R.string.category_stocks))
-                val wages          = IncomeCategory(getString(R.string.category_wages))
+                val cryptocurrency = IncomeCategory("Cryptocurrency")
+                val investments    = IncomeCategory("Investments")
+                val salary         = IncomeCategory("Salary")
+                val savings        = IncomeCategory("Savings")
+                val stocks         = IncomeCategory("Stocks")
+                val wages          = IncomeCategory("Wages")
                 val initialIncomeCategories : List<IncomeCategory> = listOf(
                     cryptocurrency, investments, salary, savings, stocks, wages)
                 transactionListViewModel.insertIncomeCategories(initialIncomeCategories)
@@ -454,8 +454,8 @@ class TransactionListFragment : BaseFragment() {
         fun bind(transaction : ItemViewTransaction) {
 
             this.transaction      = transaction
-            titleTextView   .text = this       .transaction.title
-            categoryTextView.text = this       .transaction.category
+            titleTextView   .text = this.transaction.title
+            categoryTextView.text = Utils.translateCategory(context!!, this.transaction.category)
             dateTextView    .text = DateFormat .getDateInstance(dateFormat).format(this.transaction.date)
 
             // formats the Total correctly

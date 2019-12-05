@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet.utilities
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Configuration
+import com.heyzeusv.plutuswallet.R
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -176,6 +177,51 @@ class Utils {
             calendar.set(Calendar.MILLISECOND, 0)
 
             return calendar.time
+        }
+
+        /**
+         *  Translates Categories that are automatically added
+         *
+         *  @param  context needed to retrieve translations
+         *  @param  name    the string to be checked for translation
+         *  @return the translated/non-translated string
+         */
+        fun translateCategory(context : Context, name : String) : String {
+
+            return when (name) {
+
+                "Education"      -> context.getString(R.string.category_education)
+                "Entertainment"  -> context.getString(R.string.category_entertainment)
+                "Food"           -> context.getString(R.string.category_food)
+                "Home"           -> context.getString(R.string.category_home)
+                "Transportation" -> context.getString(R.string.category_transportation)
+                "Utilities"      -> context.getString(R.string.category_utilities)
+                "Cryptocurrency" -> context.getString(R.string.category_cryptocurrency)
+                "Investments"    -> context.getString(R.string.category_investments)
+                "Salary"         -> context.getString(R.string.category_salary)
+                "Savings"        -> context.getString(R.string.category_savings)
+                "Stocks"         -> context.getString(R.string.category_stocks)
+                "Wages"          -> context.getString(R.string.category_wages)
+                else -> name
+            }
+        }
+
+        /**
+         *  Iterates through a list of Categories and translates using above function
+         *
+         *  @param  context needed to retrieve translations
+         *  @param  list    list of Category names to be checked for translation
+         *  @return the list with updated names
+         */
+        fun translateCategories(context : Context, list : MutableList<String>) : MutableList<String> {
+
+            val iterator : MutableListIterator<String> = list.listIterator()
+            while (iterator.hasNext()) {
+
+                iterator.set(translateCategory(context, iterator.next()))
+            }
+
+            return list
         }
     }
 }

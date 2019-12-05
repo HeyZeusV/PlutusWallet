@@ -121,6 +121,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // retrieves list of Expense Categories from database
             expenseCategoryNamesList = filterViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
+            // translate predetermined categories
+            expenseCategoryNamesList = Utils.translateCategories(context!!, expenseCategoryNamesList)
             // sorts list in alphabetical order
             expenseCategoryNamesList.sort()
             // Category to show all of one type
@@ -135,6 +137,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // retrieves list of Income Categories from database
             incomeCategoryNamesList = filterViewModel.getIncomeCategoryNamesAsync().await().toMutableList()
+            // translate predetermined categories
+            incomeCategoryNamesList = Utils.translateCategories(context!!, incomeCategoryNamesList)
             // sorts list in alphabetical order
             incomeCategoryNamesList.sort()
             // Category to show all of one type

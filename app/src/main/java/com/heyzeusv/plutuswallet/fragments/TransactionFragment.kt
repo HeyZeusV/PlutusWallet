@@ -245,6 +245,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // retrieves list of Expense Categories from database
             expenseCategoryNamesList = transactionDetailViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
+            // translate predetermined categories
+            expenseCategoryNamesList = Utils.translateCategories(context!!, expenseCategoryNamesList)
             // sorts list in alphabetical order
             expenseCategoryNamesList.sort()
             // "Create New Category" will always be at bottom of the list
@@ -256,6 +258,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // retrieves list of Income Categories from database
             incomeCategoryNamesList = transactionDetailViewModel.getIncomeCategoryNamesAsync().await().toMutableList()
+            // translate predetermined categories
+            incomeCategoryNamesList = Utils.translateCategories(context!!, incomeCategoryNamesList)
             // sorts list in alphabetical order
             incomeCategoryNamesList.sort()
             // "Create New Category" will always be at bottom of the list
