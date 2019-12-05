@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -19,12 +20,28 @@ import kotlinx.coroutines.Deferred
 class TransactionDetailViewModel : ViewModel() {
 
     // true = Expense, false = Income
-    val spinVisibility : MutableLiveData<Boolean> = MutableLiveData(true)
+    val categorySpinVisibility : MutableLiveData<Boolean> = MutableLiveData(true)
+    val frequencyVisibility : MutableLiveData<Boolean> = MutableLiveData(false)
     val title : MutableLiveData<String> = MutableLiveData("")
     val memo  : MutableLiveData<String> = MutableLiveData("")
     val frequency : MutableLiveData<String> = MutableLiveData("1")
     val type : MutableLiveData<String> = MutableLiveData("Expense")
     val chipSelected : MutableLiveData<Int> = MutableLiveData()
+
+    init {
+
+        Log.d("TEST", "HERE")
+
+    }
+
+    fun setTitle(newTitle : String) {
+
+        title.value = newTitle
+    }
+    fun setCategorySpinVisibility(state : Boolean) {
+
+        categorySpinVisibility.value = state
+    }
 
     /**
      *  Repository/Queries
@@ -48,10 +65,11 @@ class TransactionDetailViewModel : ViewModel() {
      *  @return LiveData object holding a Transaction that gets updated every time a
      *          new value gets set on the trigger LiveData instance.
      */
-    var transactionLiveData : LiveData<Transaction?> =
+    var transactionLiveData : LiveData<Transaction> =
         Transformations.switchMap(transactionIdLiveData) { transactionId : Int ->
             transactionRepository.getLDTransaction(transactionId)
         }
+
 
     /**
      *  'Loads' Transaction.

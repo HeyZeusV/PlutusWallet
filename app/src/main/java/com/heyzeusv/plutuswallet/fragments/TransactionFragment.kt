@@ -4,10 +4,8 @@ import android.animation.Animator
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
-import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -95,7 +93,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var newTransaction = false
 
     // true = Expense, false = Income
-    private var typeSelected = false
+    private var typeSelected = true
 
     // used to tell if date has been edited for re-repeating Transactions
     private var dateChanged    = false
@@ -250,11 +248,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
         )
 
-        transactionDetailViewModel.spinVisibility.observe(
+        transactionDetailViewModel.categorySpinVisibility.observe(
             viewLifecycleOwner,
             Observer { state : Boolean ->
-                expenseCategorySpinner.isVisible = state
-                incomeCategorySpinner .isVisible = !state
                 typeSelected = state
                 if (state) {
 
@@ -332,24 +328,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     override fun onStart() {
         super.onStart()
 
-        repeatingCheckBox.apply {
-
-            setOnCheckedChangeListener { _, isChecked ->
-                transaction.repeating = isChecked
-                if (isChecked) {
-
-                    frequencyText         .isVisible = true
-                    frequencyField        .isVisible = true
-                    frequencyPeriodSpinner.isVisible = true
-                } else {
-
-                    frequencyText         .isVisible = false
-                    frequencyField        .isVisible = false
-                    frequencyPeriodSpinner.isVisible = false
-                }
-            }
-        }
-
         frequencyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
@@ -365,7 +343,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             transaction.title = transactionDetailViewModel.title.value!!
             transaction.memo  = transactionDetailViewModel.memo .value!!
-            transaction.frequency = transactionDetailViewModel.frequency.value!!.toInt()
+            transaction.repeating = transactionDetailViewModel.frequencyVisibility.value!!
+            transaction.frequency = if (transactionDetailViewModel.frequency.value!! == "") {
+
+                1
+            } else {
+
+                transactionDetailViewModel.frequency.value!!.toInt()
+            }
             // gives Transaction simple title if user doesn't enter any
             if (transaction.title.trim().isEmpty()) {
 
@@ -626,18 +611,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         transaction.category = parent?.getItemAtPosition(position) as String
     }
 
-    fun onTextChanged(
-        sequence : CharSequence?, start : Int, before : Int, count : Int) {
-
-        try {
-
-            transaction.frequency = Integer.parseInt(sequence.toString())
-        } catch (e : NumberFormatException) {
-
-            transaction.frequency = 1
-        }
-    }
-
     /**
      *  Used in AlertDialog that appears after user switches date of Transaction
      *  that has been repeated. It appears CoRoutines do not work directly in AlertDialog.
@@ -657,7 +630,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
      */
     private fun updateUI() {
 
-        titleField    .setText(transaction.title)
+        transactionDetailViewModel.setTitle(transaction.title)
         memoField     .setText(transaction.memo)
         frequencyField.setText(transaction.frequency.toString())
         dateButton.text = DateFormat.getDateInstance(dateFormat).format(this.transaction.date)
@@ -674,14 +647,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         if (transaction.type == "Income") {
 
-            typeSelected                     = true
-            expenseCategorySpinner.isVisible = false
-            incomeCategorySpinner .isVisible = true
+            typeSelected                     = false
+            transactionDetailViewModel.setCategorySpinVisibility(false)
         } else {
 
-            typeSelected                     = false
-            expenseCategorySpinner.isVisible = true
-            incomeCategorySpinner .isVisible = false
+            typeSelected                     = true
+            transactionDetailViewModel.setCategorySpinVisibility(true)
             // weird bug that only affected expenseChip where it was able to be
             // deselected when Transaction is first started, this fixes it
             expenseChip.isClickable = false

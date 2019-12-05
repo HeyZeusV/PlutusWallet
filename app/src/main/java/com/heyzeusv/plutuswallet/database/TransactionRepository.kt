@@ -51,7 +51,7 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  Transaction Queries
      */
-    fun getLDTransaction   (id   : Int)                                                     : LiveData<Transaction?>              = transactionDao.getLDTransaction   (id)
+    fun getLDTransaction   (id   : Int)                                                     : LiveData<Transaction>               = transactionDao.getLDTransaction   (id)
     fun getLDTransactions  ()                                                               : LiveData<List<ItemViewTransaction>> = transactionDao.getLDTransactions  ()
     fun getLDTransactions  (type : String?)                                                 : LiveData<List<ItemViewTransaction>> = transactionDao.getLDTransactions  (type)
     fun getLDTransactions  (type : String?, category : String?)                             : LiveData<List<ItemViewTransaction>> = transactionDao.getLDTransactions  (type, category)

@@ -43,7 +43,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  Returns Transaction with given id.
      *
      *  @param id id of Transaction to be returned.
-     *  @return LiveData object that holds Transaction to be returned.
+     *  @return Transaction to be returned.
      */
     @Query("""SELECT *
             FROM `transaction`
@@ -87,7 +87,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT * 
             FROM `transaction` 
             WHERE id=(:id)""")
-    abstract fun getLDTransaction(id : Int) : LiveData<Transaction?>
+    abstract fun getLDTransaction(id : Int) : LiveData<Transaction>
 
     /**
      *  Returns all Transactions.

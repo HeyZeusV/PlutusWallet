@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View" />
         <variable
             name="transViewModel"
             type="com.heyzeusv.plutuswallet.viewmodels.TransactionDetailViewModel" />
@@ -182,7 +183,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/type_expense"
-                            android:checked="@={transViewModel.spinVisibility}"
+                            android:checked="@={transViewModel.categorySpinVisibility}"
                             android:textColor="@color/chip_text_color"
                             app:chipBackgroundColor="@color/chip_bg_state_list" />
 
@@ -192,7 +193,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/type_income"
-                            android:checked="@={!transViewModel.spinVisibility}"
                             android:textColor="@color/chip_text_color"
                             app:chipBackgroundColor="@color/chip_bg_state_list" />
                     </com.google.android.material.chip.ChipGroup>
@@ -221,6 +221,7 @@
                         android:layout_marginEnd="16dp"
                         android:background="@null"
                         android:onItemSelected="@{(parent, view, pos, id) -> transFragment.onItemSelected(parent, pos)}"
+                        android:visibility="@{transViewModel.categorySpinVisibility ? View.VISIBLE : View.INVISIBLE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/categoryTextView"
                         app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
@@ -234,6 +235,7 @@
                         android:layout_marginEnd="16dp"
                         android:background="@null"
                         android:onItemSelected="@{(parent, view, pos, id) -> transFragment.onItemSelected(parent, pos)}"
+                        android:visibility="@{transViewModel.categorySpinVisibility ? View.INVISIBLE : View.VISIBLE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/categoryTextView"
                         app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
@@ -295,6 +297,7 @@
                         android:layout_marginTop="4dp"
                         android:background="?android:attr/listChoiceIndicatorMultiple"
                         android:button="@null"
+                        android:checked="@={transViewModel.frequencyVisibility}"
                         android:paddingStart="8dip"
                         android:paddingEnd="8dip"
                         app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
@@ -312,7 +315,7 @@
                         android:text="@string/transaction_frequency"
                         android:textColor="@android:color/black"
                         android:textSize="18sp"
-                        android:visibility="invisible"
+                        android:visibility="@{transViewModel.frequencyVisibility ? View.VISIBLE : View.INVISIBLE}"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
                         tools:visibility="visible" />
@@ -325,8 +328,7 @@
                         android:layout_marginTop="12dp"
                         android:background="@null"
                         android:gravity="start|center_vertical"
-                        android:visibility="invisible"
-                        app:layout_constraintEnd_toStartOf="@+id/transaction_frequency"
+                        android:visibility="@{transViewModel.frequencyVisibility ? View.VISIBLE : View.INVISIBLE}"                        app:layout_constraintEnd_toStartOf="@+id/transaction_frequency"
                         app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
                         app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
                         tools:visibility="visible" />
@@ -342,10 +344,9 @@
                         android:importantForAutofill="no"
                         android:inputType="number"
                         android:maxLength="2"
-                        android:onTextChanged="@{transFragment.onTextChanged}"
                         android:text="@={transViewModel.frequency}"
                         android:textSize="18sp"
-                        android:visibility="invisible"
+                        android:visibility="@{transViewModel.frequencyVisibility ? View.VISIBLE : View.INVISIBLE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/transaction_frequency_period"
                         app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
