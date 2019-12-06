@@ -7,6 +7,9 @@
     <string name="about_license">Lizenz</string>
     <string name="about_special_thanks">Besonderer Dank geht an Familie, Freunde und Haustiere für ihre Unterstützung und an Hadia A. für die Ikone!</string>
     <string name="about_translation_warning">Für die Lokalisierung wurde Google Translate verwendet. Bitte lassen Sie mich alle Fehler wissen, danke!</string>
+    <string name="account_create">Neuen Account erstellen</string>
+    <string name="account_hint">Geben Sie ein neues Konto ein</string>
+    <string name="account_none">Keiner</string>
     <string name="alert_dialog_are_you_sure">Bist du sicher?</string>
     <string name="alert_dialog_cancel">Stornieren</string>
     <string name="alert_dialog_decimal_place_warning">Dadurch werden vorhandene Transaktionen abhängig vom Dezimalwert gerundet. Der ursprüngliche Wert kann NUR dann wiederhergestellt werden, wenn die Transaktionen nicht bearbeitet werden.</string>
@@ -65,6 +68,7 @@
     <string name="preferences_thousands_symbol">Tausendertrennzeichen</string>
     <string name="settings">die Einstellungen</string>
     <string name="snackbar_saved">Transaktion gespeichert!</string>
+    <string name="transaction_account">Konto:</string>
     <string name="transaction_category">Kategorie:</string>
     <string name="transaction_date">Datum:</string>
     <string name="transaction_empty_title">"Transaktion "</string>

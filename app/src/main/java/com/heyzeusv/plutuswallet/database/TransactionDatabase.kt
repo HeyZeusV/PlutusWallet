@@ -19,7 +19,7 @@ import com.heyzeusv.plutuswallet.database.entities.Transaction
  *                  types into those that database can store.
  */
 @Database(entities = [Transaction::class, ExpenseCategory::class, IncomeCategory::class],
-    version = 15, exportSchema = true)
+    version = 16, exportSchema = true)
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {
 

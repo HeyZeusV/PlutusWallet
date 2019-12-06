@@ -9,7 +9,10 @@
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="about_version" translatable="false">v1.0.1</string>
+    <string name="about_version" translatable="false">v1.1.0</string>
+    <string name="account_create">Create New Account</string>
+    <string name="account_hint">Enter New Account</string>
+    <string name="account_none">None</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_decimal_place_warning">This will cause existing transactions to be rounded depending on decimal value. Original value can be restored ONLY IF transactions are not edited.</string>
@@ -75,6 +78,7 @@
     <string name="snackbar_saved">Transaction saved!</string>
     <string name="total_number" translatable="false">%1$s</string>
     <string name="total_number_symbol" translatable="false">%1$s%2$s</string>
+    <string name="transaction_account">Account:</string>
     <string name="transaction_category">Category:</string>
     <string name="transaction_date">Date:</string>
     <string name="transaction_empty_title">"Transaction "</string>

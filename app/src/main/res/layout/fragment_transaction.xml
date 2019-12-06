@@ -83,7 +83,7 @@
                     tools:text="Wed Nov 14 11:56 EST 2018"/>
 
                 <TextView
-                    android:id="@+id/totalTextView"
+                    android:id="@+id/accountTextView"
                     style="?android:listSeparatorTextViewStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -91,27 +91,54 @@
                     android:layout_marginTop="8dp"
                     android:paddingStart="8dip"
                     android:paddingEnd="8dip"
+                    android:text="@string/transaction_account"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+
+                <Spinner
+                    android:id="@+id/transaction_account"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/accountTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+
+                <TextView
+                    android:id="@+id/totalTextView"
+                    style="?android:listSeparatorTextViewStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:paddingStart="8dip"
+                    android:paddingEnd="8dip"
                     android:text="@string/transaction_total"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date"/>
+                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
                 <TextView
                     android:id="@+id/symbolLeftTextView"
                     style="?android:listSeparatorTextViewStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="14dp"
                     android:textSize="18sp"
                     app:layout_constraintStart_toEndOf="@+id/totalTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date"/>
+                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
                 <com.heyzeusv.plutuswallet.utilities.CurrencyEditText
                     android:id="@+id/transaction_total"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="9dp"
                     android:layout_marginBottom="1dp"
                     android:importantForAutofill="no"
                     android:maxLength="15"
@@ -119,19 +146,19 @@
                     app:layout_constraintBottom_toTopOf="@+id/transaction_type_chips"
                     app:layout_constraintEnd_toEndOf="@+id/symbolRightTextView"
                     app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date" />
+                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
                 <TextView
                     android:id="@+id/symbolRightTextView"
                     style="?android:listSeparatorTextViewStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="14dp"
                     android:layout_marginEnd="16dp"
                     android:textSize="18sp"
                     android:visibility="invisible"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/transaction_date"/>
+                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
 
                 <TextView
@@ -201,7 +228,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="17dp"
+                    android:layout_marginTop="18dp"
                     android:layout_marginEnd="16dp"
                     android:background="@null"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -213,7 +240,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="17dp"
+                    android:layout_marginTop="18dp"
                     android:layout_marginEnd="16dp"
                     android:background="@null"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -329,6 +356,7 @@
                     app:layout_constraintStart_toEndOf="@+id/transaction_frequency_period"
                     app:layout_constraintTop_toBottomOf="@+id/transaction_repeating"
                     tools:visibility="visible"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
 

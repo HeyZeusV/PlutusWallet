@@ -55,6 +55,11 @@ class TransactionDetailViewModel : ViewModel() {
         transactionIdLiveData.value = transactionId
     }
 
+    suspend fun getAccountsAsync() : Deferred<List<String>> {
+
+        return transactionRepository.getAccountsAsync()
+    }
+
     suspend fun getMaxIdAsync() : Deferred<Int?> {
 
         return transactionRepository.getMaxIdAsync()

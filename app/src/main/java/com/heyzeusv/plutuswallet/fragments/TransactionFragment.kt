@@ -71,6 +71,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private lateinit var frequencyField         : EditText
     private lateinit var saveFab                : FloatingActionButton
     private lateinit var dateButton             : MaterialButton
+    private lateinit var accountSpinner         : Spinner
     private lateinit var expenseCategorySpinner : Spinner
     private lateinit var incomeCategorySpinner  : Spinner
     private lateinit var frequencyPeriodSpinner : Spinner
@@ -82,7 +83,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     // array holding values for frequency spinner
     private lateinit var frequencyArray : Array<String>
 
-    // used with categories
+    // used with accounts/categories
+    private var accountNameList          : MutableList<String> = mutableListOf()
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
 
@@ -100,6 +102,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var oldDate : Date = Utils.startOfDay(Date())
 
     // adapters to be used on Spinners
+    private var accountSpinnerAdapter : ArrayAdapter<String>? = null
     private var expenseSpinnerAdapter : ArrayAdapter<String>? = null
     private var incomeSpinnerAdapter  : ArrayAdapter<String>? = null
 
@@ -138,6 +141,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         frequencyField         = view.findViewById(R.id.transaction_frequency       ) as EditText
         saveFab                = view.findViewById(R.id.transaction_save_fab        ) as FloatingActionButton
         dateButton             = view.findViewById(R.id.transaction_date            ) as MaterialButton
+        accountSpinner         = view.findViewById(R.id.transaction_account         ) as Spinner
         expenseCategorySpinner = view.findViewById(R.id.transaction_expense_category) as Spinner
         incomeCategorySpinner  = view.findViewById(R.id.transaction_income_category ) as Spinner
         frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
@@ -242,6 +246,29 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         )
 
         launch {
+
+            //retrieves list of Accounts from database
+            accountNameList = transactionDetailViewModel.getAccountsAsync().await().toMutableList()
+            // will ensure Accounts list is never empty
+            if (accountNameList.isEmpty()) {
+
+                accountNameList.add("None")
+            }
+            // will translate if "None" exists
+            if (accountNameList.indexOf("None") != -1) {
+
+                accountNameList[accountNameList.indexOf("None")] = getString(R.string.account_none)
+            }
+            // sorts list in alphabetical order
+            accountNameList.sort()
+            // "Create New Account will always be at bottom of list
+            accountNameList.add(getString(R.string.account_create))
+            // sets up the accountSpinner
+            accountSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, accountNameList)
+            accountSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            accountSpinner         .adapter = accountSpinnerAdapter
+
+            accountSpinner.setSelection(accountNameList.indexOf(transaction.account))
 
             // retrieves list of Expense Categories from database
             expenseCategoryNamesList = transactionDetailViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
@@ -402,6 +429,22 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     transaction           .type      = "Income"
                 }
             }
+        }
+
+        accountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
+
+                if (parent?.getItemAtPosition(position) == getString(R.string.account_create)) {
+
+                    newAccountDialog(accountSpinner)
+                }
+                // updates account to selected one
+                transaction.account = parent?.getItemAtPosition(position) as String
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         expenseCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -602,13 +645,42 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         savedBar.show()
     }
 
-    @SuppressLint("DefaultLocale")
-    @ExperimentalStdlibApi
+    /**
+     *  Inserts new Account into list or selects it in categorySpinner if it exists already.
+     *
+     *  @param input the category to be inserted/selected.
+     */
+@ExperimentalStdlibApi
+    private fun insertAccount(input : String) {
+
+        // makes first letter of every word capital and every other letter lower case
+        val name : String = input.split(" ").joinToString(" ") {it.toLowerCase(Locale.US).capitalize(Locale.US)}
+
+        // -1 means it doesn't exist
+        if (accountNameList.indexOf(name) == -1) {
+
+            // adds new Account to list, sorts list, ensures "Create New Account" appears at bottom,
+            // updates SpinnerAdapter, and sets Spinner to new Account
+            accountNameList.remove(getString(R.string.account_create))
+            accountNameList.add(name)
+            accountNameList.sort()
+            accountNameList.add(getString(R.string.account_create))
+            accountSpinnerAdapter!!.notifyDataSetChanged()
+            accountSpinner.setSelection(accountNameList.indexOf(name))
+        } else {
+
+            accountSpinner.setSelection(accountNameList.indexOf(name))
+        }
+
+        transaction.account = name
+    }
+
     /**
      *  Inserts new Category into database or selects it in categorySpinner if it exists already.
      *
      *  @param input the category to be inserted/selected.
      */
+    @ExperimentalStdlibApi
     private fun insertCategory(input : String) {
 
         // makes first letter of every word capital and every other letter lower case
@@ -663,12 +735,51 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
     }
 
+    /**
+     *  AlertDialog to create new Account.
+     *
+     *  @param accountSpinner the Spinner that that called this function.
+     */
     @ExperimentalStdlibApi
+    private fun newAccountDialog(accountSpinner : Spinner) {
+
+        // initialize instance of Builder
+        val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+            // set title of AlertDialog
+            .setTitle(getString(R.string.account_create))
+        val viewInflated : View = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_new_account, view as ViewGroup, false)
+        // the EditText to be used
+        val input : EditText = viewInflated.findViewById(R.id.account_Input)
+        // sets the view
+        builder.setView(viewInflated)
+            // set positive button/click listener
+            .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
+
+                insertAccount(input.text.toString())
+            }
+            // set negative button/click listener
+            .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->
+
+                // users shouldn't be able to save on "Create New Account"
+                accountSpinner.setSelection(0)
+            }
+            .setOnCancelListener {
+
+                accountSpinner.setSelection(0)
+            }
+        // make the AlertDialog using builder
+        val accountAlertDialog : AlertDialog = builder.create()
+        // display AlertDialog
+        accountAlertDialog.show()
+    }
+
     /**
      *  AlertDialog to create new Category.
      *
      *  @param categorySpinner the Spinner that that called this function.
      */
+    @ExperimentalStdlibApi
     private fun newCategoryDialog(categorySpinner : Spinner) {
 
         // initialize instance of Builder
@@ -676,24 +787,24 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // set title of AlertDialog
             .setTitle(getString(R.string.category_create))
         // inflates view that holds EditText
-        val viewInflated: View = LayoutInflater.from(context)
+        val viewInflated : View = LayoutInflater.from(context)
             .inflate(R.layout.dialog_new_category, view as ViewGroup, false)
         // the EditText to be used
-        val input: EditText = viewInflated.findViewById(R.id.category_Input)
+        val input : EditText = viewInflated.findViewById(R.id.category_Input)
         // sets the view
         builder.setView(viewInflated)
             // set positive button and its click listener
             .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
 
                 insertCategory(input.text.toString())
-        }
+            }
             // set negative button and its click listener
             .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->
 
                 // users shouldn't be able to save on "Create New Category",
                 // this prevents that
                 categorySpinner.setSelection(0)
-        }
+            }
             .setOnCancelListener {
 
                 categorySpinner.setSelection(0)

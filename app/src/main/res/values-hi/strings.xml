@@ -7,6 +7,9 @@
     <string name="about_license">लाइसेंस</string>
     <string name="about_special_thanks">आइकन के लिए उनके सभी समर्थन और हदिया ए के लिए परिवार, दोस्तों और पालतू जानवरों के लिए विशेष धन्यवाद!</string>
     <string name="about_translation_warning">Google अनुवाद का उपयोग स्थानीयकरण के लिए किया गया था। कृपया मुझे किसी भी गलती के बारे में बताएं, धन्यवाद!</string>
+    <string name="account_create">नया खाता बनाएँ</string>
+    <string name="account_hint">नया खाता दर्ज करें</string>
+    <string name="account_none">कोई नहीं</string>
     <string name="alert_dialog_are_you_sure">क्या आपको यकीन है?</string>
     <string name="alert_dialog_cancel">रद्द करना</string>
     <string name="alert_dialog_decimal_place_warning">यह मौजूदा लेनदेन को दशमलव मान के आधार पर गोल किया जाएगा। मूल मान केवल बहाल किया जा सकता है यदि लेनदेन संपादित नहीं किए जाते हैं।</string>
@@ -65,6 +68,7 @@
     <string name="preferences_thousands_symbol">हजारों विभाजक प्रतीक</string>
     <string name="settings">समायोजन</string>
     <string name="snackbar_saved">लेन-देन सहेजा गया!</string>
+    <string name="transaction_account">लेखा:</string>
     <string name="transaction_category">वर्ग:</string>
     <string name="transaction_date">दिनांक:</string>
     <string name="transaction_empty_title">"लेन-देन "</string>

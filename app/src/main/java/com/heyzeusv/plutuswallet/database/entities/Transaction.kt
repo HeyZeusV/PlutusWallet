@@ -29,6 +29,7 @@ data class Transaction(
     var title          : String     = "",
     var date           : Date       = Utils.startOfDay(Date()),
     var total          : BigDecimal = BigDecimal("0"),
+    var account        : String     = "None",
     var type           : String     = "Expense",
     var category       : String     = "",
     var memo           : String     = "",
