@@ -27,21 +27,41 @@ class GraphViewModel : ViewModel() {
      *
      *  Uses the values of date and type in order to determine which Transaction list is needed.
      *
-     *  @param  date         boolean for date filter.
-     *  @param  type         either "Expense" or "Income".
-     *  @param  start        starting Date for date filter.
-     *  @param  end          ending Date for date filter.
+     *  @param  account     boolean for account filter
+     *  @param  date        boolean for date filter.
+     *  @param  type        either "Expense" or "Income".
+     *  @param  accountName Account name for account filter
+     *  @param  start       starting Date for date filter.
+     *  @param  end         ending Date for date filter.
      *  @return LiveData object holding list of Transactions.
      */
-    fun filteredCategoryTotals(date : Boolean?, type : String?, start : Date?, end : Date?)
-            : LiveData<List<CategoryTotals>> {
+    fun filteredCategoryTotals(account : Boolean?, date : Boolean?, type : String?, accountName : String?,
+                               start : Date?, end : Date?) : LiveData<List<CategoryTotals>> {
 
-        return if (date == true) {
+        return if (account == true && date == true) {
 
-            transactionRepository.getLDCategoryTotals(type, start, end)
+            if (accountName == "All") {
+
+                transactionRepository.getLdCtTD(type, start, end)
+            } else {
+
+                transactionRepository.getLdCtTAD(type, accountName, start, end)
+            }
+        } else if (account == true) {
+
+            if (accountName == "All") {
+
+                transactionRepository.getLdCtT(type)
+            } else {
+
+                transactionRepository.getLdCtTA(type, accountName)
+            }
+        } else if (date == true) {
+
+            transactionRepository.getLdCtTD(type, start, end)
         } else {
 
-            transactionRepository.getLDCategoryTotals(type)
+            transactionRepository.getLdCtT(type)
         }
     }
 }

@@ -39,6 +39,7 @@
     <string name="category_wages">Lohn</string>
     <string name="empty_graph">Keine Transaktionen erfüllen die angewendeten Filter!</string>
     <string name="empty_list">Keine Transaktionen erfüllen die angewendeten Filter!\nDrücken Sie die Taste unten, um eine neue Transaktion hinzuzufügen!</string>
+    <string name="filter_account">Konto:</string>
     <string name="filter_apply">Anwenden</string>
     <string name="filter_category">Kategorie:</string>
     <string name="filter_date">Datum:</string>

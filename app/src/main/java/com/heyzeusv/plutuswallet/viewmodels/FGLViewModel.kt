@@ -30,6 +30,6 @@ class FGLViewModel : ViewModel() {
 
         // will only be used at app start up which will show all Transactions
         tInfoLiveData.value = TransactionInfo(null, null, null,
-            null, null, null)
+            null, null, null, null, null)
     }
 }

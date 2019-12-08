@@ -39,6 +39,7 @@
     <string name="category_wages">賃金</string>
     <string name="empty_graph">適用されるフィルターを満たすトランザクションはありません！</string>
     <string name="empty_list">適用されるフィルターを満たすトランザクションはありません！\n下のボタンを押して、新しいトランザクションを追加してください！</string>
+    <string name="filter_account">口座:</string>
     <string name="filter_apply">適用する</string>
     <string name="filter_category">カテゴリ:</string>
     <string name="filter_date">日付:</string>
@@ -68,7 +69,7 @@
     <string name="preferences_thousands_symbol">数千の区切り記号</string>
     <string name="settings">設定</string>
     <string name="snackbar_saved">トランザクションが保存されました！</string>
-    <string name="transaction_account">アカウント：</string>
+    <string name="transaction_account">口座：</string>
     <string name="transaction_category">カテゴリー：</string>
     <string name="transaction_date">日付：</string>
     <string name="transaction_empty_title">"トランザクション "</string>

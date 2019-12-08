@@ -18,6 +18,14 @@ class FilterViewModel : ViewModel() {
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
     /**
+     *  Transaction queries.
+     */
+    suspend fun getAccountsAsync() : Deferred<List<String>> {
+
+        return transactionRepository.getAccountsAsync()
+    }
+
+    /**
      *  ExpenseCategory queries.
      */
     suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> {

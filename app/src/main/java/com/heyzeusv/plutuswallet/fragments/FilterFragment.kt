@@ -32,12 +32,14 @@ private const val MIDNIGHT_MILLI = 86399999
 class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // views
+    private lateinit var accountCheckBox        : CheckBox
     private lateinit var categoryCheckBox       : CheckBox
     private lateinit var dateCheckBox           : CheckBox
     private lateinit var typeButton             : MaterialButton
     private lateinit var startDateButton        : MaterialButton
     private lateinit var endDateButton          : MaterialButton
     private lateinit var applyButton            : MaterialButton
+    private lateinit var accountSpinner         : Spinner
     private lateinit var expenseCategorySpinner : Spinner
     private lateinit var incomeCategorySpinner  : Spinner
 
@@ -53,16 +55,19 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var endDate   = Date()
 
     // state of checkboxes
+    private var accountSelected  = false
     private var categorySelected = false
     private var dateSelected     = false
 
-    // lists containing Category names
+    // lists containing Account/Category names
+    private var accountNameList          : MutableList<String> = mutableListOf()
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
 
     // strings for localization
     private lateinit var applyButtonText : String
     private lateinit var typeButtonText  : String
+    private lateinit var accountName     : String
     private lateinit var categoryName    : String
     private lateinit var all             : String
 
@@ -79,6 +84,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // initializing strings for localization
         applyButtonText = getString(R.string.filter_apply)
         typeButtonText  = getString(R.string.type_expense)
+        accountName     = getString(R.string.category_all)
         categoryName    = getString(R.string.category_all)
         all             = getString(R.string.category_all)
     }
@@ -88,12 +94,14 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         val view : View = inflater.inflate(R.layout.fragment_filter, container, false)
 
         // initialize views
+        accountCheckBox        = view.findViewById(R.id.filter_account_check   ) as CheckBox
         categoryCheckBox       = view.findViewById(R.id.filter_category_check  ) as CheckBox
         dateCheckBox           = view.findViewById(R.id.filter_date_check      ) as CheckBox
         typeButton             = view.findViewById(R.id.filter_type            ) as MaterialButton
         startDateButton        = view.findViewById(R.id.filter_start_date      ) as MaterialButton
         endDateButton          = view.findViewById(R.id.filter_end_date        ) as MaterialButton
         applyButton            = view.findViewById(R.id.filter_apply           ) as MaterialButton
+        accountSpinner         = view.findViewById(R.id.filter_account         ) as Spinner
         expenseCategorySpinner = view.findViewById(R.id.filter_expense_category) as Spinner
         incomeCategorySpinner  = view.findViewById(R.id.filter_income_category ) as Spinner
 
@@ -118,6 +126,24 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         super.onViewCreated(view, savedInstanceState)
 
         launch {
+
+            //retrieves list of Accounts from database
+            accountNameList = filterViewModel.getAccountsAsync().await().toMutableList()
+            // will translate if "None" exists
+            if (accountNameList.indexOf("None") != -1) {
+
+                accountNameList[accountNameList.indexOf("None")] = getString(R.string.account_none)
+            }
+            // sorts list in alphabetical order
+            accountNameList.sort()
+            // "All" accounts at top
+            accountNameList.add(0, all)
+            // sets up the accountSpinner
+            val accountSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, accountNameList)
+            accountSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            accountSpinner         .adapter = accountSpinnerAdapter
+            // sets the spinner up to Account saved
+            accountSpinner.setSelection(accountNameList.indexOf(accountName))
 
             // retrieves list of Expense Categories from database
             expenseCategoryNamesList = filterViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
@@ -155,6 +181,18 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     override fun onStart() {
         super.onStart()
+
+        accountCheckBox.apply {
+
+            setOnCheckedChangeListener { _, isChecked ->
+
+                accountSelected          = isChecked
+                accountSpinner.isEnabled = isChecked
+                updateUi(false)
+            }
+            // skips animation
+            jumpDrawablesToCurrentState()
+        }
 
         categoryCheckBox.apply {
 
@@ -224,12 +262,26 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
         }
 
+        accountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
+
+                accountName = when (parent?.getItemAtPosition(position) as String) {
+                    getString(R.string.category_all)  -> "All"
+                    getString(R.string.account_none) -> "None"
+                    else   -> parent.getItemAtPosition(position) as String
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
         expenseCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-                categoryName = parent?.getItemAtPosition(position) as String
+                categoryName = Utils.unTranslateCategory(context!!, parent?.getItemAtPosition(position) as String)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -240,7 +292,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-                categoryName = parent?.getItemAtPosition(position) as String
+                categoryName = Utils.unTranslateCategory(context!!, parent?.getItemAtPosition(position) as String)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -265,10 +317,11 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     "Income"
                 }
                 // updating MutableLiveData value in ViewModel
-                val tInfo = TransactionInfo(categorySelected, dateSelected, type, categoryName, startDate, endDateCorrected)
+                val tInfo = TransactionInfo(accountSelected, categorySelected, dateSelected,
+                    type, accountName, categoryName, startDate, endDateCorrected)
                 fglViewModel.updateTInfo(tInfo)
                 // if both filters are unchecked
-                if (!categorySelected && !dateSelected) {
+                if (!accountSelected && !categorySelected && !dateSelected) {
 
                     resetFilter()
                 }
@@ -329,6 +382,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         if (views) {
 
             // restores state of views
+            accountSpinner        .isEnabled = accountSelected
             typeButton            .isEnabled = categorySelected
             expenseCategorySpinner.isEnabled = categorySelected
             incomeCategorySpinner .isEnabled = categorySelected
@@ -340,7 +394,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         // changes visibility of buttons depending if there are filters applied
-        if (!categorySelected && !dateSelected) {
+        if (!accountSelected && !categorySelected && !dateSelected) {
 
             applyButtonText  = getString(R.string.filter_reset)
             applyButton.text = applyButtonText

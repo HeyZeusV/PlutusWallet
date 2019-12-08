@@ -77,9 +77,11 @@ class GraphFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // values sent to ViewModels
-        var date  : Boolean?
-        var start : Date?
-        var end   : Date?
+        var account     : Boolean?
+        var date        : Boolean?
+        var start       : Date?
+        var end         : Date?
+        var accountName : String?
 
         // register an observer on LiveData instance and tie life to another component
         fglViewModel.tInfoLiveData.observe(
@@ -91,17 +93,19 @@ class GraphFragment : BaseFragment() {
                 newInfo.let {
 
                     // updating values for ViewModels
-                    date  = newInfo.date
-                    start = newInfo.start
-                    end   = newInfo.end
+                    account     = newInfo.account
+                    date        = newInfo.date
+                    start       = newInfo.start
+                    end         = newInfo.end
+                    accountName = newInfo.accountName
                 }
 
                 // LiveData of Expense Transactions
                 val expenseTransactionListLiveData : LiveData<List<CategoryTotals>> =
-                    graphViewModel.filteredCategoryTotals(date, "Expense", start, end)
+                    graphViewModel.filteredCategoryTotals(account, date, "Expense", accountName, start, end)
                 // LiveData of Income Transactions
                 val incomeTransactionListLiveData  : LiveData<List<CategoryTotals>> =
-                    graphViewModel.filteredCategoryTotals(date, "Income", start, end)
+                    graphViewModel.filteredCategoryTotals(account, date, "Income", accountName, start, end)
 
                 // register an observer on LiveData instance and tie life to another component
                 expenseTransactionListLiveData.observe(
@@ -188,19 +192,20 @@ class GraphFragment : BaseFragment() {
         categoryList.forEach { category : String ->
 
             val categoryTotal = CategoryTotals(category, BigDecimal(0))
-            var total         = 0.0f
+            var total         = BigDecimal("0")
             // calculates sum of all Totals with the same Category of this CategoryTotals
             categoryTotalList.forEach {
 
                 if (it.category == category) {
 
-                    total += it.total.toFloat()
+                    total += it.total
                 }
             }
-            categoryTotal.total = BigDecimal(total.toString())
+            categoryTotal.total = total
 
             // adds category to removeList if total is 0
             if (categoryTotal.total.toString() != "0.0") {
+
                 updatedCategoryTotalsList.add(categoryTotal)
             } else {
 

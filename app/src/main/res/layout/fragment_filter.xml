@@ -30,14 +30,13 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/categoryTextView"
+                    android:id="@+id/accountTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:layout_marginTop="9dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="35dp"
-                    android:singleLine="false"
-                    android:text="@string/filter_category"
+                    android:text="@string/filter_account"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -46,7 +45,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <CheckBox
-                    android:id="@+id/filter_category_check"
+                    android:id="@+id/filter_account_check"
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:layout_marginTop="1dp"
@@ -57,6 +56,47 @@
                     android:translationY="-1dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <Spinner
+                    android:id="@+id/filter_account"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+
+                <TextView
+                    android:id="@+id/categoryTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="38dp"
+                    android:layout_marginEnd="35dp"
+                    android:singleLine="false"
+                    android:text="@string/filter_category"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+
+                <CheckBox
+                    android:id="@+id/filter_category_check"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginEnd="3dp"
+                    android:background="?android:attr/listChoiceIndicatorMultiple"
+                    android:button="@null"
+                    android:translationX="5dp"
+                    android:translationY="-1dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/filter_type"
@@ -177,6 +217,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/filter_start_date"
                     tools:text="End Date" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
 

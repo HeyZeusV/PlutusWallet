@@ -267,8 +267,14 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             accountSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, accountNameList)
             accountSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
             accountSpinner         .adapter = accountSpinnerAdapter
+            // sets selection of spinner
+            accountSpinner.setSelection(if (transaction.account == "None") {
 
-            accountSpinner.setSelection(accountNameList.indexOf(transaction.account))
+                accountNameList.indexOf(getString(R.string.account_none))
+            } else {
+
+                accountNameList.indexOf(transaction.account)
+            })
 
             // retrieves list of Expense Categories from database
             expenseCategoryNamesList = transactionDetailViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
@@ -458,7 +464,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     newCategoryDialog(expenseCategorySpinner)
                 }
                 // updates the category to selected one
-                transaction.category = parent?.getItemAtPosition(position) as String
+                transaction.category = Utils.unTranslateCategory(context!!, parent?.getItemAtPosition(position) as String)
             }
 
             override fun onNothingSelected(parent : AdapterView<*>?) {}
@@ -475,7 +481,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     newCategoryDialog(incomeCategorySpinner)
                 }
                 // updates the category to selected one
-                transaction.category = parent?.getItemAtPosition(position) as String
+                transaction.category = Utils.unTranslateCategory(context!!, parent?.getItemAtPosition(position) as String)
             }
 
             override fun onNothingSelected(parent : AdapterView<*>?) {}
@@ -516,6 +522,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             if (transaction.title.trim().isEmpty()) {
 
                 transaction.title = getString(R.string.transaction_empty_title) + transaction.id
+            }
+
+            // Untranslated "None"
+            if (transaction.account == getString(R.string.account_none)) {
+
+                transaction.account = "None"
             }
 
             // frequency must always be at least 1
@@ -848,33 +860,35 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 Utils.formatInteger(transaction.total.toString(), thousandsSymbol)
             }))
 
+        accountSpinner.setSelection(if (transaction.account == "None") {
 
+            accountNameList.indexOf(getString(R.string.account_none))
+        } else {
+
+            accountNameList.indexOf(transaction.account)
+        })
         if (transaction.type == "Income") {
 
             typeSelected                     = true
             expenseCategorySpinner.isVisible = false
             incomeCategorySpinner .isVisible = true
+            expenseChip          .isChecked = false
+            incomeChip           .isChecked = true
+            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(
+                Utils.translateCategory(context!!, transaction.category)))
         } else {
 
             typeSelected                     = false
             expenseCategorySpinner.isVisible = true
             incomeCategorySpinner .isVisible = false
+            expenseChip           .isChecked = true
+            incomeChip            .isChecked = false
+            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(
+                Utils.translateCategory(context!!, transaction.category)))
             // weird bug that only affected expenseChip where it was able to be
             // deselected when Transaction is first started, this fixes it
             expenseChip.isClickable = false
             incomeChip .isClickable = true
-        }
-
-        if (!typeSelected) {
-
-            expenseChip           .isChecked = true
-            incomeChip            .isChecked = false
-            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
-        } else {
-
-            expenseChip          .isChecked = false
-            incomeChip           .isChecked = true
-            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
         }
 
         repeatingCheckBox.apply {

@@ -31,35 +31,71 @@ class TransactionListViewModel : ViewModel() {
      *
      *  Uses the values of category and date in order to determine which Transaction list is needed.
      *
+     *  @param  account      boolean for account filter
      *  @param  category     boolean for category filter.
      *  @param  date         boolean for date filter.
      *  @param  type         either "Expense" or "Income".
+     *  @param  accountName  account name to be searched
      *  @param  categoryName category name to be searched in table of type.
      *  @param  start        starting Date for date filter.
      *  @param  end          ending Date for date filter.
      *  @return LiveData object holding list of Transactions.
      */
-    fun filteredTransactionList(category : Boolean?, date : Boolean?, type : String?, categoryName : String?,
+    fun filteredTransactionList(account : Boolean?, category : Boolean?, date : Boolean?,
+                                type : String?, accountName : String?, categoryName : String?,
                                 start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> {
 
-        return if (category == true && date == true && categoryName == "All") {
+        return if (account == true && category == true && date == true && accountName == "All" && categoryName == "All") {
 
-            transactionRepository.getLDTransactions(type, start, end)
+            transactionRepository.getLdTD(type, start, end)
+        } else if (account == true && category == true && date == true && categoryName == "All") {
+
+            transactionRepository.getLdATD(accountName, type, start, end)
+        } else if (account == true && category == true && date == true) {
+
+            transactionRepository.getLdATCD(accountName, type, categoryName, start, end)
+        } else if (account == true && category == true && accountName == "All" && categoryName == "All") {
+
+            transactionRepository.getLdT(type)
+        } else if (account == true && category == true && accountName == "All") {
+
+            transactionRepository.getLdTC(type, categoryName)
+        } else if (account == true && category == true && categoryName == "All") {
+
+            transactionRepository.getLdAT(accountName, type)
+        } else if (account == true && category == true) {
+
+            transactionRepository.getLdATC(accountName, type, categoryName)
+        } else if (account == true && date == true && accountName == "All") {
+
+            transactionRepository.getLdD(start, end)
+        } else if (account == true && date == true) {
+
+            transactionRepository.getLdAD(accountName, start, end)
+        } else if (account == true && accountName == "All") {
+
+            transactionRepository.getLd()
+        } else if (account == true) {
+
+            transactionRepository.getLdA(accountName)
+        } else if (category == true && date == true && categoryName == "All") {
+
+            transactionRepository.getLdTD(type, start, end)
         } else if (category == true && date == true) {
 
-            transactionRepository.getLDTransactions(type, categoryName, start, end)
+            transactionRepository.getLdTCD(type, categoryName, start, end)
         } else if (category == true && categoryName == "All") {
 
-            transactionRepository.getLDTransactions(type)
+            transactionRepository.getLdT(type)
         } else if (category == true) {
 
-            transactionRepository.getLDTransactions(type, categoryName)
+            transactionRepository.getLdTC(type, categoryName)
         } else if (date == true) {
 
-            transactionRepository.getLDTransactions(start, end)
+            transactionRepository.getLdD(start, end)
         }  else {
 
-            transactionRepository.getLDTransactions()
+            transactionRepository.getLd()
         }
     }
 

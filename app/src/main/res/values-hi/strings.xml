@@ -39,6 +39,7 @@
     <string name="category_wages">वेतन</string>
     <string name="empty_graph">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!</string>
     <string name="empty_list">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!\nनया लेनदेन जोड़ने के लिए नीचे दिया गया बटन दबाएं!</string>
+    <string name="filter_account">लेखा:</string>
     <string name="filter_apply">लागू</string>
     <string name="filter_category">वर्ग:</string>
     <string name="filter_date">दिनांक:</string>

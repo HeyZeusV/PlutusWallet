@@ -39,6 +39,7 @@
     <string name="category_wages">Salario</string>
     <string name="empty_graph">¡Ninguna transacción para realizar el filtro aplicado!</string>
     <string name="empty_list">¡Ninguna transacción cumple con los filtros que se aplican!\n¡Presione el botón a continuación para agregar una nueva transacción!</string>
+    <string name="filter_account">Cuenta:</string>
     <string name="filter_apply">Aplicar</string>
     <string name="filter_category">Categoría:</string>
     <string name="filter_date">Fecha:</string>

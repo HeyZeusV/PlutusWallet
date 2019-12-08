@@ -39,6 +39,7 @@
     <string name="category_wages">ค่าจ้าง</string>
     <string name="empty_graph">ไม่มีการทำธุรกรรมใด ๆ เพื่อดำเนินการตัวกรองที่ใช้!</string>
     <string name="empty_list">ไม่มีการทำธุรกรรมใดที่ตรงตามตัวกรองที่ใช้!\nกดปุ่มด้านล่างเพื่อเพิ่มธุรกรรมใหม่!</string>
+    <string name="filter_account">บัญชี:</string>
     <string name="filter_apply">ใช้</string>
     <string name="filter_category">ประเภท:</string>
     <string name="filter_date">วันที่:</string>

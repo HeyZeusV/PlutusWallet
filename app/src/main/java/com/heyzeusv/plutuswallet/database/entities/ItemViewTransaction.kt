@@ -18,6 +18,7 @@ class ItemViewTransaction(
     val id       : Int,
     val title    : String,
     val date     : Date,
+    val account  : String,
     val total    : BigDecimal,
     val type     : String,
     val category : String)

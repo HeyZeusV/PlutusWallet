@@ -223,5 +223,32 @@ class Utils {
 
             return list
         }
+
+        /**
+         *  Translates Categories back to English
+         *
+         *  @param  context needed to retrieve translations
+         *  @param  name    the string to be checked for translation
+         *  @return the translated/non-translated string
+         */
+        fun unTranslateCategory(context : Context, name : String) : String {
+
+            return when (name) {
+
+                context.getString(R.string.category_education)      -> "Education"
+                context.getString(R.string.category_entertainment)  -> "Entertainment"
+                context.getString(R.string.category_food)           -> "Food"
+                context.getString(R.string.category_home)           -> "Home"
+                context.getString(R.string.category_transportation) -> "Transportation"
+                context.getString(R.string.category_utilities)      -> "Utilities"
+                context.getString(R.string.category_cryptocurrency) -> "Cryptocurrency"
+                context.getString(R.string.category_investments)    -> "Investments"
+                context.getString(R.string.category_salary)         -> "Salary"
+                context.getString(R.string.category_savings)        -> "Savings"
+                context.getString(R.string.category_stocks)         -> "Stocks"
+                context.getString(R.string.category_wages)          -> "Wages"
+                else -> name
+            }
+        }
     }
 }

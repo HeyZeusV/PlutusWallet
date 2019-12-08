@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
+    import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -127,9 +127,11 @@ class TransactionListFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // values sent to ViewModels
+        var account      : Boolean?
         var category     : Boolean?
         var date         : Boolean?
         var type         : String?
+        var accountName  : String?
         var categoryName : String?
         var start        : Date?
         var end          : Date?
@@ -144,11 +146,13 @@ class TransactionListFragment : BaseFragment() {
                 newInfo.let {
 
                     // updating values for ViewModels
+                    account      = newInfo.account
                     category     = newInfo.category
                     date         = newInfo.date
                     type         = newInfo.type
                     start        = newInfo.start
                     end          = newInfo.end
+                    accountName  = newInfo.accountName
                     categoryName = if (newInfo.categoryName == getString(R.string.category_all)) {
 
                         "All"
@@ -160,7 +164,8 @@ class TransactionListFragment : BaseFragment() {
 
                 // tells ViewModel which query to run on Transactions
                 val transactionListLiveData : LiveData<List<ItemViewTransaction>> =
-                    transactionListViewModel.filteredTransactionList(category, date, type, categoryName, start, end)
+                    transactionListViewModel.filteredTransactionList(account, category, date, type,
+                        accountName, categoryName, start, end)
 
                 // register an observer on LiveData instance and tie life to another component
                 transactionListLiveData.observe(
@@ -440,6 +445,7 @@ class TransactionListFragment : BaseFragment() {
 
         // views in the ItemView
         private val titleTextView    : TextView = itemView.findViewById(R.id.transaction_title   )
+        private val accountTextView  : TextView = itemView.findViewById(R.id.transaction_account )
         private val dateTextView     : TextView = itemView.findViewById(R.id.transaction_date    )
         private val totalTextView    : TextView = itemView.findViewById(R.id.transaction_total   )
         private val categoryTextView : TextView = itemView.findViewById(R.id.transaction_category)
@@ -457,6 +463,13 @@ class TransactionListFragment : BaseFragment() {
             titleTextView   .text = this.transaction.title
             categoryTextView.text = Utils.translateCategory(context!!, this.transaction.category)
             dateTextView    .text = DateFormat .getDateInstance(dateFormat).format(this.transaction.date)
+            accountTextView .text = if (this.transaction.account == "None") {
+
+                getString(R.string.account_none)
+            } else {
+
+                this.transaction.account
+            }
 
             // formats the Total correctly
             if (decimalPlaces) {
