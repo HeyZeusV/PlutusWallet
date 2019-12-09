@@ -1,3 +1,6 @@
+v1.2.0
+-Filters can now be applied to Accounts
+
 v1.1.0
 -New attribute for transactions: Account.
 

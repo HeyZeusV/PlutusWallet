@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-    import android.view.LayoutInflater
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -69,10 +69,13 @@ class TransactionListFragment : BaseFragment() {
     // used to tell if app is first starting up
     private var startUp : Boolean = true
 
+    // used to tell if a Transaction was clicked/long clicked
+    private var clicked : Boolean = false
+
     // holds position of RecyclerView so that it doesn't reset when user returns
     private var recyclerViewPosition : Int = 0
 
-    private var maxId           : Int     = 0
+    private var maxId : Int = 0
 
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
@@ -199,25 +202,22 @@ class TransactionListFragment : BaseFragment() {
 
         transactionAddFab.setOnClickListener {
             callbacks?.onTransactionSelected(0, true)
-            // this will make it so the list will snap to the top after user
-            // creates a new Transaction
-            recyclerViewPosition = transactionRecyclerView.adapter!!.itemCount
         }
     }
 
     override fun onResume() {
         super.onResume()
 
-        futureTransactions()
-
-        // tell RecyclerView that symbol has been changed
-        transactionAdapter!!.notifyDataSetChanged()
-
         launch {
 
             // retrieves maxId or 0 if null
             maxId = transactionListViewModel.getMaxIdAsync().await() ?: 0
         }
+
+        futureTransactions()
+
+        // tell RecyclerView that symbol has been changed
+        transactionAdapter!!.notifyDataSetChanged()
     }
 
 
@@ -268,47 +268,53 @@ class TransactionListFragment : BaseFragment() {
             // returns list of all Transactions whose futureDate is before current date
             val futureTransactionList : MutableList<Transaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
 
-            // co-routine is used in order to wait for entire forEach loop to complete
-            // without this, not all new Transactions created are saved correctly
-            val deferredList : Deferred<MutableList<Transaction>> = async(context = ioContext) {
+            if (futureTransactionList.isNotEmpty()) {
 
-                // list that will be upserted into database
-                val readyToUpsert : MutableList<Transaction> = mutableListOf()
+                // co-routine is used in order to wait for entire forEach loop to complete
+                // without this, not all new Transactions created are saved correctly
+                val deferredList: Deferred<MutableList<Transaction>> = async(context = ioContext) {
 
-                futureTransactionList.forEach {
+                    // list that will be upserted into database
+                    val readyToUpsert: MutableList<Transaction> = mutableListOf()
 
-                    // id must be unique
-                    maxId += 1
-                    // gets copy of Transaction attached to this FutureTransaction
-                    val transaction : Transaction = it.copy()
-                    // changing new Transaction values to updated values
-                    transaction.id         = maxId
-                    transaction.date       = it.futureDate
-                    transaction.title      = incrementString (transaction.title)
-                    transaction.futureDate = createFutureDate(transaction.date, transaction.period, transaction.frequency)
-                    // if new futureDate is less than Date() then there are more Transactions to be added
-                    if (transaction.futureDate < Date()) {
+                    futureTransactionList.forEach {
 
-                        moreToCreate = true
+                        // id must be unique
+                        maxId += 1
+                        // gets copy of Transaction attached to this FutureTransaction
+                        val transaction: Transaction = it.copy()
+                        // changing new Transaction values to updated values
+                        transaction.id = maxId
+                        transaction.date = it.futureDate
+                        transaction.title = incrementString(transaction.title)
+                        transaction.futureDate = createFutureDate(
+                            transaction.date,
+                            transaction.period,
+                            transaction.frequency
+                        )
+                        // if new futureDate is less than Date() then there are more Transactions to be added
+                        if (transaction.futureDate < Date()) {
+
+                            moreToCreate = true
+                        }
+                        // stops this Transaction from being repeated again if user switches its date
+                        it.futureTCreated = true
+                        // transaction to be inserted
+                        readyToUpsert.add(transaction)
+                        // it to be updated
+                        readyToUpsert.add(it)
                     }
-                    // stops this Transaction from being repeated again if user switches its date
-                    it.futureTCreated      = true
-                    // transaction to be inserted
-                    readyToUpsert.add(transaction)
-                    // it to be updated
-                    readyToUpsert.add(it)
+
+                    return@async readyToUpsert
                 }
 
-                return@async readyToUpsert
-            }
+                val ready : MutableList<Transaction> = deferredList.await()
+                transactionListViewModel.upsertTransactions(ready)
+                // recursive call in order to create Transactions until all futureDates are past Date()
+                if (moreToCreate) {
 
-            transactionListViewModel.upsertTransactions(deferredList.await())
-            // RecyclerView will scroll to top of the list whenever a Transaction is added
-            recyclerViewPosition = maxId
-            // recursive call in order to create Transactions until all futureDates are past Date()
-            if (moreToCreate) {
-
-                futureTransactions()
+                    futureTransactions()
+                }
             }
         }
     }
@@ -397,8 +403,16 @@ class TransactionListFragment : BaseFragment() {
         transactionAdapter              = TransactionAdapter(transactions)
         transactionRecyclerView.adapter = transactionAdapter
 
-        // used to return user to previous position in transactionRecyclerView
-        transactionRecyclerView.scrollToPosition(recyclerViewPosition)
+        if (clicked) {
+
+            // used to return user to previous position in transactionRecyclerView
+            transactionRecyclerView.scrollToPosition(recyclerViewPosition)
+            clicked = false
+        } else {
+
+            // when user applies a Filter, list should start at top
+            transactionRecyclerView.scrollToPosition(transactionRecyclerView.size - 1)
+        }
 
         // this will only run once, when application is first started
         if (startUp) {
@@ -507,6 +521,7 @@ class TransactionListFragment : BaseFragment() {
 
             // the position that the user clicked on
             recyclerViewPosition = this.layoutPosition
+            clicked              = true
             // notifies hosting activity which item was selected
             callbacks?.onTransactionSelected(transaction.id, false)
         }
@@ -518,6 +533,7 @@ class TransactionListFragment : BaseFragment() {
         override fun onLongClick(v : View?) : Boolean {
 
             recyclerViewPosition = this.layoutPosition
+            clicked              = true
             // initialize instance of builder
             val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                 // set title of AlertDialog

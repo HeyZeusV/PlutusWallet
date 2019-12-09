@@ -45,55 +45,76 @@ class TransactionListViewModel : ViewModel() {
                                 type : String?, accountName : String?, categoryName : String?,
                                 start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> {
 
-        return if (account == true && category == true && date == true && accountName == "All" && categoryName == "All") {
+        return if (account == true && category == true && date == true) {
 
-            transactionRepository.getLdTD(type, start, end)
-        } else if (account == true && category == true && date == true && categoryName == "All") {
+            if (accountName == "All" && categoryName == "All") {
 
-            transactionRepository.getLdATD(accountName, type, start, end)
-        } else if (account == true && category == true && date == true) {
+                transactionRepository.getLdTD(type, start, end)
+            } else if (accountName == "All") {
 
-            transactionRepository.getLdATCD(accountName, type, categoryName, start, end)
-        } else if (account == true && category == true && accountName == "All" && categoryName == "All") {
+                transactionRepository.getLdTCD(type, categoryName, start, end)
+            } else if (categoryName == "All") {
 
-            transactionRepository.getLdT(type)
-        } else if (account == true && category == true && accountName == "All") {
+                transactionRepository.getLdATD(accountName, type, start, end)
+            } else {
 
-            transactionRepository.getLdTC(type, categoryName)
-        } else if (account == true && category == true && categoryName == "All") {
-
-            transactionRepository.getLdAT(accountName, type)
+                transactionRepository.getLdATCD(accountName, type, categoryName, start, end)
+            }
         } else if (account == true && category == true) {
 
-            transactionRepository.getLdATC(accountName, type, categoryName)
-        } else if (account == true && date == true && accountName == "All") {
+            if (accountName == "All" && categoryName == "All") {
 
-            transactionRepository.getLdD(start, end)
+                transactionRepository.getLdT(type)
+            } else if (accountName == "All") {
+
+                transactionRepository.getLdTC(type, categoryName)
+            } else if (categoryName == "All") {
+
+                transactionRepository.getLdAT(accountName, type)
+            } else {
+
+                transactionRepository.getLdATC(accountName, type, categoryName)
+            }
         } else if (account == true && date == true) {
 
-            transactionRepository.getLdAD(accountName, start, end)
-        } else if (account == true && accountName == "All") {
+            if (accountName == "All") {
 
-            transactionRepository.getLd()
+                transactionRepository.getLdD(start, end)
+            } else {
+
+                transactionRepository.getLdAD(accountName, start, end)
+            }
         } else if (account == true) {
 
-            transactionRepository.getLdA(accountName)
-        } else if (category == true && date == true && categoryName == "All") {
+            if (accountName == "All") {
 
-            transactionRepository.getLdTD(type, start, end)
+                transactionRepository.getLd()
+            } else {
+
+                transactionRepository.getLdA(accountName)
+            }
         } else if (category == true && date == true) {
 
-            transactionRepository.getLdTCD(type, categoryName, start, end)
-        } else if (category == true && categoryName == "All") {
+            if (categoryName == "All") {
 
-            transactionRepository.getLdT(type)
+                transactionRepository.getLdTD(type, start, end)
+            } else {
+
+                transactionRepository.getLdTCD(type, categoryName, start, end)
+            }
         } else if (category == true) {
 
-            transactionRepository.getLdTC(type, categoryName)
+            if (categoryName == "All") {
+
+                transactionRepository.getLdT(type)
+            } else {
+
+                transactionRepository.getLdTC(type, categoryName)
+            }
         } else if (date == true) {
 
             transactionRepository.getLdD(start, end)
-        }  else {
+        } else {
 
             transactionRepository.getLd()
         }
