@@ -95,4 +95,5 @@
     <string name="transaction_type">Type:</string>
     <string name="type_expense">Expense</string>
     <string name="type_income">Income</string>
+    <string name="remove_ads">Remove Advertisements</string>
 </resources>

@@ -84,4 +84,5 @@
     <string name="transaction_type">タイプ：</string>
     <string name="type_expense">費用</string>
     <string name="type_income">所得</string>
+    <string name="remove_ads">広告を削除する</string>
 </resources>

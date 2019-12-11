@@ -11,4 +11,9 @@
         android:id="@+id/about"
         android:icon="@drawable/ic_baseline_info_24"
         android:title="@string/about"/>
+
+    <item
+        android:id="@+id/no_ads"
+        android:icon="@drawable/ic_baseline_star_24"
+        android:title="@string/remove_ads"/>
 </menu>

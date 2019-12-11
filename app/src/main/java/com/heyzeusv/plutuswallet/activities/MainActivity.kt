@@ -6,10 +6,13 @@ import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.billingrepo.localdb.AugmentedSkuDetails
 import com.heyzeusv.plutuswallet.fragments.BlankFragment
 import com.heyzeusv.plutuswallet.fragments.FilterFragment
 import com.heyzeusv.plutuswallet.fragments.GraphFragment
@@ -18,6 +21,7 @@ import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
 import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE_CHANGED
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
+import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
 
 private const val TAG = "MainActivity"
 
@@ -32,6 +36,12 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     private lateinit var fab            : FloatingActionButton
     private lateinit var menuButton     : MaterialButton
     private lateinit var navigationView : NavigationView
+
+    // ViewModel
+    private lateinit var billingViewModel : BillingViewModel
+
+    // details for NoAds IAP
+    private lateinit var noAdsDetails : AugmentedSkuDetails
 
     // position of FAB, depends on device
     private var fabX = 0
@@ -72,6 +82,17 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                 .add(R.id.fragment_graph_container           , graphFragment          )
                 .commit()
         }
+
+        // getting instance of BillingViewModel
+        billingViewModel = ViewModelProviders.of(this).get(BillingViewModel::class.java)
+        // observing List of SKUDetails LiveData
+        billingViewModel.inappSkuDetailsListLiveData.observe(this, Observer {
+
+            it?.let {
+
+                noAdsDetails = it[0]
+            }
+        })
     }
 
     override fun onStart() {
@@ -91,11 +112,17 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                     true
                 }
                 // starts AboutActivity
-                else -> {
+                R.id.about -> {
 
                     val aboutIntent = Intent(this, AboutActivity::class.java)
                     startActivity(aboutIntent)
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                // starts NoAds IAP
+                else -> {
+
+                    billingViewModel.makePurchase(this, noAdsDetails)
                     true
                 }
             }

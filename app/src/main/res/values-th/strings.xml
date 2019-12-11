@@ -84,4 +84,5 @@
     <string name="transaction_type">ประเภท:</string>
     <string name="type_expense">ค่าใช้จ่าย</string>
     <string name="type_income">เงินได้</string>
+    <string name="remove_ads">ลบโฆษณา</string>
 </resources>

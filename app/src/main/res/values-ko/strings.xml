@@ -84,4 +84,5 @@
     <string name="transaction_type">유형:</string>
     <string name="type_expense">비용</string>
     <string name="type_income">수입</string>
+    <string name="remove_ads">광고 제거</string>
 </resources>

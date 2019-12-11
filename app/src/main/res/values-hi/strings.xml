@@ -84,4 +84,5 @@
     <string name="transaction_type">प्रकार:</string>
     <string name="type_expense">व्यय</string>
     <string name="type_income">आय</string>
+    <string name="remove_ads">विज्ञापन निकालें</string>
 </resources>
