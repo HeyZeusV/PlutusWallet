@@ -2,12 +2,15 @@ package com.heyzeusv.plutuswallet.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
@@ -51,6 +54,9 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // initialize ads
+        MobileAds.initialize(this) {}
+
         // initialize views
         drawerLayout   = findViewById(R.id.activity_drawer         )
         fab            = findViewById(R.id.activity_fab            )
@@ -90,7 +96,10 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
             it?.let {
 
-                noAdsDetails = it[0]
+                if (it.isNotEmpty()) {
+
+                    noAdsDetails = it[0]
+                }
             }
         })
     }
@@ -133,6 +142,16 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
             drawerLayout.openDrawer(GravityCompat.START)
         }
+
+        billingViewModel.noAdsLiveData.observe(this, Observer {
+
+            it?.let {
+
+                // makes No Ads option visible depending if user is entitled to it
+                val navMenu : Menu = navigationView.menu
+                navMenu.findItem(R.id.no_ads).isVisible = !it.entitled
+            }
+        })
     }
 
     override fun onResume() {

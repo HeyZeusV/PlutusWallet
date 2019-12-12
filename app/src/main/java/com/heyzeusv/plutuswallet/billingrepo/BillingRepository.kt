@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.billingrepo
 
 import android.app.Activity
 import android.app.Application
-import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -71,7 +70,7 @@ class BillingRepository private constructor(private val application : Applicatio
      */
     fun startDataSourceConnections() {
 
-        Log.d(TAG, "startDataSourceConnections")
+        // Log.d(TAG, "startDataSourceConnections")
         instantiateAndConnectToPlayBillingService()
         localCacheBillingClient = LocalBillingDb.getInstance(application)
     }
@@ -81,7 +80,7 @@ class BillingRepository private constructor(private val application : Applicatio
         playStoreBillingClient.endConnection()
         // normally you don't worry about closing a DB connection unless you have more than
         // one DB open. so no need to call 'localCacheBillingClient.close()'
-        Log.d(TAG, "startDataSourceConnections")
+        // Log.d(TAG, "startDataSourceConnections")
     }
 
     private fun instantiateAndConnectToPlayBillingService() {
@@ -94,7 +93,7 @@ class BillingRepository private constructor(private val application : Applicatio
 
     private fun connectToPlayBillingService() : Boolean {
 
-        Log.d(TAG, "connectToPlayBillingService")
+        // Log.d(TAG, "connectToPlayBillingService")
         if (!playStoreBillingClient.isReady) {
 
             playStoreBillingClient.startConnection(this)
@@ -112,20 +111,20 @@ class BillingRepository private constructor(private val application : Applicatio
 
             BillingClient.BillingResponseCode.OK -> {
 
-                Log.d(TAG, "onBillingSetupFinished successfully")
+                // Log.d(TAG, "onBillingSetupFinished successfully")
                 querySkuDetailsAsync(BillingClient.SkuType.INAPP, AppSku.INAPP_SKUS)
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
 
                 //Some apps may choose to make decisions based on this knowledge.
-                Log.d(TAG, billingResult.debugMessage)
+                // Log.d(TAG, billingResult.debugMessage)
             }
             else -> {
 
                 //do nothing. Someone else will connect it through retry policy.
                 //May choose to send to server though
-                Log.d(TAG, billingResult.debugMessage)
+                // Log.d(TAG, billingResult.debugMessage)
             }
         }
     }
@@ -141,7 +140,7 @@ class BillingRepository private constructor(private val application : Applicatio
      */
     override fun onBillingServiceDisconnected() {
 
-        Log.d(TAG, "onBillingServiceDisconnected")
+        // Log.d(TAG, "onBillingServiceDisconnected")
         connectToPlayBillingService()
     }
 
@@ -159,10 +158,10 @@ class BillingRepository private constructor(private val application : Applicatio
      */
     private fun queryPurchasesAsync() {
 
-        Log.d(TAG, "queryPurchasesAsync called")
+        // Log.d(TAG, "queryPurchasesAsync called")
         val purchasesResult = HashSet<Purchase>()
         val result : Purchase.PurchasesResult? = playStoreBillingClient.queryPurchases(BillingClient.SkuType.INAPP)
-        Log.d(TAG, "queryPurchasesAsync INAPP results: ${result?.purchasesList?.size}")
+        // Log.d(TAG, "queryPurchasesAsync INAPP results: ${result?.purchasesList?.size}")
         result?.purchasesList?.apply {
 
             purchasesResult.addAll(this)
@@ -173,9 +172,9 @@ class BillingRepository private constructor(private val application : Applicatio
     private fun processPurchases(purchasesResult : Set<Purchase>) : Job =
         CoroutineScope(Job() + Dispatchers.IO).launch {
 
-            Log.d(TAG, "processPurchases called")
+            // Log.d(TAG, "processPurchases called")
             val validPurchases : MutableList<Purchase> = mutableListOf()
-            Log.d(TAG, "processPurchases newBatch content $purchasesResult")
+            // Log.d(TAG, "processPurchases newBatch content $purchasesResult")
             purchasesResult.forEach { purchase : Purchase ->
 
                 if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
@@ -184,12 +183,12 @@ class BillingRepository private constructor(private val application : Applicatio
 
                         validPurchases.add(purchase)
                     }
-                } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
+                } //else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
 
-                    Log.d(TAG, "Received a pending purchase of SKU: ${purchase.sku}")
+                    // Log.d(TAG, "Received a pending purchase of SKU: ${purchase.sku}")
                     // handle pending purchases, e.g. confirm with users about the pending
                     // purchases, prompt them to complete it, etc.
-                }
+                //}
             }
             /**
              *  As is being done in this sample, for extra reliability you may store the
@@ -199,8 +198,8 @@ class BillingRepository private constructor(private val application : Applicatio
              *  disbursed. In this sample, the receipts are then removed upon entitlement
              *  disbursement.
              */
-            val testing = localCacheBillingClient.purchaseDao().getPurchases()
-            Log.d(TAG, "processPurchases purchases in the lcl db ${testing.size}")
+            //val testing = localCacheBillingClient.purchaseDao().getPurchases()
+            // Log.d(TAG, "processPurchases purchases in the lcl db ${testing.size}")
             localCacheBillingClient.purchaseDao().insert(*validPurchases.toTypedArray())
             acknowledgeNonConsumablePurchasesAsync(validPurchases)
         }
@@ -224,7 +223,10 @@ class BillingRepository private constructor(private val application : Applicatio
 
                         disburseNonConsumableEntitlement(purchase)
                     }
-                    else -> Log.d(TAG, "acknowledgeNonConsumablePurchasesAsync response is ${billingResult.debugMessage}")
+                    else -> {
+
+                        // Log.d(TAG, "acknowledgeNonConsumablePurchasesAsync response is ${billingResult.debugMessage}")
+                    }
                 }
             }
 
@@ -273,7 +275,7 @@ class BillingRepository private constructor(private val application : Applicatio
 
         val params : SkuDetailsParams = SkuDetailsParams.newBuilder().setSkusList(skuList)
             .setType(skuType).build()
-        Log.d(TAG, "querySkuDetailsAsync for $skuType")
+        // Log.d(TAG, "querySkuDetailsAsync for $skuType")
         playStoreBillingClient.querySkuDetailsAsync(params)
         { billingResult : BillingResult, skuDetailsList ->
 
@@ -293,7 +295,7 @@ class BillingRepository private constructor(private val application : Applicatio
                 }
                 else -> {
 
-                    Log.e(TAG, billingResult.debugMessage)
+                    // Log.e(TAG, billingResult.debugMessage)
                 }
             }
         }
@@ -342,7 +344,7 @@ class BillingRepository private constructor(private val application : Applicatio
             BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
 
                 // item already owned? call queryPurchasesAsync to verify and process all such items
-                Log.d(TAG, billingResult.debugMessage)
+                // Log.d(TAG, billingResult.debugMessage)
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> {
@@ -351,7 +353,7 @@ class BillingRepository private constructor(private val application : Applicatio
             }
             else -> {
 
-                Log.i(TAG, billingResult.debugMessage)
+                // Log.i(TAG, billingResult.debugMessage)
             }
         }
     }

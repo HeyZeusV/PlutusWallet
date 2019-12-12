@@ -15,6 +15,10 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:fullBackupContent="@xml/backup_descriptor">
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7627627324882759~6989867808"/>
+
         <activity
             android:name=".activities.AboutActivity"
             android:label="@string/about"

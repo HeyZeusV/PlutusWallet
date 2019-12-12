@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.billingrepo
 
 import android.text.TextUtils
 import android.util.Base64
-import android.util.Log
 import java.io.IOException
 import java.security.InvalidKeyException
 import java.security.KeyFactory
@@ -59,7 +58,7 @@ object Security {
         if ((TextUtils.isEmpty(signedData) || TextUtils.isEmpty(base64PublicKey)
                     || TextUtils.isEmpty(signature))) {
 
-            Log.w(TAG, "Purchase verification failed: missing data.")
+            // Log.w(TAG, "Purchase verification failed: missing data.")
             return false
         }
         val key : PublicKey = generatePublicKey(base64PublicKey)
@@ -87,7 +86,7 @@ object Security {
         } catch (e: InvalidKeySpecException) {
 
             val msg = "Invalid key specification: $e"
-            Log.w(TAG, msg)
+            // Log.w(TAG, msg)
             throw IOException(msg)
         }
     }
@@ -109,7 +108,7 @@ object Security {
             signatureBytes = Base64.decode(signature, Base64.DEFAULT)
         } catch (e: IllegalArgumentException) {
 
-            Log.w(TAG, "Base64 decoding failed.")
+            // Log.w(TAG, "Base64 decoding failed.")
             return false
         }
         try {
@@ -119,7 +118,7 @@ object Security {
             signatureAlgorithm.update(signedData.toByteArray())
             if (!signatureAlgorithm.verify(signatureBytes)) {
 
-                Log.w(TAG, "Signature verification failed...")
+                // Log.w(TAG, "Signature verification failed...")
                 return false
             }
             return true
@@ -129,10 +128,10 @@ object Security {
             throw RuntimeException(e)
         } catch (e: InvalidKeyException) {
 
-            Log.w(TAG, "Invalid key specification.")
+            // Log.w(TAG, "Invalid key specification.")
         } catch (e: SignatureException) {
 
-            Log.w(TAG, "Signature exception.")
+            // Log.w(TAG, "Signature exception.")
         }
         return false
     }

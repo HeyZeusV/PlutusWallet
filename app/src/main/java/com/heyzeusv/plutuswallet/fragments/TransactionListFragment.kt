@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.size
@@ -18,6 +19,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.plutuswallet.R
@@ -27,6 +30,7 @@ import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.utilities.TransactionInfo
 import com.heyzeusv.plutuswallet.utilities.Utils
+import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
 import com.heyzeusv.plutuswallet.viewmodels.FGLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.Deferred
@@ -62,6 +66,8 @@ class TransactionListFragment : BaseFragment() {
     private var callbacks : Callbacks? = null
 
     // views
+    private lateinit var adView                  : AdView
+    private lateinit var rootView                : ConstraintLayout
     private lateinit var transactionAddFab       : FloatingActionButton
     private lateinit var transactionRecyclerView : RecyclerView
     private lateinit var emptyListTextView       : TextView
@@ -85,7 +91,9 @@ class TransactionListFragment : BaseFragment() {
         ViewModelProviders.of(this).get(TransactionListViewModel::class.java)
     }
 
-    private lateinit var fglViewModel : FGLViewModel
+    // shared ViewModels
+    private lateinit var fglViewModel     : FGLViewModel
+    private lateinit var billingViewModel : BillingViewModel
 
     override fun onAttach(context : Context) {
         super.onAttach(context)
@@ -99,6 +107,8 @@ class TransactionListFragment : BaseFragment() {
         val view : View = inflater.inflate(R.layout.fragment_transaction_list, container, false)
 
         // initialize views
+        adView                  = view.findViewById(R.id.ad_view                  ) as AdView
+        rootView                = view.findViewById(R.id.listRootView             ) as ConstraintLayout
         transactionAddFab       = view.findViewById(R.id.transaction_add_fab      ) as FloatingActionButton
         transactionRecyclerView = view.findViewById(R.id.transaction_recycler_view) as RecyclerView
         emptyListTextView       = view.findViewById(R.id.emptyListTextView        ) as TextView
@@ -121,6 +131,7 @@ class TransactionListFragment : BaseFragment() {
 
             ViewModelProviders.of(it).get(FGLViewModel::class.java)
         }
+        billingViewModel = ViewModelProviders.of(this).get(BillingViewModel::class.java)
 
         return view
     }
@@ -186,6 +197,31 @@ class TransactionListFragment : BaseFragment() {
 
             }
         )
+
+        billingViewModel.noAdsLiveData.observe(this, Observer {
+
+            // will load ads if there is noAds data or if user is not entitled to NoAds
+            if (it == null) {
+
+                // loads ad
+                val adRequest : AdRequest = AdRequest.Builder().build()
+                adView.loadAd(adRequest)
+            }
+            it?.let {
+
+                // makes ad disappear
+                if (it.entitled) {
+
+                    adView.destroy()
+                    adView.visibility = View.GONE
+                } else {
+
+                    // loads ad
+                    val adRequest : AdRequest = AdRequest.Builder().build()
+                    adView.loadAd(adRequest)
+                }
+            }
+        })
 
         // gets the sizes of the Category tables and sends them to initializeCategoryTables()
         launch {
