@@ -1,5 +1,9 @@
+v1.2.1
+-Added transitions when selecting a transaction from list, as well as returning from one.
+-Easier to tell which transaction was selected from list.
+
 v1.2.0
--Filters can now be applied to Accounts
+-Filters can now be applied to Accounts.
 
 v1.1.0
 -New attribute for transactions: Account.

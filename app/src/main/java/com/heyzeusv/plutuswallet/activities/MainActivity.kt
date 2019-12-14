@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.core.view.GravityCompat
@@ -203,9 +202,12 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             .beginTransaction()
             // replace fragment hosted at location with new fragment provided
             // will add fragment even if there is none
+            .setCustomAnimations(R.anim.enter_from_right, R.anim.list_exit_to_left, R.anim.list_enter_from_left, R.anim.exit_to_right)
             .add(R.id.fragment_transaction_container         , transactionFragment)
             .replace(R.id.fragment_transaction_list_container, blankFragment      )
+            .setCustomAnimations(R.anim.enter_from_right, R.anim.filter_exit_to_left, R.anim.filter_enter_from_left, R.anim.exit_to_right)
             .replace(R.id.fragment_filter_container          , blankFragment2     )
+            .setCustomAnimations(R.anim.enter_from_right, R.anim.graph_exit_to_left, R.anim.graph_enter_from_left, R.anim.exit_to_right)
             .replace(R.id.fragment_graph_container           , blankFragment3     )
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
