@@ -1,3 +1,6 @@
+v1.2.2
+-Fixed transactions not repeating when selected to.
+
 v1.2.1
 -Added transitions when selecting a transaction from list, as well as returning from one.
 -Easier to tell which transaction was selected from list.
@@ -17,7 +20,3 @@ v1.0.1
 
 v1.0.0
 -Initial release!! Woohoo!!!
-
-
-
-

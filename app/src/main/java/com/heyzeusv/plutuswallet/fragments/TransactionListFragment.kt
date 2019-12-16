@@ -244,12 +244,6 @@ class TransactionListFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        launch {
-
-            // retrieves maxId or 0 if null
-            maxId = transactionListViewModel.getMaxIdAsync().await() ?: 0
-        }
-
         futureTransactions()
 
         // tell RecyclerView that symbol has been changed
@@ -305,6 +299,9 @@ class TransactionListFragment : BaseFragment() {
             val futureTransactionList : MutableList<Transaction> = transactionListViewModel.getFutureTransactionsAsync(Date()).await().toMutableList()
 
             if (futureTransactionList.isNotEmpty()) {
+
+                // retrieves maxId or 0 if null
+                maxId = transactionListViewModel.getMaxIdAsync().await() ?: 0
 
                 // co-routine is used in order to wait for entire forEach loop to complete
                 // without this, not all new Transactions created are saved correctly
