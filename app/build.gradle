@@ -13,8 +13,8 @@ android {
         applicationId "com.heyzeusv.plutuswallet"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 12
-        versionName "1.2.2"
+        versionCode 13
+        versionName "1.2.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en", "es", "de", "hi", "ja", "ko", "th"
         javaCompileOptions {
@@ -51,7 +51,7 @@ dependencies {
     // Ads
     implementation 'com.google.android.gms:play-services-ads:18.3.0'
     // Billing
-    implementation 'com.android.billingclient:billing:2.0.3'
+    implementation 'com.android.billingclient:billing:2.1.0'
     // CircleIndicator
     implementation 'me.relex:circleindicator:2.1.4'
     // ConstraintLayout

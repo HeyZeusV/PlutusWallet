@@ -1,9 +1,9 @@
 package com.heyzeusv.plutuswallet.activities
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -15,9 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.billingrepo.localdb.AugmentedSkuDetails
-import com.heyzeusv.plutuswallet.fragments.BlankFragment
-import com.heyzeusv.plutuswallet.fragments.FilterFragment
-import com.heyzeusv.plutuswallet.fragments.GraphFragment
+import com.heyzeusv.plutuswallet.fragments.FGLFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
 import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE_CHANGED
@@ -67,24 +65,20 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
         // FragmentManager adds fragments to an activity
         val currentFragment : Fragment? =
-            supportFragmentManager.findFragmentById(R.id.fragment_transaction_list_container)
+            supportFragmentManager.findFragmentById(R.id.fragment_transaction_container)
 
         // would not be null if activity is destroyed and recreated
         // because FragmentManager saves list of fragments
         if (currentFragment == null) {
 
-            val transactionListFragment : TransactionListFragment = TransactionListFragment.newInstance()
-            val filterFragment          : FilterFragment          = FilterFragment         .newInstance()
-            val graphFragment           : GraphFragment           = GraphFragment          .newInstance()
+            val fglFragment : FGLFragment = FGLFragment.newInstance()
 
             // Create a new fragment transaction, adds fragments, and then commit it
             supportFragmentManager
                 .beginTransaction()
                 // container view ID (where fragment's view should appear)
                 // fragment to be added
-                .add(R.id.fragment_transaction_list_container, transactionListFragment)
-                .add(R.id.fragment_filter_container          , filterFragment         )
-                .add(R.id.fragment_graph_container           , graphFragment          )
+                .add(R.id.fragment_transaction_container, fglFragment)
                 .commit()
         }
 
@@ -171,12 +165,17 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     override fun onBackPressed() {
 
         // close drawer if open else do regular behavior
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.       isDrawerOpen(GravityCompat.START)) {
 
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
 
-            menuButton.visibility = View.VISIBLE
+            // moves menuButton back into view
+            ObjectAnimator.ofFloat(menuButton, "translationX", 0f).apply {
+
+                duration = 400
+                start()
+            }
             super.onBackPressed()
         }
     }
@@ -192,9 +191,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         getFabLocation()
 
         val transactionFragment : TransactionFragment = TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
-        val blankFragment                             = BlankFragment()
-        val blankFragment2                            = BlankFragment()
-        val blankFragment3                            = BlankFragment()
 
         // Create a new fragment transaction, adds fragments,
         // and then commit it
@@ -203,17 +199,17 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             // replace fragment hosted at location with new fragment provided
             // will add fragment even if there is none
             .setCustomAnimations(R.anim.enter_from_right, R.anim.list_exit_to_left, R.anim.list_enter_from_left, R.anim.exit_to_right)
-            .add(R.id.fragment_transaction_container         , transactionFragment)
-            .replace(R.id.fragment_transaction_list_container, blankFragment      )
-            .setCustomAnimations(R.anim.enter_from_right, R.anim.filter_exit_to_left, R.anim.filter_enter_from_left, R.anim.exit_to_right)
-            .replace(R.id.fragment_filter_container          , blankFragment2     )
-            .setCustomAnimations(R.anim.enter_from_right, R.anim.graph_exit_to_left, R.anim.graph_enter_from_left, R.anim.exit_to_right)
-            .replace(R.id.fragment_graph_container           , blankFragment3     )
+            .replace(R.id.fragment_transaction_container, transactionFragment)
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
             .commit()
 
-        menuButton.visibility = View.INVISIBLE
+        // moves menuButton off screen
+        ObjectAnimator.ofFloat(menuButton, "translationX", -200f).apply {
+
+            duration = 400
+            start()
+        }
     }
 
     /**
