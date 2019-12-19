@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.viewmodels
 
 import android.app.Activity
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import com.heyzeusv.plutuswallet.billingrepo.BillingRepository
@@ -13,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 
-private const val LOG = "BillingViewModel"
+private const val TAG = "BillingViewModel"
 
 /**
  * Notice just how small and simple this BillingViewModel is!!
@@ -41,7 +40,6 @@ class BillingViewModel(application: Application) : AndroidViewModel(application)
     override fun onCleared() {
         super.onCleared()
 
-        Log.d(LOG, "onCleared")
         repository.endDataSourceConnections()
         viewModelScope.coroutineContext.cancel()
     }
