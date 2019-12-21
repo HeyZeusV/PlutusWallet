@@ -3,10 +3,13 @@ package com.heyzeusv.plutuswallet.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -20,6 +23,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -40,7 +44,9 @@ import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
 
-private const val TAG = "TransactionListFragment"
+private const val TAG          = "TransactionListFragment"
+private const val TEST_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+private const val AD_UNIT_ID   = "ca-app-pub-7627627324882759/8027617303"
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -66,9 +72,9 @@ class TransactionListFragment : BaseFragment() {
     private var callbacks : Callbacks? = null
 
     // views
-    private lateinit var adView                  : AdView
     private lateinit var rootView                : ConstraintLayout
     private lateinit var transactionAddFab       : FloatingActionButton
+    private lateinit var adContainer             : RelativeLayout
     private lateinit var transactionRecyclerView : RecyclerView
     private lateinit var emptyListTextView       : TextView
 
@@ -107,9 +113,9 @@ class TransactionListFragment : BaseFragment() {
         val view : View = inflater.inflate(R.layout.fragment_transaction_list, container, false)
 
         // initialize views
-        adView                  = view.findViewById(R.id.ad_view                  ) as AdView
         rootView                = view.findViewById(R.id.listRootView             ) as ConstraintLayout
         transactionAddFab       = view.findViewById(R.id.transaction_add_fab      ) as FloatingActionButton
+        adContainer             = view.findViewById(R.id.adContainer              ) as RelativeLayout
         transactionRecyclerView = view.findViewById(R.id.transaction_recycler_view) as RecyclerView
         emptyListTextView       = view.findViewById(R.id.emptyListTextView        ) as TextView
 
@@ -203,22 +209,18 @@ class TransactionListFragment : BaseFragment() {
             // will load ads if there is noAds data or if user is not entitled to NoAds
             if (it == null) {
 
-                // loads ad
-                val adRequest : AdRequest = AdRequest.Builder().build()
-                adView.loadAd(adRequest)
+                loadAd(view)
             }
             it?.let {
 
                 // makes ad disappear
                 if (it.entitled) {
 
-                    adView.destroy()
-                    adView.visibility = View.GONE
+                    adContainer.removeAllViews()
+
                 } else {
 
-                    // loads ad
-                    val adRequest : AdRequest = AdRequest.Builder().build()
-                    adView.loadAd(adRequest)
+                    loadAd(view)
                 }
             }
         })
@@ -423,6 +425,50 @@ class TransactionListFragment : BaseFragment() {
                 transactionListViewModel.insertIncomeCategories(initialIncomeCategories)
             }
         }
+    }
+
+    /**
+     *  Creates AdView with an Adaptive Banner size
+     *
+     *  Determines the width of the device using DisplayMetrics and passes it to a AdSize, which
+     *  automatically decides the height of the ad depending on the device. Lastly, the AdView is
+     *  created and added to RelativeLayout container.
+     *
+     *  @param view the layout of this fragment.
+     */
+    private fun loadAd(view : View) {
+
+        // information about device screen
+        val metrics : DisplayMetrics = Resources.getSystem().displayMetrics
+        // device screen density
+        val density : Float = metrics.density
+
+        // width of ad in pixels(width of screen)
+        var adWidthPixels : Float = view.width.toFloat()
+        if (adWidthPixels == 0f) {
+
+            adWidthPixels = metrics.widthPixels.toFloat()
+        }
+
+        // width in pixels / screen density
+        val adWidth : Int = (adWidthPixels / density).toInt()
+        // only requires width, will automatically set height according to device
+        val adSize : AdSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, adWidth)
+
+        // just in case, remove an ads that might exist
+        adContainer.removeAllViews()
+
+        // create new AdView with adSize and adUnitID
+        val adView      = AdView(context)
+        adView.adSize   = adSize
+        adView.adUnitId = TEST_UNIT_ID
+
+        // add AdView to container
+        adContainer.addView(adView)
+
+        // loads ad
+        val adRequest : AdRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     /**

@@ -17,7 +17,7 @@
         android:layout_marginBottom="4dp"
         app:cardCornerRadius="@dimen/card_corner_radius"
         app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toTopOf="@+id/ad_view"
+        app:layout_constraintBottom_toTopOf="@+id/adContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -63,15 +63,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/ad_view"
+    <RelativeLayout
+        android:id="@+id/adContainer"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        app:adSize="LARGE_BANNER"
-        app:adUnitId="ca-app-pub-7627627324882759/8027617303"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-    <!-- TEST ADS: ca-app-pub-3940256099942544/6300978111 -->
-    <!-- AD UNIT: ca-app-pub-7627627324882759/8027617303 -->
 </androidx.constraintlayout.widget.ConstraintLayout>
