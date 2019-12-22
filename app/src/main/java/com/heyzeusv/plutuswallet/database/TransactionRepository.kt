@@ -3,6 +3,9 @@ package com.heyzeusv.plutuswallet.database
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.heyzeusv.plutuswallet.database.daos.CategoryDao
 import com.heyzeusv.plutuswallet.database.daos.ExpenseCategoryDao
 import com.heyzeusv.plutuswallet.database.daos.IncomeCategoryDao
 import com.heyzeusv.plutuswallet.database.daos.TransactionDao
@@ -27,6 +30,17 @@ private const val DATABASE_NAME = "transaction-database"
  */
 class TransactionRepository private constructor(context : Context){
 
+    private val migration16to17 : Migration = object : Migration(16, 17) {
+
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+            database.execSQL("""CREATE TABLE `Category` (
+                    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                    `category` TEXT NOT NULL, 
+                    `type` TEXT NOT NULL)""")
+        }
+    }
+
     /**
      *  Creates database.
      *
@@ -38,12 +52,13 @@ class TransactionRepository private constructor(context : Context){
         context.applicationContext,
         TransactionDatabase::class.java,
         DATABASE_NAME)
-        .fallbackToDestructiveMigration()
+        .addMigrations(migration16to17)
         .build()
 
     /**
      *  DAOs
      */
+    private val categoryDao          : CategoryDao        = database.categoryDao       ()
     private val transactionDao       : TransactionDao     = database.transactionDao    ()
     private val expenseCategoryDao   : ExpenseCategoryDao = database.expenseCategoryDao()
     private val incomeCategoryDao    : IncomeCategoryDao  = database.incomeCategoryDao ()
@@ -84,6 +99,11 @@ class TransactionRepository private constructor(context : Context){
     suspend fun insertTransaction         (transaction  : Transaction)       : Job                         = withContext(Dispatchers.IO) {launch {transactionDao.insert(transaction)}}
     suspend fun updateTransaction         (transaction  : Transaction)       : Job                         = withContext(Dispatchers.IO) {launch {transactionDao.update(transaction)}}
     suspend fun upsertTransactions        (transactions : List<Transaction>) : Job                         = withContext(Dispatchers.IO) {launch {transactionDao.upsert(transactions)}}
+
+    /**
+     *  Category Queries
+     */
+    suspend fun insertCategories(categories : List<Category>) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(categories)}}
 
     /**
      *  ExpenseCategory Queries
