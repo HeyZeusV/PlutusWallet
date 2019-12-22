@@ -85,4 +85,5 @@
     <string name="type_expense">Gastos</string>
     <string name="type_income">Ingresos</string>
     <string name="remove_ads">Eliminar anuncios</string>
+    <string name="categories">Categorias</string>
 </resources>

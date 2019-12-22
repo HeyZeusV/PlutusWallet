@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.database.daos
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.database.entities.ExpenseCategory
@@ -16,12 +17,21 @@ import com.heyzeusv.plutuswallet.database.entities.ExpenseCategory
 abstract class ExpenseCategoryDao : BaseDao<ExpenseCategory>() {
 
     /**
+     *  Returns LiveData object containing all Categories.
+     *
+     *  @return LiveData object that holds list of all Categories.
+     */
+    @Query("""SELECT category
+                   FROM expensecategory""")
+    abstract fun getLDExpenseCategoryNames() : LiveData<List<String>>
+
+    /**
      *  Returns all Categories.
      *
      *  @return List object that holds List of all Categories.
      */
     @Query("""SELECT category 
-            FROM expensecategory""")
+                   FROM expensecategory""")
     abstract suspend fun getExpenseCategoryNames() : List<String>
 
     /**
@@ -30,6 +40,6 @@ abstract class ExpenseCategoryDao : BaseDao<ExpenseCategory>() {
      *  @return the size of table.
      */
     @Query("""SELECT COUNT(*) 
-            FROM expensecategory""")
+                   FROM expensecategory""")
     abstract suspend fun getExpenseCategorySize() : Int?
 }

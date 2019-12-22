@@ -45,5 +45,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Total: $123,456,789,012" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

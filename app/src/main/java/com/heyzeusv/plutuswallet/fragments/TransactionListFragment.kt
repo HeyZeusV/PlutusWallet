@@ -44,7 +44,7 @@ import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
 
-private const val TAG          = "TransactionListFragment"
+private const val TAG          = "PWTransactionListFragment"
 private const val TEST_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
 private const val AD_UNIT_ID   = "ca-app-pub-7627627324882759/8027617303"
 
@@ -115,8 +115,8 @@ class TransactionListFragment : BaseFragment() {
         // initialize views
         rootView                = view.findViewById(R.id.listRootView             ) as ConstraintLayout
         transactionAddFab       = view.findViewById(R.id.transaction_add_fab      ) as FloatingActionButton
-        adContainer             = view.findViewById(R.id.adContainer              ) as RelativeLayout
         transactionRecyclerView = view.findViewById(R.id.transaction_recycler_view) as RecyclerView
+        adContainer             = view.findViewById(R.id.adContainer              ) as RelativeLayout
         emptyListTextView       = view.findViewById(R.id.emptyListTextView        ) as TextView
 
         val linearLayoutManager = LinearLayoutManager(context)
@@ -130,7 +130,8 @@ class TransactionListFragment : BaseFragment() {
         // set adapter for RecyclerView
         transactionRecyclerView.adapter = transactionAdapter
         // adds horizontal divider between each item in RecyclerView
-        transactionRecyclerView.addItemDecoration(DividerItemDecoration(transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
+        transactionRecyclerView.addItemDecoration(
+            DividerItemDecoration(transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
         // this ensures that this is same FGLViewModel as Filter/GraphFragment use
         fglViewModel = activity!!.let {
@@ -520,7 +521,6 @@ class TransactionListFragment : BaseFragment() {
 
         override fun getItemCount() : Int = transactions.size
 
-        // populates given holder with Transaction from the given position in TransactionList
         override fun onBindViewHolder(holder : TransactionHolder, position : Int) {
 
             val transaction : ItemViewTransaction = transactions[position]

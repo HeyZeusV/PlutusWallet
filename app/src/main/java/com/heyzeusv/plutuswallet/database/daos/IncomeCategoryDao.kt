@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.database.daos
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.database.entities.IncomeCategory
@@ -14,6 +15,15 @@ import com.heyzeusv.plutuswallet.database.entities.IncomeCategory
  */
 @Dao
 abstract class IncomeCategoryDao : BaseDao<IncomeCategory>() {
+
+    /**
+     *  Returns LiveData object containing all Categories.
+     *
+     *  @return LiveData object that holds list of all Categories.
+     */
+    @Query("""SELECT category
+                   FROM incomecategory""")
+    abstract fun getLDIncomeCategoryNames() : LiveData<List<String>>
 
     /**
      *  Returns all categories in table.

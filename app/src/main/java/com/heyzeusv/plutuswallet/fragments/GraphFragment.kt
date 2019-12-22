@@ -34,13 +34,12 @@ private const val TAG = "GraphFragment"
  */
 class GraphFragment : BaseFragment() {
 
-    //views
+    // views
     private lateinit var circleIndicator : CircleIndicator3
     private lateinit var graphViewPager  : ViewPager2
 
     // lists used to hold CategoryTotals and Category names
-    private var emptyList        : List<CategoryTotals>              = emptyList()
-    private var transactionLists : MutableList<List<CategoryTotals>> = mutableListOf(emptyList, emptyList)
+    private var transactionLists : MutableList<List<CategoryTotals>> = mutableListOf(emptyList(), emptyList())
     private var expenseNameList  : MutableList<String>               = mutableListOf()
     private var incomeNameList   : MutableList<String>               = mutableListOf()
 
@@ -62,7 +61,7 @@ class GraphFragment : BaseFragment() {
         graphViewPager  = view.findViewById(R.id.graph_view_pager      ) as ViewPager2
 
         // clears previous lists
-        transactionLists = mutableListOf(emptyList, emptyList)
+        transactionLists = mutableListOf(emptyList(), emptyList())
 
         // this ensures that this is same FGLViewModel as Filter/ListFragment use
         fglViewModel = activity!!.let {
@@ -231,6 +230,7 @@ class GraphFragment : BaseFragment() {
 
         return updatedCategoryTotalsList
     }
+
     /**
      *  Ensures the UI is up to date with correct information.
      *
@@ -263,9 +263,9 @@ class GraphFragment : BaseFragment() {
             return GraphHolder(view)
         }
 
-        override fun getItemCount() = transactionLists.size
+        override fun getItemCount() : Int = transactionLists.size
 
-        // populates given holder CategoryTotal from the given position in list
+        // populates given holder with list of CategoryTotal from the given position in list
         override fun onBindViewHolder(holder : GraphHolder, position : Int) {
 
             val categoryTotals : List<CategoryTotals> = transactionLists[position]

@@ -15,6 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.billingrepo.localdb.AugmentedSkuDetails
+import com.heyzeusv.plutuswallet.fragments.CategoriesFragment
 import com.heyzeusv.plutuswallet.fragments.FGLFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
@@ -105,11 +106,30 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
             return@setNavigationItemSelectedListener when (it.itemId) {
 
+                // starts CategoriesFragment
+                R.id.categories -> {
+
+                    // instance of CategoriesFragment
+                    val categoriesFragment : CategoriesFragment = CategoriesFragment.newInstance()
+
+                    supportFragmentManager
+                        .beginTransaction()
+                        // replace fragment hosted at location with new fragment provided
+                        // will add fragment even if there is none
+                        .replace(R.id.fragment_transaction_container, categoriesFragment)
+                        // pressing back button will go back to previous fragment (if any)
+                        .addToBackStack(null)
+                        .commit()
+
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
                 // starts SettingsActivity
                 R.id.settings -> {
 
                     val settingsIntent = Intent(this, SettingsActivity::class.java)
                     startActivity(settingsIntent)
+
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
@@ -118,6 +138,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
                     val aboutIntent = Intent(this, AboutActivity::class.java)
                     startActivity(aboutIntent)
+
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
@@ -196,9 +217,10 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         // and then commit it
         supportFragmentManager
             .beginTransaction()
+            // animations for switching out fragments
+            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
             // replace fragment hosted at location with new fragment provided
             // will add fragment even if there is none
-            .setCustomAnimations(R.anim.enter_from_right, R.anim.list_exit_to_left, R.anim.list_enter_from_left, R.anim.exit_to_right)
             .replace(R.id.fragment_transaction_container, transactionFragment)
             // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)

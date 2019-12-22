@@ -85,4 +85,5 @@
     <string name="type_expense">Aufwand</string>
     <string name="type_income">Einkommen</string>
     <string name="remove_ads">Werbung entfernen</string>
+    <string name="categories">Kategorien</string>
 </resources>

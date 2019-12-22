@@ -2,13 +2,12 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginStart="4dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginEnd="1dp"
-    android:layout_marginBottom="1dp"
-    app:cardCornerRadius="4dp"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="@dimen/card_corner_radius"
     app:cardUseCompatPadding="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,20 +15,16 @@
         android:layout_height="match_parent">
 
         <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/graph_view_pager"
+            android:id="@+id/categories_view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="36dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <me.relex.circleindicator.CircleIndicator3
-            android:id="@+id/graph_circle_indicator"
+            android:id="@+id/categories_circle_indicator"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             app:ci_animator="@animator/indicator_animator"
@@ -43,5 +38,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.google.android.material.card.MaterialCardView>

@@ -71,11 +71,11 @@ class TransactionRepository private constructor(context : Context){
     fun getLdTD  (                   type : String?,                     start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTD  (         type,           start, end)
     fun getLdTCD (                   type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTCD (         type, category, start, end)
     fun getLdD   (                                                       start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdD   (                         start, end)
-    fun getLDTransaction   (id   : Int)                                 : LiveData<Transaction?>         = transactionDao.getLDTransaction(id)
-    fun getLdCtT  (type : String?)                                                : LiveData<List<CategoryTotals>> = transactionDao.getLdCtT  (type)
-    fun getLdCtTA (type : String?, account : String?)                             : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTA (type, account)
-    fun getLdCtTD (type : String?,                    start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTD (type,          start, end)
-    fun getLdCtTAD(type : String?, account : String?, start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTAD(type, account, start, end)
+    fun getLDTransaction   (id   : Int)                                           : LiveData<Transaction?>         = transactionDao.getLDTransaction(id)
+    fun getLdCtT  (type : String?)                                                : LiveData<List<CategoryTotals>> = transactionDao.getLdCtT        (type)
+    fun getLdCtTA (type : String?, account : String?)                             : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTA       (type, account)
+    fun getLdCtTD (type : String?,                    start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTD       (type,          start, end)
+    fun getLdCtTAD(type : String?, account : String?, start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTAD      (type, account, start, end)
     suspend fun getAccountsAsync          ()                                 : Deferred<List<String>>      = withContext(Dispatchers.IO) {async  {transactionDao.getAccounts()}}
     suspend fun getFutureTransactionsAsync(currentDate  : Date)              : Deferred<List<Transaction>> = withContext(Dispatchers.IO) {async  {transactionDao.getFutureTransactions(currentDate)}}
     suspend fun getMaxIdAsync             ()                                 : Deferred<Int?>              = withContext(Dispatchers.IO) {async  {transactionDao.getMaxId()}}
@@ -88,6 +88,7 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  ExpenseCategory Queries
      */
+    fun getLDExpenseCategoryNames() : LiveData<List<String>> = expenseCategoryDao.getLDExpenseCategoryNames()
     suspend fun getExpenseCategoryNamesAsync()                                          : Deferred<List<String>> = withContext(Dispatchers.IO) {async  {expenseCategoryDao.getExpenseCategoryNames()}}
     suspend fun getExpenseCategorySizeAsync ()                                          : Deferred<Int?>         = withContext(Dispatchers.IO) {async  {expenseCategoryDao.getExpenseCategorySize()}}
     suspend fun deleteExpenseCategory       (expenseCategory   : ExpenseCategory)       : Job                    = withContext(Dispatchers.IO) {launch {expenseCategoryDao.delete(expenseCategory)}}
@@ -97,7 +98,7 @@ class TransactionRepository private constructor(context : Context){
 
     /**
      *  IncomeCategory Queries
-     */
+     */fun getLDIncomeCategoryNames() : LiveData<List<String>> = incomeCategoryDao.getLDIncomeCategoryNames()
     suspend fun getIncomeCategoryNamesAsync()                                        : Deferred<List<String>> = withContext(Dispatchers.IO) {async  {incomeCategoryDao.getIncomeCategoryNames()}}
     suspend fun getIncomeCategorySizeAsync ()                                        : Deferred<Int?>         = withContext(Dispatchers.IO) {async  {incomeCategoryDao.getIncomeCategorySize()}}
     suspend fun deleteIncomeCategory       (incomeCategory   : IncomeCategory)       : Job                    = withContext(Dispatchers.IO) {launch {incomeCategoryDao.delete(incomeCategory)}}
