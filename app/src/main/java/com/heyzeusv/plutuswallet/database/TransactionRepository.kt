@@ -103,6 +103,8 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  Category Queries
      */
+    suspend fun getCategoryNamesAsync() : Deferred<List<Category>> = withContext(Dispatchers.IO) {async {categoryDao.getCategoryNames()}}
+    suspend fun getCategorySizeAsync () : Deferred<Int?>           = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize()}}
     suspend fun insertCategories(categories : List<Category>) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(categories)}}
 
     /**

@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.utilities.TransactionInfo
 import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.FGLViewModel
@@ -21,7 +23,7 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.Date
 
-private const val TAG            = "FilterFragment"
+private const val TAG            = "PWFilterFragment"
 private const val DIALOG_DATE    = "DialogDate"
 private const val REQUEST_DATE   = 0
 private const val MIDNIGHT_MILLI = 86399999
@@ -176,6 +178,34 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             incomeCategorySpinner.adapter = incomeSpinnerAdapter
             // starts the spinner up to ExpenseCategory saved
             incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(categoryName))
+
+            val categorySize : Int = filterViewModel.getCategorySizeAsync().await() ?: 0
+            if (categorySize == 0) {
+
+                val categoryList : MutableList<Category> = mutableListOf()
+                expenseCategoryNamesList.forEach {
+
+                    if (it != all) {
+
+                        val category = Category(0, it, "Expense")
+                        categoryList.add(category)
+                    }
+                }
+                incomeCategoryNamesList.forEach {
+
+                    if (it != all) {
+
+                        val category = Category(0, it, "Income")
+                        categoryList.add(category)
+                    }
+                }
+                filterViewModel.insertCategories(categoryList)
+            }
+            val categoryList : List<Category> = filterViewModel.getCategoryNamesAsync().await()
+            categoryList.forEach {
+
+                Log.d(TAG, "ID: ${it.id} Category: ${it.category} Type: ${it.type}")
+            }
         }
     }
 

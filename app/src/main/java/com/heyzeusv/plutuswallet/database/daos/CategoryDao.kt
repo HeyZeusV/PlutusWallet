@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.database.daos
 
 import androidx.room.Dao
+import androidx.room.Query
 import com.heyzeusv.plutuswallet.database.entities.Category
 
 /**
@@ -13,4 +14,22 @@ import com.heyzeusv.plutuswallet.database.entities.Category
  */
 @Dao
 abstract class CategoryDao : BaseDao<Category>() {
+
+    /**
+     *  Returns all Categories.
+     *
+     *  @return List object that holds List of all Categories.
+     */
+    @Query("""SELECT * 
+                   FROM category""")
+    abstract suspend fun getCategoryNames() : List<Category>
+
+    /**
+     *  Returns the size of table.
+     *
+     *  @return the size of table.
+     */
+    @Query("""SELECT COUNT(*) 
+                   FROM category""")
+    abstract suspend fun getCategorySize() : Int?
 }

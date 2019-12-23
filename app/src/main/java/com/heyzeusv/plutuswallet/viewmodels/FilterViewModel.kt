@@ -2,6 +2,7 @@ package com.heyzeusv.plutuswallet.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
+import com.heyzeusv.plutuswallet.database.entities.Category
 import kotlinx.coroutines.Deferred
 
 /**
@@ -23,6 +24,24 @@ class FilterViewModel : ViewModel() {
     suspend fun getAccountsAsync() : Deferred<List<String>> {
 
         return transactionRepository.getAccountsAsync()
+    }
+
+    /**
+     *  Category queries.
+     */
+    suspend fun getCategoryNamesAsync() : Deferred<List<Category>> {
+
+        return transactionRepository.getCategoryNamesAsync()
+    }
+
+    suspend fun getCategorySizeAsync() : Deferred<Int?> {
+
+        return transactionRepository.getCategorySizeAsync()
+    }
+
+    suspend fun insertCategories(categories : List<Category>) {
+
+        transactionRepository.insertCategories(categories)
     }
 
     /**
