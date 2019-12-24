@@ -28,8 +28,7 @@ import com.google.android.gms.ads.AdView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.database.entities.ExpenseCategory
-import com.heyzeusv.plutuswallet.database.entities.IncomeCategory
+import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.utilities.TransactionInfo
@@ -47,6 +46,8 @@ import java.util.Date
 private const val TAG          = "PWTransactionListFragment"
 private const val TEST_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
 private const val AD_UNIT_ID   = "ca-app-pub-7627627324882759/8027617303"
+private const val EXPENSE      = "Expense"
+private const val INCOME       = "Income"
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -229,10 +230,14 @@ class TransactionListFragment : BaseFragment() {
         // gets the sizes of the Category tables and sends them to initializeCategoryTables()
         launch {
 
-            val expenseSize : Int? = transactionListViewModel.getExpenseCategorySizeAsync().await()
-            val incomeSize  : Int? = transactionListViewModel.getIncomeCategorySizeAsync ().await()
+            val expenseSize  : Int = transactionListViewModel.getExpenseCategorySizeAsync().await() ?: 0
+            val incomeSize   : Int = transactionListViewModel.getIncomeCategorySizeAsync ().await() ?: 0
+            val categorySize : Int = transactionListViewModel.getCategorySizeAsync().await() ?: 0
 
-            initializeCategoryTables(expenseSize, incomeSize)
+            if (expenseSize == 0 && incomeSize == 0 && categorySize == 0) {
+
+                initializeCategoryTables(expenseSize, incomeSize)
+            }
         }
     }
 
@@ -402,28 +407,28 @@ class TransactionListFragment : BaseFragment() {
 
             if (expenseSize == 0 || expenseSize == null) {
 
-                val education      = ExpenseCategory("Education")
-                val entertainment  = ExpenseCategory("Entertainment")
-                val food           = ExpenseCategory("Food")
-                val home           = ExpenseCategory("Home")
-                val transportation = ExpenseCategory("Transportation")
-                val utilities      = ExpenseCategory("Utilities")
-                val initialExpenseCategories : List<ExpenseCategory> = listOf(
+                val education      = Category(0, "Education"     , EXPENSE)
+                val entertainment  = Category(0, "Entertainment" , EXPENSE)
+                val food           = Category(0, "Food"          , EXPENSE)
+                val home           = Category(0, "Home"          , EXPENSE)
+                val transportation = Category(0, "Transportation", EXPENSE)
+                val utilities      = Category(0, "Utilities"     , EXPENSE)
+                val initialCategories : List<Category> = listOf(
                     education, entertainment, food, home, transportation, utilities)
-                transactionListViewModel.insertExpenseCategories(initialExpenseCategories)
+                transactionListViewModel.insertCategories(initialCategories)
             }
 
             if (incomeSize == 0 || incomeSize == null) {
 
-                val cryptocurrency = IncomeCategory("Cryptocurrency")
-                val investments    = IncomeCategory("Investments")
-                val salary         = IncomeCategory("Salary")
-                val savings        = IncomeCategory("Savings")
-                val stocks         = IncomeCategory("Stocks")
-                val wages          = IncomeCategory("Wages")
-                val initialIncomeCategories : List<IncomeCategory> = listOf(
+                val cryptocurrency = Category(0, "Cryptocurrency", INCOME)
+                val investments    = Category(0, "Investments"   , INCOME)
+                val salary         = Category(0, "Salary"        , INCOME)
+                val savings        = Category(0, "Savings"       , INCOME)
+                val stocks         = Category(0, "Stocks"        , INCOME)
+                val wages          = Category(0, "Wages"         , INCOME)
+                val initialCategories : List<Category> = listOf(
                     cryptocurrency, investments, salary, savings, stocks, wages)
-                transactionListViewModel.insertIncomeCategories(initialIncomeCategories)
+                transactionListViewModel.insertCategories(initialCategories)
             }
         }
     }

@@ -18,7 +18,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.viewmodels.CategoriesViewModel
+import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
 
 private const val TAG = "PWCategoriesFragment"
@@ -30,7 +32,7 @@ class CategoriesFragment : BaseFragment() {
     private lateinit var categoriesViewPager : ViewPager2
 
     // lists used to hold CategoryTotals and Category names
-    private var categoryLists   : MutableList<List<String>> = mutableListOf(emptyList(), emptyList())
+    private var categoryLists   : MutableList<List<Category>> = mutableListOf(emptyList(), emptyList())
     private var expenseNameList : MutableList<String>       = mutableListOf()
     private var incomeNameList  : MutableList<String>       = mutableListOf()
 
@@ -51,13 +53,13 @@ class CategoriesFragment : BaseFragment() {
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        categoriesViewModel.expenseNamesLiveData.observe(this, Observer {
+        categoriesViewModel.expenseCategoriesLiveData.observe(this, Observer {
 
             categoryLists[0] = it
             updateUI(categoryLists)
         })
 
-        categoriesViewModel.incomeNamesLiveData.observe(this, Observer {
+        categoriesViewModel.incomeCategoriesLiveData.observe(this, Observer {
 
             categoryLists[1] = it
             updateUI(categoryLists)
@@ -69,7 +71,7 @@ class CategoriesFragment : BaseFragment() {
      *
      *  @param categoryLists list of lists to be shown in RecyclerViews.
      */
-    private fun updateUI(categoryLists : MutableList<List<String>>) {
+    private fun updateUI(categoryLists : MutableList<List<Category>>) {
 
         categoriesViewPager.adapter = CategoryListAdapter(categoryLists)
         circleIndicator.setViewPager(categoriesViewPager)
@@ -80,7 +82,7 @@ class CategoriesFragment : BaseFragment() {
      *
      *  @param categoryLists the list of lists of Categories.
      */
-    private inner class CategoryListAdapter(var categoryLists : MutableList<List<String>>)
+    private inner class CategoryListAdapter(var categoryLists : MutableList<List<Category>>)
         : RecyclerView.Adapter<CategoryListHolder>() {
 
         // creates view to display, wraps the view in a ViewHolder and returns the result
@@ -95,7 +97,7 @@ class CategoriesFragment : BaseFragment() {
         // populates given holder with list of Category names from the given position in list
         override fun onBindViewHolder(holder: CategoryListHolder, position: Int) {
 
-            val categoryList : List<String> = categoryLists[position]
+            val categoryList : List<Category> = categoryLists[position]
             holder.bind(categoryList, position)
         }
     }
@@ -109,7 +111,7 @@ class CategoriesFragment : BaseFragment() {
         private val categoryTypeTextView : TextView     = itemView.findViewById(R.id.categories_type           )
         private val categoryRecyclerView : RecyclerView = itemView.findViewById(R.id.categories_recycler_view)
 
-        fun bind(categoryList : List<String>, type : Int) {
+        fun bind(categoryList : List<Category>, type : Int) {
 
             if (type == 0) {
 
@@ -130,7 +132,7 @@ class CategoriesFragment : BaseFragment() {
          *
          *  @param categoryList the list of Categories.
          */
-        private inner class CategoryAdapter(var categoryList : List<String>)
+        private inner class CategoryAdapter(var categoryList : List<Category>)
             : RecyclerView.Adapter<CategoryHolder>() {
 
             // creates view to display, wraps the view in a ViewHolder and returns the result
@@ -145,8 +147,8 @@ class CategoriesFragment : BaseFragment() {
             // populates given holder with Category from the given position in CategoryList
             override fun onBindViewHolder(holder : CategoryHolder, position : Int) {
 
-                val categoryName : String = categoryList[position]
-                holder.bind(categoryName)
+                val category : Category = categoryList[position]
+                holder.bind(category)
             }
         }
 
@@ -161,9 +163,9 @@ class CategoriesFragment : BaseFragment() {
             private val deleteButton     : MaterialButton = itemView.findViewById(R.id.category_delete)
             private val categoryTextView : TextView       = itemView.findViewById(R.id.category_name  )
 
-            fun bind(categoryName : String) {
+            fun bind(category : Category) {
 
-                categoryTextView.text = categoryName
+                categoryTextView.text = category.category
 
                 editButton.setOnClickListener {
 
@@ -181,7 +183,7 @@ class CategoriesFragment : BaseFragment() {
                         // set positive button and its click listener
                         .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
 
-                            editCategory(input.text.toString())
+                            editCategory(input.text.toString(), category)
                         }
                         // set negative button and its click listener
                         .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->
@@ -195,9 +197,13 @@ class CategoriesFragment : BaseFragment() {
                 }
             }
 
-            private fun editCategory(updatedName : String) {
+            private fun editCategory(updatedName : String, category : Category) {
 
+                category.category = updatedName
+                launch {
 
+                    categoriesViewModel.updateCategory(category)
+                }
             }
         }
     }

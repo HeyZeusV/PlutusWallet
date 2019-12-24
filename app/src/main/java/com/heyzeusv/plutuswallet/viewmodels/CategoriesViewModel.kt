@@ -3,9 +3,7 @@ package com.heyzeusv.plutuswallet.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
-import com.heyzeusv.plutuswallet.database.entities.ExpenseCategory
-import com.heyzeusv.plutuswallet.database.entities.IncomeCategory
-import kotlinx.coroutines.Deferred
+import com.heyzeusv.plutuswallet.database.entities.Category
 
 /**
  *  Data manager for CategoriesFragments.
@@ -20,16 +18,11 @@ class CategoriesViewModel : ViewModel() {
      */
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
-    val expenseNamesLiveData : LiveData<List<String>> = transactionRepository.getLDExpenseCategoryNames()
-    val incomeNamesLiveData  : LiveData<List<String>> = transactionRepository.getLDIncomeCategoryNames ()
+    val expenseCategoriesLiveData : LiveData<List<Category>> = transactionRepository.getLDCategoriesByType("Expense")
+    val incomeCategoriesLiveData  : LiveData<List<Category>> = transactionRepository.getLDCategoriesByType("Income" )
 
-    suspend fun updateExpenseCategory(expenseCategory : ExpenseCategory) {
+    suspend fun updateCategory(category : Category) {
 
-        transactionRepository.updateExpenseCategory(expenseCategory)
-    }
-
-    suspend fun updateIncomeCategory(incomeCategory : IncomeCategory) {
-
-        transactionRepository.updateIncomeCategory(incomeCategory)
+        transactionRepository.updateCategory(category)
     }
 }

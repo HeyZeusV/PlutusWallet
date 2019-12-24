@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.database.daos
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.database.entities.Category
@@ -20,9 +21,11 @@ abstract class CategoryDao : BaseDao<Category>() {
      *
      *  @return list that holds all Categories.
      */
-    @Query("""SELECT * 
-                   FROM category""")
-    abstract suspend fun getCategoryNames() : List<Category>
+    @Query("""SELECT *
+                   FROM category
+                   WHERE type=(:type)
+                   ORDER BY category ASC""")
+    abstract fun getLDCategoriesByType(type : String) : LiveData<List<Category>>
 
     /**
      *  Returns the size of table.

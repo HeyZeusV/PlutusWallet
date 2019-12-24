@@ -148,7 +148,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             accountSpinner.setSelection(accountNameList.indexOf(accountName))
 
             // retrieves list of Expense Categories from database
-            expenseCategoryNamesList = filterViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
+            expenseCategoryNamesList = filterViewModel.getCategoriesByTypeAsync("Expense").await().toMutableList()
             // translate predetermined categories
             expenseCategoryNamesList = Utils.translateCategories(context!!, expenseCategoryNamesList)
             // sorts list in alphabetical order
@@ -164,7 +164,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(categoryName))
 
             // retrieves list of Income Categories from database
-            incomeCategoryNamesList = filterViewModel.getIncomeCategoryNamesAsync().await().toMutableList()
+            incomeCategoryNamesList = filterViewModel.getCategoriesByTypeAsync("Income").await().toMutableList()
             // translate predetermined categories
             incomeCategoryNamesList = Utils.translateCategories(context!!, incomeCategoryNamesList)
             // sorts list in alphabetical order

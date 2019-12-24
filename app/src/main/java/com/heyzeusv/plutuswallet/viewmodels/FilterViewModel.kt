@@ -29,9 +29,9 @@ class FilterViewModel : ViewModel() {
     /**
      *  Category queries.
      */
-    suspend fun getCategoryNamesAsync() : Deferred<List<Category>> {
+    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> {
 
-        return transactionRepository.getCategoryNamesAsync()
+        return transactionRepository.getCategoriesByTypeAsync(type)
     }
 
     suspend fun getCategorySizeAsync() : Deferred<Int?> {

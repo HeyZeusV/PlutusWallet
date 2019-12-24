@@ -3,8 +3,7 @@ package com.heyzeusv.plutuswallet.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
-import com.heyzeusv.plutuswallet.database.entities.ExpenseCategory
-import com.heyzeusv.plutuswallet.database.entities.IncomeCategory
+import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import kotlinx.coroutines.Deferred
@@ -146,16 +145,24 @@ class TransactionListViewModel : ViewModel() {
     }
 
     /**
+     *  Category queries
+     */
+    suspend fun getCategorySizeAsync() : Deferred<Int?> {
+
+        return transactionRepository.getCategorySizeAsync()
+    }
+
+    suspend fun insertCategories(categories : List<Category>) {
+
+        transactionRepository.insertCategories(categories)
+    }
+
+    /**
      *  ExpenseCategory queries
      */
     suspend fun getExpenseCategorySizeAsync() : Deferred<Int?> {
 
         return transactionRepository.getExpenseCategorySizeAsync()
-    }
-
-    suspend fun insertExpenseCategories(expenseCategories : List<ExpenseCategory>) {
-
-        transactionRepository.insertExpenseCategories(expenseCategories)
     }
 
     /**
@@ -164,10 +171,5 @@ class TransactionListViewModel : ViewModel() {
     suspend fun getIncomeCategorySizeAsync() : Deferred<Int?> {
 
         return transactionRepository.getIncomeCategorySizeAsync()
-    }
-
-    suspend fun insertIncomeCategories(incomeCategories : List<IncomeCategory>) {
-
-        transactionRepository.insertIncomeCategories(incomeCategories)
     }
 }
