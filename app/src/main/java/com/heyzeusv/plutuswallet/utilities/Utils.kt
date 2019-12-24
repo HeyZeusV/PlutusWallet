@@ -207,19 +207,22 @@ class Utils {
         }
 
         /**
-         *  Iterates through a list of Categories and translates using above function
+         *  Iterates through a list of Categories, translates using above function, and sorts it
          *
          *  @param  context needed to retrieve translations
          *  @param  list    list of Category names to be checked for translation
-         *  @return the list with updated names
+         *  @return the list with updated names and sorted in alphabetical order
          */
         fun translateCategories(context : Context, list : MutableList<String>) : MutableList<String> {
 
+            // using a Iterator allows us to edit the list while we loop through it
             val iterator : MutableListIterator<String> = list.listIterator()
             while (iterator.hasNext()) {
 
                 iterator.set(translateCategory(context, iterator.next()))
             }
+            // sorts list alphabetically
+            list.sort()
 
             return list
         }

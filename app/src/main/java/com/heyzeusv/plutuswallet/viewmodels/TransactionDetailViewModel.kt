@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
-import com.heyzeusv.plutuswallet.database.entities.ExpenseCategory
-import com.heyzeusv.plutuswallet.database.entities.IncomeCategory
+import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import kotlinx.coroutines.Deferred
 
@@ -76,28 +75,15 @@ class TransactionDetailViewModel : ViewModel() {
     }
 
     /**
-     *  ExpenseCategory queries.
+     *  Category queries
      */
-    suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> {
+    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> {
 
-        return transactionRepository.getExpenseCategoryNamesAsync()
+        return transactionRepository.getCategoriesByTypeAsync(type)
     }
 
-    suspend fun insertExpenseCategory(expenseCategory : ExpenseCategory) {
+    suspend fun insertCategory(category : Category) {
 
-        transactionRepository.insertExpenseCategory(expenseCategory)
-    }
-
-    /**
-     *  IncomeCategory queries.
-     */
-    suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> {
-
-        return transactionRepository.getIncomeCategoryNamesAsync()
-    }
-
-    suspend fun insertIncomeCategory(incomeCategory : IncomeCategory) {
-
-        transactionRepository.insertIncomeCategory(incomeCategory)
+        transactionRepository.insertCategory(category)
     }
 }

@@ -18,7 +18,7 @@ abstract class CategoryDao : BaseDao<Category>() {
     /**
      *  Returns all Categories.
      *
-     *  @return List object that holds List of all Categories.
+     *  @return list that holds all Categories.
      */
     @Query("""SELECT * 
                    FROM category""")
@@ -32,4 +32,15 @@ abstract class CategoryDao : BaseDao<Category>() {
     @Query("""SELECT COUNT(*) 
                    FROM category""")
     abstract suspend fun getCategorySize() : Int?
+
+    /**
+     *  Returns all Categories of given Type
+     *
+     *  @return list of all Categories of given Type
+     */
+    @Query("""SELECT category
+                   FROM category
+                   WHERE type=(:type)
+                   ORDER BY category ASC""")
+    abstract suspend fun getCategoriesByType(type : String) : List<String>
 }

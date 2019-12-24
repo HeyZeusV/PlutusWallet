@@ -201,11 +201,6 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
                 filterViewModel.insertCategories(categoryList)
             }
-            val categoryList : List<Category> = filterViewModel.getCategoryNamesAsync().await()
-            categoryList.forEach {
-
-                Log.d(TAG, "ID: ${it.id} Category: ${it.category} Type: ${it.type}")
-            }
         }
     }
 

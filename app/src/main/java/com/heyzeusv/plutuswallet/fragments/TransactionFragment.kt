@@ -32,8 +32,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.database.entities.ExpenseCategory
-import com.heyzeusv.plutuswallet.database.entities.IncomeCategory
+import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.utilities.CurrencyEditText
 import com.heyzeusv.plutuswallet.utilities.Utils
@@ -46,7 +45,7 @@ import java.util.Calendar
 import java.util.Locale
 import kotlin.math.hypot
 
-private const val TAG                 = "TransactionFragment"
+private const val TAG                 = "PWTransactionFragment"
 private const val ARG_TRANSACTION_ID  = "transaction_id"
 private const val ARG_FAB_X           = "fab_X"
 private const val ARG_FAB_Y           = "fab_Y"
@@ -277,11 +276,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             })
 
             // retrieves list of Expense Categories from database
-            expenseCategoryNamesList = transactionDetailViewModel.getExpenseCategoryNamesAsync().await().toMutableList()
+            expenseCategoryNamesList = transactionDetailViewModel.getCategoriesByTypeAsync("Expense").await().toMutableList()
             // translate predetermined categories
             expenseCategoryNamesList = Utils.translateCategories(context!!, expenseCategoryNamesList)
-            // sorts list in alphabetical order
-            expenseCategoryNamesList.sort()
             // "Create New Category" will always be at bottom of the list
             expenseCategoryNamesList.add(getString(R.string.category_create))
             // sets up the categorySpinner
@@ -290,11 +287,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             expenseCategorySpinner .adapter = expenseSpinnerAdapter
 
             // retrieves list of Income Categories from database
-            incomeCategoryNamesList = transactionDetailViewModel.getIncomeCategoryNamesAsync().await().toMutableList()
+            incomeCategoryNamesList = transactionDetailViewModel.getCategoriesByTypeAsync("Income").await().toMutableList()
             // translate predetermined categories
             incomeCategoryNamesList = Utils.translateCategories(context!!, incomeCategoryNamesList)
-            // sorts list in alphabetical order
-            incomeCategoryNamesList.sort()
             // "Create New Category" will always be at bottom of the list
             incomeCategoryNamesList.add(getString(R.string.category_create))
             // sets up the categorySpinner
@@ -690,13 +685,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     /**
      *  Inserts new Category into database or selects it in categorySpinner if it exists already.
      *
-     *  @param input the category to be inserted/selected.
+     *  @param name the category to be inserted/selected.
      */
     @ExperimentalStdlibApi
-    private fun insertCategory(input : String) {
-
-        // makes first letter of every word capital and every other letter lower case
-        val name : String = input.split(" ").joinToString(" ") {it.toLowerCase(Locale.US).capitalize(Locale.US)}
+    private fun insertCategory(name : String) {
 
         if (!typeSelected) {
 
@@ -704,10 +696,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             if (expenseCategoryNamesList.indexOf(name) == -1) {
 
                 // creates new Category with name
-                val newCategory = ExpenseCategory(name)
                 launch {
 
-                    transactionDetailViewModel.insertExpenseCategory(newCategory)
+                    val category = Category(0, name, "Expense")
+                    transactionDetailViewModel.insertCategory(category)
                 }
                 // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
                 // updates SpinnerAdapter, and sets Spinner to new Category
@@ -716,21 +708,19 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 expenseCategoryNamesList.sort()
                 expenseCategoryNamesList.add(getString(R.string.category_create))
                 expenseSpinnerAdapter!!.notifyDataSetChanged()
-                expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
-            } else {
-
-                expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
             }
+            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
+
         } else if (typeSelected) {
 
             // -1 means it doesn't exist
             if (incomeCategoryNamesList.indexOf(name) == -1) {
 
                 // creates new Category with name
-                val newCategory = IncomeCategory(name)
                 launch {
 
-                    transactionDetailViewModel.insertIncomeCategory(newCategory)
+                    val category = Category(0, name, "Expense")
+                    transactionDetailViewModel.insertCategory(category)
                 }
                 // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
                 // updates SpinnerAdapter, and sets Spinner to new Category
@@ -739,11 +729,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 incomeCategoryNamesList.sort()
                 incomeCategoryNamesList.add(getString(R.string.category_create))
                 incomeSpinnerAdapter!!.notifyDataSetChanged()
-                incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))
-            } else {
-
-                incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))
             }
+            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))
         }
     }
 

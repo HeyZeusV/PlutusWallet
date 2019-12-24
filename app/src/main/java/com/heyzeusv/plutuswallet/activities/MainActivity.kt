@@ -7,6 +7,7 @@ import android.view.Menu
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.ads.MobileAds
@@ -178,6 +179,27 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             // saving into SharedPreferences
             sharedPreferences[KEY_LANGUAGE_CHANGED] = false
 
+            // parent fragment and its Fragment Manager
+            val fglFrag        : Fragment        = supportFragmentManager.findFragmentById(R.id.fragment_transaction_container)!!
+            val fglFragManager : FragmentManager = fglFrag.childFragmentManager
+
+            // nested child fragments
+            val filterFrag : Fragment = fglFragManager.findFragmentById(R.id.fragment_filter_container          )!!
+            val graphFrag  : Fragment = fglFragManager.findFragmentById(R.id.fragment_graph_container           )!!
+            val listFrag   : Fragment = fglFragManager.findFragmentById(R.id.fragment_transaction_list_container)!!
+
+            // have to remove nested fragments before recreating or else references get left behind
+            fglFragManager.beginTransaction()
+                .remove(filterFrag)
+                .remove(graphFrag)
+                .remove(listFrag)
+                .commit()
+
+            // removing the parent fragment
+            supportFragmentManager.beginTransaction()
+                .remove(fglFrag)
+                .commit()
+
             // destroys then restarts Activity in order to have updated language
             recreate()
         }
@@ -186,7 +208,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     override fun onBackPressed() {
 
         // close drawer if open else do regular behavior
-        if (drawerLayout.       isDrawerOpen(GravityCompat.START)) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
 
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
