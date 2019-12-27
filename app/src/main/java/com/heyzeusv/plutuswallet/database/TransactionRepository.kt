@@ -30,14 +30,61 @@ private const val DATABASE_NAME = "transaction-database"
  */
 class TransactionRepository private constructor(context : Context){
 
-    private val migration16to17 : Migration = object : Migration(16, 17) {
+    private val migration19to20 : Migration = object : Migration(19, 20) {
 
         override fun migrate(database: SupportSQLiteDatabase) {
 
-            database.execSQL("""CREATE TABLE `Category` (
-                    `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-                    `category` TEXT NOT NULL, 
-                    `type` TEXT NOT NULL)""")
+            database.execSQL("""CREATE TABLE IF NOT EXISTS `Transaction_new` (
+                                            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                                            `title` TEXT NOT NULL, 
+                                            `date` INTEGER NOT NULL, 
+                                            `total` TEXT NOT NULL, 
+                                            `account` TEXT NOT NULL, 
+                                            `type` TEXT NOT NULL, 
+                                            `category` TEXT NOT NULL, 
+                                            `memo` TEXT NOT NULL, 
+                                            `repeating` INTEGER NOT NULL, 
+                                            `frequency` INTEGER NOT NULL, 
+                                            `period` INTEGER NOT NULL, 
+                                            `futureDate` INTEGER NOT NULL, 
+                                            `futureTCreated` INTEGER NOT NULL, 
+                                            FOREIGN KEY(`category`, `type`) 
+                                                REFERENCES `Category`(`category`, `type`) 
+                                                ON UPDATE CASCADE ON DELETE NO ACTION)""")
+            database.execSQL("""INSERT INTO `Transaction_new` SELECT * FROM `Transaction`""")
+            database.execSQL("""DROP TABLE `Transaction`""")
+            database.execSQL("""ALTER TABLE `Transaction_new` RENAME TO `Transaction`""")
+            database.execSQL("""CREATE INDEX IF NOT EXISTS `index_trans_name_type` 
+                                            ON `Transaction` (category, type)""")
+        }
+    }
+
+    private val migration18to19 : Migration = object : Migration(18, 19) {
+
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+            database.execSQL("""CREATE TABLE IF NOT EXISTS `Transaction_new` (
+                                            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                                            `title` TEXT NOT NULL, 
+                                            `date` INTEGER NOT NULL, 
+                                            `total` TEXT NOT NULL, 
+                                            `account` TEXT NOT NULL, 
+                                            `type` TEXT NOT NULL, 
+                                            `category` TEXT NOT NULL, 
+                                            `memo` TEXT NOT NULL, 
+                                            `repeating` INTEGER NOT NULL, 
+                                            `frequency` INTEGER NOT NULL, 
+                                            `period` INTEGER NOT NULL, 
+                                            `futureDate` INTEGER NOT NULL, 
+                                            `futureTCreated` INTEGER NOT NULL, 
+                                            FOREIGN KEY(`category`, `type`) 
+                                                REFERENCES `Category`(`category`, `type`) 
+                                                ON UPDATE CASCADE ON DELETE NO ACTION)""")
+            database.execSQL("""INSERT INTO `Transaction_new` SELECT * FROM `Transaction`""")
+            database.execSQL("""DROP TABLE `Transaction`""")
+            database.execSQL("""ALTER TABLE `Transaction_new` RENAME TO `Transaction`""")
+            database.execSQL("""CREATE INDEX index_trans_name_type
+                                        ON `Transaction` (category, type)""")
         }
     }
 
@@ -68,8 +115,17 @@ class TransactionRepository private constructor(context : Context){
             database.execSQL("""INSERT INTO `Transaction_new` SELECT * FROM `Transaction`""")
             database.execSQL("""DROP TABLE `Transaction`""")
             database.execSQL("""ALTER TABLE `Transaction_new` RENAME TO `Transaction`""")
-            database.execSQL("""CREATE UNIQUE INDEX index_trans_name_type
-                                        ON `Transaction` (category, type)""")
+        }
+    }
+
+    private val migration16to17 : Migration = object : Migration(16, 17) {
+
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+            database.execSQL("""CREATE TABLE `Category` (
+                                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                                        `category` TEXT NOT NULL, 
+                                        `type` TEXT NOT NULL)""")
         }
     }
 
@@ -84,7 +140,7 @@ class TransactionRepository private constructor(context : Context){
         context.applicationContext,
         TransactionDatabase::class.java,
         DATABASE_NAME)
-        .addMigrations(migration16to17, migration17to18)
+        .addMigrations(migration16to17, migration17to18, migration18to19, migration19to20)
         .build()
 
     /**
@@ -145,14 +201,14 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  ExpenseCategory Queries
      */
-    suspend fun getExpenseCategoryNamesAsync()                                          : Deferred<List<String>> = withContext(Dispatchers.IO) {async  {expenseCategoryDao.getExpenseCategoryNames()}}
-    suspend fun getExpenseCategorySizeAsync ()                                          : Deferred<Int?>         = withContext(Dispatchers.IO) {async  {expenseCategoryDao.getExpenseCategorySize()}}
+    suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> = withContext(Dispatchers.IO) {async {expenseCategoryDao.getExpenseCategoryNames()}}
+    suspend fun getExpenseCategorySizeAsync () : Deferred<Int?>         = withContext(Dispatchers.IO) {async {expenseCategoryDao.getExpenseCategorySize()}}
 
     /**
      *  IncomeCategory Queries
      */
-    suspend fun getIncomeCategoryNamesAsync()                                        : Deferred<List<String>> = withContext(Dispatchers.IO) {async  {incomeCategoryDao.getIncomeCategoryNames()}}
-    suspend fun getIncomeCategorySizeAsync ()                                        : Deferred<Int?>         = withContext(Dispatchers.IO) {async  {incomeCategoryDao.getIncomeCategorySize()}}
+    suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> = withContext(Dispatchers.IO) {async {incomeCategoryDao.getIncomeCategoryNames()}}
+    suspend fun getIncomeCategorySizeAsync () : Deferred<Int?>         = withContext(Dispatchers.IO) {async {incomeCategoryDao.getIncomeCategorySize()}}
 
     companion object {
 

@@ -29,11 +29,10 @@ import java.util.Date
                                   parentColumns = arrayOf("category", "type"),
                                   childColumns  = arrayOf("category", "type"),
                                   onUpdate      = CASCADE)],
-        indices = [Index(value  = ["category", "type"],
-                         name   = "index_trans_name_type",
-                         unique = true)])
+        indices = [Index(value = ["category", "type"],
+                         name  = "index_trans_name_type")])
 data class Transaction(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     var id             : Int        = 0,
     var title          : String     = "",
     var date           : Date       = Utils.startOfDay(Date()),

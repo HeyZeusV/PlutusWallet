@@ -1,7 +1,6 @@
 package com.heyzeusv.plutuswallet.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -183,7 +182,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             if (categorySize == 0) {
 
                 val categoryList : MutableList<Category> = mutableListOf()
-                expenseCategoryNamesList.forEach {
+                val existingExpense : List<String> = filterViewModel.getExpenseCategoryNamesAsync().await()
+                existingExpense.forEach {
 
                     if (it != all) {
 
@@ -191,7 +191,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                         categoryList.add(category)
                     }
                 }
-                incomeCategoryNamesList.forEach {
+                val existingIncome : List<String> = filterViewModel.getIncomeCategoryNamesAsync().await()
+                existingIncome.forEach {
 
                     if (it != all) {
 

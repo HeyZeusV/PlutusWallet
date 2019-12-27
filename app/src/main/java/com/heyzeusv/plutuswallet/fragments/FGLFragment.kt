@@ -11,23 +11,24 @@ import com.heyzeusv.plutuswallet.R
  */
 class FGLFragment : BaseFragment() {
 
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
-
-        return inflater.inflate(R.layout.fragment_fgl, container, false)
-    }
-
-    override fun onStart() {
-        super.onStart()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         val filterFragment          : FilterFragment          = FilterFragment.newInstance()
         val graphFragment           : GraphFragment           = GraphFragment.newInstance()
         val transactionListFragment : TransactionListFragment = TransactionListFragment.newInstance()
 
         childFragmentManager.beginTransaction()
-            .add(R.id.fragment_filter_container          , filterFragment         )
-            .add(R.id.fragment_graph_container           , graphFragment          )
-            .add(R.id.fragment_transaction_list_container, transactionListFragment)
+            .replace(R.id.fragment_filter_container          , filterFragment         )
+            .replace(R.id.fragment_graph_container           , graphFragment          )
+            .replace(R.id.fragment_transaction_list_container, transactionListFragment)
+            .addToBackStack(null)
             .commit()
+    }
+
+    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
+
+        return inflater.inflate(R.layout.fragment_fgl, container, false)
     }
 
     companion object {

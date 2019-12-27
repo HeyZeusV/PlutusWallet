@@ -43,7 +43,7 @@ import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
 
-private const val TAG          = "PWTransactionListFragment"
+private const val TAG          = "PWTransactionListFrag"
 private const val TEST_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
 private const val AD_UNIT_ID   = "ca-app-pub-7627627324882759/8027617303"
 private const val EXPENSE      = "Expense"
@@ -87,8 +87,6 @@ class TransactionListFragment : BaseFragment() {
 
     // holds position of RecyclerView so that it doesn't reset when user returns
     private var recyclerViewPosition : Int = 0
-
-    private var maxId : Int = 0
 
     // initialize adapter with empty crime list since we have to wait for results from DB
     private var transactionAdapter : TransactionAdapter? = TransactionAdapter(emptyList())
@@ -258,7 +256,6 @@ class TransactionListFragment : BaseFragment() {
         transactionAdapter!!.notifyDataSetChanged()
     }
 
-
     override fun onDetach() {
         super.onDetach()
 
@@ -308,9 +305,6 @@ class TransactionListFragment : BaseFragment() {
 
             if (futureTransactionList.isNotEmpty()) {
 
-                // retrieves maxId or 0 if null
-                maxId = transactionListViewModel.getMaxIdAsync().await() ?: 0
-
                 // co-routine is used in order to wait for entire forEach loop to complete
                 // without this, not all new Transactions created are saved correctly
                 val deferredList: Deferred<MutableList<Transaction>> = async(context = ioContext) {
@@ -320,12 +314,10 @@ class TransactionListFragment : BaseFragment() {
 
                     futureTransactionList.forEach {
 
-                        // id must be unique
-                        maxId += 1
                         // gets copy of Transaction attached to this FutureTransaction
                         val transaction: Transaction = it.copy()
                         // changing new Transaction values to updated values
-                        transaction.id = maxId
+                        transaction.id = 0
                         transaction.date = it.futureDate
                         transaction.title = incrementString(transaction.title)
                         transaction.futureDate = createFutureDate(
