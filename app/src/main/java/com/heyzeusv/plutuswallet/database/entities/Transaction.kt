@@ -1,6 +1,9 @@
 package com.heyzeusv.plutuswallet.database.entities
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.CASCADE
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.heyzeusv.plutuswallet.utilities.Utils
 import java.math.BigDecimal
@@ -22,7 +25,13 @@ import java.util.Date
  *  @param futureDate     if repeating true, frequency * period + date.
  *  @param futureTCreated true if this Transaction has had a future Transaction created for it.
  */
-@Entity
+@Entity(foreignKeys = [ForeignKey(entity        = Category::class,
+                                  parentColumns = arrayOf("category", "type"),
+                                  childColumns  = arrayOf("category", "type"),
+                                  onUpdate      = CASCADE)],
+        indices = [Index(value  = ["category", "type"],
+                         name   = "index_trans_name_type",
+                         unique = true)])
 data class Transaction(
     @PrimaryKey
     var id             : Int        = 0,

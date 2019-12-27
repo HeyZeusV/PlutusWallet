@@ -43,19 +43,4 @@ class FilterViewModel : ViewModel() {
 
         transactionRepository.insertCategories(categories)
     }
-
-    /**
-     *  ExpenseCategory queries.
-     */
-    suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> {
-
-        return transactionRepository.getExpenseCategoryNamesAsync()
-    }
-    /**
-     *  IncomeCategory queries.
-     */
-    suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> {
-
-        return transactionRepository.getIncomeCategoryNamesAsync()
-    }
 }
