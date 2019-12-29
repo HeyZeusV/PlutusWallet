@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
 import android.text.TextWatcher
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -719,7 +720,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // creates new Category with name
                 launch {
 
-                    val category = Category(0, name, "Expense")
+                    val category = Category(0, name, "Income")
                     transactionDetailViewModel.insertCategory(category)
                 }
                 // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
@@ -732,6 +733,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             }
             incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))
         }
+        transaction.category = name
     }
 
     /**

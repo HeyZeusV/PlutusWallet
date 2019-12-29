@@ -31,10 +31,14 @@ class CategoriesFragment : BaseFragment() {
     private lateinit var circleIndicator     : CircleIndicator3
     private lateinit var categoriesViewPager : ViewPager2
 
-    // lists used to hold CategoryTotals and Category names
-    private var categoryLists   : MutableList<List<Category>> = mutableListOf(emptyList(), emptyList())
-    private var expenseNameList : MutableList<String>       = mutableListOf()
-    private var incomeNameList  : MutableList<String>       = mutableListOf()
+    // list used to hold lists of Categories
+    private var categoryLists : MutableList<List<Category>> = mutableListOf(emptyList(), emptyList())
+
+    // list used to hold lists of unique Categories by type being used
+    private var uniqueCategoryLists : MutableList<List<String>> = mutableListOf(emptyList(), emptyList())
+
+    // used to tell which page of ViewPager2 to scroll to
+    private var typeChanged : Int = 0
 
     private val categoriesViewModel : CategoriesViewModel by lazy {
         ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
@@ -52,6 +56,19 @@ class CategoriesFragment : BaseFragment() {
 
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        categoriesViewModel.uniqueExpenseLiveData.observe(this, Observer {
+
+            uniqueCategoryLists[0] = it
+            updateUI(categoryLists)
+        })
+
+        categoriesViewModel.uniqueIncomeLiveData.observe(this, Observer {
+
+            uniqueCategoryLists[1] = it
+            updateUI(categoryLists)
+        })
 
         categoriesViewModel.expenseCategoriesLiveData.observe(this, Observer {
 
@@ -74,6 +91,7 @@ class CategoriesFragment : BaseFragment() {
     private fun updateUI(categoryLists : MutableList<List<Category>>) {
 
         categoriesViewPager.adapter = CategoryListAdapter(categoryLists)
+        categoriesViewPager.setCurrentItem(typeChanged, false)
         circleIndicator.setViewPager(categoriesViewPager)
     }
 
@@ -165,7 +183,27 @@ class CategoriesFragment : BaseFragment() {
 
             fun bind(category : Category) {
 
+                val type : Int = when (category.type) {
+
+                    "Expense" -> 0
+                    else      -> 1
+                }
+
                 categoryTextView.text = category.category
+
+                if (!uniqueCategoryLists[type].contains(category.category)) {
+
+                    deleteButton.isEnabled = true
+
+                    deleteButton.setOnClickListener {
+
+                        launch {
+
+                            categoriesViewModel.deleteCategory(category)
+                        }
+                        typeChanged = type
+                    }
+                }
 
                 editButton.setOnClickListener {
 
@@ -184,6 +222,7 @@ class CategoriesFragment : BaseFragment() {
                         .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
 
                             editCategory(input.text.toString(), category)
+                            typeChanged = type
                         }
                         // set negative button and its click listener
                         .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->

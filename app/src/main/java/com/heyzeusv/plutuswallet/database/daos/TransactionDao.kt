@@ -19,9 +19,15 @@ import java.util.Date
 @Dao
 abstract class TransactionDao : BaseDao<Transaction>() {
 
+    /**
+     *  Returns list of Accounts with no repeats
+     *
+     *  @return list of unique Accounts
+     */
     @Query("""SELECT DISTINCT account
                    FROM `transaction`""")
     abstract suspend fun getAccounts() : List<String>
+
     /**
      *  Returns all transactions where futureDate is before currentDate and futureTCreated is false.
      *
@@ -60,9 +66,19 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @return LiveData object that holds Transaction to be returned.
      */
     @Query("""SELECT * 
-            FROM `transaction` 
+            FROM `transaction`
             WHERE id=(:id)""")
     abstract fun getLDTransaction(id : Int) : LiveData<Transaction?>
+
+    /**
+     *  Returns LiveData object holding life of Categories with no repeats
+     *
+     *  @return LiveData object with list of unique Categories by type
+     */
+    @Query("""SELECT DISTINCT category
+                FROM `transaction`
+                WHERE type=(:type)""")
+    abstract fun getLDUniqueCategories(type : String) : LiveData<List<String>>
 
     /**
      *  Ld = LiveData

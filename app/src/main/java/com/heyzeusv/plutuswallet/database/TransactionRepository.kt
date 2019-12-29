@@ -174,6 +174,7 @@ class TransactionRepository private constructor(context : Context){
     fun getLdTD  (                   type : String?,                     start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTD  (         type,           start, end)
     fun getLdTCD (                   type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTCD (         type, category, start, end)
     fun getLdD   (                                                       start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdD   (                         start, end)
+    fun getLDUniqueCategories(type : String)                                      : LiveData<List<String>> = transactionDao.getLDUniqueCategories(type)
     fun getLDTransaction   (id   : Int)                                           : LiveData<Transaction?>         = transactionDao.getLDTransaction(id)
     fun getLdCtT  (type : String?)                                                : LiveData<List<CategoryTotals>> = transactionDao.getLdCtT        (type)
     fun getLdCtTA (type : String?, account : String?)                             : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTA       (type, account)
@@ -193,7 +194,8 @@ class TransactionRepository private constructor(context : Context){
      */
     fun getLDCategoriesByType(type : String) : LiveData<List<Category>> = categoryDao.getLDCategoriesByType(type)
     suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> = withContext(Dispatchers.IO) {async {categoryDao.getCategoriesByType(type)}}
-    suspend fun getCategorySizeAsync () : Deferred<Int?>           = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize()}}
+    suspend fun getCategorySizeAsync () : Deferred<Int?>            = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize()}}
+    suspend fun deleteCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.delete(category)}}
     suspend fun insertCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(category)}}
     suspend fun updateCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.update(category)}}
     suspend fun insertCategories(categories : List<Category>) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(categories)}}
