@@ -17,11 +17,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Category
+import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.CategoriesViewModel
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
+import java.util.Locale
 
 private const val TAG = "PWCategoriesFragment"
 
@@ -33,6 +36,9 @@ class CategoriesFragment : BaseFragment() {
 
     // list used to hold lists of Categories
     private var categoryLists : MutableList<List<Category>> = mutableListOf(emptyList(), emptyList())
+
+    // list used to hold list of Category names
+    private var categoryNameLists : MutableList<MutableList<String>> = mutableListOf(mutableListOf(), mutableListOf())
 
     // list used to hold lists of unique Categories by type being used
     private var uniqueCategoryLists : MutableList<List<String>> = mutableListOf(emptyList(), emptyList())
@@ -57,6 +63,27 @@ class CategoriesFragment : BaseFragment() {
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        categoriesViewModel.expenseCategoriesLiveData.observe(this, Observer {
+
+            categoryNameLists[0].clear()
+            it.forEach { category : Category ->
+
+                categoryNameLists[0].add(category.category)
+            }
+            categoryLists[0] = it
+            updateUI(categoryLists)
+        })
+
+        categoriesViewModel.incomeCategoriesLiveData.observe(this, Observer {
+
+            categoryNameLists[1].clear()
+            it.forEach { category : Category ->
+
+                categoryNameLists[1].add(category.category)
+            }
+            categoryLists[1] = it
+            updateUI(categoryLists)
+        })
 
         categoriesViewModel.uniqueExpenseLiveData.observe(this, Observer {
 
@@ -67,18 +94,6 @@ class CategoriesFragment : BaseFragment() {
         categoriesViewModel.uniqueIncomeLiveData.observe(this, Observer {
 
             uniqueCategoryLists[1] = it
-            updateUI(categoryLists)
-        })
-
-        categoriesViewModel.expenseCategoriesLiveData.observe(this, Observer {
-
-            categoryLists[0] = it
-            updateUI(categoryLists)
-        })
-
-        categoriesViewModel.incomeCategoriesLiveData.observe(this, Observer {
-
-            categoryLists[1] = it
             updateUI(categoryLists)
         })
     }
@@ -189,7 +204,7 @@ class CategoriesFragment : BaseFragment() {
                     else      -> 1
                 }
 
-                categoryTextView.text = category.category
+                categoryTextView.text = Utils.translateCategory(context!!, category.category)
 
                 if (!uniqueCategoryLists[type].contains(category.category)) {
 
@@ -221,7 +236,7 @@ class CategoriesFragment : BaseFragment() {
                         // set positive button and its click listener
                         .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
 
-                            editCategory(input.text.toString(), category)
+                            editCategory(input.text.toString(), category, type)
                             typeChanged = type
                         }
                         // set negative button and its click listener
@@ -236,12 +251,20 @@ class CategoriesFragment : BaseFragment() {
                 }
             }
 
-            private fun editCategory(updatedName : String, category : Category) {
+            private fun editCategory(updatedName : String, category : Category, type : Int) {
 
-                category.category = updatedName
-                launch {
+                if (categoryNameLists[type].contains(updatedName)) {
 
-                    categoriesViewModel.updateCategory(category)
+                    val existBar : Snackbar = Snackbar.make(view!!, "$updatedName already exists!", Snackbar.LENGTH_SHORT)
+                    existBar.anchorView = circleIndicator
+                    existBar.show()
+                } else {
+
+                    category.category = updatedName
+                    launch {
+
+                        categoriesViewModel.updateCategory(category)
+                    }
                 }
             }
         }
