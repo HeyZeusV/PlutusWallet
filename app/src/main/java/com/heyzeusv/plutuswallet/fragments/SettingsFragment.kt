@@ -117,10 +117,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         } else {
 
             // Language
-            lgPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, newValue : Any ->
+            lgPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, languageCode : Any ->
 
                 // checks if a different language was selected
-                if (languageSet != newValue.toString()) {
+                if (languageSet != languageCode.toString()) {
 
                     // saving into SharedPreferences
                     sharedPreferences[KEY_LANGUAGE_CHANGED] = true

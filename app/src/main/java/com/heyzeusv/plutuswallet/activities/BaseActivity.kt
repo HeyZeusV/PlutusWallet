@@ -26,7 +26,7 @@ abstract class BaseActivity : AppCompatActivity() {
     private val languages : Array<String> = arrayOf("en", "es", "de", "hi", "ja", "ko", "th")
 
     @SuppressLint("CommitPrefEdits")
-    override fun attachBaseContext(newBase: Context?) {
+    override fun attachBaseContext(newBase : Context?) {
 
         // SharedPreference/Editor will be available to all Activities that inherit this class
         sharedPreferences = PreferenceHelper.sharedPrefs(newBase!!)

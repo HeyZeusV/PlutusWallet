@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.fragments
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,11 +19,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Category
-import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.CategoriesViewModel
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
-import java.util.Locale
 
 private const val TAG = "PWCategoriesFragment"
 
@@ -204,7 +201,7 @@ class CategoriesFragment : BaseFragment() {
                     else      -> 1
                 }
 
-                categoryTextView.text = Utils.translateCategory(context!!, category.category)
+                categoryTextView.text = category.category
 
                 if (!uniqueCategoryLists[type].contains(category.category)) {
 
