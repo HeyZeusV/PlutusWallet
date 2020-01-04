@@ -278,8 +278,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // retrieves list of Expense Categories from database
             expenseCategoryNamesList = transactionDetailViewModel.getCategoriesByTypeAsync("Expense").await().toMutableList()
-            // translate predetermined categories
-            expenseCategoryNamesList = Utils.translateCategories(context!!, expenseCategoryNamesList)
             // "Create New Category" will always be at bottom of the list
             expenseCategoryNamesList.add(getString(R.string.category_create))
             // sets up the categorySpinner
@@ -289,8 +287,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // retrieves list of Income Categories from database
             incomeCategoryNamesList = transactionDetailViewModel.getCategoriesByTypeAsync("Income").await().toMutableList()
-            // translate predetermined categories
-            incomeCategoryNamesList = Utils.translateCategories(context!!, incomeCategoryNamesList)
             // "Create New Category" will always be at bottom of the list
             incomeCategoryNamesList.add(getString(R.string.category_create))
             // sets up the categorySpinner
@@ -460,7 +456,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     newCategoryDialog(expenseCategorySpinner)
                 }
                 // updates the category to selected one
-                transaction.category = Utils.unTranslateCategory(context!!, parent?.getItemAtPosition(position) as String)
+                transaction.category = parent?.getItemAtPosition(position) as String
             }
 
             override fun onNothingSelected(parent : AdapterView<*>?) {}
@@ -477,7 +473,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     newCategoryDialog(incomeCategorySpinner)
                 }
                 // updates the category to selected one
-                transaction.category = Utils.unTranslateCategory(context!!, parent?.getItemAtPosition(position) as String)
+                transaction.category = parent?.getItemAtPosition(position) as String
             }
 
             override fun onNothingSelected(parent : AdapterView<*>?) {}
@@ -861,10 +857,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             typeSelected                     = true
             expenseCategorySpinner.isVisible = false
             incomeCategorySpinner .isVisible = true
-            expenseChip          .isChecked = false
-            incomeChip           .isChecked = true
-            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(
-                Utils.translateCategory(context!!, transaction.category)))
+            expenseChip           .isChecked = false
+            incomeChip            .isChecked = true
+            incomeCategorySpinner .setSelection(incomeCategoryNamesList.indexOf(transaction.category))
         } else {
 
             typeSelected                     = false
@@ -872,8 +867,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             incomeCategorySpinner .isVisible = false
             expenseChip           .isChecked = true
             incomeChip            .isChecked = false
-            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(
-                Utils.translateCategory(context!!, transaction.category)))
+            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
             // weird bug that only affected expenseChip where it was able to be
             // deselected when Transaction is first started, this fixes it
             expenseChip.isClickable = false

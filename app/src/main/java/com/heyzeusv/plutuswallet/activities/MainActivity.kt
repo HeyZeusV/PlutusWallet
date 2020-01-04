@@ -7,7 +7,6 @@ import android.view.Menu
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.ads.MobileAds
@@ -178,8 +177,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
             // saving into SharedPreferences
             sharedPreferences[KEY_LANGUAGE_CHANGED] = false
-
-
 
             // destroys then restarts Activity in order to have updated language
             recreate()

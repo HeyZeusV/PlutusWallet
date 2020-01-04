@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,7 +86,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // initializing strings for localization
         applyButtonText = getString(R.string.filter_apply)
         typeButtonText  = getString(R.string.type_expense)
-        accountName     = getString(R.string.category_all)
+        accountName     = ""
         categoryName    = getString(R.string.category_all)
         all             = getString(R.string.category_all)
     }
@@ -130,26 +131,23 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             //retrieves list of Accounts from database
             accountNameList = filterViewModel.getAccountsAsync().await().toMutableList()
-            // will translate if "None" exists
-            if (accountNameList.indexOf("None") != -1) {
-
-                accountNameList[accountNameList.indexOf("None")] = getString(R.string.account_none)
-            }
             // sorts list in alphabetical order
             accountNameList.sort()
-            // "All" accounts at top
-            accountNameList.add(0, all)
             // sets up the accountSpinner
-            val accountSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, accountNameList)
+            val accountSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, accountNameList)
             accountSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            accountSpinner         .adapter = accountSpinnerAdapter
+            accountSpinner.adapter = accountSpinnerAdapter
             // sets the spinner up to Account saved
-            accountSpinner.setSelection(accountNameList.indexOf(accountName))
+            accountSpinner.setSelection(if (accountNameList.indexOf(accountName) == -1) {
+
+                0
+            } else {
+
+                accountNameList.indexOf(accountName)
+            })
 
             // retrieves list of Expense Categories from database
             expenseCategoryNamesList = filterViewModel.getCategoriesByTypeAsync("Expense").await().toMutableList()
-            // translate predetermined categories
-            expenseCategoryNamesList = Utils.translateCategories(context!!, expenseCategoryNamesList)
             // Category to show all of one type
             expenseCategoryNamesList.add(0, all)
             // sets up the categorySpinner
@@ -162,8 +160,6 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             // retrieves list of Income Categories from database
             incomeCategoryNamesList = filterViewModel.getCategoriesByTypeAsync("Income").await().toMutableList()
-            // translate predetermined categories
-            incomeCategoryNamesList = Utils.translateCategories(context!!, incomeCategoryNamesList)
             // Category to show all of one type
             incomeCategoryNamesList.add(0, all)
             // sets up the categorySpinner
@@ -289,12 +285,9 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             override fun onItemSelected(
                 parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
 
-                accountName = when (parent?.getItemAtPosition(position) as String) {
-                    getString(R.string.category_all)  -> "All"
-                    getString(R.string.account_none) -> "None"
-                    else   -> parent.getItemAtPosition(position) as String
-                }
+                accountName = parent?.getItemAtPosition(position) as String
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
@@ -303,7 +296,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-                categoryName = Utils.unTranslateCategory(context!!, parent?.getItemAtPosition(position) as String)
+                categoryName = parent?.getItemAtPosition(position) as String
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -314,7 +307,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-                categoryName = Utils.unTranslateCategory(context!!, parent?.getItemAtPosition(position) as String)
+                categoryName = parent?.getItemAtPosition(position) as String
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}

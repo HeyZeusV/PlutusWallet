@@ -551,7 +551,7 @@ class TransactionListFragment : BaseFragment() {
 
             this.transaction      = transaction
             titleTextView   .text = this.transaction.title
-            categoryTextView.text = Utils.translateCategory(context!!, this.transaction.category)
+            categoryTextView.text = this.transaction.category
             dateTextView    .text = DateFormat .getDateInstance(dateFormat).format(this.transaction.date)
             accountTextView .text = if (this.transaction.account == "None") {
 
