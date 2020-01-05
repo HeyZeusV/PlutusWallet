@@ -33,6 +33,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.utilities.CurrencyEditText
@@ -249,16 +250,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             //retrieves list of Accounts from database
             accountNameList = transactionDetailViewModel.getAccountsAsync().await().toMutableList()
-            // will ensure Accounts list is never empty
-            if (accountNameList.isEmpty()) {
-
-                accountNameList.add("None")
-            }
-            // will translate if "None" exists
-            if (accountNameList.indexOf("None") != -1) {
-
-                accountNameList[accountNameList.indexOf("None")] = getString(R.string.account_none)
-            }
             // sorts list in alphabetical order
             accountNameList.sort()
             // "Create New Account will always be at bottom of list
@@ -268,9 +259,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             accountSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
             accountSpinner         .adapter = accountSpinnerAdapter
             // sets selection of spinner
-            accountSpinner.setSelection(if (transaction.account == "None") {
+            accountSpinner.setSelection(if (transaction.account == "") {
 
-                accountNameList.indexOf(getString(R.string.account_none))
+                0
             } else {
 
                 accountNameList.indexOf(transaction.account)
@@ -652,16 +643,21 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     /**
      *  Inserts new Account into list or selects it in categorySpinner if it exists already.
      *
-     *  @param input the category to be inserted/selected.
+     *  @param name the Account to be inserted/selected.
      */
 @ExperimentalStdlibApi
-    private fun insertAccount(input : String) {
+    private fun insertAccount(name : String) {
 
-        // makes first letter of every word capital and every other letter lower case
-        val name : String = input.split(" ").joinToString(" ") {it.toLowerCase(Locale.US).capitalize(Locale.US)}
 
         // -1 means it doesn't exist
         if (accountNameList.indexOf(name) == -1) {
+
+            // creates new Account with name
+            launch {
+
+                val account = Account(name)
+                transactionDetailViewModel.insertAccount(account)
+            }
 
             // adds new Account to list, sorts list, ensures "Create New Account" appears at bottom,
             // updates SpinnerAdapter, and sets Spinner to new Account
@@ -670,11 +666,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             accountNameList.sort()
             accountNameList.add(getString(R.string.account_create))
             accountSpinnerAdapter!!.notifyDataSetChanged()
-            accountSpinner.setSelection(accountNameList.indexOf(name))
-        } else {
-
-            accountSpinner.setSelection(accountNameList.indexOf(name))
         }
+
+        accountSpinner.setSelection(accountNameList.indexOf(name))
 
         transaction.account = name
     }

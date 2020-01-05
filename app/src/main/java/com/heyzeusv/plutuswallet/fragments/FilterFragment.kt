@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.utilities.TransactionInfo
 import com.heyzeusv.plutuswallet.utilities.Utils
@@ -130,7 +131,15 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         launch {
 
             //retrieves list of Accounts from database
-            accountNameList = filterViewModel.getAccountsAsync().await().toMutableList()
+            accountNameList = filterViewModel.getDistinctAccountsAsync().await().toMutableList()
+            Log.d(TAG, accountNameList.toString())
+            val accountList : MutableList<Account> = mutableListOf()
+            accountNameList.forEach {
+
+                val account = Account(it)
+                accountList.add(account)
+            }
+            filterViewModel.upsertAccounts(accountList)
             // sorts list in alphabetical order
             accountNameList.sort()
             // sets up the accountSpinner

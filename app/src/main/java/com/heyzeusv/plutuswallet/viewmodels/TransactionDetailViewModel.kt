@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
+import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import kotlinx.coroutines.Deferred
@@ -21,6 +22,27 @@ class TransactionDetailViewModel : ViewModel() {
      *  Stores handle to TransactionRepository.
      */
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
+
+    /**
+     *  Account queries
+     */
+    suspend fun insertAccount(account : Account) {
+
+        transactionRepository.insertAccount(account)
+    }
+
+    /**
+     *  Category queries
+     */
+    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> {
+
+        return transactionRepository.getCategoriesByTypeAsync(type)
+    }
+
+    suspend fun insertCategory(category : Category) {
+
+        transactionRepository.insertCategory(category)
+    }
 
     /**
      *  Transaction queries.
@@ -72,18 +94,5 @@ class TransactionDetailViewModel : ViewModel() {
     suspend fun updateTransaction(transaction : Transaction) {
 
         transactionRepository.updateTransaction(transaction)
-    }
-
-    /**
-     *  Category queries
-     */
-    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> {
-
-        return transactionRepository.getCategoriesByTypeAsync(type)
-    }
-
-    suspend fun insertCategory(category : Category) {
-
-        transactionRepository.insertCategory(category)
     }
 }

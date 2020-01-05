@@ -16,6 +16,7 @@ import java.util.Date
  *  @param title          title of Transaction.
  *  @param date           Date of Transaction.
  *  @param total          the total amount of Transaction.
+ *  @param account        account this Transaction will belong to.
  *  @param type           either "Expense" or "Income".
  *  @param category       the name of category selected.
  *  @param memo           optional information.
@@ -25,19 +26,25 @@ import java.util.Date
  *  @param futureDate     if repeating true, frequency * period + date.
  *  @param futureTCreated true if this Transaction has had a future Transaction created for it.
  */
-@Entity(foreignKeys = [ForeignKey(entity        = Category::class,
+@Entity(foreignKeys = [ForeignKey(entity        = Account::class,
+                                  parentColumns = arrayOf("account"),
+                                  childColumns  = arrayOf("account"),
+                                  onUpdate      = CASCADE),
+                       ForeignKey(entity        = Category::class,
                                   parentColumns = arrayOf("category", "type"),
                                   childColumns  = arrayOf("category", "type"),
                                   onUpdate      = CASCADE)],
         indices = [Index(value = ["category", "type"],
-                         name  = "index_trans_name_type")])
+                         name  = "index_trans_name_type"),
+                   Index(value = ["account"],
+                         name  = "index_account_name")])
 data class Transaction(
     @PrimaryKey(autoGenerate = true)
     var id             : Int        = 0,
     var title          : String     = "",
     var date           : Date       = Utils.startOfDay(Date()),
     var total          : BigDecimal = BigDecimal("0"),
-    var account        : String     = "None",
+    var account        : String     = "",
     var type           : String     = "Expense",
     var category       : String     = "",
     var memo           : String     = "",
