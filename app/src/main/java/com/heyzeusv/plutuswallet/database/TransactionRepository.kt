@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.heyzeusv.plutuswallet.database.daos.AccountDao
 import com.heyzeusv.plutuswallet.database.daos.CategoryDao
 import com.heyzeusv.plutuswallet.database.daos.ExpenseCategoryDao
 import com.heyzeusv.plutuswallet.database.daos.IncomeCategoryDao
@@ -29,6 +30,45 @@ private const val DATABASE_NAME = "transaction-database"
  *  @constructor Used to make this class a singleton.
  */
 class TransactionRepository private constructor(context : Context){
+
+    private val migration20to21 : Migration = object : Migration(20, 21) {
+
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+            database.execSQL("""CREATE TABLE IF NOT EXISTS `Account` (
+                                            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                            `account` TEXT NOT NULL)""")
+            database.execSQL("""CREATE UNIQUE INDEX index_account
+                                        ON `Account` (account)""")
+            database.execSQL("""CREATE TABLE IF NOT EXISTS `Transaction_new` (
+                                            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                                            `title` TEXT NOT NULL, 
+                                            `date` INTEGER NOT NULL,    
+                                            `total` TEXT NOT NULL, 
+                                            `account` TEXT NOT NULL, 
+                                            `type` TEXT NOT NULL, 
+                                            `category` TEXT NOT NULL, 
+                                            `memo` TEXT NOT NULL, 
+                                            `repeating` INTEGER NOT NULL, 
+                                            `frequency` INTEGER NOT NULL, 
+                                            `period` INTEGER NOT NULL, 
+                                            `futureDate` INTEGER NOT NULL,
+                                            `futureTCreated` INTEGER NOT NULL,
+                                            FOREIGN KEY(`account`) 
+                                                REFERENCES `Account`(`account`) 
+                                                ON UPDATE CASCADE ON DELETE NO ACTION , 
+                                            FOREIGN KEY(`category`, `type`) 
+                                                REFERENCES `Category`(`category`, `type`)
+                                                ON UPDATE CASCADE ON DELETE NO ACTION )""")
+            database.execSQL("""INSERT INTO `Transaction_new` SELECT * FROM `Transaction`""")
+            database.execSQL("""DROP TABLE `Transaction`""")
+            database.execSQL("""ALTER TABLE `Transaction_new` RENAME TO `Transaction`""")
+            database.execSQL("""CREATE INDEX IF NOT EXISTS `index_trans_name_type` 
+                                            ON `Transaction` (category, type)""")
+            database.execSQL("""CREATE INDEX IF NOT EXISTS `index_account_name` 
+                                            ON `Transaction` (`account`)""")
+        }
+    }
 
     private val migration19to20 : Migration = object : Migration(19, 20) {
 
@@ -140,16 +180,38 @@ class TransactionRepository private constructor(context : Context){
         context.applicationContext,
         TransactionDatabase::class.java,
         DATABASE_NAME)
-        .addMigrations(migration16to17, migration17to18, migration18to19, migration19to20)
+        .addMigrations(migration16to17, migration17to18, migration18to19, migration19to20, migration20to21)
         .build()
 
     /**
      *  DAOs
      */
-    private val categoryDao          : CategoryDao        = database.categoryDao       ()
-    private val transactionDao       : TransactionDao     = database.transactionDao    ()
-    private val expenseCategoryDao   : ExpenseCategoryDao = database.expenseCategoryDao()
-    private val incomeCategoryDao    : IncomeCategoryDao  = database.incomeCategoryDao ()
+    private val accountDao         : AccountDao         = database.accountDao        ()
+    private val categoryDao        : CategoryDao        = database.categoryDao       ()
+    private val transactionDao     : TransactionDao     = database.transactionDao    ()
+    private val expenseCategoryDao : ExpenseCategoryDao = database.expenseCategoryDao()
+    private val incomeCategoryDao  : IncomeCategoryDao  = database.incomeCategoryDao ()
+
+    /**
+     *  Account Queries
+     */
+    suspend fun getAccountsAsync() : Deferred<List<String>> = withContext(Dispatchers.IO) {async {accountDao.getAccounts()}}
+    suspend fun getAccountSizeAsync() : Deferred<Int?> = withContext(Dispatchers.IO) {async {accountDao.getAccountSize()}}
+    suspend fun insertAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.insert(account)}}
+    suspend fun upsertAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.upsert(account)}}
+    suspend fun upsertAccounts(accounts : List<Account>) : Job = withContext(Dispatchers.IO) {launch {accountDao.upsert(accounts)}}
+
+
+    /**
+     *  Category Queries
+     */
+    fun getLDCategoriesByType(type : String) : LiveData<List<Category>> = categoryDao.getLDCategoriesByType(type)
+    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> = withContext(Dispatchers.IO) {async {categoryDao.getCategoriesByType(type)}}
+    suspend fun getCategorySizeAsync () : Deferred<Int?>            = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize()}}
+    suspend fun deleteCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.delete(category)}}
+    suspend fun insertCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(category)}}
+    suspend fun updateCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.update(category)}}
+    suspend fun insertCategories(categories : List<Category>) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(categories)}}
 
     /**
      *  Transaction Queries
@@ -180,7 +242,7 @@ class TransactionRepository private constructor(context : Context){
     fun getLdCtTA (type : String?, account : String?)                             : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTA       (type, account)
     fun getLdCtTD (type : String?,                    start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTD       (type,          start, end)
     fun getLdCtTAD(type : String?, account : String?, start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtTAD      (type, account, start, end)
-    suspend fun getAccountsAsync          ()                                 : Deferred<List<String>>      = withContext(Dispatchers.IO) {async  {transactionDao.getAccounts()}}
+    suspend fun getDistinctAccountsAsync          ()                                 : Deferred<List<String>>      = withContext(Dispatchers.IO) {async  {transactionDao.getDistinctAccounts()}}
     suspend fun getFutureTransactionsAsync(currentDate  : Date)              : Deferred<List<Transaction>> = withContext(Dispatchers.IO) {async  {transactionDao.getFutureTransactions(currentDate)}}
     suspend fun getMaxIdAsync             ()                                 : Deferred<Int?>              = withContext(Dispatchers.IO) {async  {transactionDao.getMaxId()}}
     suspend fun getTransactionAsync       (id           : Int)               : Deferred<Transaction>       = withContext(Dispatchers.IO) {async  {transactionDao.getTransaction(id)}}
@@ -188,17 +250,6 @@ class TransactionRepository private constructor(context : Context){
     suspend fun insertTransaction         (transaction  : Transaction)       : Job                         = withContext(Dispatchers.IO) {launch {transactionDao.insert(transaction)}}
     suspend fun updateTransaction         (transaction  : Transaction)       : Job                         = withContext(Dispatchers.IO) {launch {transactionDao.update(transaction)}}
     suspend fun upsertTransactions        (transactions : List<Transaction>) : Job                         = withContext(Dispatchers.IO) {launch {transactionDao.upsert(transactions)}}
-
-    /**
-     *  Category Queries
-     */
-    fun getLDCategoriesByType(type : String) : LiveData<List<Category>> = categoryDao.getLDCategoriesByType(type)
-    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> = withContext(Dispatchers.IO) {async {categoryDao.getCategoriesByType(type)}}
-    suspend fun getCategorySizeAsync () : Deferred<Int?>            = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize()}}
-    suspend fun deleteCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.delete(category)}}
-    suspend fun insertCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(category)}}
-    suspend fun updateCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.update(category)}}
-    suspend fun insertCategories(categories : List<Category>) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(categories)}}
 
     /**
      *  ExpenseCategory Queries
@@ -239,7 +290,7 @@ class TransactionRepository private constructor(context : Context){
         fun get() : TransactionRepository {
 
             return INSTANCE ?:
-                    throw IllegalStateException("TransactionRepository must be initialized")
+            throw IllegalStateException("TransactionRepository must be initialized")
         }
     }
 }

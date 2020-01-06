@@ -26,7 +26,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT DISTINCT account
                    FROM `transaction`""")
-    abstract suspend fun getAccounts() : List<String>
+    abstract suspend fun getDistinctAccounts() : List<String>
 
     /**
      *  Returns all transactions where futureDate is before currentDate and futureTCreated is false.

@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey
 @Entity(indices = [Index(value  = ["category", "type"],
                          name   = "index_cat_name_type",
                          unique = true)])
-class Category(
+data class Category(
     @PrimaryKey(autoGenerate = true)
     val id       : Int,
     var category : String,

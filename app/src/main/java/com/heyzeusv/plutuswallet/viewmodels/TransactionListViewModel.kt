@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
+import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
@@ -21,6 +22,32 @@ class TransactionListViewModel : ViewModel() {
      *  Stores handle to TransactionRepository.
      */
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
+
+    /**
+     *  Account queries
+     */
+    suspend fun getAccountSizeAsync() : Deferred<Int?> {
+
+        return  transactionRepository.getAccountSizeAsync()
+    }
+
+    suspend fun upsertAccount(account : Account) {
+
+        transactionRepository.upsertAccount(account)
+    }
+
+    /**
+     *  Category queries
+     */
+    suspend fun getCategorySizeAsync() : Deferred<Int?> {
+
+        return transactionRepository.getCategorySizeAsync()
+    }
+
+    suspend fun insertCategories(categories : List<Category>) {
+
+        transactionRepository.insertCategories(categories)
+    }
 
     /**
      *  Transaction queries
@@ -137,19 +164,6 @@ class TransactionListViewModel : ViewModel() {
     suspend fun upsertTransactions(transactions : List<Transaction>) {
 
         transactionRepository.upsertTransactions(transactions)
-    }
-
-    /**
-     *  Category queries
-     */
-    suspend fun getCategorySizeAsync() : Deferred<Int?> {
-
-        return transactionRepository.getCategorySizeAsync()
-    }
-
-    suspend fun insertCategories(categories : List<Category>) {
-
-        transactionRepository.insertCategories(categories)
     }
 
     /**

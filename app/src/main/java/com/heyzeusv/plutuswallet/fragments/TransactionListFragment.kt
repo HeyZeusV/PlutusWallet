@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ import com.google.android.gms.ads.AdView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
@@ -235,6 +237,20 @@ class TransactionListFragment : BaseFragment() {
             if (expenseSize == 0 && incomeSize == 0 && categorySize == 0) {
 
                 initializeCategoryTables(expenseSize, incomeSize)
+            }
+        }
+
+        // gets size of Account table and adds "None" account if empty
+        launch {
+
+            val accountSize : Int = transactionListViewModel.getAccountSizeAsync().await() ?: 0
+
+            Log.d(TAG, accountSize.toString())
+            if (accountSize == 0) {
+
+                val newAccount = Account(0, "None")
+
+                transactionListViewModel.upsertAccount(newAccount)
             }
         }
     }
