@@ -12,7 +12,7 @@ import kotlinx.coroutines.Deferred
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class CategoriesViewModel : ViewModel() {
+class CategoryViewModel : ViewModel() {
 
     /**
      *  Stores handle to TransactionRepository.

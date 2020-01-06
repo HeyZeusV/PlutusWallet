@@ -22,13 +22,13 @@ import com.heyzeusv.plutuswallet.database.entities.Transaction
  *  @TypeConverters database can only store certain types, need TypeConverters to convert
  *                  types into those that database can store.
  */
-@Database(entities = [Account::class,
-    Category::class,
-    Transaction::class,
-    ExpenseCategory::class,
-    IncomeCategory::class],
-    version = 21,
-    exportSchema = true)
+@Database(entities     = [Account::class,
+                          Category::class,
+                          Transaction::class,
+                          ExpenseCategory::class,
+                          IncomeCategory::class],
+          version      = 21,
+          exportSchema = true)
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {
 

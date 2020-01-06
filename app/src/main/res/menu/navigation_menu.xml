@@ -3,6 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/accounts"
+        android:icon="@drawable/ic_baseline_account_balance_24"
+        android:title="Accounts"/>
+
+    <item
         android:id="@+id/categories"
         android:icon="@drawable/ic_baseline_category_24"
         android:title="@string/categories"/>
@@ -14,7 +19,7 @@
 
     <item
         android:id="@+id/about"
-        android:icon="@drawable/ic_baseline_info_24"
+        android:icon="@drawable/ic_baseline_information_24"
         android:title="@string/about"/>
 
     <item

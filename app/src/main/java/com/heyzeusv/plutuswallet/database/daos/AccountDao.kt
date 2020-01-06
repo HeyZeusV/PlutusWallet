@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.database.daos
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.database.entities.Account
@@ -14,6 +15,11 @@ import com.heyzeusv.plutuswallet.database.entities.Account
  */
 @Dao
 abstract class AccountDao : BaseDao<Account>() {
+
+    @Query("""SELECT *
+              FROM account
+              ORDER BY account ASC""")
+    abstract fun getLDAccounts() : LiveData<List<Account>>
 
     @Query("""SELECT account
               FROM account""")

@@ -19,13 +19,13 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Category
-import com.heyzeusv.plutuswallet.viewmodels.CategoriesViewModel
+import com.heyzeusv.plutuswallet.viewmodels.CategoryViewModel
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
 
 private const val TAG = "PWCategoriesFragment"
 
-class CategoriesFragment : BaseFragment() {
+class CategoryFragment : BaseFragment() {
 
     // views
     private lateinit var circleIndicator     : CircleIndicator3
@@ -43,16 +43,16 @@ class CategoriesFragment : BaseFragment() {
     // used to tell which page of ViewPager2 to scroll to
     private var typeChanged : Int = 0
 
-    private val categoriesViewModel : CategoriesViewModel by lazy {
-        ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
+    private val categoryViewModel : CategoryViewModel by lazy {
+        ViewModelProviders.of(this).get(CategoryViewModel::class.java)
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
 
-        val view : View = inflater.inflate(R.layout.fragment_categories, container, false)
+        val view : View = inflater.inflate(R.layout.fragment_category, container, false)
 
-        circleIndicator     = view.findViewById(R.id.categories_circle_indicator) as CircleIndicator3
-        categoriesViewPager = view.findViewById(R.id.categories_view_pager      ) as ViewPager2
+        circleIndicator     = view.findViewById(R.id.category_circle_indicator) as CircleIndicator3
+        categoriesViewPager = view.findViewById(R.id.category_view_pager      ) as ViewPager2
 
         return view
     }
@@ -60,7 +60,7 @@ class CategoriesFragment : BaseFragment() {
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        categoriesViewModel.expenseCategoriesLiveData.observe(this, Observer {
+        categoryViewModel.expenseCategoriesLiveData.observe(this, Observer {
 
             categoryNameLists[0].clear()
             it.forEach { category : Category ->
@@ -71,7 +71,7 @@ class CategoriesFragment : BaseFragment() {
             updateUI(categoryLists)
         })
 
-        categoriesViewModel.incomeCategoriesLiveData.observe(this, Observer {
+        categoryViewModel.incomeCategoriesLiveData.observe(this, Observer {
 
             categoryNameLists[1].clear()
             it.forEach { category : Category ->
@@ -82,13 +82,13 @@ class CategoriesFragment : BaseFragment() {
             updateUI(categoryLists)
         })
 
-        categoriesViewModel.uniqueExpenseLiveData.observe(this, Observer {
+        categoryViewModel.uniqueExpenseLiveData.observe(this, Observer {
 
             uniqueCategoryLists[0] = it
             updateUI(categoryLists)
         })
 
-        categoriesViewModel.uniqueIncomeLiveData.observe(this, Observer {
+        categoryViewModel.uniqueIncomeLiveData.observe(this, Observer {
 
             uniqueCategoryLists[1] = it
             updateUI(categoryLists)
@@ -138,8 +138,8 @@ class CategoriesFragment : BaseFragment() {
     private inner class CategoryListHolder(view : View) : RecyclerView.ViewHolder(view) {
 
         // views in ItemView
-        private val categoryTypeTextView : TextView     = itemView.findViewById(R.id.categories_type           )
-        private val categoryRecyclerView : RecyclerView = itemView.findViewById(R.id.categories_recycler_view)
+        private val categoryTypeTextView : TextView     = itemView.findViewById(R.id.category_type           )
+        private val categoryRecyclerView : RecyclerView = itemView.findViewById(R.id.category_recycler_view)
 
         fun bind(categoryList : List<Category>, type : Int) {
 
@@ -154,7 +154,7 @@ class CategoriesFragment : BaseFragment() {
             categoryRecyclerView.layoutManager = linearLayoutManager
             categoryRecyclerView.adapter = CategoryAdapter(categoryList)
             categoryRecyclerView.addItemDecoration(
-                    DividerItemDecoration(categoryRecyclerView.context, DividerItemDecoration.VERTICAL))
+                DividerItemDecoration(categoryRecyclerView.context, DividerItemDecoration.VERTICAL))
         }
 
         /**
@@ -185,8 +185,7 @@ class CategoriesFragment : BaseFragment() {
         /**
          *  ViewHolder stores a reference to an item's view
          */
-        private inner class CategoryHolder(view : View)
-            : RecyclerView.ViewHolder(view) {
+        private inner class CategoryHolder(view : View) : RecyclerView.ViewHolder(view) {
 
             // views in ItemView
             private val editButton       : MaterialButton = itemView.findViewById(R.id.category_edit  )
@@ -203,7 +202,7 @@ class CategoriesFragment : BaseFragment() {
 
                 categoryTextView.text = category.category
 
-                if (!uniqueCategoryLists[type].contains(category.category)) {
+                if (!uniqueCategoryLists[type].contains(category.category) && categoryNameLists[type].size > 1) {
 
                     deleteButton.isEnabled = true
 
@@ -211,7 +210,7 @@ class CategoriesFragment : BaseFragment() {
 
                         launch {
 
-                            categoriesViewModel.deleteCategory(category)
+                            categoryViewModel.deleteCategory(category)
                         }
                         typeChanged = type
                     }
@@ -237,10 +236,7 @@ class CategoriesFragment : BaseFragment() {
                             typeChanged = type
                         }
                         // set negative button and its click listener
-                        .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->
-
-
-                        }
+                        .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int -> }
                     // make the AlertDialog using the builder
                     val categoryAlertDialog : AlertDialog = builder.create()
                     // display AlertDialog
@@ -260,7 +256,7 @@ class CategoriesFragment : BaseFragment() {
                     category.category = updatedName
                     launch {
 
-                        categoriesViewModel.updateCategory(category)
+                        categoryViewModel.updateCategory(category)
                     }
                 }
             }
@@ -270,11 +266,11 @@ class CategoriesFragment : BaseFragment() {
     companion object {
 
         /**
-         *  Initializes instance of CategoriesFragment
+         *  Initializes instance of CategoryFragment
          */
-        fun newInstance() : CategoriesFragment {
+        fun newInstance() : CategoryFragment {
 
-            return CategoriesFragment()
+            return CategoryFragment()
         }
     }
 }

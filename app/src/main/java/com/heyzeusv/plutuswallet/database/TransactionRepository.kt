@@ -180,7 +180,8 @@ class TransactionRepository private constructor(context : Context){
         context.applicationContext,
         TransactionDatabase::class.java,
         DATABASE_NAME)
-        .addMigrations(migration16to17, migration17to18, migration18to19, migration19to20, migration20to21)
+        .addMigrations(migration16to17, migration17to18, migration18to19,
+            migration19to20, migration20to21)
         .build()
 
     /**
@@ -195,12 +196,14 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  Account Queries
      */
+    fun getLDAccounts() : LiveData<List<Account>> = accountDao.getLDAccounts()
     suspend fun getAccountsAsync() : Deferred<List<String>> = withContext(Dispatchers.IO) {async {accountDao.getAccounts()}}
     suspend fun getAccountSizeAsync() : Deferred<Int?> = withContext(Dispatchers.IO) {async {accountDao.getAccountSize()}}
+    suspend fun deleteAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.delete(account)}}
     suspend fun insertAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.insert(account)}}
+    suspend fun updateAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.update(account)}}
     suspend fun upsertAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.upsert(account)}}
     suspend fun upsertAccounts(accounts : List<Account>) : Job = withContext(Dispatchers.IO) {launch {accountDao.upsert(accounts)}}
-
 
     /**
      *  Category Queries

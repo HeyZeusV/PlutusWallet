@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -15,7 +16,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.billingrepo.localdb.AugmentedSkuDetails
-import com.heyzeusv.plutuswallet.fragments.CategoriesFragment
+import com.heyzeusv.plutuswallet.fragments.AccountFragment
+import com.heyzeusv.plutuswallet.fragments.CategoryFragment
 import com.heyzeusv.plutuswallet.fragments.FGLFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
@@ -35,6 +37,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     // views
     private lateinit var drawerLayout   : DrawerLayout
     private lateinit var fab            : FloatingActionButton
+    private lateinit var backButton     : MaterialButton
     private lateinit var menuButton     : MaterialButton
     private lateinit var navigationView : NavigationView
 
@@ -58,7 +61,8 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         // initialize views
         drawerLayout   = findViewById(R.id.activity_drawer         )
         fab            = findViewById(R.id.activity_fab            )
-        menuButton     = findViewById(R.id.fragment_settings       )
+        backButton     = findViewById(R.id.activity_back           )
+        menuButton     = findViewById(R.id.activity_settings       )
         navigationView = findViewById(R.id.activity_navigation_view)
 
         // disables swipe to open drawer
@@ -106,17 +110,39 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
             return@setNavigationItemSelectedListener when (it.itemId) {
 
-                // starts CategoriesFragment
+                // starts AccountFragment
+                R.id.accounts -> {
+
+                    backButton.visibility = View.VISIBLE
+                    menuButton.visibility = View.INVISIBLE
+
+                    // instance of AccountFragment
+                    val accountFragment : AccountFragment = AccountFragment.newInstance()
+
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.fragment_transaction_container, accountFragment)
+                        .addToBackStack(null)
+                        .commit()
+
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+
+                // starts CategoryFragment
                 R.id.categories -> {
 
-                    // instance of CategoriesFragment
-                    val categoriesFragment : CategoriesFragment = CategoriesFragment.newInstance()
+                    backButton.visibility = View.VISIBLE
+                    menuButton.visibility = View.INVISIBLE
+
+                    // instance of CategoryFragment
+                    val categoryFragment : CategoryFragment = CategoryFragment.newInstance()
 
                     supportFragmentManager
                         .beginTransaction()
                         // replace fragment hosted at location with new fragment provided
                         // will add fragment even if there is none
-                        .replace(R.id.fragment_transaction_container, categoriesFragment)
+                        .replace(R.id.fragment_transaction_container, categoryFragment)
                         // pressing back button will go back to previous fragment (if any)
                         .addToBackStack(null)
                         .commit()
@@ -157,6 +183,11 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
+        backButton.setOnClickListener {
+
+            onBackPressed()
+        }
+
         billingViewModel.noAdsLiveData.observe(this, Observer {
 
             it?.let {
@@ -186,18 +217,27 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     override fun onBackPressed() {
 
         // close drawer if open else do regular behavior
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        when {
+            drawerLayout.isDrawerOpen(GravityCompat.START) -> {
 
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-
-            // moves menuButton back into view
-            ObjectAnimator.ofFloat(menuButton, "translationX", 0f).apply {
-
-                duration = 400
-                start()
+                drawerLayout.closeDrawer(GravityCompat.START)
             }
-            super.onBackPressed()
+            menuButton.visibility == View.INVISIBLE -> {
+
+                backButton.visibility = View.INVISIBLE
+                menuButton.visibility = View.VISIBLE
+                super.onBackPressed()
+            }
+            else -> {
+
+                // moves menuButton back into view
+                ObjectAnimator.ofFloat(menuButton, "translationX", 0f).apply {
+
+                    duration = 400
+                    start()
+                }
+                super.onBackPressed()
+            }
         }
     }
 

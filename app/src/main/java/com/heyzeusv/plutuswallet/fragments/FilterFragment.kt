@@ -1,7 +1,6 @@
 package com.heyzeusv.plutuswallet.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -132,7 +131,6 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
             //retrieves list of Accounts from database
             accountNameList = filterViewModel.getDistinctAccountsAsync().await().toMutableList()
-            Log.d(TAG, accountNameList.toString())
             val accountList : MutableList<Account> = mutableListOf()
             accountNameList.forEach {
 

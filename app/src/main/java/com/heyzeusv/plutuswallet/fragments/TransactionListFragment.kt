@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -245,7 +244,6 @@ class TransactionListFragment : BaseFragment() {
 
             val accountSize : Int = transactionListViewModel.getAccountSizeAsync().await() ?: 0
 
-            Log.d(TAG, accountSize.toString())
             if (accountSize == 0) {
 
                 val newAccount = Account(0, "None")
