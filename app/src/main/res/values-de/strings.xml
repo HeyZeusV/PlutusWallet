@@ -13,8 +13,7 @@
     <string name="alert_dialog_are_you_sure">Bist du sicher?</string>
     <string name="alert_dialog_cancel">Stornieren</string>
     <string name="alert_dialog_decimal_place_warning">Dadurch werden vorhandene Transaktionen abhängig vom Dezimalwert gerundet. Der ursprüngliche Wert kann NUR dann wiederhergestellt werden, wenn die Transaktionen nicht bearbeitet werden.</string>
-    <string name="alert_dialog_delete_transaction">Transaktion löschen</string>
-    <string name="alert_dialog_delete_transaction_warning">Möchten Sie %1$s wirklich löschen?</string>
+    <string name="alert_dialog_delete_warning">Möchten Sie %1$s wirklich löschen?</string>
     <string name="alert_dialog_future_transaction">Zukünftige Transaktion</string>
     <string name="alert_dialog_future_transaction_warning">Diese Transaktion wurde zuvor wiederholt und das Datum wurde bearbeitet. Möchten Sie, dass diese Transaktion noch einmal wiederholt wird?</string>
     <string name="alert_dialog_no">Nein</string>
@@ -86,4 +85,12 @@
     <string name="type_income">Einkommen</string>
     <string name="remove_ads">Werbung entfernen</string>
     <string name="categories">Kategorien</string>
+    <string name="alert_dialog_edit_account">Konto bearbeiten</string>
+    <string name="alert_dialog_input_hint">Geben Sie einen Namen ein</string>
+    <string name="alert_dialog_create_account">Benutzerkonto anlegen</string>
+    <string name="alert_dialog_edit_category">Kategorie bearbeiten</string>
+    <string name="alert_dialog_create_category">Kategorie erstellen</string>
+    <string name="alert_dialog_delete_transaction">Transaktion löschen</string>
+    <string name="alert_dialog_delete_category">Kategorie löschen</string>
+    <string name="alert_dialog_delete_account">Konto löschen</string>
 </resources>

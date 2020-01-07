@@ -12,10 +12,10 @@
         android:layout_marginEnd="24dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/category_Input"
+            android:id="@+id/dialog_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/category_hint"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:hint="@string/alert_dialog_input_hint" />
     </com.google.android.material.textfield.TextInputLayout>
 </FrameLayout>

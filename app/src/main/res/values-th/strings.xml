@@ -13,8 +13,7 @@
     <string name="alert_dialog_are_you_sure">คุณแน่ใจไหม?</string>
     <string name="alert_dialog_cancel">ยกเลิก</string>
     <string name="alert_dialog_decimal_place_warning">นี่จะทำให้ธุรกรรมที่มีอยู่ถูกปัดเศษขึ้นอยู่กับค่าทศนิยม ค่าดั้งเดิมสามารถกู้คืนได้เฉพาะในกรณีที่ไม่มีการแก้ไขธุรกรรม</string>
-    <string name="alert_dialog_delete_transaction">ลบธุรกรรม</string>
-    <string name="alert_dialog_delete_transaction_warning">คุณแน่ใจหรือว่าต้องการลบ %1$s</string>
+    <string name="alert_dialog_delete_warning">คุณแน่ใจหรือว่าต้องการลบ %1$s</string>
     <string name="alert_dialog_future_transaction">การทำธุรกรรมในอนาคต</string>
     <string name="alert_dialog_future_transaction_warning">ธุรกรรมนี้ซ้ำก่อนหน้านี้และวันที่ได้รับการแก้ไข คุณต้องการให้ธุรกรรมนี้สามารถทำซ้ำได้อีกครั้งหรือไม่?</string>
     <string name="alert_dialog_no">ไม่</string>
@@ -86,4 +85,12 @@
     <string name="type_income">เงินได้</string>
     <string name="remove_ads">ลบโฆษณา</string>
     <string name="categories">หมวดหมู่</string>
+    <string name="alert_dialog_edit_account">แก้ไขบัญชี</string>
+    <string name="alert_dialog_input_hint">ป้อนชื่อ</string>
+    <string name="alert_dialog_create_account">สร้างบัญชี</string>
+    <string name="alert_dialog_create_category">สร้างหมวดหมู่</string>
+    <string name="alert_dialog_edit_category">แก้ไขหมวดหมู่</string>
+    <string name="alert_dialog_delete_account">ลบบัญชี</string>
+    <string name="alert_dialog_delete_category">ลบหมวดหมู่</string>
+    <string name="alert_dialog_delete_transaction">ลบธุรกรรม</string>
 </resources>

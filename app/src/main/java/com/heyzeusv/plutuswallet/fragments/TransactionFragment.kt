@@ -737,9 +737,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // set title of AlertDialog
             .setTitle(getString(R.string.account_create))
         val viewInflated : View = LayoutInflater.from(context)
-            .inflate(R.layout.dialog_new_account, view as ViewGroup, false)
+            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
         // the EditText to be used
-        val input : EditText = viewInflated.findViewById(R.id.account_Input)
+        val input : EditText = viewInflated.findViewById(R.id.dialog_input)
         // sets the view
         builder.setView(viewInflated)
             // set positive button/click listener
@@ -777,9 +777,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             .setTitle(getString(R.string.category_create))
         // inflates view that holds EditText
         val viewInflated : View = LayoutInflater.from(context)
-            .inflate(R.layout.dialog_new_category, view as ViewGroup, false)
+            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
         // the EditText to be used
-        val input : EditText = viewInflated.findViewById(R.id.category_Input)
+        val input : EditText = viewInflated.findViewById(R.id.dialog_input)
         // sets the view
         builder.setView(viewInflated)
             // set positive button and its click listener

@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.fragments
 
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -192,6 +193,7 @@ class CategoryFragment : BaseFragment() {
             private val deleteButton     : MaterialButton = itemView.findViewById(R.id.category_delete)
             private val categoryTextView : TextView       = itemView.findViewById(R.id.category_name  )
 
+            @SuppressLint("StringFormatInvalid")
             fun bind(category : Category) {
 
                 val type : Int = when (category.type) {
@@ -208,11 +210,23 @@ class CategoryFragment : BaseFragment() {
 
                     deleteButton.setOnClickListener {
 
-                        launch {
+                        // initialize instance of Builder
+                        val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+                            // set title of AlertDialog
+                            .setTitle(getString(R.string.alert_dialog_delete_category))
+                            .setMessage(getString(R.string.alert_dialog_delete_warning, category.category))
+                            // set positive button and its click listener
+                            .setPositiveButton(getString(R.string.alert_dialog_yes)) { _ : DialogInterface, _ : Int ->
 
-                            categoryViewModel.deleteCategory(category)
-                        }
-                        typeChanged = type
+                                deleteCategory(category)
+                                typeChanged = type
+                            }
+                            // set negative button and its click listener
+                            .setNegativeButton(getString(R.string.alert_dialog_no)) { _ : DialogInterface, _ : Int -> }
+                        // make the AlertDialog using the builder
+                        val accountAlertDialog : AlertDialog = builder.create()
+                        // display AlertDialog
+                        accountAlertDialog.show()
                     }
                 }
 
@@ -221,12 +235,12 @@ class CategoryFragment : BaseFragment() {
                     // initialize instance of Builder
                     val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                         // set title of AlertDialog
-                        .setTitle(getString(R.string.category_create))
+                        .setTitle(getString(R.string.alert_dialog_edit_category))
                     // inflates view that holds EditText
                     val viewInflated : View = LayoutInflater.from(context)
-                        .inflate(R.layout.dialog_new_category, view as ViewGroup, false)
+                        .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
                     // the EditText to be used
-                    val input : EditText = viewInflated.findViewById(R.id.category_Input)
+                    val input : EditText = viewInflated.findViewById(R.id.dialog_input)
                     // sets the view
                     builder.setView(viewInflated)
                         // set positive button and its click listener
@@ -241,6 +255,14 @@ class CategoryFragment : BaseFragment() {
                     val categoryAlertDialog : AlertDialog = builder.create()
                     // display AlertDialog
                     categoryAlertDialog.show()
+                }
+            }
+
+            private fun deleteCategory(category : Category) {
+
+                launch {
+
+                    categoryViewModel.deleteCategory(category)
                 }
             }
 

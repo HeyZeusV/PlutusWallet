@@ -13,8 +13,7 @@
     <string name="alert_dialog_are_you_sure">¿Estás seguro?</string>
     <string name="alert_dialog_cancel">Cancelar</string>
     <string name="alert_dialog_decimal_place_warning">Esto hará que las transacciones existentes se redondeen según el valor decimal. El valor original se puede restaurar SOLO SI las transacciones no se editan.</string>
-    <string name="alert_dialog_delete_transaction">Eliminar transacción</string>
-    <string name="alert_dialog_delete_transaction_warning">¿Seguro que quieres eliminar %1$s?</string>
+    <string name="alert_dialog_delete_warning">¿Seguro que quieres eliminar %1$s?</string>
     <string name="alert_dialog_future_transaction">Transacción futura</string>
     <string name="alert_dialog_future_transaction_warning">Esta transacción se ha repetido antes y la fecha se ha editado. ¿Desea que esta transacción se pueda repetir nuevamente?</string>
     <string name="alert_dialog_no">No</string>
@@ -86,4 +85,12 @@
     <string name="type_income">Ingresos</string>
     <string name="remove_ads">Eliminar anuncios</string>
     <string name="categories">Categorias</string>
+    <string name="alert_dialog_edit_account">Editar cuenta</string>
+    <string name="alert_dialog_input_hint">Ingresa un nombre</string>
+    <string name="alert_dialog_create_account">Crear una cuenta</string>
+    <string name="alert_dialog_create_category">Crear categoría</string>
+    <string name="alert_dialog_edit_category">Editar categoría</string>
+    <string name="alert_dialog_delete_account">Eliminar cuenta</string>
+    <string name="alert_dialog_delete_category">Eliminar categoría</string>
+    <string name="alert_dialog_delete_transaction">Eliminar transacción</string>
 </resources>

@@ -13,8 +13,7 @@
     <string name="alert_dialog_are_you_sure">क्या आपको यकीन है?</string>
     <string name="alert_dialog_cancel">रद्द करना</string>
     <string name="alert_dialog_decimal_place_warning">यह मौजूदा लेनदेन को दशमलव मान के आधार पर गोल किया जाएगा। मूल मान केवल बहाल किया जा सकता है यदि लेनदेन संपादित नहीं किए जाते हैं।</string>
-    <string name="alert_dialog_delete_transaction">ट्रांजेक्शन को डिलीट करें</string>
-    <string name="alert_dialog_delete_transaction_warning">क्या आप वाकई %1$s को हटाना चाहते हैं?</string>
+    <string name="alert_dialog_delete_warning">क्या आप वाकई %1$s को हटाना चाहते हैं?</string>
     <string name="alert_dialog_future_transaction">भविष्य का लेन-देन</string>
     <string name="alert_dialog_future_transaction_warning">यह लेन-देन पहले भी दोहराया गया है और तारीख को संपादित किया गया है। क्या आप चाहेंगे कि यह लेनदेन दोबारा दोहराया जा सके।</string>
     <string name="alert_dialog_no">नहीं</string>
@@ -86,4 +85,12 @@
     <string name="type_income">आय</string>
     <string name="remove_ads">विज्ञापन निकालें</string>
     <string name="categories">श्रेणियाँ</string>
+    <string name="alert_dialog_edit_account">खाता संपादित करें</string>
+    <string name="alert_dialog_input_hint">नाम डालें</string>
+    <string name="alert_dialog_create_account">खाता बनाएं</string>
+    <string name="alert_dialog_edit_category">श्रेणी संपादित करें</string>
+    <string name="alert_dialog_create_category">श्रेणी बनाएँ</string>
+    <string name="alert_dialog_delete_transaction">ट्रांजेक्शन को डिलीट करें</string>
+    <string name="alert_dialog_delete_category">श्रेणी हटाएँ</string>
+    <string name="alert_dialog_delete_account">खाता हटा दो</string>
 </resources>

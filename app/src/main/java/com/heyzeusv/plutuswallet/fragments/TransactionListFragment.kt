@@ -629,7 +629,7 @@ class TransactionListFragment : BaseFragment() {
                 // set title of AlertDialog
                 .setTitle(getString(R.string.alert_dialog_delete_transaction))
                 // set message of AlertDialog
-                .setMessage(getString(R.string.alert_dialog_delete_transaction_warning, transaction.title))
+                .setMessage(getString(R.string.alert_dialog_delete_warning, transaction.title))
                 // set positive button and its click listener
                 .setPositiveButton(getString(R.string.alert_dialog_yes)) { _ : DialogInterface, _ : Int ->
 

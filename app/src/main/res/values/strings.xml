@@ -16,8 +16,7 @@
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_decimal_place_warning">This will cause existing transactions to be rounded depending on decimal value. Original value can be restored ONLY IF transactions are not edited.</string>
-    <string name="alert_dialog_delete_transaction">Delete Transaction</string>
-    <string name="alert_dialog_delete_transaction_warning">Are you sure you want to delete %1$s?</string>
+    <string name="alert_dialog_delete_warning">Are you sure you want to delete %1$s?</string>
     <string name="alert_dialog_future_transaction">Future Transaction</string>
     <string name="alert_dialog_future_transaction_warning">This transaction has been repeated before and the date has been edited. Would you like this transaction to be able to be repeated again?</string>
     <string name="alert_dialog_no">No</string>
@@ -97,4 +96,12 @@
     <string name="type_income">Income</string>
     <string name="remove_ads">Remove Advertisements</string>
     <string name="categories">Categories</string>
+    <string name="alert_dialog_edit_account">Edit Account</string>
+    <string name="alert_dialog_input_hint">Enter A Name</string>
+    <string name="alert_dialog_create_account">Create Account</string>
+    <string name="alert_dialog_edit_category">Edit Category</string>
+    <string name="alert_dialog_create_category">Create Category</string>
+    <string name="alert_dialog_delete_account">Delete Account</string>
+    <string name="alert_dialog_delete_category">Delete Category</string>
+    <string name="alert_dialog_delete_transaction">Delete Transaction</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.fragments
 
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -106,6 +107,7 @@ class AccountFragment : BaseFragment() {
         private val deleteButton     : MaterialButton = itemView.findViewById(R.id.account_delete)
         private val accountTextView  : TextView       = itemView.findViewById(R.id.account_name  )
 
+        @SuppressLint("StringFormatInvalid")
         fun bind(account : Account) {
 
             accountTextView.text = account.account
@@ -116,10 +118,22 @@ class AccountFragment : BaseFragment() {
 
                 deleteButton.setOnClickListener {
 
-                    launch {
+                    // initialize instance of Builder
+                    val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+                        // set title of AlertDialog
+                        .setTitle(getString(R.string.alert_dialog_delete_account))
+                        .setMessage(getString(R.string.alert_dialog_delete_warning, account.account))
+                        // set positive button and its click listener
+                        .setPositiveButton(getString(R.string.alert_dialog_yes)) { _ : DialogInterface, _ : Int ->
 
-                        accountViewModel.deleteAccount(account)
-                    }
+                            deleteAccount(account)
+                        }
+                        // set negative button and its click listener
+                        .setNegativeButton(getString(R.string.alert_dialog_no)) { _ : DialogInterface, _ : Int -> }
+                    // make the AlertDialog using the builder
+                    val accountAlertDialog : AlertDialog = builder.create()
+                    // display AlertDialog
+                    accountAlertDialog.show()
                 }
             }
 
@@ -128,12 +142,12 @@ class AccountFragment : BaseFragment() {
                 // initialize instance of Builder
                 val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                     // set title of AlertDialog
-                    .setTitle(getString(R.string.category_create))
+                    .setTitle(getString(R.string.alert_dialog_edit_account))
                 // inflates view that holds EditText
                 val viewInflated : View = LayoutInflater.from(context)
-                    .inflate(R.layout.dialog_new_category, view as ViewGroup, false)
+                    .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
                 // the EditText to be used
-                val input : EditText = viewInflated.findViewById(R.id.category_Input)
+                val input : EditText = viewInflated.findViewById(R.id.dialog_input)
                 // sets the view
                 builder.setView(viewInflated)
                     // set positive button and its click listener
@@ -147,6 +161,14 @@ class AccountFragment : BaseFragment() {
                 val accountAlertDialog : AlertDialog = builder.create()
                 // display AlertDialog
                 accountAlertDialog.show()
+            }
+        }
+
+        private fun deleteAccount(account : Account) {
+
+            launch {
+
+                accountViewModel.deleteAccount(account)
             }
         }
 
