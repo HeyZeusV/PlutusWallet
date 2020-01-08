@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.utilities
+package com.heyzeusv.plutuswallet.database.entities
 
 import java.util.Date
 

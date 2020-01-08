@@ -73,13 +73,7 @@ class TransactionListViewModel : ViewModel() {
 
         return if (account == true && category == true && date == true) {
 
-            if (accountName == "All" && categoryName == "All") {
-
-                transactionRepository.getLdTD(type, start, end)
-            } else if (accountName == "All") {
-
-                transactionRepository.getLdTCD(type, categoryName, start, end)
-            } else if (categoryName == "All") {
+            if (categoryName == "All") {
 
                 transactionRepository.getLdATD(accountName, type, start, end)
             } else {
@@ -88,13 +82,7 @@ class TransactionListViewModel : ViewModel() {
             }
         } else if (account == true && category == true) {
 
-            if (accountName == "All" && categoryName == "All") {
-
-                transactionRepository.getLdT(type)
-            } else if (accountName == "All") {
-
-                transactionRepository.getLdTC(type, categoryName)
-            } else if (categoryName == "All") {
+            if (categoryName == "All") {
 
                 transactionRepository.getLdAT(accountName, type)
             } else {
@@ -103,22 +91,10 @@ class TransactionListViewModel : ViewModel() {
             }
         } else if (account == true && date == true) {
 
-            if (accountName == "All") {
-
-                transactionRepository.getLdD(start, end)
-            } else {
-
-                transactionRepository.getLdAD(accountName, start, end)
-            }
+            transactionRepository.getLdAD(accountName, start, end)
         } else if (account == true) {
 
-            if (accountName == "All") {
-
-                transactionRepository.getLd()
-            } else {
-
-                transactionRepository.getLdA(accountName)
-            }
+            transactionRepository.getLdA(accountName)
         } else if (category == true && date == true) {
 
             if (categoryName == "All") {

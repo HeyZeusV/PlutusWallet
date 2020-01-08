@@ -27,7 +27,7 @@ import com.heyzeusv.plutuswallet.database.entities.Transaction
                           Transaction::class,
                           ExpenseCategory::class,
                           IncomeCategory::class],
-          version      = 21,
+          version      = 22,
           exportSchema = true)
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {

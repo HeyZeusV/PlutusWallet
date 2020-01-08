@@ -8,8 +8,6 @@
     <string name="about_special_thanks">Besonderer Dank geht an Familie, Freunde und Haustiere für ihre Unterstützung und an Hadia A. für die Ikone!</string>
     <string name="about_translation_warning">Für die Lokalisierung wurde Google Translate verwendet. Bitte lassen Sie mich alle Fehler wissen, danke!</string>
     <string name="account_create">Neuen Account erstellen</string>
-    <string name="account_hint">Geben Sie ein neues Konto ein</string>
-    <string name="account_none">Keiner</string>
     <string name="alert_dialog_are_you_sure">Bist du sicher?</string>
     <string name="alert_dialog_cancel">Stornieren</string>
     <string name="alert_dialog_decimal_place_warning">Dadurch werden vorhandene Transaktionen abhängig vom Dezimalwert gerundet. Der ursprüngliche Wert kann NUR dann wiederhergestellt werden, wenn die Transaktionen nicht bearbeitet werden.</string>
@@ -23,19 +21,6 @@
     <string name="app_icon">App-Symbol</string>
     <string name="category_all">Alle</string>
     <string name="category_create">Neue Kategorie erstellen</string>
-    <string name="category_cryptocurrency">Kryptowährung</string>
-    <string name="category_education">Bildung</string>
-    <string name="category_entertainment">Unterhaltung</string>
-    <string name="category_food">Essen</string>
-    <string name="category_hint">Neue Kategorie eingeben</string>
-    <string name="category_home">Zuhause</string>
-    <string name="category_investments">Investitionen</string>
-    <string name="category_salary">Gehalt</string>
-    <string name="category_savings">Ersparnisse</string>
-    <string name="category_stocks">Bestände</string>
-    <string name="category_transportation">Transport</string>
-    <string name="category_utilities">Dienstprogramme</string>
-    <string name="category_wages">Lohn</string>
     <string name="empty_graph">Keine Transaktionen erfüllen die angewendeten Filter!</string>
     <string name="empty_list">Keine Transaktionen erfüllen die angewendeten Filter!\nDrücken Sie die Taste unten, um eine neue Transaktion hinzuzufügen!</string>
     <string name="filter_account">Konto:</string>
@@ -93,4 +78,5 @@
     <string name="alert_dialog_delete_transaction">Transaktion löschen</string>
     <string name="alert_dialog_delete_category">Kategorie löschen</string>
     <string name="alert_dialog_delete_account">Konto löschen</string>
+    <string name="snackbar_exists">%1$s existiert bereits!</string>
 </resources>

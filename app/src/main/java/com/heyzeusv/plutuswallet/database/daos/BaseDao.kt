@@ -8,7 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 
 /**
- *  Queries that can be applied to all tables
+ *  Queries that can be applied to all tables.
  *
  *  DAO used to interact with tables, essentially queries.
  *  They support inheritance, this is a base.
@@ -20,42 +20,32 @@ import androidx.room.Update
 abstract class BaseDao<T> {
 
     /**
-     *  Insert an object in the database.
-     *
      *  @param  obj the object to be inserted.
-     *  @return The SQLite row id.
+     *  @return row id or -1 if there is conflict.
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insert(obj : T) : Long
 
     /**
-     *  Insert an array of objects in the database.
-     *
-     *  @param  obj the objects to be inserted.
-     *  @return The SQLite row ids.
+     *  @param  obj list of objects to be inserted.
+     *  @return list of row ids or -1 where there is conflict.
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insert(obj : List<T>) : List<Long>
 
     /**
-     *  Update an object from the database.
-     *
      *  @param obj the object to be updated.
      */
     @Update
     abstract suspend fun update(obj : T)
 
     /**
-     *  Update an array of objects from the database.
-     *
-     *  @param obj the objects to be updated.
+     *  @param obj list of objects to be updated.
      */
     @Update
     abstract suspend fun update(obj : List<T>)
 
     /**
-     *  Delete an up from the database.
-     *
      *  @param obj the object to be deleted.
      */
     @Delete

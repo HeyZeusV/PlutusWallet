@@ -17,33 +17,28 @@ import com.heyzeusv.plutuswallet.database.entities.Category
 abstract class CategoryDao : BaseDao<Category>() {
 
     /**
-     *  Returns all Categories.
-     *
-     *  @return list that holds all Categories.
+     *  @return LiveData object that holds list that holds all Categories.
      */
     @Query("""SELECT *
-                   FROM category
-                   WHERE type=(:type)
-                   ORDER BY category ASC""")
+              FROM category
+              WHERE type=(:type)
+              ORDER BY category ASC""")
     abstract fun getLDCategoriesByType(type : String) : LiveData<List<Category>>
 
     /**
-     *  Returns the size of table.
-     *
-     *  @return the size of table.
-     */
-    @Query("""SELECT COUNT(*) 
-                   FROM category""")
-    abstract suspend fun getCategorySize() : Int?
-
-    /**
-     *  Returns all Categories of given Type
-     *
-     *  @return list of all Categories of given Type
+     *  @return list of all Categories of given Type.
      */
     @Query("""SELECT category
-                   FROM category
-                   WHERE type=(:type)
-                   ORDER BY category ASC""")
+              FROM category
+              WHERE type=(:type)
+              ORDER BY category ASC""")
     abstract suspend fun getCategoriesByType(type : String) : List<String>
+
+    /**
+     *  @return the size of table or null if empty.
+     */
+    @Query("""SELECT COUNT(*) 
+              FROM category""")
+    abstract suspend fun getCategorySize() : Int?
+
 }

@@ -15,7 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
-import com.heyzeusv.plutuswallet.utilities.TransactionInfo
+import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.FGLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.FilterViewModel
@@ -129,55 +129,10 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         launch {
 
-            //retrieves list of Accounts from database
-            accountNameList = filterViewModel.getDistinctAccountsAsync().await().toMutableList()
-            val accountList : MutableList<Account> = mutableListOf()
-            accountNameList.forEach {
-
-                val account = Account(0, it)
-                accountList.add(account)
-            }
-            filterViewModel.upsertAccounts(accountList)
-            // sorts list in alphabetical order
-            accountNameList.sort()
-            // sets up the accountSpinner
-            val accountSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, accountNameList)
-            accountSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            accountSpinner.adapter = accountSpinnerAdapter
-            // sets the spinner up to Account saved
-            accountSpinner.setSelection(if (accountNameList.indexOf(accountName) == -1) {
-
-                0
-            } else {
-
-                accountNameList.indexOf(accountName)
-            })
-
-            // retrieves list of Expense Categories from database
-            expenseCategoryNamesList = filterViewModel.getCategoriesByTypeAsync("Expense").await().toMutableList()
-            // Category to show all of one type
-            expenseCategoryNamesList.add(0, all)
-            // sets up the categorySpinner
-            val expenseSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!,
-                R.layout.spinner_item, expenseCategoryNamesList)
-            expenseSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            expenseCategorySpinner.adapter = expenseSpinnerAdapter
-            // starts the spinner up to ExpenseCategory saved
-            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(categoryName))
-
-            // retrieves list of Income Categories from database
-            incomeCategoryNamesList = filterViewModel.getCategoriesByTypeAsync("Income").await().toMutableList()
-            // Category to show all of one type
-            incomeCategoryNamesList.add(0, all)
-            // sets up the categorySpinner
-            val incomeSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!,
-                R.layout.spinner_item, incomeCategoryNamesList)
-            incomeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            incomeCategorySpinner.adapter = incomeSpinnerAdapter
-            // starts the spinner up to ExpenseCategory saved
-            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(categoryName))
-
+            // will get size of new Category table
             val categorySize : Int = filterViewModel.getCategorySizeAsync().await() ?: 0
+            // if new table is empty, add all Categories from old table in order to be inserted
+            // into new table
             if (categorySize == 0) {
 
                 val categoryList : MutableList<Category> = mutableListOf()
@@ -201,6 +156,57 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 }
                 filterViewModel.insertCategories(categoryList)
             }
+
+            //retrieves list of Accounts from database
+            accountNameList = filterViewModel.getDistinctAccountsAsync().await().toMutableList()
+            // will create a list of existing accounts and adds them to new table
+            val accountList : MutableList<Account> = mutableListOf()
+            accountNameList.forEach {
+
+                val account = Account(0, it)
+                accountList.add(account)
+            }
+            filterViewModel.upsertAccounts(accountList)
+            // sorts list in alphabetical order
+            accountNameList.sort()
+            // sets up the accountSpinner
+            val accountSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, accountNameList)
+            accountSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            accountSpinner.adapter = accountSpinnerAdapter
+            // sets the spinner up to Account saved
+            accountSpinner.setSelection(if (accountNameList.indexOf(accountName) == -1) {
+
+                0
+            } else {
+
+                accountNameList.indexOf(accountName)
+            })
+
+            // retrieves list of Expense Categories from database
+            expenseCategoryNamesList = filterViewModel.getCategoriesByTypeAsync(
+                "Expense").await().toMutableList()
+            // Category to show all of one type
+            expenseCategoryNamesList.add(0, all)
+            // sets up the categorySpinner
+            val expenseSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!,
+                R.layout.spinner_item, expenseCategoryNamesList)
+            expenseSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            expenseCategorySpinner.adapter = expenseSpinnerAdapter
+            // starts the spinner up to ExpenseCategory saved
+            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(categoryName))
+
+            // retrieves list of Income Categories from database
+            incomeCategoryNamesList = filterViewModel.getCategoriesByTypeAsync(
+                "Income").await().toMutableList()
+            // Category to show all of one type
+            incomeCategoryNamesList.add(0, all)
+            // sets up the categorySpinner
+            val incomeSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!,
+                R.layout.spinner_item, incomeCategoryNamesList)
+            incomeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+            incomeCategorySpinner.adapter = incomeSpinnerAdapter
+            // starts the spinner up to ExpenseCategory saved
+            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(categoryName))
         }
     }
 
@@ -325,7 +331,8 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
             // startDate must be before endDate else it displays Toast warning and doesn't apply filters
             if (startDate > endDate && dateSelected) {
 
-                val dateBar : Snackbar = Snackbar.make(it, getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT)
+                val dateBar : Snackbar = Snackbar.make(it,
+                    getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT)
                 dateBar.show()
             } else {
 
@@ -339,8 +346,11 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     "Income"
                 }
                 // updating MutableLiveData value in ViewModel
-                val tInfo = TransactionInfo(accountSelected, categorySelected, dateSelected,
-                    type, accountName, categoryName, startDate, endDateCorrected)
+                val tInfo =
+                    TransactionInfo(
+                        accountSelected, categorySelected, dateSelected,
+                        type, accountName, categoryName, startDate, endDateCorrected
+                    )
                 fglViewModel.updateTInfo(tInfo)
                 // if both filters are unchecked
                 if (!accountSelected && !categorySelected && !dateSelected) {

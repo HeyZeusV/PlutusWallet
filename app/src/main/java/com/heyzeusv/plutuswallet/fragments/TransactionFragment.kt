@@ -54,7 +54,8 @@ private const val DIALOG_DATE         = "DialogDate"
 private const val REQUEST_DATE        = 0
 
 /**
- *  Shows all the information in database of one Transaction and allows users to edit any field and save changes.
+ *  Shows all the information in database of one Transaction and allows users to
+ *  edit any field and save changes.
  */
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
@@ -224,12 +225,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
 
-        // register an observer on LiveData instance and tie life to another component
-        transactionDetailViewModel.transactionLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { transaction : Transaction? ->
+        // register an observer on LiveData instance and tie life to this component
+        // execute code whenever LiveData gets updated
+        transactionDetailViewModel.transactionLiveData.observe(this, Observer { transaction : Transaction? ->
                 // if not null
                 transaction?.let {
                     this.transaction = transaction
@@ -505,12 +503,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 transaction.title = getString(R.string.transaction_empty_title) + transaction.id
             }
 
-            // Untranslated "None"
-            if (transaction.account == getString(R.string.account_none)) {
-
-                transaction.account = "None"
-            }
-
             // frequency must always be at least 1
             if (transaction.frequency < 1) {
 
@@ -633,7 +625,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
      */
     private fun createSnackbar(view : View) {
 
-        val savedBar : Snackbar = Snackbar.make(view, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT)
+        val savedBar : Snackbar = Snackbar.make(view,
+            getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT)
         savedBar.anchorView = view
         savedBar.show()
     }
@@ -837,13 +830,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             Utils.formatInteger(transaction.total.toString(), thousandsSymbol)
         }))
 
-        accountSpinner.setSelection(if (transaction.account == "None") {
+        accountSpinner.setSelection(accountNameList.indexOf(transaction.account))
 
-            accountNameList.indexOf(getString(R.string.account_none))
-        } else {
-
-            accountNameList.indexOf(transaction.account)
-        })
         if (transaction.type == "Income") {
 
             typeSelected                     = true

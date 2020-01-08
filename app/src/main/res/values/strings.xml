@@ -11,8 +11,6 @@
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
     <string name="about_version" translatable="false">v1.2.3</string>
     <string name="account_create">Create New Account</string>
-    <string name="account_hint">Enter New Account</string>
-    <string name="account_none">None</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_decimal_place_warning">This will cause existing transactions to be rounded depending on decimal value. Original value can be restored ONLY IF transactions are not edited.</string>
@@ -27,19 +25,6 @@
     <string name="app_name" translatable="false">Plutus\' Wallet</string>
     <string name="category_all">All</string>
     <string name="category_create">Create New Category</string>
-    <string name="category_cryptocurrency">Cryptocurrency</string>
-    <string name="category_education">Education</string>
-    <string name="category_entertainment">Entertainment</string>
-    <string name="category_food">Food</string>
-    <string name="category_hint">Enter New Category</string>
-    <string name="category_home">Home</string>
-    <string name="category_investments">Investments</string>
-    <string name="category_salary">Salary</string>
-    <string name="category_savings">Savings</string>
-    <string name="category_stocks">Stocks</string>
-    <string name="category_transportation">Transportation</string>
-    <string name="category_utilities">Utilities</string>
-    <string name="category_wages">Wages</string>
     <string name="empty_graph">No transactions fulfill the filters being applied!</string>
     <string name="empty_list">No transactions fulfill the filters being applied! \nPress the button below to add a new transaction!</string>
     <string name="filter_account">Account:</string>
@@ -104,4 +89,5 @@
     <string name="alert_dialog_delete_account">Delete Account</string>
     <string name="alert_dialog_delete_category">Delete Category</string>
     <string name="alert_dialog_delete_transaction">Delete Transaction</string>
+    <string name="snackbar_exists">%1$s already exists!</string>
 </resources>

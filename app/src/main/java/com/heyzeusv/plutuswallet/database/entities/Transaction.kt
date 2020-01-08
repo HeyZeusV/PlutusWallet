@@ -12,6 +12,10 @@ import java.util.Date
 /**
  *  Representation of Transaction table.
  *
+ *  @ForeignKey one Account/Category to many Transactions. Update in parent table will cause
+ *              change in corresponding child row.
+ *  @Index indices on foreign keys.
+ *
  *  @param id             unique id of Transaction.
  *  @param title          title of Transaction.
  *  @param date           Date of Transaction.
@@ -35,7 +39,7 @@ import java.util.Date
                                   childColumns  = arrayOf("category", "type"),
                                   onUpdate      = CASCADE)],
         indices = [Index(value = ["category", "type"],
-                         name  = "index_trans_name_type"),
+                         name  = "index_cat_name_type"),
                    Index(value = ["account"],
                          name  = "index_account_name")])
 data class Transaction(

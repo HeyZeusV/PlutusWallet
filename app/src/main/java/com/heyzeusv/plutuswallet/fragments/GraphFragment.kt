@@ -20,14 +20,14 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
-import com.heyzeusv.plutuswallet.utilities.TransactionInfo
+import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.viewmodels.FGLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.GraphViewModel
 import me.relex.circleindicator.CircleIndicator3
 import java.math.BigDecimal
 import java.util.Date
 
-private const val TAG = "GraphFragment"
+private const val TAG = "PWGraphFragment"
 
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.
@@ -82,12 +82,10 @@ class GraphFragment : BaseFragment() {
         var end         : Date?
         var accountName : String?
 
-        // register an observer on LiveData instance and tie life to another component
-        fglViewModel.tInfoLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { newInfo : TransactionInfo ->
+        // register an observer on LiveData instance and tie life to this component
+        // execute code whenever LiveData gets updated
+        fglViewModel.tInfoLiveData.observe(this, Observer { newInfo : TransactionInfo ->
+
                 // never null
                 newInfo.let {
 
@@ -106,12 +104,10 @@ class GraphFragment : BaseFragment() {
                 val incomeTransactionListLiveData  : LiveData<List<CategoryTotals>> =
                     graphViewModel.filteredCategoryTotals(account, date, "Income", accountName, start, end)
 
-                // register an observer on LiveData instance and tie life to another component
-                expenseTransactionListLiveData.observe(
-                    // view's lifecycle owner ensures that updates are only received when view is on screen
-                    viewLifecycleOwner,
-                    // executed whenever LiveData gets updated
-                    Observer { expenseList : List<CategoryTotals> ->
+                // register an observer on LiveData instance and tie life to this component
+                // execute code whenever LiveData gets update
+                expenseTransactionListLiveData.observe(this, Observer { expenseList : List<CategoryTotals> ->
+
                         // never null
                         expenseList.let {
                             transactionLists[0] = calculateTotals("Expense", expenseList)
@@ -120,12 +116,10 @@ class GraphFragment : BaseFragment() {
                     }
                 )
 
-                // register an observer on LiveData instance and tie life to another component
-                incomeTransactionListLiveData.observe(
-                    // view's lifecycle owner ensures that updates are only received when view is on screen
-                    viewLifecycleOwner,
-                    // executed whenever LiveData gets updated
-                    Observer { incomeList : List<CategoryTotals> ->
+                // register an observer on LiveData instance and tie life to this component
+                // execute code whenever LiveData gets updated
+                incomeTransactionListLiveData.observe(this, Observer { incomeList : List<CategoryTotals> ->
+
                         // never null
                         incomeList.let {
                             transactionLists[1] = calculateTotals("Income", incomeList)

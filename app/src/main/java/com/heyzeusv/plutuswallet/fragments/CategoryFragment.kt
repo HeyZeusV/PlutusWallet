@@ -26,6 +26,10 @@ import me.relex.circleindicator.CircleIndicator3
 
 private const val TAG = "PWCategoriesFragment"
 
+/**
+ *  Shows all Categories depending on type in database and allows users to either
+ *  edit them or delete them.
+ */
 class CategoryFragment : BaseFragment() {
 
     // views
@@ -33,25 +37,31 @@ class CategoryFragment : BaseFragment() {
     private lateinit var categoriesViewPager : ViewPager2
 
     // list used to hold lists of Categories
-    private var categoryLists : MutableList<List<Category>> = mutableListOf(emptyList(), emptyList())
+    private var categoryLists : MutableList<List<Category>>
+            = mutableListOf(emptyList(), emptyList())
 
     // list used to hold list of Category names
-    private var categoryNameLists : MutableList<MutableList<String>> = mutableListOf(mutableListOf(), mutableListOf())
+    private var categoryNameLists : MutableList<MutableList<String>>
+            = mutableListOf(mutableListOf(), mutableListOf())
 
     // list used to hold lists of unique Categories by type being used
-    private var uniqueCategoryLists : MutableList<List<String>> = mutableListOf(emptyList(), emptyList())
+    private var uniqueCategoryLists : MutableList<List<String>>
+            = mutableListOf(emptyList(), emptyList())
 
     // used to tell which page of ViewPager2 to scroll to
     private var typeChanged : Int = 0
 
+    // instance of ViewModel
     private val categoryViewModel : CategoryViewModel by lazy {
         ViewModelProviders.of(this).get(CategoryViewModel::class.java)
     }
 
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
+    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
+                              savedInstanceState : Bundle?) : View? {
 
         val view : View = inflater.inflate(R.layout.fragment_category, container, false)
 
+        // initialize views
         circleIndicator     = view.findViewById(R.id.category_circle_indicator) as CircleIndicator3
         categoriesViewPager = view.findViewById(R.id.category_view_pager      ) as ViewPager2
 
@@ -61,8 +71,11 @@ class CategoryFragment : BaseFragment() {
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // register an observer on LiveData instance and tie life to this component
+        // execute code whenever LiveData gets updated
         categoryViewModel.expenseCategoriesLiveData.observe(this, Observer {
 
+            // clears list before adding names again since names can be added or dropped
             categoryNameLists[0].clear()
             it.forEach { category : Category ->
 
@@ -72,8 +85,11 @@ class CategoryFragment : BaseFragment() {
             updateUI(categoryLists)
         })
 
+        // register an observer on LiveData instance and tie life to this component
+        // execute code whenever LiveData gets updated
         categoryViewModel.incomeCategoriesLiveData.observe(this, Observer {
 
+            // clears list before adding names again since names can be added or dropped
             categoryNameLists[1].clear()
             it.forEach { category : Category ->
 
@@ -83,14 +99,20 @@ class CategoryFragment : BaseFragment() {
             updateUI(categoryLists)
         })
 
+        // register an observer on LiveData instance and tie life to this component
+        // execute code whenever LiveData gets updated
         categoryViewModel.uniqueExpenseLiveData.observe(this, Observer {
 
+            // list of Categories used by Transactions
             uniqueCategoryLists[0] = it
             updateUI(categoryLists)
         })
 
+        // register an observer on LiveData instance and tie life to this component
+        // execute code whenever LiveData gets updated
         categoryViewModel.uniqueIncomeLiveData.observe(this, Observer {
 
+            // list of Categories used by Transactions
             uniqueCategoryLists[1] = it
             updateUI(categoryLists)
         })
@@ -103,8 +125,10 @@ class CategoryFragment : BaseFragment() {
      */
     private fun updateUI(categoryLists : MutableList<List<Category>>) {
 
+        // creates Adapter with MutableList of Lists of Categories and sets it to ViewPager2
         categoriesViewPager.adapter = CategoryListAdapter(categoryLists)
         categoriesViewPager.setCurrentItem(typeChanged, false)
+        // sets ViewPager2 to CircleIndicator
         circleIndicator.setViewPager(categoriesViewPager)
     }
 
@@ -119,7 +143,8 @@ class CategoryFragment : BaseFragment() {
         // creates view to display, wraps the view in a ViewHolder and returns the result
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryListHolder {
 
-            val view : View = layoutInflater.inflate(R.layout.item_view_category_list, parent, false)
+            val view : View = layoutInflater.inflate(R.layout.item_view_category_list,
+                parent, false)
             return CategoryListHolder(view)
         }
 
@@ -134,12 +159,14 @@ class CategoryFragment : BaseFragment() {
     }
 
     /**
-     *  ViewHolder stores a reference to an item's view
+     *  ViewHolder stores a reference to an item's view.
+     *
+     *  @param view ViewPager2 layout.
      */
     private inner class CategoryListHolder(view : View) : RecyclerView.ViewHolder(view) {
 
         // views in ItemView
-        private val categoryTypeTextView : TextView     = itemView.findViewById(R.id.category_type           )
+        private val categoryTypeTextView : TextView     = itemView.findViewById(R.id.category_type         )
         private val categoryRecyclerView : RecyclerView = itemView.findViewById(R.id.category_recycler_view)
 
         fun bind(categoryList : List<Category>, type : Int) {
@@ -152,8 +179,11 @@ class CategoryFragment : BaseFragment() {
                 categoryTypeTextView.text = getString(R.string.type_income)
             }
             val linearLayoutManager = LinearLayoutManager(context)
+            // RecyclerView NEEDS a LayoutManager to work
             categoryRecyclerView.layoutManager = linearLayoutManager
+            // set adapter for RecyclerView
             categoryRecyclerView.adapter = CategoryAdapter(categoryList)
+            // adds horizontal divider between each item in RecyclerView
             categoryRecyclerView.addItemDecoration(
                 DividerItemDecoration(categoryRecyclerView.context, DividerItemDecoration.VERTICAL))
         }
@@ -169,7 +199,8 @@ class CategoryFragment : BaseFragment() {
             // creates view to display, wraps the view in a ViewHolder and returns the result
             override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : CategoryHolder {
 
-                val view : View = layoutInflater.inflate(R.layout.item_view_category, parent, false)
+                val view : View = layoutInflater.inflate(R.layout.item_view_category,
+                    parent, false)
                 return CategoryHolder(view)
             }
 
@@ -184,7 +215,9 @@ class CategoryFragment : BaseFragment() {
         }
 
         /**
-         *  ViewHolder stores a reference to an item's view
+         *  ViewHolder stores a reference to an item's.
+         *
+         *  @param view ItemView layout.
          */
         private inner class CategoryHolder(view : View) : RecyclerView.ViewHolder(view) {
 
@@ -204,10 +237,13 @@ class CategoryFragment : BaseFragment() {
 
                 categoryTextView.text = category.category
 
-                if (!uniqueCategoryLists[type].contains(category.category) && categoryNameLists[type].size > 1) {
+                // enables delete button if Category is not in use and if there is more than 1 Category
+                if (!uniqueCategoryLists[type].contains(category.category)
+                    && categoryNameLists[type].size > 1) {
 
                     deleteButton.isEnabled = true
 
+                    // AlertDialog to ensure user does want to delete Category
                     deleteButton.setOnClickListener {
 
                         // initialize instance of Builder
@@ -230,6 +266,7 @@ class CategoryFragment : BaseFragment() {
                     }
                 }
 
+                // AlertDialog with EditText that allows input for new name
                 editButton.setOnClickListener {
 
                     // initialize instance of Builder
@@ -258,6 +295,9 @@ class CategoryFragment : BaseFragment() {
                 }
             }
 
+            /**
+             *  @param category the Category to be deleted
+             */
             private fun deleteCategory(category : Category) {
 
                 launch {
@@ -266,11 +306,20 @@ class CategoryFragment : BaseFragment() {
                 }
             }
 
+            /**
+             *  Checks if name inputted exists already before editing.
+             *
+             *  @param updatedName new name of Category
+             *  @param category    Category to be changed
+             *  @param type        used to tell which name list to check (Expense/Income)
+             */
             private fun editCategory(updatedName : String, category : Category, type : Int) {
 
+                // if exists, Snackbar appears telling user so, else, updates Category
                 if (categoryNameLists[type].contains(updatedName)) {
 
-                    val existBar : Snackbar = Snackbar.make(view!!, "$updatedName already exists!", Snackbar.LENGTH_SHORT)
+                    val existBar : Snackbar = Snackbar.make(view!!,
+                        getString(R.string.snackbar_exists, updatedName), Snackbar.LENGTH_SHORT)
                     existBar.anchorView = circleIndicator
                     existBar.show()
                 } else {

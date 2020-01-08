@@ -188,7 +188,7 @@ class AboutActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item : MenuItem?) : Boolean {
 
-        when (item?.itemId) {
+        when (item!!.itemId) {
 
             // returns user to previous activity if they select back arrow
             android.R.id.home -> {

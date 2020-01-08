@@ -7,7 +7,10 @@ import androidx.room.PrimaryKey
 /**
  *  Representation of Account table.
  *
- *  @param account name of Account, no two Accounts can have the same name.
+ *  @Index unique since account is not primary key and foreign keys must be unique.
+ *
+ *  @param id      unique id of Account.
+ *  @param account name of Account.
  */
 @Entity(indices = [Index(value  = ["account"],
                          name   = "index_account",

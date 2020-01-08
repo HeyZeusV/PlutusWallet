@@ -16,16 +16,25 @@ import com.heyzeusv.plutuswallet.database.entities.Account
 @Dao
 abstract class AccountDao : BaseDao<Account>() {
 
+    /**
+     *  @return LiveData object holding list of all Accounts in order of account.
+     */
     @Query("""SELECT *
               FROM account
               ORDER BY account ASC""")
     abstract fun getLDAccounts() : LiveData<List<Account>>
 
-    @Query("""SELECT account
-              FROM account""")
-    abstract suspend fun getAccounts() : List<String>
-
+    /**
+     *  @return size of table or null if empty.
+     */
     @Query("""SELECT COUNT(*)
               FROM account""")
     abstract suspend fun getAccountSize() : Int?
+
+    /**
+     *  @return list holding names of Accounts.
+     */
+    @Query("""SELECT account
+              FROM account""")
+    abstract suspend fun getAccounts() : List<String>
 }

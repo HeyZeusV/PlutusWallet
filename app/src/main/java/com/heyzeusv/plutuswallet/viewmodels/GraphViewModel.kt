@@ -40,22 +40,10 @@ class GraphViewModel : ViewModel() {
 
         return if (account == true && date == true) {
 
-            if (accountName == "All") {
-
-                transactionRepository.getLdCtTD(type, start, end)
-            } else {
-
-                transactionRepository.getLdCtTAD(type, accountName, start, end)
-            }
+            transactionRepository.getLdCtTAD(type, accountName, start, end)
         } else if (account == true) {
 
-            if (accountName == "All") {
-
-                transactionRepository.getLdCtT(type)
-            } else {
-
-                transactionRepository.getLdCtTA(type, accountName)
-            }
+            transactionRepository.getLdCtTA(type, accountName)
         } else if (date == true) {
 
             transactionRepository.getLdCtTD(type, start, end)

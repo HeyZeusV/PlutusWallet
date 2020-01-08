@@ -25,9 +25,35 @@ class MigrationTests {
 
     @Test
     @Throws(IOException::class)
+    fun migrate21to22() {
+
+        val MIGRATION_21_22 = object : Migration(21, 22) {
+
+            override fun migrate(database: SupportSQLiteDatabase) {
+
+                database.execSQL("""DROP INDEX index_cat_name_type""")
+                database.execSQL("""DROP INDEX index_trans_name_type""")
+                database.execSQL("""CREATE UNIQUE INDEX index_cat_type
+                                        ON `Category` (category, type)""")
+                database.execSQL("""CREATE INDEX index_cat_name_type
+                                        ON `Transaction` (category, type)""")
+
+            }
+        }
+
+        var db : SupportSQLiteDatabase = helper.createDatabase(TEST_DB, 21).apply {
+
+            close()
+        }
+
+        db = helper.runMigrationsAndValidate(TEST_DB, 22, true, MIGRATION_21_22)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun migrate16to21() {
 
-        val MIGRATION_16_21 = object : Migration(16, 21) {
+        val MIGRATION_16_22 = object : Migration(16, 22) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
 
@@ -35,12 +61,12 @@ class MigrationTests {
                                             `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
                                             `category` TEXT NOT NULL, 
                                             `type` TEXT NOT NULL)""")
-                database.execSQL("""CREATE UNIQUE INDEX index_cat_name_type
+                database.execSQL("""CREATE UNIQUE INDEX IF NOT EXISTS index_cat_type
                                         ON `Category` (category, type)""")
                 database.execSQL("""CREATE TABLE IF NOT EXISTS `Account` (
                                             `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                                             `account` TEXT NOT NULL)""")
-                database.execSQL("""CREATE UNIQUE INDEX index_account
+                database.execSQL("""CREATE UNIQUE INDEX IF NOT EXISTS index_account
                                         ON `Account` (account)""")
                 database.execSQL("""CREATE TABLE IF NOT EXISTS `Transaction_new` (
                                             `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
@@ -65,8 +91,8 @@ class MigrationTests {
                 database.execSQL("""INSERT INTO `Transaction_new` SELECT * FROM `Transaction`""")
                 database.execSQL("""DROP TABLE `Transaction`""")
                 database.execSQL("""ALTER TABLE `Transaction_new` RENAME TO `Transaction`""")
-                database.execSQL("""CREATE INDEX IF NOT EXISTS `index_trans_name_type` 
-                                            ON `Transaction` (category, type)""")
+                database.execSQL("""CREATE INDEX IF NOT EXISTS index_cat_name_type
+                                        ON `Transaction` (category, type)""")
                 database.execSQL("""CREATE INDEX IF NOT EXISTS `index_account_name` 
                                             ON `Transaction` (`account`)""")
             }
@@ -77,7 +103,7 @@ class MigrationTests {
             close()
         }
 
-        db = helper.runMigrationsAndValidate(TEST_DB, 21, true, MIGRATION_16_21)
+        db = helper.runMigrationsAndValidate(TEST_DB, 22, true, MIGRATION_16_22)
     }
 
     @Test

@@ -8,8 +8,6 @@
     <string name="about_special_thanks">ขอขอบคุณเป็นพิเศษกับครอบครัวเพื่อนและสัตว์เลี้ยงสำหรับการสนับสนุนและ Hadia A. สำหรับไอคอน!</string>
     <string name="about_translation_warning">Google Translate ใช้สำหรับการแปลภาษาท้องถิ่น โปรดแจ้งให้เราทราบถึงข้อผิดพลาดใด ๆ ขอบคุณ!</string>
     <string name="account_create">สร้างบัญชีใหม่</string>
-    <string name="account_hint">ป้อนบัญชีใหม่</string>
-    <string name="account_none">ไม่มี</string>
     <string name="alert_dialog_are_you_sure">คุณแน่ใจไหม?</string>
     <string name="alert_dialog_cancel">ยกเลิก</string>
     <string name="alert_dialog_decimal_place_warning">นี่จะทำให้ธุรกรรมที่มีอยู่ถูกปัดเศษขึ้นอยู่กับค่าทศนิยม ค่าดั้งเดิมสามารถกู้คืนได้เฉพาะในกรณีที่ไม่มีการแก้ไขธุรกรรม</string>
@@ -23,19 +21,6 @@
     <string name="app_icon">ไอคอนแอป</string>
     <string name="category_all">ทั้งหมด</string>
     <string name="category_create">สร้างหมวดหมู่ใหม่</string>
-    <string name="category_cryptocurrency">cryptocurrency</string>
-    <string name="category_education">การศึกษา</string>
-    <string name="category_entertainment">การบันเทิง</string>
-    <string name="category_food">อาหาร</string>
-    <string name="category_hint">ป้อนหมวดหมู่ใหม่</string>
-    <string name="category_home">บ้าน</string>
-    <string name="category_investments">เงินลงทุน</string>
-    <string name="category_salary">เงินเดือน</string>
-    <string name="category_savings">เงินออม</string>
-    <string name="category_stocks">หุ้น</string>
-    <string name="category_transportation">การขนส่ง</string>
-    <string name="category_utilities">ยูทิลิตี้</string>
-    <string name="category_wages">ค่าจ้าง</string>
     <string name="empty_graph">ไม่มีการทำธุรกรรมใด ๆ เพื่อดำเนินการตัวกรองที่ใช้!</string>
     <string name="empty_list">ไม่มีการทำธุรกรรมใดที่ตรงตามตัวกรองที่ใช้!\nกดปุ่มด้านล่างเพื่อเพิ่มธุรกรรมใหม่!</string>
     <string name="filter_account">บัญชี:</string>
@@ -93,4 +78,5 @@
     <string name="alert_dialog_delete_account">ลบบัญชี</string>
     <string name="alert_dialog_delete_category">ลบหมวดหมู่</string>
     <string name="alert_dialog_delete_transaction">ลบธุรกรรม</string>
+    <string name="snackbar_exists">มี %1$s อยู่แล้ว!</string>
 </resources>

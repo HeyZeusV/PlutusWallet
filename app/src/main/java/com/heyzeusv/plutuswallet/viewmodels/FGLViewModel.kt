@@ -2,7 +2,7 @@ package com.heyzeusv.plutuswallet.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.heyzeusv.plutuswallet.utilities.TransactionInfo
+import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 
 /**
  *  Data manager for shared data between Filter/Graph/TransactionList Fragments.
@@ -29,7 +29,10 @@ class FGLViewModel : ViewModel() {
     init {
 
         // will only be used at app start up which will show all Transactions
-        tInfoLiveData.value = TransactionInfo(null, null, null,
-            null, null, null, null, null)
+        tInfoLiveData.value =
+            TransactionInfo(
+                null, null, null,
+                null, null, null, null, null
+            )
     }
 }

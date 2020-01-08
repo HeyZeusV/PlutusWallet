@@ -81,8 +81,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             // Create a new fragment transaction, adds fragments, and then commit it
             supportFragmentManager
                 .beginTransaction()
-                // container view ID (where fragment's view should appear)
-                // fragment to be added
                 .add(R.id.fragment_transaction_container, fglFragment)
                 .commit()
         }
@@ -113,6 +111,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                 // starts AccountFragment
                 R.id.accounts -> {
 
+                    // changes buttons visibility
                     backButton.visibility = View.VISIBLE
                     menuButton.visibility = View.INVISIBLE
 
@@ -128,10 +127,10 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
-
                 // starts CategoryFragment
                 R.id.categories -> {
 
+                    // changes buttons visibility
                     backButton.visibility = View.VISIBLE
                     menuButton.visibility = View.INVISIBLE
 
@@ -140,10 +139,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
                     supportFragmentManager
                         .beginTransaction()
-                        // replace fragment hosted at location with new fragment provided
-                        // will add fragment even if there is none
                         .replace(R.id.fragment_transaction_container, categoryFragment)
-                        // pressing back button will go back to previous fragment (if any)
                         .addToBackStack(null)
                         .commit()
 
@@ -183,6 +179,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
+        // clicking the backButton will return to FGLFragment
         backButton.setOnClickListener {
 
             onBackPressed()
@@ -216,18 +213,20 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
     override fun onBackPressed() {
 
-        // close drawer if open else do regular behavior
         when {
+            // close drawer if it is open
             drawerLayout.isDrawerOpen(GravityCompat.START) -> {
 
                 drawerLayout.closeDrawer(GravityCompat.START)
             }
+            // change visibility of buttons and go back
             menuButton.visibility == View.INVISIBLE -> {
 
                 backButton.visibility = View.INVISIBLE
                 menuButton.visibility = View.VISIBLE
                 super.onBackPressed()
             }
+            // animates menuButton back into screen and goes back
             else -> {
 
                 // moves menuButton back into view
@@ -242,7 +241,8 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     }
 
     /**
-     *  Replaces TransactionListFragment, FilterFragment, and GraphFragment with TransactionFragment selected.
+     *  Replaces TransactionListFragment, FilterFragment, and GraphFragment
+     *  with TransactionFragment selected.
      *
      *  @param transactionId id of Transaction selected.
      *  @param fromFab       true if user clicked on FAB to create Transaction.
@@ -251,18 +251,15 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
         getFabLocation()
 
-        val transactionFragment : TransactionFragment = TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
+        val transactionFragment : TransactionFragment =
+            TransactionFragment.newInstance(transactionId, fabX, fabY, fromFab)
 
-        // Create a new fragment transaction, adds fragments,
-        // and then commit it
+        // fragment transaction with sliding animation
         supportFragmentManager
             .beginTransaction()
-            // animations for switching out fragments
-            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-            // replace fragment hosted at location with new fragment provided
-            // will add fragment even if there is none
+            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
+                R.anim.enter_from_left, R.anim.exit_to_right)
             .replace(R.id.fragment_transaction_container, transactionFragment)
-            // pressing back button will go back to previous fragment (if any)
             .addToBackStack(null)
             .commit()
 

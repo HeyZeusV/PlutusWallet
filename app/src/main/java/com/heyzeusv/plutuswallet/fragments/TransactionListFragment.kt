@@ -32,7 +32,7 @@ import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
-import com.heyzeusv.plutuswallet.utilities.TransactionInfo
+import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
 import com.heyzeusv.plutuswallet.viewmodels.FGLViewModel
@@ -157,12 +157,10 @@ class TransactionListFragment : BaseFragment() {
         var start        : Date?
         var end          : Date?
 
-        // register an observer on LiveData instance and tie life to another component
-        fglViewModel.tInfoLiveData.observe(
-            // view's lifecycle owner ensures that updates are only received when view is on screen
-            viewLifecycleOwner,
-            // executed whenever LiveData gets updated
-            Observer { newInfo : TransactionInfo ->
+        // register an observer on LiveData instance and tie life to this component
+        // execute code whenever LiveData gets updated
+        fglViewModel.tInfoLiveData.observe(this, Observer { newInfo : TransactionInfo ->
+
                 // never null
                 newInfo.let {
 
@@ -205,6 +203,8 @@ class TransactionListFragment : BaseFragment() {
             }
         )
 
+        // register an observer on LiveData instance and tie life to this component
+        // execute code whenever LiveData gets updated
         billingViewModel.noAdsLiveData.observe(this, Observer {
 
             // will load ads if there is noAds data or if user is not entitled to NoAds
@@ -484,7 +484,7 @@ class TransactionListFragment : BaseFragment() {
     }
 
     /**
-     *  Ensures the UI is up to date with correct information.
+     *  Ensures RecyclerView is up to date with correct data and position.
      *
      *  @param transactions the list of Transactions to be displayed.
      */
@@ -526,12 +526,14 @@ class TransactionListFragment : BaseFragment() {
         // creates view to display, wraps the view in a ViewHolder and returns the result
         override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : TransactionHolder {
 
-            val view : View = layoutInflater.inflate(R.layout.item_view_transaction, parent, false)
+            val view : View = layoutInflater.inflate(R.layout.item_view_transaction,
+                parent, false)
             return TransactionHolder(view)
         }
 
         override fun getItemCount() : Int = transactions.size
 
+        // populates given holder with Transaction from the given position in list
         override fun onBindViewHolder(holder : TransactionHolder, position : Int) {
 
             val transaction : ItemViewTransaction = transactions[position]
@@ -541,6 +543,8 @@ class TransactionListFragment : BaseFragment() {
 
     /**
      *  ViewHolder stores a reference to an item's view.
+     *
+     *  @param view ItemView layout.
      */
     private inner class TransactionHolder(view : View)
         : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnLongClickListener {
@@ -567,13 +571,7 @@ class TransactionListFragment : BaseFragment() {
             titleTextView   .text = this.transaction.title
             categoryTextView.text = this.transaction.category
             dateTextView    .text = DateFormat .getDateInstance(dateFormat).format(this.transaction.date)
-            accountTextView .text = if (this.transaction.account == "None") {
-
-                getString(R.string.account_none)
-            } else {
-
-                this.transaction.account
-            }
+            accountTextView .text = this.transaction.account
 
             // formats the Total correctly
             if (decimalPlaces) {

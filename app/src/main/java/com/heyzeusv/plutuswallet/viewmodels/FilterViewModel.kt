@@ -28,19 +28,6 @@ class FilterViewModel : ViewModel() {
     }
 
     /**
-     *  Transaction queries.
-     */
-    suspend fun getAccountsAsync() : Deferred<List<String>> {
-
-        return transactionRepository.getAccountsAsync()
-    }
-    suspend fun getDistinctAccountsAsync() : Deferred<List<String>> {
-
-        return transactionRepository.getDistinctAccountsAsync()
-    }
-
-
-    /**
      *  Category queries.
      */
     suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> {
@@ -57,6 +44,15 @@ class FilterViewModel : ViewModel() {
 
         transactionRepository.insertCategories(categories)
     }
+
+    /**
+     *  Transaction queries.
+     */
+    suspend fun getDistinctAccountsAsync() : Deferred<List<String>> {
+
+        return transactionRepository.getDistinctAccountsAsync()
+    }
+
 
     /**
      *  ExpenseCategory queries.

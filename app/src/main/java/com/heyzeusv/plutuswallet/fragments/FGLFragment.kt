@@ -18,6 +18,7 @@ class FGLFragment : BaseFragment() {
         val graphFragment           : GraphFragment           = GraphFragment.newInstance()
         val transactionListFragment : TransactionListFragment = TransactionListFragment.newInstance()
 
+        // starts fragment transaction, replaces fragments, and then commits it
         childFragmentManager.beginTransaction()
             .replace(R.id.fragment_filter_container          , filterFragment         )
             .replace(R.id.fragment_graph_container           , graphFragment          )

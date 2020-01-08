@@ -8,8 +8,6 @@
     <string name="about_special_thanks">¡Un agradecimiento especial a la familia, amigos y mascotas por todo su apoyo y a Hadia A. por el ícono!</string>
     <string name="about_translation_warning">Google Translate se utilizó para la localización. Por favor, hágamelo saber de cualquier error, ¡gracias!</string>
     <string name="account_create">Crear una nueva cuenta</string>
-    <string name="account_hint">Ingresar nueva cuenta</string>
-    <string name="account_none">Ninguna</string>
     <string name="alert_dialog_are_you_sure">¿Estás seguro?</string>
     <string name="alert_dialog_cancel">Cancelar</string>
     <string name="alert_dialog_decimal_place_warning">Esto hará que las transacciones existentes se redondeen según el valor decimal. El valor original se puede restaurar SOLO SI las transacciones no se editan.</string>
@@ -23,19 +21,6 @@
     <string name="app_icon">Ícono de la aplicación</string>
     <string name="category_all">Todas</string>
     <string name="category_create">Crear nueva categoría</string>
-    <string name="category_cryptocurrency">Criptomoneda</string>
-    <string name="category_education">Educación</string>
-    <string name="category_entertainment">Entretenimiento</string>
-    <string name="category_food">Comida</string>
-    <string name="category_hint">Ingrese nueva categoría</string>
-    <string name="category_home">Casa</string>
-    <string name="category_investments">Inversiones</string>
-    <string name="category_salary">Salario</string>
-    <string name="category_savings">Ahorros</string>
-    <string name="category_stocks">Cepo</string>
-    <string name="category_transportation">Transporte</string>
-    <string name="category_utilities">Utilidades</string>
-    <string name="category_wages">Salario</string>
     <string name="empty_graph">¡Ninguna transacción para realizar el filtro aplicado!</string>
     <string name="empty_list">¡Ninguna transacción cumple con los filtros que se aplican!\n¡Presione el botón a continuación para agregar una nueva transacción!</string>
     <string name="filter_account">Cuenta:</string>
@@ -93,4 +78,5 @@
     <string name="alert_dialog_delete_account">Eliminar cuenta</string>
     <string name="alert_dialog_delete_category">Eliminar categoría</string>
     <string name="alert_dialog_delete_transaction">Eliminar transacción</string>
+    <string name="snackbar_exists">%1$s ya existe!</string>
 </resources>
