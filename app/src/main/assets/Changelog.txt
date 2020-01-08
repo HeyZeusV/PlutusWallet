@@ -1,3 +1,7 @@
+v1.3.0
+-New: Accounts and Categories can now be edited whenever or deleted when not being used. This can be done in a separate page accessed through the side menu.
+-Fixed: Changed language caused app to crash.
+
 v1.2.3
 -Internal layout changes to make transitions smoother (Using Nested Fragments now).
 
