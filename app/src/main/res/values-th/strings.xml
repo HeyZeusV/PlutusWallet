@@ -79,4 +79,6 @@
     <string name="alert_dialog_delete_category">ลบหมวดหมู่</string>
     <string name="alert_dialog_delete_transaction">ลบธุรกรรม</string>
     <string name="snackbar_exists">มี %1$s อยู่แล้ว!</string>
+    <string name="alert_dialog_duplicate_symbols">สัญลักษณ์ที่ซ้ำกัน</string>
+    <string name="alert_dialog_duplicate_symbols_warning">ตัวคั่นหลักพันและทศนิยมต้องไม่เหมือนกันคุณต้องการเปลี่ยนหรือไม่</string>
 </resources>

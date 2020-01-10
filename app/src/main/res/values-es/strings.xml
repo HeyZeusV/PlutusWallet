@@ -79,4 +79,6 @@
     <string name="alert_dialog_delete_category">Eliminar categoría</string>
     <string name="alert_dialog_delete_transaction">Eliminar transacción</string>
     <string name="snackbar_exists">%1$s ya existe!</string>
+    <string name="alert_dialog_duplicate_symbols">Símbolos duplicados</string>
+    <string name="alert_dialog_duplicate_symbols_warning">Miles y separadores decimales no pueden ser lo mismo. ¿Te gustaría cambiarlos?</string>
 </resources>

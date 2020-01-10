@@ -19,7 +19,6 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
@@ -28,13 +27,13 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.Transaction
+import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.CurrencyEditText
 import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.TransactionDetailViewModel
@@ -421,9 +420,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             override fun onItemSelected(
                 parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
 
-                if (parent?.getItemAtPosition(position) == getString(R.string.account_create)) {
+                if (position == accountNameList.size - 1) {
 
-                    newAccountDialog(accountSpinner)
+                    createDialog(accountSpinner, 0)
                 }
                 // updates account to selected one
                 transaction.account = parent?.getItemAtPosition(position) as String
@@ -438,9 +437,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
 
                 // only creates AlertDialog if user selects "Create New Category"
-                if (parent?.getItemAtPosition(position) == getString(R.string.category_create)) {
+                if (position == expenseCategoryNamesList.size - 1) {
 
-                    newCategoryDialog(expenseCategorySpinner)
+                    createDialog(expenseCategorySpinner, 1)
                 }
                 // updates the category to selected one
                 transaction.category = parent?.getItemAtPosition(position) as String
@@ -455,9 +454,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
 
                 // only creates AlertDialog if user selects "Create New Category"
-                if (parent?.getItemAtPosition(position) == getString(R.string.category_create)) {
+                if (position == incomeCategoryNamesList.size - 1) {
 
-                    newCategoryDialog(incomeCategorySpinner)
+                    createDialog(incomeCategorySpinner, 1)
                 }
                 // updates the category to selected one
                 transaction.category = parent?.getItemAtPosition(position) as String
@@ -536,31 +535,26 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // AlertDialog that asks user if they want Transaction to repeat again
                 if (transaction.futureTCreated && dateChanged && transaction.repeating) {
 
-                    // initialize instance of builder
-                    val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-                        // set title
-                        .setTitle(getString(R.string.alert_dialog_future_transaction))
-                        // set message
-                        .setMessage(getString(R.string.alert_dialog_future_transaction_warning))
-                        // set positive button and click listener
-                        .setPositiveButton(getString(R.string.alert_dialog_yes)) { _ : DialogInterface, _ : Int ->
+                    val posFun = DialogInterface.OnClickListener { _, _ ->
 
-                            transaction.futureTCreated = false
-                            updateTransaction(transaction)
-                            createSnackbar(it)
-                        }
-                        // set negative button and click listener
-                        .setNegativeButton(getString(R.string.alert_dialog_no)) { _ : DialogInterface, _ : Int ->
+                        transaction.futureTCreated = false
+                        updateTransaction(transaction)
+                        createSnackbar(it)
+                    }
+                    val negFun = DialogInterface.OnClickListener { _, _ ->
 
-                            dateChanged = false
-                            updateTransaction(transaction)
-                            createSnackbar(it)
-                        }
-                    // make AlertDialog using builder
-                    val alertDialog : AlertDialog = alertDialogBuilder.create()
-                    // display AlertDialog
-                    alertDialog.show()
-                    // will insert Transaction if it is new, else updates existing
+                        dateChanged = false
+                        updateTransaction(transaction)
+                        createSnackbar(it)
+                    }
+
+                    AlertDialogCreator.alertDialog(context!!,
+                        getString(R.string.alert_dialog_future_transaction),
+                        getString(R.string.alert_dialog_future_transaction_warning),
+                        getString(R.string.alert_dialog_yes), posFun,
+                        getString(R.string.alert_dialog_no), negFun)
+
+                // will insert Transaction if it is new, else updates existing
                 } else if (newTransaction) {
 
                     transactionDetailViewModel.insertTransaction(transaction)
@@ -576,24 +570,59 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
     }
 
+    /**
+     *  Creates AlertDialog when user selects "Create New ..."
+     *
+     *  @param spinner Spinner to be applied to.
+     *  @param type    0 = Account, 1 = Category.
+     */
+    @ExperimentalStdlibApi
+    private fun createDialog(spinner : Spinner, type : Int) {
+
+        // inflates view that holds EditText
+        val viewInflated : View = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
+        // the EditText to be used
+        val input : EditText = viewInflated.findViewById(R.id.dialog_input)
+
+        val title : String = when (type) {
+
+            0    -> getString(R.string.account_create)
+            else -> getString(R.string.category_create)
+        }
+
+        // Listeners
+        val cancelListener = DialogInterface.OnCancelListener {
+
+            spinner.setSelection(0)
+        }
+        val negListener = DialogInterface.OnClickListener { _, _ ->
+
+            spinner.setSelection(0)
+        }
+        val posListener = DialogInterface.OnClickListener { _, _ ->
+
+            when (type) {
+
+                0    -> insertAccount(input.text.toString())
+                else -> insertCategory(input.text.toString())
+            }
+        }
+
+        AlertDialogCreator.alertDialogInputCancelable(context!!,
+            title,
+            viewInflated,
+            getString(R.string.alert_dialog_save), posListener,
+            getString(R.string.alert_dialog_cancel), negListener,
+            cancelListener)
+    }
+
     override fun onResume() {
         super.onResume()
 
         // symbol side setting might have changed
         symbolLeftText .text = currencySymbol
         symbolRightText.text = currencySymbol
-    }
-
-    /**
-     *  Will update Transaction date with date selected from DatePickerFragment.
-     *
-     *  @param date the date selected by the user.
-     */
-    override fun onDateSelected(date : Date) {
-
-        transaction.date = date
-        dateButton .text = DateFormat.getDateInstance(dateFormat).format(this.transaction.date)
-        dateChanged      = transaction.date != oldDate
     }
 
     /**
@@ -718,83 +747,15 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     }
 
     /**
-     *  AlertDialog to create new Account.
+     *  Will update Transaction date with date selected from DatePickerFragment.
      *
-     *  @param accountSpinner the Spinner that that called this function.
+     *  @param date the date selected by the user.
      */
-    @ExperimentalStdlibApi
-    private fun newAccountDialog(accountSpinner : Spinner) {
+    override fun onDateSelected(date : Date) {
 
-        // initialize instance of Builder
-        val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-            // set title of AlertDialog
-            .setTitle(getString(R.string.account_create))
-        val viewInflated : View = LayoutInflater.from(context)
-            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
-        // the EditText to be used
-        val input : EditText = viewInflated.findViewById(R.id.dialog_input)
-        // sets the view
-        builder.setView(viewInflated)
-            // set positive button/click listener
-            .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
-
-                insertAccount(input.text.toString())
-            }
-            // set negative button/click listener
-            .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->
-
-                // users shouldn't be able to save on "Create New Account"
-                accountSpinner.setSelection(0)
-            }
-            .setOnCancelListener {
-
-                accountSpinner.setSelection(0)
-            }
-        // make the AlertDialog using builder
-        val accountAlertDialog : AlertDialog = builder.create()
-        // display AlertDialog
-        accountAlertDialog.show()
-    }
-
-    /**
-     *  AlertDialog to create new Category.
-     *
-     *  @param categorySpinner the Spinner that that called this function.
-     */
-    @ExperimentalStdlibApi
-    private fun newCategoryDialog(categorySpinner : Spinner) {
-
-        // initialize instance of Builder
-        val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-            // set title of AlertDialog
-            .setTitle(getString(R.string.category_create))
-        // inflates view that holds EditText
-        val viewInflated : View = LayoutInflater.from(context)
-            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
-        // the EditText to be used
-        val input : EditText = viewInflated.findViewById(R.id.dialog_input)
-        // sets the view
-        builder.setView(viewInflated)
-            // set positive button and its click listener
-            .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
-
-                insertCategory(input.text.toString())
-            }
-            // set negative button and its click listener
-            .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int ->
-
-                // users shouldn't be able to save on "Create New Category",
-                // this prevents that
-                categorySpinner.setSelection(0)
-            }
-            .setOnCancelListener {
-
-                categorySpinner.setSelection(0)
-            }
-        // make the AlertDialog using the builder
-        val categoryAlertDialog : AlertDialog = builder.create()
-        // display AlertDialog
-        categoryAlertDialog.show()
+        transaction.date = date
+        dateButton .text = DateFormat.getDateInstance(dateFormat).format(this.transaction.date)
+        dateChanged      = transaction.date != oldDate
     }
 
     /**

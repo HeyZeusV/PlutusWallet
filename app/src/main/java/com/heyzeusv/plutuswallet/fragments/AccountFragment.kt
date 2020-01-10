@@ -8,17 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Account
+import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.viewmodels.AccountViewModel
 import kotlinx.coroutines.launch
 
@@ -156,50 +155,37 @@ class AccountFragment : BaseFragment() {
                 // AlertDialog to ensure user does want to delete Account
                 deleteButton.setOnClickListener {
 
-                    // initialize instance of Builder
-                    val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-                        // set title of AlertDialog
-                        .setTitle(getString(R.string.alert_dialog_delete_account))
-                        .setMessage(getString(R.string.alert_dialog_delete_warning, account.account))
-                        // set positive button and its click listener
-                        .setPositiveButton(getString(R.string.alert_dialog_yes)) { _ : DialogInterface, _ : Int ->
+                    val posFun = DialogInterface.OnClickListener { _, _ ->
 
-                            deleteAccount(account)
-                        }
-                        // set negative button and its click listener
-                        .setNegativeButton(getString(R.string.alert_dialog_no)) { _ : DialogInterface, _ : Int -> }
-                    // make the AlertDialog using the builder
-                    val accountAlertDialog : AlertDialog = builder.create()
-                    // display AlertDialog
-                    accountAlertDialog.show()
+                        deleteAccount(account)
+                    }
+
+                    AlertDialogCreator.alertDialog(context!!,
+                        getString(R.string.alert_dialog_delete_account),
+                        getString(R.string.alert_dialog_delete_warning, account.account),
+                        getString(R.string.alert_dialog_yes), posFun,
+                        getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing)
                 }
             }
 
             // AlertDialog with EditText that allows input for new name
             editButton.setOnClickListener {
 
-                // initialize instance of Builder
-                val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-                    // set title of AlertDialog
-                    .setTitle(getString(R.string.alert_dialog_edit_account))
                 // inflates view that holds EditText
                 val viewInflated : View = LayoutInflater.from(context)
                     .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
                 // the EditText to be used
                 val input : EditText = viewInflated.findViewById(R.id.dialog_input)
-                // sets the view
-                builder.setView(viewInflated)
-                    // set positive button and its click listener
-                    .setPositiveButton(getString(R.string.alert_dialog_save)) { _ : DialogInterface, _ : Int ->
+                val posFun = DialogInterface.OnClickListener { _, _ ->
 
-                        editAccount(input.text.toString(), account)
-                    }
-                    // set negative button and its click listener
-                    .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int -> }
-                // make the AlertDialog using the builder
-                val accountAlertDialog : AlertDialog = builder.create()
-                // display AlertDialog
-                accountAlertDialog.show()
+                    editAccount(input.text.toString(), account)
+                }
+
+                AlertDialogCreator.alertDialogInput(context!!,
+                    getString(R.string.alert_dialog_edit_account),
+                    viewInflated,
+                    getString(R.string.alert_dialog_save), posFun,
+                    getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing)
             }
         }
 

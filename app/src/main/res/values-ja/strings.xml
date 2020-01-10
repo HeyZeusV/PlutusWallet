@@ -79,4 +79,6 @@
     <string name="alert_dialog_delete_category">カテゴリーを削除</string>
     <string name="alert_dialog_delete_account">アカウントを削除する</string>
     <string name="snackbar_exists">%1$sはすでに存在します！</string>
+    <string name="alert_dialog_duplicate_symbols">シンボルの複製</string>
+    <string name="alert_dialog_duplicate_symbols_warning">桁区切り記号と小数点記号を同じにすることはできません。 それらを変更しますか？</string>
 </resources>

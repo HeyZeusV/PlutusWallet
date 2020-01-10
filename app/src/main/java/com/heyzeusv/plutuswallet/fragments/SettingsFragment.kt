@@ -5,13 +5,12 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE_CHANGED
 import com.heyzeusv.plutuswallet.utilities.KEY_MANUAL_LANGUAGE
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper
@@ -141,26 +140,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
      */
     private fun allowDecimalDialog(warning : Boolean) {
 
-        // initialize and set up Builder
-        val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-            // set title
-            .setTitle(getString(R.string.alert_dialog_are_you_sure))
-            // set positive button and its click listener
-            .setPositiveButton(getString(R.string.alert_dialog_switch)) { _ : DialogInterface, _ : Int ->
+        val message : String = if (warning) {
 
-                dpPreference.isChecked = !dpPreference.isChecked
-            }
-            // set negative button and its click listener
-            .setNegativeButton(getString(R.string.alert_dialog_cancel)) { _ : DialogInterface, _ : Int -> }
-        if (warning) {
+            getString(R.string.alert_dialog_decimal_place_warning)
+        } else {
 
-            // set message
-            alertDialogBuilder.setMessage(getString(R.string.alert_dialog_decimal_place_warning))
+            ""
         }
-        // make AlertDialog using Builder
-        val decimalAlertDialog : AlertDialog = alertDialogBuilder.create()
-        // display AlertDialog
-        decimalAlertDialog.show()
+        val posFun = DialogInterface.OnClickListener { _, _ ->
+
+            dpPreference.isChecked = !dpPreference.isChecked
+        }
+        AlertDialogCreator.alertDialog(context!!,
+            getString(R.string.alert_dialog_are_you_sure),
+            message,
+            getString(R.string.alert_dialog_switch), posFun,
+            getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing)
     }
 
     /**
@@ -168,25 +163,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
      */
     private fun switchSymbolDialog() {
 
-        // initialize and set up Builder
-        val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-            // set title
-            .setTitle("Duplicate Symbols")
-            // set message
-            .setMessage("The thousands and decimal separators cannot be the same... Would you like to switch them?")
-            // set positive button and its click listener
-            .setPositiveButton("Switch") { _ : DialogInterface, _ : Int ->
+        val posFun = DialogInterface.OnClickListener { _, _ ->
 
-                tsPreference.value = decimal
-                dsPreference.value = thousands
-                decimal   = dsPreference.value
-                thousands = tsPreference.value
-            }
-            // set negative button and its click listener
-            .setNegativeButton("Cancel") { _ : DialogInterface, _ : Int -> }
-        // make AlertDialog using builder
-        val alertDialog : AlertDialog = alertDialogBuilder.create()
-        // display AlertDialog
-        alertDialog.show()
+            tsPreference.value = decimal
+            dsPreference.value = thousands
+            decimal   = dsPreference.value
+            thousands = tsPreference.value
+        }
+
+        AlertDialogCreator.alertDialog(context!!,
+            getString(R.string.alert_dialog_duplicate_symbols),
+            getString(R.string.alert_dialog_duplicate_symbols_warning),
+            getString(R.string.alert_dialog_switch), posFun,
+            getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing)
     }
 }

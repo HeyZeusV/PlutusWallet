@@ -79,4 +79,6 @@
     <string name="alert_dialog_delete_category">Kategorie löschen</string>
     <string name="alert_dialog_delete_account">Konto löschen</string>
     <string name="snackbar_exists">%1$s existiert bereits!</string>
+    <string name="alert_dialog_duplicate_symbols">Doppelte Symbole</string>
+    <string name="alert_dialog_duplicate_symbols_warning">Tausende und Dezimaltrennzeichen können nicht identisch sein. Möchten Sie sie ändern?</string>
 </resources>

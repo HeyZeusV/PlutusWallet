@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -25,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Account
@@ -33,6 +31,7 @@ import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
+import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
 import com.heyzeusv.plutuswallet.viewmodels.FGLViewModel
@@ -622,26 +621,20 @@ class TransactionListFragment : BaseFragment() {
 
             recyclerViewPosition = this.layoutPosition
             clicked              = true
-            // initialize instance of builder
-            val alertDialogBuilder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
-                // set title of AlertDialog
-                .setTitle(getString(R.string.alert_dialog_delete_transaction))
-                // set message of AlertDialog
-                .setMessage(getString(R.string.alert_dialog_delete_warning, transaction.title))
-                // set positive button and its click listener
-                .setPositiveButton(getString(R.string.alert_dialog_yes)) { _ : DialogInterface, _ : Int ->
 
-                    launch {
+            val posFun = DialogInterface.OnClickListener { _, _ ->
 
-                        transactionListViewModel.deleteTransaction(transactionListViewModel.getTransactionAsync(transaction.id).await())
-                    }
+                launch {
+
+                    transactionListViewModel.deleteTransaction(transactionListViewModel.getTransactionAsync(transaction.id).await())
                 }
-                // set negative button and its click listener
-                .setNegativeButton(getString(R.string.alert_dialog_no)) { _ : DialogInterface, _ : Int ->  }
-            // make the AlertDialog using the builder
-            val alertDialog : AlertDialog = alertDialogBuilder.create()
-            // display AlertDialog
-            alertDialog.show()
+            }
+
+            AlertDialogCreator.alertDialog(context!!,
+                getString(R.string.alert_dialog_delete_transaction),
+                getString(R.string.alert_dialog_delete_warning, transaction.title),
+                getString(R.string.alert_dialog_yes), posFun,
+                getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing)
 
             return true
         }

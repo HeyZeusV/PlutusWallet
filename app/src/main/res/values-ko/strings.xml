@@ -79,4 +79,6 @@
     <string name="alert_dialog_delete_category">카테고리 삭제</string>
     <string name="alert_dialog_delete_transaction">거래 삭제</string>
     <string name="snackbar_exists">%1$s가 이미 존재합니다!</string>
+    <string name="alert_dialog_duplicate_symbols">중복 된 기호</string>
+    <string name="alert_dialog_duplicate_symbols_warning">천 단위와 소수점 구분 기호는 같을 수 없습니다. 그것들을 바꾸시겠습니까?</string>
 </resources>
