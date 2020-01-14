@@ -472,7 +472,7 @@ class TransactionListFragment : BaseFragment() {
         // create new AdView with adSize and adUnitID
         val adView      = AdView(context)
         adView.adSize   = adSize
-        adView.adUnitId = AD_UNIT_ID
+        adView.adUnitId = TEST_UNIT_ID
 
         // add AdView to container
         adContainer.addView(adView)

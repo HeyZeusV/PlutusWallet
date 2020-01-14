@@ -77,7 +77,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  D  = Date
      *  T  = Type
      *
-     *  CategoryTotals(CT): Used for GraphFragment contains Category and Total.
+     *  CategoryTotals(CT): Used for GraphFragment contains Category and Total sum of
+     *                      chosen Category.
      *  ItemViewTransaction(IVT): Used For TransListFragment contains only what is needed
      *                            to be displayed.
      */
@@ -85,9 +86,11 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  type the type of Transactions to be returned.
      *  @return LiveData obj holding list of CT of given type.
      */
-    @Query("""SELECT category, total
+    @Query("""SELECT category, SUM(total) AS total
               FROM `transaction` 
-              WHERE type=(:type)""")
+              WHERE type=(:type)
+              GROUP BY category
+              HAVING SUM(total) > 0""")
     abstract fun getLdCtT(type : String?) : LiveData<List<CategoryTotals>>
 
     /**
@@ -95,9 +98,11 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  type    the type of Transactions to be returned.
      *  @return LiveData obj holding list of CT of given type and account.
      */
-    @Query("""SELECT category, total
+    @Query("""SELECT category, SUM(total) AS total
               FROM `transaction` 
-              WHERE account=(:account) AND type=(:type)""")
+              WHERE account=(:account) AND type=(:type)
+              GROUP BY category
+              HAVING SUM(total) > 0""")
     abstract fun getLdCtTA(type : String?, account : String?) : LiveData<List<CategoryTotals>>
 
     /**
@@ -106,9 +111,11 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  end   the end Date to be compared with.
      *  @return LiveData obj holding list of CT of given type and between dates.
      */
-    @Query("""SELECT category, total 
+    @Query("""SELECT category, SUM(total) AS total
               FROM `transaction` 
-              WHERE type=(:type) AND date BETWEEN :start AND :end""")
+              WHERE type=(:type) AND date BETWEEN :start AND :end
+              GROUP BY category
+              HAVING SUM(total) > 0""")
     abstract fun getLdCtTD(type : String?, start : Date?, end : Date?)
             : LiveData<List<CategoryTotals>>
 
@@ -119,9 +126,11 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  @param  end     the end Date to be compared with.
      *  @return LiveData obj holding list of CT of given type, account, and between dates.
      */
-    @Query("""SELECT category, total 
+    @Query("""SELECT category, SUM(total) AS total 
               FROM `transaction` 
-              WHERE account=(:account) AND type=(:type) AND date BETWEEN :start AND :end""")
+              WHERE account=(:account) AND type=(:type) AND date BETWEEN :start AND :end
+              GROUP BY category
+              HAVING SUM(total) > 0""")
     abstract fun getLdCtTAD(type : String?, account : String?, start : Date?, end : Date?)
             : LiveData<List<CategoryTotals>>
 

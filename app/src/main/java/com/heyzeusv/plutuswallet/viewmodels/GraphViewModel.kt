@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
+import java.math.BigDecimal
 import java.util.Date
 
 /**
@@ -18,6 +19,18 @@ class GraphViewModel : ViewModel() {
      *  Stores handle to TransactionRepository.
      */
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
+
+    // graph being displayed
+    var selectedGraph : Int = 0
+
+    var expenseCatTotals : List<CategoryTotals> = emptyList()
+    var incomeCatTotals  : List<CategoryTotals> = emptyList()
+
+    var expenseNames : List<String> = emptyList()
+    var incomeNames  : List<String> = emptyList()
+
+    var expenseTotal : BigDecimal = BigDecimal("0.0")
+    var incomeTotal  : BigDecimal = BigDecimal("0.0")
 
     /**
      *  Transaction queries

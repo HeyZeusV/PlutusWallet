@@ -9,7 +9,14 @@ import java.math.BigDecimal
  *  @param category the name of category.
  *  @param total    the total of all the Transactions of same Category.
  */
-data class CategoryTotals(
-    var category : String,
-    var total    : BigDecimal
-)
+class CategoryTotals(
+    var category: String,
+    var total: BigDecimal
+) {
+
+    fun test() {
+
+        category
+    }
+}
+

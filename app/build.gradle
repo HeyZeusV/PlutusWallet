@@ -33,6 +33,9 @@ android {
             pseudoLocalesEnabled true
         }
     }
+    dataBinding {
+        enabled true
+    }
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
