@@ -4,8 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
+import com.heyzeusv.plutuswallet.database.entities.ItemViewChart
+import com.heyzeusv.plutuswallet.utilities.adapters.ChartAdapter
 import java.math.BigDecimal
 import java.util.Date
+
+private const val TAG = "PWGraphViewModel"
 
 /**
  *  Data manager for GraphFragments.
@@ -15,22 +19,134 @@ import java.util.Date
  */
 class GraphViewModel : ViewModel() {
 
-    /**
-     *  Stores handle to TransactionRepository.
-     */
+    // stores handle to TransactionRepository
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
-    // graph being displayed
-    var selectedGraph : Int = 0
+    // used to make list of 2 ItemViewChart objects to initialize ChartAdapter
+    private val emptyIvc = ItemViewChart(emptyList(), "", "", emptyList(), null, null, null)
+    private var ivcList : MutableList<ItemViewChart> = mutableListOf(emptyIvc, emptyIvc)
+    var adapter = ChartAdapter(ivcList)
 
-    var expenseCatTotals : List<CategoryTotals> = emptyList()
-    var incomeCatTotals  : List<CategoryTotals> = emptyList()
+    // list of CategoryTotals after filter is applied
+    private var exCatTotals : List<CategoryTotals> = emptyList()
+    private var inCatTotals : List<CategoryTotals> = emptyList()
 
-    var expenseNames : List<String> = emptyList()
-    var incomeNames  : List<String> = emptyList()
+    // list of names from list of CategoryTotals
+    private var exNames : List<String> = emptyList()
+    private var inNames : List<String> = emptyList()
 
-    var expenseTotal : BigDecimal = BigDecimal("0.0")
-    var incomeTotal  : BigDecimal = BigDecimal("0.0")
+    // total from each list of CategoryTotals
+    var exTotal : BigDecimal = BigDecimal("0.0")
+    var inTotal : BigDecimal = BigDecimal("0.0")
+
+    // formatted text that displays total
+    var exTotText : String = ""
+    var inTotText : String = ""
+
+    // translated versions
+    var expense : String = "Expense"
+    var income  : String = "Income"
+
+    // list of Int that represent colors resources to be used for charts
+    var exColors : List<Int> = emptyList()
+    var inColors : List<Int> = emptyList()
+
+    /**
+     *  Splits ctList into 2 lists according to type and retrieves Category names.
+     *
+     *  @param ctList list containing all CategoryTotals that pass filters applied.
+     */
+    fun prepareLists(ctList : List<CategoryTotals>) {
+
+        // list by type
+        val eCTs : MutableList<CategoryTotals> = mutableListOf()
+        val iCTs : MutableList<CategoryTotals> = mutableListOf()
+
+        // splits ctList into 2 lists according to type
+        ctList.forEach {
+
+            if (it.type == "Expense") {
+
+                eCTs.add(it)
+            } else {
+
+                iCTs.add(it)
+            }
+        }
+        exCatTotals = eCTs
+        inCatTotals = iCTs
+
+        // map transformation to retrieve Category names
+        exNames = exCatTotals.map { it.category }
+        inNames = inCatTotals.map { it.category }
+    }
+
+    /**
+     *  Calculates totals for each list.
+     *
+     *  @param fCat     true if Category filter is applied.
+     *  @param fCatName Category selected when Category filter is applied.
+     *  @param fType    type of Category selected from filter.
+     */
+    fun prepareTotals(fCat : Boolean?, fCatName : String?, fType : String?) {
+
+        // Category filter is applied
+        if (fCat == true) {
+
+            // checks which type
+            when (fType) {
+
+                // if fCatName = "All", add up all totals of given type
+                // else total is total of Category selected in filter if there exists entries else 0
+                // sets opposite type total to 0
+                "Expense" ->  {
+
+                    exTotal = when (fCatName) {
+
+                        "All" -> exCatTotals.fold(BigDecimal.ZERO) {
+                                total : BigDecimal, next : CategoryTotals -> total + next.total }
+                        else  -> exCatTotals.find {it.category == fCatName}?.total ?: BigDecimal.ZERO
+                    }
+                    inTotal = BigDecimal.ZERO
+                }
+                "Income"  ->  {
+
+                    inTotal = when (fCatName) {
+
+                        "All" -> inCatTotals.fold(BigDecimal.ZERO) {
+                                total : BigDecimal, next : CategoryTotals -> total + next.total }
+                        else  -> inCatTotals.find {it.category == fCatName}?.total ?: BigDecimal.ZERO
+                    }
+                    exTotal = BigDecimal.ZERO
+                }
+            }
+        } else {
+
+            // Category filter is not applied, so add up all the totals
+            exTotal = exCatTotals.fold(BigDecimal.ZERO) {
+                    total : BigDecimal, next : CategoryTotals -> total + next.total }
+            inTotal = inCatTotals.fold(BigDecimal.ZERO) {
+                    total : BigDecimal, next : CategoryTotals -> total + next.total }
+        }
+    }
+
+    /**
+     *  Creates ItemViewChart objects using data calculated using above functions, passes them
+     *  to adapter, and notifies of changes.
+     *
+     *  @param fCat     true if Category filter is applied.
+     *  @param fCatName Category selected when Category filter is applied.
+     *  @param fType    type of Category selected from filter.
+     */
+    fun prepareIvgAdapter(fCat : Boolean?, fCatName : String?, fType : String?) {
+
+        val exIvc = ItemViewChart(exCatTotals, expense, exTotText, exColors, fCat, fCatName, fType)
+        val inIvc = ItemViewChart(inCatTotals, income , inTotText, inColors, fCat, fCatName, fType)
+
+        ivcList = mutableListOf(exIvc, inIvc)
+        adapter.ivcList = ivcList
+        adapter.notifyDataSetChanged()
+    }
 
     /**
      *  Transaction queries
@@ -38,31 +154,28 @@ class GraphViewModel : ViewModel() {
     /**
      *  Tells Repository which CategoryTotals list to return.
      *
-     *  Uses the values of date and type in order to determine which Transaction list is needed.
-     *
-     *  @param  account     boolean for account filter
-     *  @param  date        boolean for date filter.
-     *  @param  type        either "Expense" or "Income".
-     *  @param  accountName Account name for account filter
-     *  @param  start       starting Date for date filter.
-     *  @param  end         ending Date for date filter.
+     *  @param  fAccount     boolean for account filter
+     *  @param  fDate        boolean for date filter.
+     *  @param  fAccountName Account name for account filter.
+     *  @param  fStart       starting Date for date filter.
+     *  @param  fEnd         ending Date for date filter.
      *  @return LiveData object holding list of Transactions.
      */
-    fun filteredCategoryTotals(account : Boolean?, date : Boolean?, type : String?, accountName : String?,
-                               start : Date?, end : Date?) : LiveData<List<CategoryTotals>> {
+    fun filteredCategoryTotals(fAccount : Boolean?, fDate : Boolean?, fAccountName : String?,
+                               fStart : Date?, fEnd : Date?) : LiveData<List<CategoryTotals>> {
 
-        return if (account == true && date == true) {
+        return if (fAccount == true && fDate == true) {
 
-            transactionRepository.getLdCtTAD(type, accountName, start, end)
-        } else if (account == true) {
+            transactionRepository.getLdCtAD(fAccountName, fStart, fEnd)
+        } else if (fAccount == true) {
 
-            transactionRepository.getLdCtTA(type, accountName)
-        } else if (date == true) {
+            transactionRepository.getLdCtA(fAccountName)
+        } else if (fDate == true) {
 
-            transactionRepository.getLdCtTD(type, start, end)
+            transactionRepository.getLdCtD(fStart, fEnd)
         } else {
 
-            transactionRepository.getLdCtT(type)
+            transactionRepository.getLdCt()
         }
     }
 }

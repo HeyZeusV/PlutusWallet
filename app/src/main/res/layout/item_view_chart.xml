@@ -6,9 +6,11 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
-            name="catTotal"
-            type="com.heyzeusv.plutuswallet.database.entities.CategoryTotals" />
+            name="ivc"
+            type="com.heyzeusv.plutuswallet.database.entities.ItemViewChart" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,6 +24,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="45dp"
             android:translationY="-6dp"
+            android:setUpChart="@{ivc}"
+            android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,6 +40,7 @@
             android:gravity="center"
             android:text="@string/empty_graph"
             android:textColor="@android:color/black"
+            android:visibility="@{ivc.ctList.empty ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,8 +53,10 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="23dp"
+            android:text="@{ivc.totalText}"
             android:textColor="@android:color/black"
             android:textSize="16sp"
+            android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -338,12 +338,19 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
                 // adds time to endDate to make it right before midnight of next day
                 val endDateCorrected = Date(endDate.time + MIDNIGHT_MILLI)
-                val type : String    = if (typeButtonText == getString(R.string.type_expense)) {
+                // returns type selected if Category filter is applied, otherwise null
+                val type : String? = when (typeButton.text) {
+                    getString(R.string.type_expense) -> "Expense"
+                    getString(R.string.type_income)  -> "Income"
+                    else -> null
+                }
+                // translates "All"
+                categoryName = if (categoryName == getString(R.string.category_all)) {
 
-                    "Expense"
+                    "All"
                 } else {
 
-                    "Income"
+                    categoryName
                 }
                 // updating MutableLiveData value in ViewModel
                 val tInfo =
@@ -391,7 +398,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         expenseCategorySpinner.setSelection(0)
         incomeCategorySpinner .setSelection(0)
         typeButtonText                         = getString(R.string.type_expense)
-        typeButton            .text            = typeButtonText
+        typeButton            .text            = getString(R.string.filter_type)
     }
 
     /**

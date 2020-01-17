@@ -171,13 +171,7 @@ class TransactionListFragment : BaseFragment() {
                     start        = newInfo.start
                     end          = newInfo.end
                     accountName  = newInfo.accountName
-                    categoryName = if (newInfo.categoryName == getString(R.string.category_all)) {
-
-                        "All"
-                    } else {
-
-                        newInfo.categoryName
-                    }
+                    categoryName = newInfo.categoryName
                 }
 
                 // tells ViewModel which query to run on Transactions

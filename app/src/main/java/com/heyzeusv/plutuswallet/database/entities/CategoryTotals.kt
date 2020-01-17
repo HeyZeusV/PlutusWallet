@@ -8,15 +8,10 @@ import java.math.BigDecimal
  *
  *  @param category the name of category.
  *  @param total    the total of all the Transactions of same Category.
+ *  @param type     either "Expense" or "Income".
  */
 class CategoryTotals(
-    var category: String,
-    var total: BigDecimal
-) {
-
-    fun test() {
-
-        category
-    }
-}
+    var category : String,
+    var total    : BigDecimal,
+    var type     : String)
 

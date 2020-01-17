@@ -404,6 +404,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     expenseCategorySpinner.isVisible = true
                     incomeCategorySpinner .isVisible = false
                     transaction           .type      = "Expense"
+                    transaction           .category  = expenseCategorySpinner.selectedItem?.toString() ?: ""
                 }
                 R.id.transaction_income_chip -> {
 
@@ -411,6 +412,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     expenseCategorySpinner.isVisible = false
                     incomeCategorySpinner .isVisible = true
                     transaction           .type      = "Income"
+                    transaction           .category  = incomeCategorySpinner.selectedItem?.toString() ?: ""
                 }
             }
         }
