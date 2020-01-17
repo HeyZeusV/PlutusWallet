@@ -1,3 +1,6 @@
+v1.3.2
+-Bugfix: Crash that occurred when switching between types on transaction screen and saving.
+
 v1.3.1
 -Fixed: Changed the logic for the "Create New Account/Category" dialog from appearing.
 
