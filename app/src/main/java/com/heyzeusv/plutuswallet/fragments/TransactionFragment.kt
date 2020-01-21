@@ -87,7 +87,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
     private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
 
-    private var maxId              : Int     = 0
+    private var maxId : Int = 0
 
     // used to determine whether to insert a new transaction or updated existing
     private var newTransaction = false
@@ -244,7 +244,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         launch {
 
             //retrieves list of Accounts from database
-            accountNameList = transactionDetailViewModel.getAccountsAsync().await().toMutableList()
+            accountNameList = transactionDetailViewModel.getAccountsAsync().await()
             // sorts list in alphabetical order
             accountNameList.sort()
             // "Create New Account will always be at bottom of list

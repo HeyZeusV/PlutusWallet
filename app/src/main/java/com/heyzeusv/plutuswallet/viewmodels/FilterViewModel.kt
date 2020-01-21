@@ -1,10 +1,16 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
+import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.database.TransactionRepository
-import com.heyzeusv.plutuswallet.database.entities.Account
-import com.heyzeusv.plutuswallet.database.entities.Category
-import kotlinx.coroutines.Deferred
+import com.heyzeusv.plutuswallet.utilities.Utils
+import kotlinx.coroutines.launch
+import java.util.Date
+
+private const val TAG            = "PWFilterViewModel"
+private const val MIDNIGHT_MILLI = 86399999
 
 /**
  *  Data manager for FilterFragments.
@@ -19,53 +25,82 @@ class FilterViewModel : ViewModel() {
      */
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
+    // localized Strings
+    var all     : String = ""
+    var apply   : String = ""
+    var end     : String = ""
+    var expense : String = ""
+    var income  : String = ""
+    var reset   : String = ""
+    var start   : String = ""
+    var type    : String = ""
+
+    // current Account selected and Account list
+    val account : MutableLiveData<String>              = MutableLiveData("None")
+    val accList : MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
+
+    // type of Category selected and which is visible, true = "Expense" false = "Income"
+    var typeSelected : MutableLiveData<String>  = MutableLiveData("")
+    var typeVisible  : MutableLiveData<Boolean> = MutableLiveData(true)
+
+    // current Category selected and Category list, both by type
+    val exCategory : MutableLiveData<String>              = MutableLiveData("")
+    val inCategory : MutableLiveData<String>              = MutableLiveData("")
+    val exCatList  : MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
+    val inCatList  : MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
+
+    // Date values
+    val startDate : MutableLiveData<Date> = MutableLiveData(Utils.startOfDay(Date()))
+    val endDate   : MutableLiveData<Date> = MutableLiveData(Date(startDate.value!!.time + MIDNIGHT_MILLI))
+
+    // CheckBox status
+    val accCheck  : MutableLiveData<Boolean> = MutableLiveData(false)
+    val catCheck  : MutableLiveData<Boolean> = MutableLiveData(false)
+    val dateCheck : MutableLiveData<Boolean> = MutableLiveData(false)
+
+    // OnClickListeners for MaterialButtons
+    val typeOnClick   : MutableLiveData<View.OnClickListener> = MutableLiveData()
+    val startOnClick  : MutableLiveData<View.OnClickListener> = MutableLiveData()
+    val endOnClick    : MutableLiveData<View.OnClickListener> = MutableLiveData()
+    val actionOnClick : MutableLiveData<View.OnClickListener> = MutableLiveData()
+
     /**
-     *  Account queries
+     *  Retrieves data that will be displayed in Spinners from Repository.
      */
-    suspend fun upsertAccounts(accounts : List<Account>) {
+    fun prepareSpinners() {
 
-        transactionRepository.upsertAccounts(accounts)
+        viewModelScope.launch {
+
+            // Account data
+            accList.value = transactionRepository.getAccountsAsync().await()
+
+            // Category by type data
+            val mExCatList : MutableList<String> =
+                transactionRepository.getCategoriesByTypeAsync("Expense").await()
+            val mInCatList : MutableList<String> =
+                transactionRepository.getCategoriesByTypeAsync("Income" ).await()
+            mExCatList.add(0, all)
+            mInCatList.add(0, all)
+            exCatList.value = mExCatList
+            inCatList.value = mInCatList
+            // sets Spinner to previous value
+            exCategory.value = exCategory.value
+            inCategory.value = inCategory.value
+        }
     }
 
     /**
-     *  Category queries.
+     *  Resets all filters.
      */
-    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> {
+    fun resetFilter() {
 
-        return transactionRepository.getCategoriesByTypeAsync(type)
-    }
+        // sets the startDate to very start of current day and endDate to right before the next day
+        startDate.value = Utils.startOfDay(Date())
+        endDate  .value = startDate.value
 
-    suspend fun getCategorySizeAsync() : Deferred<Int?> {
-
-        return transactionRepository.getCategorySizeAsync()
-    }
-
-    suspend fun insertCategories(categories : List<Category>) {
-
-        transactionRepository.insertCategories(categories)
-    }
-
-    /**
-     *  Transaction queries.
-     */
-    suspend fun getDistinctAccountsAsync() : Deferred<List<String>> {
-
-        return transactionRepository.getDistinctAccountsAsync()
-    }
-
-
-    /**
-     *  ExpenseCategory queries.
-     */
-    suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> {
-
-        return transactionRepository.getExpenseCategoryNamesAsync()
-    }
-    /**
-     *  IncomeCategory queries.
-     */
-    suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> {
-
-        return transactionRepository.getIncomeCategoryNamesAsync()
+        // resets type Button and Spinner selections
+        exCategory  .value = all
+        inCategory  .value = all
+        typeSelected.value = expense
     }
 }

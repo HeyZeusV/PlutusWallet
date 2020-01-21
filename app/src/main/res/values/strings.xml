@@ -36,7 +36,7 @@
     <string name="filter_type">Type</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_start">Start</string>
-    <string name="graph_total">Total: %1$s%2$s</string>
+    <string name="chart_total">Total: %1$s%2$s</string>
     <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
     <string name="library_circleindicator" translatable="false">CircleIndicator</string>
     <string name="library_mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>

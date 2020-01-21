@@ -38,7 +38,7 @@ class DatePickerFragment : DialogFragment() {
          *  Used to receive the date the user selects.
          */
         val dateListener = DatePickerDialog.OnDateSetListener {
-                _: DatePicker, year: Int, month: Int, day: Int ->
+                _ : DatePicker, year : Int, month : Int, day : Int ->
 
             // turns date selected into Date type
             val resultDate : Date = GregorianCalendar(year, month, day).time

@@ -8,7 +8,7 @@
     android:background="@color/colorPrimary">
 
     <FrameLayout
-        android:id="@+id/fragment_graph_container"
+        android:id="@+id/fragment_chart_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.40"
@@ -21,7 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.40"
-        app:layout_constraintStart_toEndOf="@id/fragment_graph_container"
+        app:layout_constraintStart_toEndOf="@id/fragment_chart_container"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.40"/>
 
@@ -32,7 +32,7 @@
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.60"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_graph_container"/>
+        app:layout_constraintTop_toBottomOf="@id/fragment_chart_container"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

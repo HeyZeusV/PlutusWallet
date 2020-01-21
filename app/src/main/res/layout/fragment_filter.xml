@@ -1,240 +1,274 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.MaterialComponents.CardView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginStart="1dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginEnd="4dp"
-    android:layout_marginBottom="1dp"
-    app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardUseCompatPadding="true">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+        <import type="android.view.View" />
+        <import type="java.text.DateFormat" />
+        <variable
+            name="filterVM"
+            type="com.heyzeusv.plutuswallet.viewmodels.FilterViewModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.MaterialComponents.CardView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="1dp"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardUseCompatPadding="true">
 
-        <ScrollView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/filter_apply"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/filter_action"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/accountTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="35dp"
-                    android:text="@string/filter_account"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <CheckBox
-                    android:id="@+id/filter_account_check"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_marginEnd="3dp"
-                    android:background="?android:attr/listChoiceIndicatorMultiple"
-                    android:button="@null"
-                    android:translationX="5dp"
-                    android:translationY="-1dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/accountTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="35dp"
+                        android:text="@string/filter_account"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <Spinner
-                    android:id="@+id/filter_account"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="6dp"
-                    android:background="@null"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                    <CheckBox
+                        android:id="@+id/filter_account_check"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_marginEnd="3dp"
+                        android:background="?android:attr/listChoiceIndicatorMultiple"
+                        android:button="@null"
+                        android:translationX="5dp"
+                        android:translationY="-1dp"
+                        android:checked="@={filterVM.accCheck}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/categoryTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="35dp"
-                    android:singleLine="false"
-                    android:text="@string/filter_category"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                    <Spinner
+                        android:id="@+id/filter_account"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="6dp"
+                        android:background="@null"
+                        app:entries="@{filterVM.accList}"
+                        app:isEnabled="@{filterVM.accCheck}"
+                        app:selectedValue="@={filterVM.account}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
-                <CheckBox
-                    android:id="@+id/filter_category_check"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:layout_marginTop="23dp"
-                    android:layout_marginEnd="3dp"
-                    android:background="?android:attr/listChoiceIndicatorMultiple"
-                    android:button="@null"
-                    android:translationX="5dp"
-                    android:translationY="-1dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                    <TextView
+                        android:id="@+id/categoryTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="35dp"
+                        android:singleLine="false"
+                        android:text="@string/filter_category"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/filter_type"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="6dp"
-                    android:enabled="false"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp "
-                    android:minHeight="30dip"
-                    android:paddingStart="0dp"
-                    android:paddingTop="3dp"
-                    android:paddingEnd="0dp"
-                    android:paddingBottom="3dp"
-                    android:singleLine="true"
-                    android:text="@string/type_expense"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
+                    <CheckBox
+                        android:id="@+id/filter_category_check"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="23dp"
+                        android:layout_marginEnd="3dp"
+                        android:background="?android:attr/listChoiceIndicatorMultiple"
+                        android:button="@null"
+                        android:translationX="5dp"
+                        android:translationY="-1dp"
+                        android:checked="@={filterVM.catCheck}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
-                <Spinner
-                    android:id="@+id/filter_expense_category"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="6dp"
-                    android:background="@null"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/filter_type" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/filter_type"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="6dp"
+                        android:enabled="false"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp "
+                        android:minHeight="30dip"
+                        android:paddingStart="0dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="0dp"
+                        android:paddingBottom="3dp"
+                        android:singleLine="true"
+                        android:textSize="14sp"
+                        android:onClick="@{filterVM.typeOnClick}"
+                        android:text="@{filterVM.catCheck ? filterVM.typeSelected : filterVM.type}"
+                        app:isEnabled="@{filterVM.catCheck}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
 
-                <Spinner
-                    android:id="@+id/filter_income_category"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="6dp"
-                    android:background="@null"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/filter_type" />
+                    <Spinner
+                        android:id="@+id/filter_expense_category"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="6dp"
+                        android:background="@null"
+                        android:visibility="@{filterVM.typeVisible ? View.VISIBLE : View.INVISIBLE}"
+                        app:entries="@{filterVM.exCatList}"
+                        app:isEnabled="@{filterVM.catCheck}"
+                        app:selectedValue="@={filterVM.exCategory}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
-                <TextView
-                    android:id="@+id/dateTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="36dp"
-                    android:layout_marginEnd="35dp"
-                    android:text="@string/transaction_date"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/filter_type" />
+                    <Spinner
+                        android:id="@+id/filter_income_category"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="6dp"
+                        android:background="@null"
+                        android:visibility="@{filterVM.typeVisible ? View.INVISIBLE : View.VISIBLE}"
+                        app:entries="@{filterVM.inCatList}"
+                        app:isEnabled="@{filterVM.catCheck}"
+                        app:selectedValue="@={filterVM.inCategory}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
-                <CheckBox
-                    android:id="@+id/filter_date_check"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:layout_marginTop="26dp"
-                    android:layout_marginEnd="3dp"
-                    android:background="?android:attr/listChoiceIndicatorMultiple"
-                    android:button="@null"
-                    android:translationX="5dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/filter_type" />
+                    <TextView
+                        android:id="@+id/dateTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="36dp"
+                        android:layout_marginEnd="35dp"
+                        android:text="@string/transaction_date"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/filter_start_date"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="6dp"
-                    android:enabled="false"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minHeight="30dip"
-                    android:paddingStart="0dp"
-                    android:paddingTop="3dp"
-                    android:paddingEnd="0dp"
-                    android:paddingBottom="3dp"
-                    android:singleLine="true"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/dateTextView"
-                    tools:text="Start Date" />
+                    <CheckBox
+                        android:id="@+id/filter_date_check"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="26dp"
+                        android:layout_marginEnd="3dp"
+                        android:background="?android:attr/listChoiceIndicatorMultiple"
+                        android:button="@null"
+                        android:translationX="5dp"
+                        android:checked="@={filterVM.dateCheck}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/filter_end_date"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="6dp"
-                    android:enabled="false"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp "
-                    android:minHeight="30dip"
-                    android:paddingStart="0dp"
-                    android:paddingTop="3dp"
-                    android:paddingEnd="0dp"
-                    android:paddingBottom="3dp"
-                    android:singleLine="true"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/filter_start_date"
-                    tools:text="End Date" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/filter_start_date"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="6dp"
+                        android:enabled="false"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minHeight="30dip"
+                        android:paddingStart="0dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="0dp"
+                        android:paddingBottom="3dp"
+                        android:singleLine="true"
+                        android:textSize="14sp"
+                        android:onClick="@{filterVM.startOnClick}"
+                        android:text="@{filterVM.dateCheck ? DateFormat.getDateInstance(DateFormat.SHORT).format(filterVM.startDate) : filterVM.start}"
+                        app:isEnabled="@{filterVM.dateCheck}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/dateTextView"
+                        tools:text="Start Date" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </ScrollView>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/filter_end_date"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="6dp"
+                        android:enabled="false"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp "
+                        android:minHeight="30dip"
+                        android:paddingStart="0dp"
+                        android:paddingTop="3dp"
+                        android:paddingEnd="0dp"
+                        android:paddingBottom="3dp"
+                        android:singleLine="true"
+                        android:textSize="14sp"
+                        android:onClick="@{filterVM.endOnClick}"
+                        android:text="@{filterVM.dateCheck ? DateFormat.getDateInstance(DateFormat.SHORT).format(filterVM.endDate) : filterVM.end}"
+                        app:isEnabled="@{filterVM.dateCheck}"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/filter_start_date"
+                        tools:text="End Date" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/filter_apply"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_marginEnd="6dp"
-            android:backgroundTint="@color/colorSecondary"
-            android:minHeight="50dip"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:text="@string/filter_reset"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </ScrollView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filter_action"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="@color/colorSecondary"
+                android:minHeight="50dip"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                android:textSize="14sp"
+                android:onClick="@{filterVM.actionOnClick}"
+                android:text="@{(!filterVM.accCheck &amp;&amp; !filterVM.catCheck &amp;&amp; !filterVM.dateCheck) ? filterVM.reset : filterVM.apply}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

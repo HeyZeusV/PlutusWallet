@@ -18,7 +18,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.billingrepo.localdb.AugmentedSkuDetails
 import com.heyzeusv.plutuswallet.fragments.AccountFragment
 import com.heyzeusv.plutuswallet.fragments.CategoryFragment
-import com.heyzeusv.plutuswallet.fragments.FGLFragment
+import com.heyzeusv.plutuswallet.fragments.CFLFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
 import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE_CHANGED
@@ -26,7 +26,7 @@ import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
 
-private const val TAG = "MainActivity"
+private const val TAG = "PWMainActivity"
 
 /**
  *  Handles the loading and replacement of fragments into their containers, as well as
@@ -76,12 +76,12 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         // because FragmentManager saves list of fragments
         if (currentFragment == null) {
 
-            val fglFragment : FGLFragment = FGLFragment.newInstance()
+            val CFLFragment : CFLFragment = CFLFragment.newInstance()
 
             // Create a new fragment transaction, adds fragments, and then commit it
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_transaction_container, fglFragment)
+                .add(R.id.fragment_transaction_container, CFLFragment)
                 .commit()
         }
 
@@ -179,7 +179,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        // clicking the backButton will return to FGLFragment
+        // clicking the backButton will return to CFLFragment
         backButton.setOnClickListener {
 
             onBackPressed()
@@ -241,7 +241,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     }
 
     /**
-     *  Replaces TransactionListFragment, FilterFragment, and GraphFragment
+     *  Replaces TransactionListFragment, FilterFragment, and ChartFragment
      *  with TransactionFragment selected.
      *
      *  @param transactionId id of Transaction selected.

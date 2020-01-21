@@ -4,10 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
-            name="graphVM"
-            type="com.heyzeusv.plutuswallet.viewmodels.GraphViewModel" />
+            name="chartVM"
+            type="com.heyzeusv.plutuswallet.viewmodels.ChartViewModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -25,19 +24,19 @@
             android:layout_height="match_parent">
 
             <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/graph_view_pager"
+                android:id="@+id/chart_view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:setAdapter="@{graphVM.adapter}"
+                app:setAdapter="@{chartVM.adapter}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <me.relex.circleindicator.CircleIndicator3
-                android:id="@+id/graph_circle_indicator"
+                android:id="@+id/chart_circle_indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 app:ci_animator="@animator/indicator_animator"

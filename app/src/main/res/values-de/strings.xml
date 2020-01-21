@@ -32,7 +32,7 @@
     <string name="filter_reset">Rücksetzen</string>
     <string name="filter_start">Anfang</string>
     <string name="filter_type">Art</string>
-    <string name="graph_total">Gesamt: %1$s%2$s</string>
+    <string name="chart_total">Gesamt: %1$s%2$s</string>
     <string name="period_days">Tage</string>
     <string name="period_months">Monate</string>
     <string name="period_weeks">Wochen</string>

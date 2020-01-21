@@ -105,20 +105,19 @@ class TransactionRepository private constructor(context : Context){
      *  Account Queries
      */
     fun getLDAccounts() : LiveData<List<Account>> = accountDao.getLDAccounts()
-    suspend fun getAccountSizeAsync() : Deferred<Int?>         = withContext(Dispatchers.IO) {async  {accountDao.getAccountSize()}}
-    suspend fun getAccountsAsync   () : Deferred<List<String>> = withContext(Dispatchers.IO) {async  {accountDao.getAccounts   ()}}
+    suspend fun getAccountSizeAsync() : Deferred<Int?>                = withContext(Dispatchers.IO) {async  {accountDao.getAccountSize()}}
+    suspend fun getAccountsAsync   () : Deferred<MutableList<String>> = withContext(Dispatchers.IO) {async  {accountDao.getAccounts   ()}}
     suspend fun deleteAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.delete(account )}}
     suspend fun insertAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.insert(account )}}
     suspend fun updateAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.update(account )}}
     suspend fun upsertAccount (account  : Account      ) : Job = withContext(Dispatchers.IO) {launch {accountDao.upsert(account )}}
-    suspend fun upsertAccounts(accounts : List<Account>) : Job = withContext(Dispatchers.IO) {launch {accountDao.upsert(accounts)}}
 
     /**
      *  Category Queries
      */
     fun getLDCategoriesByType(type : String) : LiveData<List<Category>> = categoryDao.getLDCategoriesByType(type)
-    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<List<String>> = withContext(Dispatchers.IO) {async {categoryDao.getCategoriesByType(type)}}
-    suspend fun getCategorySizeAsync    (             ) : Deferred<Int?>         = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize    (    )}}
+    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<MutableList<String>> = withContext(Dispatchers.IO) {async {categoryDao.getCategoriesByType(type)}}
+    suspend fun getCategorySizeAsync    (             ) : Deferred<Int?>                = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize    (    )}}
     suspend fun deleteCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.delete(category  )}}
     suspend fun insertCategories(categories : List<Category>) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(categories)}}
     suspend fun insertCategory  (category   : Category      ) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(category  )}}
@@ -165,13 +164,11 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  ExpenseCategory Queries
      */
-    suspend fun getExpenseCategoryNamesAsync() : Deferred<List<String>> = withContext(Dispatchers.IO) {async {expenseCategoryDao.getExpenseCategoryNames()}}
     suspend fun getExpenseCategorySizeAsync () : Deferred<Int?>         = withContext(Dispatchers.IO) {async {expenseCategoryDao.getExpenseCategorySize()}}
 
     /**
      *  IncomeCategory Queries
      */
-    suspend fun getIncomeCategoryNamesAsync() : Deferred<List<String>> = withContext(Dispatchers.IO) {async {incomeCategoryDao.getIncomeCategoryNames()}}
     suspend fun getIncomeCategorySizeAsync () : Deferred<Int?>         = withContext(Dispatchers.IO) {async {incomeCategoryDao.getIncomeCategorySize()}}
 
     companion object {

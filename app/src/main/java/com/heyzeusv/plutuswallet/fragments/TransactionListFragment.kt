@@ -34,7 +34,7 @@ import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
-import com.heyzeusv.plutuswallet.viewmodels.FGLViewModel
+import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -62,7 +62,7 @@ class TransactionListFragment : BaseFragment() {
     interface Callbacks {
 
         /**
-         *  Replaces TransactionListFragment, FilterFragment, and GraphFragment with TransactionFragment selected.
+         *  Replaces TransactionListFragment, FilterFragment, and ChartFragment with TransactionFragment selected.
          *
          *  @param transactionId id of Transaction selected.
          *  @param fromFab       true if user clicked on FAB to create Transaction.
@@ -97,7 +97,7 @@ class TransactionListFragment : BaseFragment() {
     }
 
     // shared ViewModels
-    private lateinit var fglViewModel     : FGLViewModel
+    private lateinit var cflViewModel     : CFLViewModel
     private lateinit var billingViewModel : BillingViewModel
 
     override fun onAttach(context : Context) {
@@ -132,10 +132,10 @@ class TransactionListFragment : BaseFragment() {
         transactionRecyclerView.addItemDecoration(
             DividerItemDecoration(transactionRecyclerView.context, DividerItemDecoration.VERTICAL))
 
-        // this ensures that this is same FGLViewModel as Filter/GraphFragment use
-        fglViewModel = activity!!.let {
+        // this ensures that this is same CFLViewModel as Filter/ChartFragment use
+        cflViewModel = activity!!.let {
 
-            ViewModelProviders.of(it).get(FGLViewModel::class.java)
+            ViewModelProviders.of(it).get(CFLViewModel::class.java)
         }
         billingViewModel = ViewModelProviders.of(this).get(BillingViewModel::class.java)
 
@@ -158,7 +158,7 @@ class TransactionListFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        fglViewModel.tInfoLiveData.observe(this, Observer { newInfo : TransactionInfo ->
+        cflViewModel.tInfoLiveData.observe(this, Observer { newInfo : TransactionInfo ->
 
                 // never null
                 newInfo.let {

@@ -2,7 +2,7 @@ package com.heyzeusv.plutuswallet.database.entities
 
 /**
  *  Not exactly an entity, but more of a helper object to hold Graph data that is displayed on
- *  GraphFragment.
+ *  ChartFragment.
  *
  *  @param ctList     data to be show in PieChart.
  *  @param typeTrans  translated text that will appear in center of PieChart.

@@ -3,8 +3,7 @@ package com.heyzeusv.plutuswallet.database.entities
 import java.util.Date
 
 /**
- *  Holds data to be sent to FGLViewModel that then gets past to Repository
- *  to complete a query.
+ *  Holds data to be sent to CFLViewModel that then gets passed to Repository to complete a query.
  *
  *  @param  account      boolean for account filter.
  *  @param  category     boolean for category filter.

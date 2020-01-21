@@ -10,7 +10,7 @@ import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class FGLViewModel : ViewModel() {
+class CFLViewModel : ViewModel() {
 
     // stores TransactionInfo object
     var tInfoLiveData = MutableLiveData<TransactionInfo>()

@@ -5,9 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
-
         <variable
             name="ivc"
             type="com.heyzeusv.plutuswallet.database.entities.ItemViewChart" />
@@ -24,8 +22,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="45dp"
             android:translationY="-6dp"
-            android:setUpChart="@{ivc}"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
+            app:setUpChart="@{ivc}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -13,25 +13,25 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentChartBinding
-import com.heyzeusv.plutuswallet.viewmodels.FGLViewModel
-import com.heyzeusv.plutuswallet.viewmodels.GraphViewModel
+import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
+import com.heyzeusv.plutuswallet.viewmodels.ChartViewModel
 
-private const val TAG = "PWGraphFragment"
+private const val TAG = "PWChartFragment"
 
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.
  */
-class GraphFragment : BaseFragment() {
+class ChartFragment : BaseFragment() {
 
     // DataBinding
     private lateinit var binding : FragmentChartBinding
 
     // shared ViewModel
-    private lateinit var fglViewModel : FGLViewModel
+    private lateinit var cflViewModel : CFLViewModel
 
-    // provides instance of GraphViewModel
-    private val graphVM : GraphViewModel by lazy {
-        ViewModelProviders.of(this).get(GraphViewModel::class.java)
+    // provides instance of ChartViewModel
+    private val chartVM : ChartViewModel by lazy {
+        ViewModelProviders.of(this).get(ChartViewModel::class.java)
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
@@ -40,26 +40,26 @@ class GraphFragment : BaseFragment() {
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chart, container, false)
         binding.lifecycleOwner = activity
-        binding.graphVM        = graphVM
+        binding.chartVM        = chartVM
 
-        // sending data that requires context to graphVM
-        graphVM.expense  = getString(R.string.type_expense)
-        graphVM.income   = getString(R.string.type_income )
-        graphVM.exColors = listOf(ContextCompat.getColor(context!!, R.color.colorExpense1),
+        val view : View = binding.root
+
+        // sending data that requires context to ViewModel
+        chartVM.expense  = getString(R.string.type_expense)
+        chartVM.income   = getString(R.string.type_income )
+        chartVM.exColors = listOf(ContextCompat.getColor(context!!, R.color.colorExpense1),
                                   ContextCompat.getColor(context!!, R.color.colorExpense2),
                                   ContextCompat.getColor(context!!, R.color.colorExpense3),
                                   ContextCompat.getColor(context!!, R.color.colorExpense4))
-        graphVM.inColors = listOf(ContextCompat.getColor(context!!, R.color.colorIncome1),
+        chartVM.inColors = listOf(ContextCompat.getColor(context!!, R.color.colorIncome1),
                                   ContextCompat.getColor(context!!, R.color.colorIncome2),
                                   ContextCompat.getColor(context!!, R.color.colorIncome3),
                                   ContextCompat.getColor(context!!, R.color.colorIncome4))
 
-        val view : View = binding.root
+        // this ensures that this is same CFLViewModel as Filter/ListFragment use
+        cflViewModel = activity!!.let {
 
-        // this ensures that this is same FGLViewModel as Filter/ListFragment use
-        fglViewModel = activity!!.let {
-
-            ViewModelProviders.of(it).get(FGLViewModel::class.java)
+            ViewModelProviders.of(it).get(CFLViewModel::class.java)
         }
 
         return view
@@ -70,25 +70,25 @@ class GraphFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        fglViewModel.tInfoLiveData.observe(this, Observer { tInfo : TransactionInfo ->
+        cflViewModel.tInfoLiveData.observe(this, Observer { tInfo : TransactionInfo ->
 
                 // LiveData of list of CategoryTotals
                 val ctLiveData : LiveData<List<CategoryTotals>> =
-                    graphVM.filteredCategoryTotals(tInfo.account, tInfo.date, tInfo.accountName,
+                    chartVM.filteredCategoryTotals(tInfo.account, tInfo.date, tInfo.accountName,
                         tInfo.start, tInfo.end)
 
                 // register an observer on LiveData instance and tie life to this component
                 // execute code whenever LiveData gets update
                 ctLiveData.observe( this, Observer { ctList : List<CategoryTotals> ->
 
-                    // prepares list of ItemViewGraphs that will be used to create PieCharts
-                    graphVM.prepareLists(ctList)
-                    graphVM.prepareTotals(tInfo.category, tInfo.categoryName, tInfo.type)
+                    // prepares list of ItemViewCharts that will be used to create PieCharts
+                    chartVM.prepareLists(ctList)
+                    chartVM.prepareTotals(tInfo.category, tInfo.categoryName, tInfo.type)
                     prepareTotalTexts()
-                    graphVM.prepareIvgAdapter(tInfo.category, tInfo.categoryName, tInfo.type)
+                    chartVM.prepareIvgAdapter(tInfo.category, tInfo.categoryName, tInfo.type)
 
                     // sets up Dots Indicator with ViewPager2
-                    binding.graphCircleIndicator.setViewPager(binding.graphViewPager)
+                    binding.chartCircleIndicator.setViewPager(binding.chartViewPager)
                 })
             }
         )
@@ -102,7 +102,7 @@ class GraphFragment : BaseFragment() {
     }
 
     /**
-     *  Translations require context, so rather than have ViewModel with context, use GraphFragment's
+     *  Translations require context, so rather than have ViewModel with context, use ChartFragment's
      *  context to translate strings depending on settings and then send them to ViewModel.
      */
     private fun prepareTotalTexts() {
@@ -111,31 +111,31 @@ class GraphFragment : BaseFragment() {
 
             if (symbolSide) {
 
-                graphVM.exTotText = getString(R.string.graph_total,
-                    currencySymbol, decimalFormatter.format(graphVM.exTotal))
-                graphVM.inTotText = getString(R.string.graph_total,
-                    currencySymbol, decimalFormatter.format(graphVM.inTotal))
+                chartVM.exTotText = getString(R.string.chart_total,
+                    currencySymbol, decimalFormatter.format(chartVM.exTotal))
+                chartVM.inTotText = getString(R.string.chart_total,
+                    currencySymbol, decimalFormatter.format(chartVM.inTotal))
             } else {
 
-                graphVM.exTotText = getString(R.string.graph_total,
-                    decimalFormatter.format(graphVM.exTotal), currencySymbol)
-                graphVM.inTotText = getString(R.string.graph_total,
-                    decimalFormatter.format(graphVM.inTotal), currencySymbol)
+                chartVM.exTotText = getString(R.string.chart_total,
+                    decimalFormatter.format(chartVM.exTotal), currencySymbol)
+                chartVM.inTotText = getString(R.string.chart_total,
+                    decimalFormatter.format(chartVM.inTotal), currencySymbol)
             }
         } else {
 
             if (symbolSide) {
 
-                graphVM.exTotText = getString(R.string.graph_total,
-                    currencySymbol, integerFormatter.format(graphVM.exTotal))
-                graphVM.inTotText = getString(R.string.graph_total,
-                    currencySymbol, integerFormatter.format(graphVM.inTotal))
+                chartVM.exTotText = getString(R.string.chart_total,
+                    currencySymbol, integerFormatter.format(chartVM.exTotal))
+                chartVM.inTotText = getString(R.string.chart_total,
+                    currencySymbol, integerFormatter.format(chartVM.inTotal))
             } else {
 
-                graphVM.exTotText = getString(R.string.graph_total,
-                    integerFormatter.format(graphVM.exTotal), currencySymbol)
-                graphVM.inTotText = getString(R.string.graph_total,
-                    integerFormatter.format(graphVM.inTotal), currencySymbol)
+                chartVM.exTotText = getString(R.string.chart_total,
+                    integerFormatter.format(chartVM.exTotal), currencySymbol)
+                chartVM.inTotText = getString(R.string.chart_total,
+                    integerFormatter.format(chartVM.inTotal), currencySymbol)
             }
         }
     }
@@ -143,11 +143,11 @@ class GraphFragment : BaseFragment() {
     companion object {
 
         /**
-         *  Initializes instance of GraphFragment
+         *  Initializes instance of ChartFragment
          */
-        fun newInstance() : GraphFragment {
+        fun newInstance() : ChartFragment {
 
-            return GraphFragment()
+            return ChartFragment()
         }
     }
 }

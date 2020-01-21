@@ -77,7 +77,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  D  = Date
      *  T  = Type
      *
-     *  CategoryTotals(CT): Used for GraphFragment contains Category and Total sum of
+     *  CategoryTotals(CT): Used for ChartFragment contains Category and Total sum of
      *                      chosen Category.
      *  ItemViewTransaction(IVT): Used For TransListFragment contains only what is needed
      *                            to be displayed.

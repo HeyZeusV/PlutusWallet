@@ -9,7 +9,7 @@ import com.heyzeusv.plutuswallet.utilities.adapters.ChartAdapter
 import java.math.BigDecimal
 import java.util.Date
 
-private const val TAG = "PWGraphViewModel"
+private const val TAG = "PWChartViewModel"
 
 /**
  *  Data manager for GraphFragments.
@@ -17,13 +17,14 @@ private const val TAG = "PWGraphViewModel"
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class GraphViewModel : ViewModel() {
+class ChartViewModel : ViewModel() {
 
     // stores handle to TransactionRepository
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
     // used to make list of 2 ItemViewChart objects to initialize ChartAdapter
-    private val emptyIvc = ItemViewChart(emptyList(), "", "", emptyList(), null, null, null)
+    private val emptyIvc = ItemViewChart(
+        emptyList(), "", "", emptyList(), null, null, null)
     private var ivcList : MutableList<ItemViewChart> = mutableListOf(emptyIvc, emptyIvc)
     var adapter = ChartAdapter(ivcList)
 

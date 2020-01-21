@@ -65,10 +65,13 @@ dependencies {
     // CoRoutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
-    // LiveData and ViewModel
+    // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-rc03'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0-rc03'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc03'
     // Material Design
-    implementation 'com.google.android.material:material:1.2.0-alpha03'
+    implementation 'com.google.android.material:material:1.2.0-alpha04'
     // MPAndroidChart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     // Preferences
@@ -82,6 +85,7 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     // Room Compiler
     kapt "androidx.room:room-compiler:$room_version"
+    kapt "com.android.databinding:compiler:3.1.4"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'android.arch.persistence.room:testing:1.1.1'
