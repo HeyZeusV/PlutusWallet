@@ -68,7 +68,6 @@
     <string name="transaction_type">Art:</string>
     <string name="type_expense">Aufwand</string>
     <string name="type_income">Einkommen</string>
-    <string name="remove_ads">Werbung entfernen</string>
     <string name="categories">Kategorien</string>
     <string name="alert_dialog_edit_account">Konto bearbeiten</string>
     <string name="alert_dialog_input_hint">Geben Sie einen Namen ein</string>
@@ -81,4 +80,5 @@
     <string name="snackbar_exists">%1$s existiert bereits!</string>
     <string name="alert_dialog_duplicate_symbols">Doppelte Symbole</string>
     <string name="alert_dialog_duplicate_symbols_warning">Tausende und Dezimaltrennzeichen können nicht identisch sein. Möchten Sie sie ändern?</string>
+    <string name="accounts">Konten</string>
 </resources>

@@ -79,7 +79,6 @@
     <string name="transaction_type">Type:</string>
     <string name="type_expense">Expense</string>
     <string name="type_income">Income</string>
-    <string name="remove_ads">Remove Advertisements</string>
     <string name="categories">Categories</string>
     <string name="alert_dialog_edit_account">Edit Account</string>
     <string name="alert_dialog_input_hint">Enter A Name</string>
@@ -92,4 +91,5 @@
     <string name="snackbar_exists">%1$s already exists!</string>
     <string name="alert_dialog_duplicate_symbols">Duplicate Symbols</string>
     <string name="alert_dialog_duplicate_symbols_warning">The thousands and decimal separators cannot be the same, would you like to switch them?</string>
+    <string name="accounts">Accounts</string>
 </resources>

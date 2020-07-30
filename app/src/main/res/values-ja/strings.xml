@@ -68,7 +68,6 @@
     <string name="transaction_type">タイプ：</string>
     <string name="type_expense">費用</string>
     <string name="type_income">所得</string>
-    <string name="remove_ads">広告を削除する</string>
     <string name="categories">カテゴリー</string>
     <string name="alert_dialog_edit_account">アカウントの編集</string>
     <string name="alert_dialog_input_hint">名前を入力してください</string>
@@ -81,4 +80,5 @@
     <string name="snackbar_exists">%1$sはすでに存在します！</string>
     <string name="alert_dialog_duplicate_symbols">シンボルの複製</string>
     <string name="alert_dialog_duplicate_symbols_warning">桁区切り記号と小数点記号を同じにすることはできません。 それらを変更しますか？</string>
+    <string name="accounts">アカウント</string>
 </resources>

@@ -68,7 +68,6 @@
     <string name="transaction_type">ประเภท:</string>
     <string name="type_expense">ค่าใช้จ่าย</string>
     <string name="type_income">เงินได้</string>
-    <string name="remove_ads">ลบโฆษณา</string>
     <string name="categories">หมวดหมู่</string>
     <string name="alert_dialog_edit_account">แก้ไขบัญชี</string>
     <string name="alert_dialog_input_hint">ป้อนชื่อ</string>
@@ -81,4 +80,5 @@
     <string name="snackbar_exists">มี %1$s อยู่แล้ว!</string>
     <string name="alert_dialog_duplicate_symbols">สัญลักษณ์ที่ซ้ำกัน</string>
     <string name="alert_dialog_duplicate_symbols_warning">ตัวคั่นหลักพันและทศนิยมต้องไม่เหมือนกันคุณต้องการเปลี่ยนหรือไม่</string>
+    <string name="accounts">บัญชี</string>
 </resources>

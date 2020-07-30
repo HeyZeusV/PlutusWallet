@@ -3,19 +3,14 @@ package com.heyzeusv.plutuswallet.activities
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.ads.MobileAds
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.billingrepo.localdb.AugmentedSkuDetails
 import com.heyzeusv.plutuswallet.fragments.AccountFragment
 import com.heyzeusv.plutuswallet.fragments.CategoryFragment
 import com.heyzeusv.plutuswallet.fragments.CFLFragment
@@ -24,7 +19,6 @@ import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
 import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE_CHANGED
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
-import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
 
 private const val TAG = "PWMainActivity"
 
@@ -41,12 +35,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     private lateinit var menuButton     : MaterialButton
     private lateinit var navigationView : NavigationView
 
-    // ViewModel
-    private lateinit var billingViewModel : BillingViewModel
-
-    // details for NoAds IAP
-    private lateinit var noAdsDetails : AugmentedSkuDetails
-
     // position of FAB, depends on device
     private var fabX = 0
     private var fabY = 0
@@ -54,9 +42,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // initialize ads
-        MobileAds.initialize(this) {}
 
         // initialize views
         drawerLayout   = findViewById(R.id.activity_drawer         )
@@ -84,20 +69,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                 .add(R.id.fragment_transaction_container, cflFragment)
                 .commit()
         }
-
-        // getting instance of BillingViewModel
-        billingViewModel = ViewModelProvider(this).get(BillingViewModel::class.java)
-        // observing List of SKUDetails LiveData
-        billingViewModel.inappSkuDetailsListLiveData.observe(this, Observer {
-
-            it?.let {
-
-                if (it.isNotEmpty()) {
-
-                    noAdsDetails = it[0]
-                }
-            }
-        })
     }
 
     override fun onStart() {
@@ -156,18 +127,13 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                     true
                 }
                 // starts AboutActivity
-                R.id.about -> {
+                // R.id.about
+                else -> {
 
                     val aboutIntent = Intent(this, AboutActivity::class.java)
                     startActivity(aboutIntent)
 
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                // starts NoAds IAP
-                else -> {
-
-                    billingViewModel.makePurchase(this, noAdsDetails)
                     true
                 }
             }
@@ -184,16 +150,6 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
             onBackPressed()
         }
-
-        billingViewModel.noAdsLiveData.observe(this, Observer {
-
-            it?.let {
-
-                // makes No Ads option visible depending if user is entitled to it
-                val navMenu : Menu = navigationView.menu
-                navMenu.findItem(R.id.no_ads).isVisible = !it.entitled
-            }
-        })
     }
 
     override fun onResume() {

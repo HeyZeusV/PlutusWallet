@@ -3,36 +3,26 @@ package com.heyzeusv.plutuswallet.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
-import android.content.res.Resources
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.AdView
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.billingrepo.localdb.NoAds
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
 import com.heyzeusv.plutuswallet.databinding.ItemViewTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
-import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.launch
 
-private const val TAG          = "PWTransactionListFrag"
-private const val TEST_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
-private const val AD_UNIT_ID   = "ca-app-pub-7627627324882759/8027617303"
+private const val TAG = "PWTransactionListFrag"
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -61,9 +51,6 @@ class TransactionListFragment : BaseFragment() {
     // DataBinding
     private lateinit var binding : FragmentTransactionListBinding
 
-    // views
-    private lateinit var adContainer : RelativeLayout
-
     // provides instance of ViewModel
     private val listVM : TransactionListViewModel by lazy {
         ViewModelProvider(this).get(TransactionListViewModel::class.java)
@@ -71,7 +58,6 @@ class TransactionListFragment : BaseFragment() {
 
     // shared ViewModels
     private lateinit var cflViewModel     : CFLViewModel
-    private lateinit var billingViewModel : BillingViewModel
 
     override fun onAttach(context : Context) {
         super.onAttach(context)
@@ -93,17 +79,10 @@ class TransactionListFragment : BaseFragment() {
         // LayoutManager requires context so created here and sent to ViewModel
         listVM.layoutManager.value = LinearLayoutManager(context)
 
-        // initialize views
-        adContainer  = view.findViewById(R.id.adContainer              ) as RelativeLayout
-
         // this ensures that this is same CFLViewModel as Filter/ChartFragment use
         cflViewModel = requireActivity().let {
 
             ViewModelProvider(it).get(CFLViewModel::class.java)
-        }
-        billingViewModel = requireActivity().let {
-
-            ViewModelProvider(it).get(BillingViewModel::class.java)
         }
 
         return view
@@ -149,28 +128,6 @@ class TransactionListFragment : BaseFragment() {
                 .addToBackStack(null)
                 .commit()
         }
-
-        // register an observer on LiveData instance and tie life to this component
-        // execute code whenever LiveData gets updated
-        billingViewModel.noAdsLiveData.observe(viewLifecycleOwner, Observer { noAds : NoAds? ->
-
-            // will load ads if there is noAds data or if user is not entitled to NoAds
-            if (noAds == null) {
-
-                loadAd(view)
-            } else {
-
-                // makes ad disappear
-                if (noAds.entitled) {
-
-                    adContainer.removeAllViews()
-
-                } else {
-
-                    loadAd(view)
-                }
-            }
-        })
     }
 
     override fun onResume() {
@@ -187,50 +144,6 @@ class TransactionListFragment : BaseFragment() {
         // afterward you cannot access the activity
         // or count on the activity continuing to exist
         callbacks = null
-    }
-
-    /**
-     *  Creates AdView with an Adaptive Banner size
-     *
-     *  Determines the width of the device using DisplayMetrics and passes it to a AdSize, which
-     *  automatically decides the height of the ad depending on the device. Lastly, the AdView is
-     *  created and added to RelativeLayout container.
-     *
-     *  @param view the layout of this fragment.
-     */
-    private fun loadAd(view : View) {
-
-        // information about device screen
-        val metrics : DisplayMetrics = Resources.getSystem().displayMetrics
-        // device screen density
-        val density : Float = metrics.density
-
-        // width of ad in pixels(width of screen)
-        var adWidthPixels : Float = view.width.toFloat()
-        if (adWidthPixels == 0f) {
-
-            adWidthPixels = metrics.widthPixels.toFloat()
-        }
-
-        // width in pixels / screen density
-        val adWidth : Int = (adWidthPixels / density).toInt()
-        // only requires width, will automatically set height according to device
-        val adSize : AdSize = AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, adWidth)
-
-        // just in case, remove an ads that might exist
-        adContainer.removeAllViews()
-
-        // create new AdView with adSize and adUnitID
-        val adView      = AdView(context)
-        adView.adSize   = adSize
-        adView.adUnitId = TEST_UNIT_ID
-
-        // add AdView to container
-        adContainer.addView(adView)
-
-        // loads ad
-        val adRequest : AdRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
     }
 
     /**
@@ -264,7 +177,7 @@ class TransactionListFragment : BaseFragment() {
      *
      *  @param binding DataBinding layout
      */
-     inner class TranListHolder(var binding : ItemViewTransactionBinding)
+     inner class TranListHolder(private var binding : ItemViewTransactionBinding)
         : RecyclerView.ViewHolder(binding.root), View.OnClickListener, View.OnLongClickListener {
 
         init {
