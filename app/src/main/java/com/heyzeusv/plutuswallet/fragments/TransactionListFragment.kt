@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdRequest
@@ -66,7 +66,7 @@ class TransactionListFragment : BaseFragment() {
 
     // provides instance of ViewModel
     private val listVM : TransactionListViewModel by lazy {
-        ViewModelProviders.of(this).get(TransactionListViewModel::class.java)
+        ViewModelProvider(this).get(TransactionListViewModel::class.java)
     }
 
     // shared ViewModels
@@ -97,13 +97,13 @@ class TransactionListFragment : BaseFragment() {
         adContainer  = view.findViewById(R.id.adContainer              ) as RelativeLayout
 
         // this ensures that this is same CFLViewModel as Filter/ChartFragment use
-        cflViewModel = activity!!.let {
+        cflViewModel = requireActivity().let {
 
-            ViewModelProviders.of(it).get(CFLViewModel::class.java)
+            ViewModelProvider(it).get(CFLViewModel::class.java)
         }
-        billingViewModel = activity!!.let {
+        billingViewModel = requireActivity().let {
 
-            ViewModelProviders.of(it).get(BillingViewModel::class.java)
+            ViewModelProvider(it).get(BillingViewModel::class.java)
         }
 
         return view
@@ -141,7 +141,7 @@ class TransactionListFragment : BaseFragment() {
 
             val transFrag = TransactionFragment(0, true)
 
-            activity!!.supportFragmentManager
+            requireActivity().supportFragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
                     R.anim.enter_from_left, R.anim.exit_to_right)
@@ -152,7 +152,7 @@ class TransactionListFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        billingViewModel.noAdsLiveData.observe(this, Observer { noAds : NoAds? ->
+        billingViewModel.noAdsLiveData.observe(viewLifecycleOwner, Observer { noAds : NoAds? ->
 
             // will load ads if there is noAds data or if user is not entitled to NoAds
             if (noAds == null) {

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
@@ -36,7 +36,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // provides instance of FilterViewModel
     private val filterVM : FilterViewModel by lazy {
-        ViewModelProviders.of(this).get(FilterViewModel::class.java)
+        ViewModelProvider(this).get(FilterViewModel::class.java)
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
@@ -64,9 +64,9 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
         prepareListeners()
 
         // this ensures that this is same CFLViewModel as Chart/ListFragment use
-        cflViewModel = activity!!.let {
+        cflViewModel = requireActivity().let {
 
-            ViewModelProviders.of(it).get(CFLViewModel::class.java)
+            ViewModelProvider(it).get(CFLViewModel::class.java)
         }
 
         return view
@@ -127,7 +127,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // fragment that will be target and request code
                 setTargetFragment(this@FilterFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
-                show(this@FilterFragment.requireFragmentManager(), DIALOG_DATE)
+                show(this@FilterFragment.parentFragmentManager, DIALOG_DATE)
                 startButton = true
             }
         }
@@ -140,7 +140,7 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 // fragment that will be target and request code
                 setTargetFragment(this@FilterFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
-                show(this@FilterFragment.requireFragmentManager(), DIALOG_DATE)
+                show(this@FilterFragment.parentFragmentManager, DIALOG_DATE)
                 endButton = true
             }
         }

@@ -8,7 +8,6 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
 import android.text.TextWatcher
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -112,7 +111,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
 
     // provides instance of ViewModel
     private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
-        ViewModelProviders.of(this).get(TransactionDetailViewModel::class.java)
+        ViewModelProvider(this).get(TransactionDetailViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,7 +153,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
         symbolRightText        = view.findViewById(R.id.symbolRightTextView         ) as TextView
 
         // set up for the frequencyPeriodSpinner
-        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(context!!, R.layout.spinner_item, frequencyArray)
+        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(requireContext(), R.layout.spinner_item, frequencyArray)
         frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
         frequencyPeriodSpinner       .adapter = frequencyPeriodSpinnerAdapter
 
@@ -230,7 +229,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        transactionDetailViewModel.transactionLiveData.observe(this, Observer { transaction : Transaction? ->
+        transactionDetailViewModel.transactionLiveData.observe(viewLifecycleOwner, Observer { transaction : Transaction? ->
                 // if not null
                 transaction?.let {
                     this.transaction = transaction
@@ -254,7 +253,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
             // "Create New Account will always be at bottom of list
             accountNameList.add(getString(R.string.account_create))
             // sets up the accountSpinner
-            accountSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, accountNameList)
+            accountSpinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, accountNameList)
             accountSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
             accountSpinner         .adapter = accountSpinnerAdapter
             // sets selection of spinner
@@ -271,7 +270,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
             // "Create New Category" will always be at bottom of the list
             expenseCategoryNamesList.add(getString(R.string.category_create))
             // sets up the categorySpinner
-            expenseSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, expenseCategoryNamesList)
+            expenseSpinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, expenseCategoryNamesList)
             expenseSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
             expenseCategorySpinner .adapter = expenseSpinnerAdapter
 
@@ -280,7 +279,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
             // "Create New Category" will always be at bottom of the list
             incomeCategoryNamesList.add(getString(R.string.category_create))
             // sets up the categorySpinner
-            incomeSpinnerAdapter = ArrayAdapter(context!!, R.layout.spinner_item, incomeCategoryNamesList)
+            incomeSpinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, incomeCategoryNamesList)
             incomeSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
             incomeCategorySpinner .adapter = incomeSpinnerAdapter
 
@@ -387,7 +386,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
                 // fragment that will be target and request code
                 setTargetFragment(this@TransactionFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
-                show(this@TransactionFragment.requireFragmentManager(), DIALOG_DATE)
+                show(this@TransactionFragment.parentFragmentManager, DIALOG_DATE)
             }
         }
 
@@ -554,7 +553,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
                         createSnackbar(it)
                     }
 
-                    AlertDialogCreator.alertDialog(context!!,
+                    AlertDialogCreator.alertDialog(requireContext(),
                         getString(R.string.alert_dialog_future_transaction),
                         getString(R.string.alert_dialog_future_transaction_warning),
                         getString(R.string.alert_dialog_yes), posFun,
@@ -615,7 +614,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
             }
         }
 
-        AlertDialogCreator.alertDialogInputCancelable(context!!,
+        AlertDialogCreator.alertDialogInputCancelable(requireContext(),
             title,
             viewInflated,
             getString(R.string.alert_dialog_save), posListener,

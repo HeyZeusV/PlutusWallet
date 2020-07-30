@@ -3,14 +3,13 @@ package com.heyzeusv.plutuswallet.activities
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -77,17 +76,17 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         // because FragmentManager saves list of fragments
         if (currentFragment == null) {
 
-            val CFLFragment : CFLFragment = CFLFragment.newInstance()
+            val cflFragment : CFLFragment = CFLFragment.newInstance()
 
             // Create a new fragment transaction, adds fragments, and then commit it
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_transaction_container, CFLFragment)
+                .add(R.id.fragment_transaction_container, cflFragment)
                 .commit()
         }
 
         // getting instance of BillingViewModel
-        billingViewModel = ViewModelProviders.of(this).get(BillingViewModel::class.java)
+        billingViewModel = ViewModelProvider(this).get(BillingViewModel::class.java)
         // observing List of SKUDetails LiveData
         billingViewModel.inappSkuDetailsListLiveData.observe(this, Observer {
 

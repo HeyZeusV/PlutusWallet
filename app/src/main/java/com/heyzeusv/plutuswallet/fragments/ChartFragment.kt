@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
@@ -31,7 +31,7 @@ class ChartFragment : BaseFragment() {
 
     // provides instance of ChartViewModel
     private val chartVM : ChartViewModel by lazy {
-        ViewModelProviders.of(this).get(ChartViewModel::class.java)
+        ViewModelProvider(this).get(ChartViewModel::class.java)
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
@@ -47,19 +47,19 @@ class ChartFragment : BaseFragment() {
         // sending data that requires context to ViewModel
         chartVM.expense  = getString(R.string.type_expense)
         chartVM.income   = getString(R.string.type_income )
-        chartVM.exColors = listOf(ContextCompat.getColor(context!!, R.color.colorExpense1),
-                                  ContextCompat.getColor(context!!, R.color.colorExpense2),
-                                  ContextCompat.getColor(context!!, R.color.colorExpense3),
-                                  ContextCompat.getColor(context!!, R.color.colorExpense4))
-        chartVM.inColors = listOf(ContextCompat.getColor(context!!, R.color.colorIncome1),
-                                  ContextCompat.getColor(context!!, R.color.colorIncome2),
-                                  ContextCompat.getColor(context!!, R.color.colorIncome3),
-                                  ContextCompat.getColor(context!!, R.color.colorIncome4))
+        chartVM.exColors = listOf(ContextCompat.getColor(requireContext(), R.color.colorExpense1),
+                                  ContextCompat.getColor(requireContext(), R.color.colorExpense2),
+                                  ContextCompat.getColor(requireContext(), R.color.colorExpense3),
+                                  ContextCompat.getColor(requireContext(), R.color.colorExpense4))
+        chartVM.inColors = listOf(ContextCompat.getColor(requireContext(), R.color.colorIncome1),
+                                  ContextCompat.getColor(requireContext(), R.color.colorIncome2),
+                                  ContextCompat.getColor(requireContext(), R.color.colorIncome3),
+                                  ContextCompat.getColor(requireContext(), R.color.colorIncome4))
 
         // this ensures that this is same CFLViewModel as Filter/ListFragment use
-        cflViewModel = activity!!.let {
+        cflViewModel = requireActivity().let {
 
-            ViewModelProviders.of(it).get(CFLViewModel::class.java)
+            ViewModelProvider(it).get(CFLViewModel::class.java)
         }
 
         return view
@@ -70,7 +70,7 @@ class ChartFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        cflViewModel.tInfoLiveData.observe(this, Observer { tInfo : TransactionInfo ->
+        cflViewModel.tInfoLiveData.observe(viewLifecycleOwner, Observer { tInfo : TransactionInfo ->
 
             // LiveData of list of CategoryTotals
             val ctLiveData : LiveData<List<CategoryTotals>> =
@@ -79,7 +79,7 @@ class ChartFragment : BaseFragment() {
 
             // register an observer on LiveData instance and tie life to this component
             // execute code whenever LiveData gets update
-            ctLiveData.observe( this, Observer { ctList : List<CategoryTotals> ->
+            ctLiveData.observe( viewLifecycleOwner, Observer { ctList : List<CategoryTotals> ->
 
                 // prepares list of ItemViewCharts that will be used to create PieCharts
                 chartVM.prepareLists(ctList)

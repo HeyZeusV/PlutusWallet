@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,7 +52,7 @@ class CategoryFragment : BaseFragment() {
 
     // instance of ViewModel
     private val categoryViewModel : CategoryViewModel by lazy {
-        ViewModelProviders.of(this).get(CategoryViewModel::class.java)
+        ViewModelProvider(this).get(CategoryViewModel::class.java)
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
@@ -72,7 +72,7 @@ class CategoryFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        categoryViewModel.expenseCategoriesLiveData.observe(this, Observer {
+        categoryViewModel.expenseCategoriesLiveData.observe(viewLifecycleOwner, Observer {
 
             // clears list before adding names again since names can be added or dropped
             categoryNameLists[0].clear()
@@ -86,7 +86,7 @@ class CategoryFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        categoryViewModel.incomeCategoriesLiveData.observe(this, Observer {
+        categoryViewModel.incomeCategoriesLiveData.observe(viewLifecycleOwner, Observer {
 
             // clears list before adding names again since names can be added or dropped
             categoryNameLists[1].clear()
@@ -100,7 +100,7 @@ class CategoryFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        categoryViewModel.uniqueExpenseLiveData.observe(this, Observer {
+        categoryViewModel.uniqueExpenseLiveData.observe(viewLifecycleOwner, Observer {
 
             // list of Categories used by Transactions
             uniqueCategoryLists[0] = it
@@ -109,7 +109,7 @@ class CategoryFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        categoryViewModel.uniqueIncomeLiveData.observe(this, Observer {
+        categoryViewModel.uniqueIncomeLiveData.observe(viewLifecycleOwner, Observer {
 
             // list of Categories used by Transactions
             uniqueCategoryLists[1] = it

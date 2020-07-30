@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -44,7 +44,7 @@ class AccountFragment : BaseFragment() {
 
     // provides instance of ViewModel
     private val accountViewModel: AccountViewModel by lazy {
-        ViewModelProviders.of(this).get(AccountViewModel::class.java)
+        ViewModelProvider(this).get(AccountViewModel::class.java)
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
@@ -73,7 +73,7 @@ class AccountFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        accountViewModel.accountLiveData.observe(this, Observer {
+        accountViewModel.accountLiveData.observe(viewLifecycleOwner, Observer {
 
             totalAccounts = it.size
 
