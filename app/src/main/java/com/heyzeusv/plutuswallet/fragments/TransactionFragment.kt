@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
 import android.text.TextWatcher
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -55,8 +56,12 @@ private const val REQUEST_DATE        = 0
 /**
  *  Shows all the information in database of one Transaction and allows users to
  *  edit any field and save changes.
+ *
+ *  @param tranID  id of current Transaction
+ *  @param fromFab true if user clicked on FAB to create a new Transaction
  */
-class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
+class TransactionFragment(private val tranID : Int, private val fromFab: Boolean)
+    : BaseFragment(), DatePickerFragment.Callbacks {
 
     // views
     private lateinit var repeatingCheckBox      : CheckBox
@@ -116,7 +121,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         transaction = Transaction()
 
         // retrieves arguments passed on (if any)
-        val transactionId : Int = arguments?.getInt(ARG_TRANSACTION_ID) as Int
+        val transactionId : Int = tranID
         transactionDetailViewModel.loadTransaction(transactionId)
 
         // initialize array with Resource strings for localization
@@ -154,7 +159,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         frequencyPeriodSpinner       .adapter = frequencyPeriodSpinnerAdapter
 
         // checks to see how user arrived to TransactionFragment
-        val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
         if (fromFab) {
 
             // animation that plays on user presses FAB
@@ -163,8 +167,10 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 override fun onLayoutChange(v : View, left : Int, top : Int, right : Int, bottom : Int, oldLeft : Int, oldTop : Int, oldRight : Int, oldButton : Int) {
 
                     v.removeOnLayoutChangeListener(this)
-                    val fabX        : Int      = arguments?.getInt(ARG_FAB_X) as Int
-                    val fabY        : Int      = arguments?.getInt(ARG_FAB_Y) as Int
+                    val location = IntArray(2)
+                    saveFab.getLocationOnScreen(location)
+                    val fabX        : Int      = location[0] + saveFab.width/2
+                    val fabY        : Int      = location[1] - saveFab.height
                     val finalRadius : Float    = hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
                     // view, initialX, initialY, startingRadius, endRadius
                     val anim        : Animator = ViewAnimationUtils.createCircularReveal(v, fabX, fabY, 10.0F, finalRadius)
@@ -221,8 +227,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val fromFab : Boolean = arguments?.getBoolean(ARG_FROM_FAB) as Boolean
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
@@ -848,7 +852,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                 putBoolean(ARG_FROM_FAB      , fromFab      )
             }
 
-            return TransactionFragment().apply {
+            return TransactionFragment(transactionId, fromFab).apply {
 
                 arguments = args
             }

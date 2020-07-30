@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.utilities.Utils
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -20,9 +21,7 @@ private const val MIDNIGHT_MILLI = 86399999
  */
 class FilterViewModel : ViewModel() {
 
-    /**
-     *  Stores handle to TransactionRepository.
-     */
+    // stores handle to TransactionRepository
     private val transactionRepository : TransactionRepository = TransactionRepository.get()
 
     // localized Strings
@@ -70,15 +69,13 @@ class FilterViewModel : ViewModel() {
     fun prepareSpinners() {
 
         viewModelScope.launch {
-
+            
             // Account data
             accList.value = transactionRepository.getAccountsAsync().await()
 
             // Category by type data
-            val mExCatList : MutableList<String> =
-                transactionRepository.getCategoriesByTypeAsync("Expense").await()
-            val mInCatList : MutableList<String> =
-                transactionRepository.getCategoriesByTypeAsync("Income" ).await()
+            val mExCatList : MutableList<String> = getCategoriesByTypeAsync("Expense").await()
+            val mInCatList : MutableList<String> = getCategoriesByTypeAsync("Income" ).await()
             mExCatList.add(0, all)
             mInCatList.add(0, all)
             exCatList.value = mExCatList
@@ -102,5 +99,13 @@ class FilterViewModel : ViewModel() {
         exCategory  .value = all
         inCategory  .value = all
         typeSelected.value = expense
+    }
+
+    /**
+     *  Category Queries
+     */
+    private suspend fun getCategoriesByTypeAsync(type : String) : Deferred<MutableList<String>> {
+
+        return transactionRepository.getCategoriesByTypeAsync(type)
     }
 }

@@ -83,12 +83,3 @@ fun Spinner.getSelectedValue() : Any? {
 
     return selectedItem
 }
-
-/**
- *  @param bool Spinner enabled state.
- */
-@BindingAdapter("isEnabled")
-fun Spinner.setIsEnabled(bool : Boolean) {
-
-    isEnabled = bool
-}

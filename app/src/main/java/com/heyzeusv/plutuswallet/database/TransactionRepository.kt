@@ -161,16 +161,6 @@ class TransactionRepository private constructor(context : Context){
     suspend fun updateTransaction         (transaction  : Transaction)       : Job = withContext(Dispatchers.IO) {launch {transactionDao.update(transaction )}}
     suspend fun upsertTransactions        (transactions : List<Transaction>) : Job = withContext(Dispatchers.IO) {launch {transactionDao.upsert(transactions)}}
 
-    /**
-     *  ExpenseCategory Queries
-     */
-    suspend fun getExpenseCategorySizeAsync () : Deferred<Int?>         = withContext(Dispatchers.IO) {async {expenseCategoryDao.getExpenseCategorySize()}}
-
-    /**
-     *  IncomeCategory Queries
-     */
-    suspend fun getIncomeCategorySizeAsync () : Deferred<Int?>         = withContext(Dispatchers.IO) {async {incomeCategoryDao.getIncomeCategorySize()}}
-
     companion object {
 
         private var INSTANCE : TransactionRepository? = null

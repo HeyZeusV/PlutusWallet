@@ -15,6 +15,10 @@ class CFLViewModel : ViewModel() {
     // stores TransactionInfo object
     var tInfoLiveData = MutableLiveData<TransactionInfo>()
 
+    // will be used by TransactionListFragment to tell when a new filter is applied/reset in order
+    // to scroll back to top of the list
+    var filterChanged : Boolean = true
+
     /**
      *  Updates tInfoLiveData which in turn will set off any Observers attached.
      *

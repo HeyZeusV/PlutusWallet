@@ -21,4 +21,5 @@ class ItemViewTransaction(
     val account  : String,
     val total    : BigDecimal,
     val type     : String,
-    val category : String)
+    val category : String
+)

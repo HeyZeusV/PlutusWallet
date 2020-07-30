@@ -185,11 +185,12 @@ class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
                         filterVM.startDate.value, filterVM.endDate.value)
                 // updates MutableLiveData, causing Chart/ListFragment refresh
                 cflViewModel.updateTInfo(tInfo)
-                    // if all filters are unchecked
+                // if all filters are unchecked
                 if (!filterVM.accCheck.value!! && !filterVM.catCheck.value!! && !filterVM.dateCheck.value!!) {
 
                     filterVM.resetFilter()
                 }
+                cflViewModel.filterChanged = true
             }
         }
     }

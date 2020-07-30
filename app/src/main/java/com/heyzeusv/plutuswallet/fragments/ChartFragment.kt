@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.fragments
+ package com.heyzeusv.plutuswallet.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -72,26 +72,25 @@ class ChartFragment : BaseFragment() {
         // execute code whenever LiveData gets updated
         cflViewModel.tInfoLiveData.observe(this, Observer { tInfo : TransactionInfo ->
 
-                // LiveData of list of CategoryTotals
-                val ctLiveData : LiveData<List<CategoryTotals>> =
-                    chartVM.filteredCategoryTotals(tInfo.account, tInfo.date, tInfo.accountName,
-                        tInfo.start, tInfo.end)
+            // LiveData of list of CategoryTotals
+            val ctLiveData : LiveData<List<CategoryTotals>> =
+                chartVM.filteredCategoryTotals(tInfo.account, tInfo.date, tInfo.accountName,
+                    tInfo.start, tInfo.end)
 
-                // register an observer on LiveData instance and tie life to this component
-                // execute code whenever LiveData gets update
-                ctLiveData.observe( this, Observer { ctList : List<CategoryTotals> ->
+            // register an observer on LiveData instance and tie life to this component
+            // execute code whenever LiveData gets update
+            ctLiveData.observe( this, Observer { ctList : List<CategoryTotals> ->
 
-                    // prepares list of ItemViewCharts that will be used to create PieCharts
-                    chartVM.prepareLists(ctList)
-                    chartVM.prepareTotals(tInfo.category, tInfo.categoryName, tInfo.type)
-                    prepareTotalTexts()
-                    chartVM.prepareIvgAdapter(tInfo.category, tInfo.categoryName, tInfo.type)
+                // prepares list of ItemViewCharts that will be used to create PieCharts
+                chartVM.prepareLists(ctList)
+                chartVM.prepareTotals(tInfo.category, tInfo.categoryName, tInfo.type)
+                prepareTotalTexts()
+                chartVM.prepareIvgAdapter(tInfo.category, tInfo.categoryName, tInfo.type)
 
-                    // sets up Dots Indicator with ViewPager2
-                    binding.chartCircleIndicator.setViewPager(binding.chartViewPager)
-                })
-            }
-        )
+                // sets up Dots Indicator with ViewPager2
+                binding.chartCircleIndicator.setViewPager(binding.chartViewPager)
+            })
+        })
     }
 
     override fun onResume() {
