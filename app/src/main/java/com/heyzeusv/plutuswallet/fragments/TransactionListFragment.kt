@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
@@ -18,6 +20,7 @@ import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
 import com.heyzeusv.plutuswallet.databinding.ItemViewTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
+import com.heyzeusv.plutuswallet.utilities.TranListDiffUtil
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.launch
@@ -59,6 +62,10 @@ class TransactionListFragment : BaseFragment() {
     // shared ViewModels
     private lateinit var cflViewModel     : CFLViewModel
 
+    // RecyclerView Adapter/LayoutManager
+    private val tranListAdapter = TranListAdapter()
+    lateinit var layoutManager : LinearLayoutManager
+
     override fun onAttach(context : Context) {
         super.onAttach(context)
 
@@ -69,15 +76,23 @@ class TransactionListFragment : BaseFragment() {
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
                               savedInstanceState : Bundle?) : View? {
 
+        //setting up LayoutManager
+        layoutManager = LinearLayoutManager(context)
+        layoutManager.apply {
+            reverseLayout = true
+            stackFromEnd  = true
+        }
+
         //setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_list, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.listVM         = listVM
+        binding.lifecycleOwner     = viewLifecycleOwner
+        binding.listVM             = listVM
+        binding.tranlistRv.adapter = tranListAdapter
+        binding.tranlistRv.addItemDecoration(
+            DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        binding.tranlistRv.layoutManager = layoutManager
 
         val view : View = binding.root
-
-        // LayoutManager requires context so created here and sent to ViewModel
-        listVM.layoutManager.value = LinearLayoutManager(context)
 
         // this ensures that this is same CFLViewModel as Filter/ChartFragment use
         cflViewModel = requireActivity().let {
@@ -103,13 +118,20 @@ class TransactionListFragment : BaseFragment() {
             // execute code whenever LiveData gets update
             listVM.ivtList.observe(viewLifecycleOwner, Observer { transactions : List<ItemViewTransaction> ->
 
+                // scrolls to saved position
+                binding.tranlistRv.scrollToPosition(listVM.rvPosition)
+                // will display empty string
                 listVM.ivtEmpty.value = transactions.isEmpty()
-                if (cflViewModel.filterChanged) {
+                // update adapter with new list to check for any changes
+                // and waits to be fully updated before running Runnable
+                tranListAdapter.submitList(transactions) {
 
-                    listVM.recyclerViewPosition.value = transactions.size - 1
-                    cflViewModel.filterChanged = false
+                    if (cflViewModel.filterChanged) {
+
+                        binding.tranlistRv.smoothScrollToPosition(transactions.size - 1)
+                        cflViewModel.filterChanged = false
+                    }
                 }
-                listVM.tranAdapter.value = TranListAdapter(transactions)
             })
         })
 
@@ -134,7 +156,7 @@ class TransactionListFragment : BaseFragment() {
         super.onResume()
 
         // ensures that RecyclerView is up to date with any symbols changes
-        listVM.tranAdapter.value?.notifyDataSetChanged()
+        tranListAdapter.notifyDataSetChanged()
         listVM.futureTransactions()
     }
 
@@ -148,11 +170,8 @@ class TransactionListFragment : BaseFragment() {
 
     /**
      *  Creates ViewHolder and binds ViewHolder to data from model layer.
-     *
-     *  @param ivtList the list of ItemViewTransaction holding data to display Transactions.
      */
-     inner class TranListAdapter(private var ivtList : List<ItemViewTransaction>)
-        : RecyclerView.Adapter<TranListHolder>() {
+     inner class TranListAdapter : ListAdapter<ItemViewTransaction, TranListHolder>(TranListDiffUtil()) {
 
         // creates view to display, wraps the view in a ViewHolder and returns the result
         override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : TranListHolder {
@@ -162,12 +181,10 @@ class TransactionListFragment : BaseFragment() {
             return TranListHolder(itemViewBinding)
         }
 
-        override fun getItemCount() : Int = ivtList.size
-
         // populates given holder with Transaction from the given position in list
         override fun onBindViewHolder(holder : TranListHolder, position : Int) {
 
-            val ivt : ItemViewTransaction = ivtList[position]
+            val ivt : ItemViewTransaction = getItem(position)
             holder.bind(ivt)
         }
     }
@@ -209,13 +226,8 @@ class TransactionListFragment : BaseFragment() {
         override fun onClick(v : View?) {
 
             // the position that the user clicked on
-            // doesn't scroll to correct position for first few items when using findLast...()
-            when {
+            listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
 
-                layoutPosition < 5 -> listVM.recyclerViewPosition.value = layoutPosition
-                else -> listVM.recyclerViewPosition.value =
-                    listVM.layoutManager.value?.findLastCompletelyVisibleItemPosition()
-            }
             // notifies hosting activity which item was selected
             callbacks?.onTransactionSelected(binding.ivt!!.id, false)
         }
@@ -230,14 +242,6 @@ class TransactionListFragment : BaseFragment() {
 
                 launch {
 
-                    // the position that the user clicked on
-                    // doesn't scroll to correct position for first few items when using findLast...()
-                    when {
-
-                        layoutPosition < 5 -> listVM.recyclerViewPosition.value = layoutPosition
-                        else -> listVM.recyclerViewPosition.value =
-                            listVM.layoutManager.value?.findLastCompletelyVisibleItemPosition()
-                    }
                     listVM.deleteTransaction(listVM.getTransactionAsync(binding.ivt!!.id).await())
                 }
             }

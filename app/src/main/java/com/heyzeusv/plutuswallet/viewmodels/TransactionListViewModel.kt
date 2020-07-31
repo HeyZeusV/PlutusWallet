@@ -5,13 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
-import com.heyzeusv.plutuswallet.fragments.TransactionListFragment.TranListAdapter
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -37,12 +35,8 @@ class TransactionListViewModel : ViewModel() {
     // true if there are more Transactions that repeat with futureDate before Date()
     private var moreToCreate : Boolean = false
 
-    // RecyclerView Adapter/LayoutManager
-    val tranAdapter   : MutableLiveData<TranListAdapter>     = MutableLiveData()
-    val layoutManager : MutableLiveData<LinearLayoutManager> = MutableLiveData()
-
-    // saves position of RecyclerView
-    val recyclerViewPosition : MutableLiveData<Int> = MutableLiveData(0)
+    // saves position of RecyclerView, MAX_VALUE so that list starts at top
+    var rvPosition : Int = Int.MAX_VALUE
 
     // ItemViewTransaction list to be displayed by RecyclerView
     var ivtList : LiveData<List<ItemViewTransaction>> = MutableLiveData(emptyList())

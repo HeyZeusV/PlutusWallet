@@ -17,7 +17,7 @@ class CFLViewModel : ViewModel() {
 
     // will be used by TransactionListFragment to tell when a new filter is applied/reset in order
     // to scroll back to top of the list
-    var filterChanged : Boolean = true
+    var filterChanged : Boolean = false
 
     /**
      *  Updates tInfoLiveData which in turn will set off any Observers attached.

@@ -14,7 +14,7 @@ import java.util.Date
  *  @param type     either "Expense" or "Income".
  *  @param category the name of category selected.
  */
-class ItemViewTransaction(
+data class ItemViewTransaction(
     val id       : Int,
     val title    : String,
     val date     : Date,

@@ -3,9 +3,6 @@ package com.heyzeusv.plutuswallet.utilities.adapters
 import android.graphics.Color
 import android.view.View
 import androidx.databinding.BindingAdapter
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
@@ -13,7 +10,6 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.heyzeusv.plutuswallet.database.entities.ItemViewChart
-import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
 
 private const val TAG = "PWBindingAdapters"
 
@@ -115,43 +111,4 @@ fun PieChart.setUpChart(ivc : ItemViewChart) {
 fun View.setIsEnabled(bool : Boolean) {
 
     isEnabled = bool
-}
-
-/**
- *  Sets up LinearLayoutManager for RecyclerView with option to reverse list order and adds divider
- *  lines between items.
- *
- *  @param layout  LinearLayoutManager to be applied
- *  @param reverse true to reverse order of items
- */
-@BindingAdapter(value=["layoutManager", "reverseLayout"], requireAll = false)
-fun RecyclerView.setUpLayout(layout : LinearLayoutManager?, reverse : Boolean) {
-
-    addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-    if (layout != null && layoutManager == null) {
-
-        // true = newer items appear at top of View
-        layout.reverseLayout = reverse
-        // true = scrollToPosition starts from top
-        layout.stackFromEnd = reverse
-        // View NEEDS LayoutManager to work
-        layoutManager = layout
-    }
-}
-
-/**
- *  Assigns adapter to RecyclerView and scroll to position given.
- *
- *  @param tlAdapter TranListAdapter to be assigned
- *  @param position  position to scroll to
- */
-@BindingAdapter(value=["setAdapter", "setPosition"], requireAll = false)
-fun RecyclerView.setTranListAdapter(tlAdapter : TransactionListFragment.TranListAdapter?,
-                                    position : Int) {
-
-    tlAdapter?.let {
-
-        adapter = tlAdapter
-    }
-    scrollToPosition(position)
 }
