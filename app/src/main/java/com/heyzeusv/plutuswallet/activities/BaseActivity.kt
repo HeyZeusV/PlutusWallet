@@ -6,8 +6,7 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
-import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE
-import com.heyzeusv.plutuswallet.utilities.KEY_MANUAL_LANGUAGE
+import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.Utils
@@ -31,7 +30,7 @@ abstract class BaseActivity : AppCompatActivity() {
         // SharedPreference/Editor will be available to all Activities that inherit this class
         sharedPreferences = PreferenceHelper.sharedPrefs(newBase!!)
 
-        val manualChange : Boolean = sharedPreferences[KEY_MANUAL_LANGUAGE, false]!!
+        val manualChange : Boolean = sharedPreferences[Constants.KEY_MANUAL_LANGUAGE, false]!!
 
         // API 24 or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -50,7 +49,7 @@ abstract class BaseActivity : AppCompatActivity() {
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && manualChange) {
 
                 // retrieves language selected
-                val languageCode : String  = sharedPreferences[KEY_LANGUAGE, "en"]!!
+                val languageCode : String  = sharedPreferences[Constants.KEY_LANGUAGE, "en"]!!
                 // sets context with language
                 val context : Context = Utils.changeLanguage(newBase, languageCode)
 

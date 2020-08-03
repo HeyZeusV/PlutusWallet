@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
-        app:defaultValue="dollar"
+        app:key="key_currency_symbol"
+        app:title="@string/preferences_currency_symbol"
         app:entries="@array/currency_symbol_array"
         app:entryValues="@array/currency_symbol_key_array"
         app:iconSpaceReserved="false"
-        app:key="key_currency_symbol"
-        app:title="@string/preferences_currency_symbol"
-        app:useSimpleSummaryProvider="true"/>
+        app:useSimpleSummaryProvider="true"
+        app:defaultValue="dollar"/>
 
     <SwitchPreference
         app:key="key_symbol_side"
@@ -64,5 +64,4 @@
         app:iconSpaceReserved="false"
         app:useSimpleSummaryProvider="true"
         app:defaultValue="en"/>
-
 </PreferenceScreen>

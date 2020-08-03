@@ -15,7 +15,7 @@ package com.heyzeusv.plutuswallet.database.entities
 class ItemViewChart(
     val ctList     : List<CategoryTotals>,
     val typeTrans  : String,
-    val totalText  : String,
+    var totalText  : String,
     val colorArray : List<Int>,
     val fCategory  : Boolean?,
     val fCatName   : String?,

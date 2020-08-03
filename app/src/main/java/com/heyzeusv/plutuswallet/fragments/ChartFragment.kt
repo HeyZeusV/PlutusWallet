@@ -13,6 +13,10 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentChartBinding
+import com.heyzeusv.plutuswallet.utilities.Constants
+import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
+import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
+import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.ChartViewModel
 
@@ -96,8 +100,16 @@ class ChartFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        // language change does not cause LiveData update... so this will update total strings
-        prepareTotalTexts()
+        // checks if there has been a change in settings, updates changes, and updates list
+        if (sharedPreferences[Constants.KEY_CHART_CHANGE, false]!!) {
+
+            setVals = Utils.prepareSettingValues(sharedPreferences)
+            prepareTotalTexts()
+            chartVM.adapter.ivcList[0].totalText = chartVM.exTotText
+            chartVM.adapter.ivcList[1].totalText = chartVM.inTotText
+            chartVM.adapter.notifyDataSetChanged()
+            sharedPreferences[Constants.KEY_CHART_CHANGE] = false
+        }
     }
 
     /**
@@ -106,35 +118,35 @@ class ChartFragment : BaseFragment() {
      */
     private fun prepareTotalTexts() {
 
-        if (decimalPlaces) {
+        if (setVals.decimalPlaces) {
 
-            if (symbolSide) {
+            if (setVals.symbolSide) {
 
                 chartVM.exTotText = getString(R.string.chart_total,
-                    currencySymbol, decimalFormatter.format(chartVM.exTotal))
+                    setVals.currencySymbol, setVals.decimalFormatter.format(chartVM.exTotal))
                 chartVM.inTotText = getString(R.string.chart_total,
-                    currencySymbol, decimalFormatter.format(chartVM.inTotal))
+                    setVals.currencySymbol, setVals.decimalFormatter.format(chartVM.inTotal))
             } else {
 
                 chartVM.exTotText = getString(R.string.chart_total,
-                    decimalFormatter.format(chartVM.exTotal), currencySymbol)
+                    setVals.decimalFormatter.format(chartVM.exTotal), setVals.currencySymbol)
                 chartVM.inTotText = getString(R.string.chart_total,
-                    decimalFormatter.format(chartVM.inTotal), currencySymbol)
+                    setVals.decimalFormatter.format(chartVM.inTotal), setVals.currencySymbol)
             }
         } else {
 
-            if (symbolSide) {
+            if (setVals.symbolSide) {
 
                 chartVM.exTotText = getString(R.string.chart_total,
-                    currencySymbol, integerFormatter.format(chartVM.exTotal))
+                    setVals.currencySymbol, setVals.integerFormatter.format(chartVM.exTotal))
                 chartVM.inTotText = getString(R.string.chart_total,
-                    currencySymbol, integerFormatter.format(chartVM.inTotal))
+                    setVals.currencySymbol, setVals.integerFormatter.format(chartVM.inTotal))
             } else {
 
                 chartVM.exTotText = getString(R.string.chart_total,
-                    integerFormatter.format(chartVM.exTotal), currencySymbol)
+                    setVals.integerFormatter.format(chartVM.exTotal), setVals.currencySymbol)
                 chartVM.inTotText = getString(R.string.chart_total,
-                    integerFormatter.format(chartVM.inTotal), currencySymbol)
+                    setVals.integerFormatter.format(chartVM.inTotal), setVals.currencySymbol)
             }
         }
     }

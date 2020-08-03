@@ -16,7 +16,7 @@ import com.heyzeusv.plutuswallet.fragments.CategoryFragment
 import com.heyzeusv.plutuswallet.fragments.CFLFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
-import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE_CHANGED
+import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 
@@ -156,11 +156,11 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         super.onResume()
 
         // loads if language changed
-        val languageChanged : Boolean = sharedPreferences[KEY_LANGUAGE_CHANGED, false]!!
+        val languageChanged : Boolean = sharedPreferences[Constants.KEY_LANGUAGE_CHANGED, false]!!
         if (languageChanged) {
 
             // saving into SharedPreferences
-            sharedPreferences[KEY_LANGUAGE_CHANGED] = false
+            sharedPreferences[Constants.KEY_LANGUAGE_CHANGED] = false
 
             // destroys then restarts Activity in order to have updated language
             recreate()

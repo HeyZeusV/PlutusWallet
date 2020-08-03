@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
@@ -22,7 +23,7 @@ private const val MIDNIGHT_MILLI = 86399999
 /**
  *  Used to apply filters and tell TransactionListFragment which Transaction list to load
  */
-class FilterFragment : BaseFragment(), DatePickerFragment.Callbacks {
+class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
 
     // DataBinding
     private lateinit var binding : FragmentFilterBinding

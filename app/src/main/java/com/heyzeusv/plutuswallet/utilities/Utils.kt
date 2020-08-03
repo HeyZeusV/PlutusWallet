@@ -2,8 +2,10 @@ package com.heyzeusv.plutuswallet.utilities
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.SharedPreferences
 import android.content.res.Configuration
-import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.database.entities.SettingsValues
+import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -78,9 +80,11 @@ class Utils {
 
                 return "0" + customSymbols.decimalSeparator.toString()
             }
-            val parsed = BigDecimal(string.replace(("[" + customSymbols.decimalSeparator +"]").toRegex(), "."))
+            val parsed = BigDecimal(
+                string.replace(("[" + customSymbols.decimalSeparator +"]").toRegex(), "."))
             // every three numbers, a thousands symbol will be added
-            val formatter = DecimalFormat("#,##0." + getDecimalPattern(string, customSymbols), customSymbols)
+            val formatter = DecimalFormat(
+                "#,##0." + getDecimalPattern(string, customSymbols), customSymbols)
             formatter.roundingMode = RoundingMode.DOWN
             return formatter.format(parsed)
         }
@@ -93,10 +97,12 @@ class Utils {
          *  @param  customSymbols contains decimal symbol
          *  @return returns pattern to be used after decimal symbol
          */
-        private fun getDecimalPattern(string : String, customSymbols : DecimalFormatSymbols) : String {
+        private fun getDecimalPattern(string : String, customSymbols : DecimalFormatSymbols)
+                : String {
 
             // returns number of characters after decimal point
-            val decimalCount : Int = string.length - string.indexOf(customSymbols.decimalSeparator) - 1
+            val decimalCount : Int =
+                string.length - string.indexOf(customSymbols.decimalSeparator) - 1
             val decimalPattern     = StringBuilder()
             var i = 0
             while (i < decimalCount && i < 2) {
@@ -113,7 +119,7 @@ class Utils {
          *  @param  symbolKey taken from SettingsFragment.
          *  @return the symbol to be used.
          */
-        fun getCurrencySymbol(symbolKey : String) : String {
+        private fun getCurrencySymbol(symbolKey : String) : String {
 
             return when (symbolKey) {
 
@@ -133,7 +139,7 @@ class Utils {
          *  @param  dateFormat taken from Settings Fragment.
          *  @return int used DateFormat: 0 = FULL, 1 = LONG, 2 = MEDIUM, 3 = SHORT
          */
-        fun getDateFormat(dateFormat : String) : Int {
+        private fun getDateFormat(dateFormat : String) : Int {
 
             return when (dateFormat) {
 
@@ -177,6 +183,41 @@ class Utils {
             calendar.set(Calendar.MILLISECOND, 0)
 
             return calendar.time
+        }
+
+        /**
+         *  Retrieves settings values and either passes them or uses them prepare formatters.
+         *
+         *  @param  sp SharedPreferences used to retrieve values.
+         *  @return data class that holds settings values/formatters.
+         */
+        fun prepareSettingValues(sp : SharedPreferences) : SettingsValues {
+
+            // retrieving SharedPreferences values
+            val currencySymbolKey  : String  = sp[Constants.KEY_CURRENCY_SYMBOL , "dollar"]!!
+            val dateFormatKey      : String  = sp[Constants.KEY_DATE_FORMAT     , "0"     ]!!
+            val decimalSymbolKey   : String  = sp[Constants.KEY_DECIMAL_SYMBOL  , "period"]!!
+            val thousandsSymbolKey : String  = sp[Constants.KEY_THOUSANDS_SYMBOL, "comma" ]!!
+            val decimalPlaces      : Boolean = sp[Constants.KEY_DECIMAL_PLACES  , true]!!
+            val symbolSide         : Boolean = sp[Constants.KEY_SYMBOL_SIDE     , true]!!
+
+            // converting keys to values
+            val currencySymbol  : String = getCurrencySymbol (currencySymbolKey )
+            val dateFormat      : Int    = getDateFormat     (dateFormatKey     )
+            val decimalSymbol   : Char   = getSeparatorSymbol(decimalSymbolKey  )
+            val thousandsSymbol : Char   = getSeparatorSymbol(thousandsSymbolKey)
+
+            // set up decimal/thousands symbol
+            val customSymbols = DecimalFormatSymbols(Locale.US)
+            customSymbols.decimalSeparator  = decimalSymbol
+            customSymbols.groupingSeparator = thousandsSymbol
+
+            // remaking formatters with new symbols
+            val decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
+            val integerFormatter = DecimalFormat("#,###"   , customSymbols)
+
+            return SettingsValues(currencySymbol, symbolSide, thousandsSymbol, decimalPlaces,
+                decimalSymbol, dateFormat, decimalFormatter, integerFormatter)
         }
     }
 }

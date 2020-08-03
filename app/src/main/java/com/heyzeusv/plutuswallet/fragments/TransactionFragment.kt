@@ -182,7 +182,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
         }
 
         // if symbol on right side
-        if (!symbolSide) {
+        if (!setVals.symbolSide) {
 
             // used to change constraints
             val totalConstraintSet = ConstraintSet()
@@ -201,7 +201,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
         }
 
         // user selects no decimal places
-        if (!decimalPlaces) {
+        if (!setVals.decimalPlaces) {
 
             // filter that prevents user from typing decimalSymbol thus only integers
             val filter = object : InputFilter {
@@ -210,7 +210,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
 
                     for (i : Int in start until end) {
 
-                        if (source != null && source == decimalSymbol.toString()) {
+                        if (source != null && source == setVals.decimalSymbol.toString()) {
 
                             return ""
                         }
@@ -518,8 +518,8 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
 
                 // need to save to separate string or else format will be ruined after saving
                 var savedTotal : String = totalField.text.toString()
-                savedTotal = savedTotal.replace(thousandsSymbol.toString(), "" )
-                    .replace(decimalSymbol  .toString(), ".")
+                savedTotal = savedTotal.replace(setVals.thousandsSymbol.toString(), "" )
+                    .replace(setVals.decimalSymbol.toString(), ".")
                 // converts the totalField into BigDecimal
                 transaction.total = BigDecimal(savedTotal)
             }
@@ -626,8 +626,8 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
         super.onResume()
 
         // symbol side setting might have changed
-        symbolLeftText .text = currencySymbol
-        symbolRightText.text = currencySymbol
+        symbolLeftText .text = setVals.currencySymbol
+        symbolRightText.text = setVals.currencySymbol
     }
 
     /**
@@ -759,7 +759,7 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
     override fun onDateSelected(date : Date) {
 
         transaction.date = date
-        dateButton .text = DateFormat.getDateInstance(dateFormat).format(this.transaction.date)
+        dateButton .text = DateFormat.getDateInstance(setVals.dateFormat).format(this.transaction.date)
         dateChanged      = transaction.date != oldDate
     }
 
@@ -785,15 +785,15 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
         titleField    .setText(transaction.title)
         memoField     .setText(transaction.memo)
         frequencyField.setText(transaction.frequency.toString())
-        dateButton.text = DateFormat.getDateInstance(dateFormat).format(this.transaction.date)
+        dateButton.text = DateFormat.getDateInstance(setVals.dateFormat).format(this.transaction.date)
 
         // formats Total depending on decimalPlaces and if decimal separator is present
-        totalField.setText(getString(R.string.total_number, if (decimalPlaces && transaction.total.toString().contains(".")) {
+        totalField.setText(getString(R.string.total_number, if (setVals.decimalPlaces && transaction.total.toString().contains(".")) {
 
-            Utils.formatDecimal(transaction.total.toString(), thousandsSymbol, decimalSymbol)
+            Utils.formatDecimal(transaction.total.toString(), setVals.thousandsSymbol, setVals.decimalSymbol)
         } else {
 
-            Utils.formatInteger(transaction.total.toString(), thousandsSymbol)
+            Utils.formatInteger(transaction.total.toString(), setVals.thousandsSymbol)
         }))
 
         accountSpinner.setSelection(accountNameList.indexOf(transaction.account))

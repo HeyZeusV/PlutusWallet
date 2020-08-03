@@ -20,7 +20,11 @@ import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
 import com.heyzeusv.plutuswallet.databinding.ItemViewTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
+import com.heyzeusv.plutuswallet.utilities.Constants
+import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
+import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import com.heyzeusv.plutuswallet.utilities.TranListDiffUtil
+import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.launch
@@ -137,8 +141,11 @@ class TransactionListFragment : BaseFragment() {
 
         listVM.initializeTables()
 
-        // When FAB is pressed, a new blank TransactionFragment will be created and displayed
+    // When FAB is pressed, a new blank TransactionFragment will be created and displayed
         listVM.fabOnClick.value = View.OnClickListener {
+
+            // scroll back to top of list
+            cflViewModel.filterChanged = true
 
             val transFrag = TransactionFragment(0, true)
 
@@ -155,8 +162,13 @@ class TransactionListFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        // ensures that RecyclerView is up to date with any symbols changes
-        tranListAdapter.notifyDataSetChanged()
+        // checks if there has been a change in settings, updates changes, and updates list
+        if (sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE, false]!!) {
+
+            setVals = Utils.prepareSettingValues(sharedPreferences)
+            tranListAdapter.notifyDataSetChanged()
+            sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = false
+        }
         listVM.futureTransactions()
     }
 
@@ -212,14 +224,18 @@ class TransactionListFragment : BaseFragment() {
             // formats the Total correctly
             when {
 
-                decimalPlaces && symbolSide -> binding.transactionTotal.text = getString(
-                    R.string.total_number_symbol, currencySymbol, decimalFormatter.format(ivt.total))
-                decimalPlaces -> binding.transactionTotal.text = getString(
-                    R.string.total_number_symbol, decimalFormatter.format(ivt.total), currencySymbol)
-                symbolSide -> binding.transactionTotal.text = getString(
-                    R.string.total_number_symbol, currencySymbol, integerFormatter.format(ivt.total))
-                else -> binding.transactionTotal.text = getString(
-                    R.string.total_number_symbol, integerFormatter.format(ivt.total), currencySymbol)
+                setVals.decimalPlaces && setVals.symbolSide -> binding.transactionTotal.text =
+                    getString(R.string.total_number_symbol,
+                        setVals.currencySymbol, setVals.decimalFormatter.format(ivt.total))
+                setVals.decimalPlaces -> binding.transactionTotal.text =
+                    getString(R.string.total_number_symbol,
+                        setVals.decimalFormatter.format(ivt.total), setVals.currencySymbol)
+                setVals.symbolSide -> binding.transactionTotal.text =
+                    getString(R.string.total_number_symbol,
+                        setVals.currencySymbol, setVals.integerFormatter.format(ivt.total))
+                else -> binding.transactionTotal.text =
+                    getString(R.string.total_number_symbol,
+                        setVals.integerFormatter.format(ivt.total), setVals.currencySymbol)
             }
         }
 

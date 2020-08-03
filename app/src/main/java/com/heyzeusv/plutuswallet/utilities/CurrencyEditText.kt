@@ -31,8 +31,8 @@ class CurrencyEditText @JvmOverloads constructor(
     private val sharedPreferences  : SharedPreferences = PreferenceHelper.sharedPrefs(context)
 
     // keys from separator symbols
-    private var decimalSymbolKey   : String = sharedPreferences[KEY_DECIMAL_SYMBOL  , "period"]!!
-    private var thousandsSymbolKey : String = sharedPreferences[KEY_THOUSANDS_SYMBOL, "comma" ]!!
+    private var decimalSymbolKey   : String = sharedPreferences[Constants.KEY_DECIMAL_SYMBOL  , "period"]!!
+    private var thousandsSymbolKey : String = sharedPreferences[Constants.KEY_THOUSANDS_SYMBOL, "comma" ]!!
 
     init {
 
