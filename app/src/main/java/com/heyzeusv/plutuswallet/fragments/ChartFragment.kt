@@ -105,8 +105,8 @@ class ChartFragment : BaseFragment() {
 
             setVals = Utils.prepareSettingValues(sharedPreferences)
             prepareTotalTexts()
-            chartVM.adapter.ivcList[0].totalText = chartVM.exTotText
-            chartVM.adapter.ivcList[1].totalText = chartVM.inTotText
+            chartVM.adapter.currentList[0].totalText = chartVM.exTotText
+            chartVM.adapter.currentList[1].totalText = chartVM.inTotText
             chartVM.adapter.notifyDataSetChanged()
             sharedPreferences[Constants.KEY_CHART_CHANGE] = false
         }
@@ -118,30 +118,30 @@ class ChartFragment : BaseFragment() {
      */
     private fun prepareTotalTexts() {
 
-        if (setVals.decimalPlaces) {
+        when {
 
-            if (setVals.symbolSide) {
+            setVals.decimalPlaces && setVals.symbolSide -> {
 
                 chartVM.exTotText = getString(R.string.chart_total,
                     setVals.currencySymbol, setVals.decimalFormatter.format(chartVM.exTotal))
                 chartVM.inTotText = getString(R.string.chart_total,
                     setVals.currencySymbol, setVals.decimalFormatter.format(chartVM.inTotal))
-            } else {
+            }
+            setVals.decimalPlaces -> {
 
                 chartVM.exTotText = getString(R.string.chart_total,
                     setVals.decimalFormatter.format(chartVM.exTotal), setVals.currencySymbol)
                 chartVM.inTotText = getString(R.string.chart_total,
                     setVals.decimalFormatter.format(chartVM.inTotal), setVals.currencySymbol)
             }
-        } else {
-
-            if (setVals.symbolSide) {
+            setVals.symbolSide -> {
 
                 chartVM.exTotText = getString(R.string.chart_total,
                     setVals.currencySymbol, setVals.integerFormatter.format(chartVM.exTotal))
                 chartVM.inTotText = getString(R.string.chart_total,
                     setVals.currencySymbol, setVals.integerFormatter.format(chartVM.inTotal))
-            } else {
+            }
+            else -> {
 
                 chartVM.exTotText = getString(R.string.chart_total,
                     setVals.integerFormatter.format(chartVM.exTotal), setVals.currencySymbol)

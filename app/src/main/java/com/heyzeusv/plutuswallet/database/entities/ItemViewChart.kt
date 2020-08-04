@@ -12,7 +12,7 @@ package com.heyzeusv.plutuswallet.database.entities
  *  @param fCategory  boolean stating if Category filter is applied.
  *  @param fCatName   string of Category selected from filter.
  */
-class ItemViewChart(
+data class ItemViewChart(
     val ctList     : List<CategoryTotals>,
     val typeTrans  : String,
     var totalText  : String,

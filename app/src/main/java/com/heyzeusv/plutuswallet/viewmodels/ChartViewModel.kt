@@ -26,7 +26,7 @@ class ChartViewModel : ViewModel() {
     private val emptyIvc = ItemViewChart(
         emptyList(), "", "", emptyList(), null, null, null)
     private var ivcList : MutableList<ItemViewChart> = mutableListOf(emptyIvc, emptyIvc)
-    var adapter = ChartAdapter(ivcList)
+    var adapter = ChartAdapter()
 
     // list of CategoryTotals after filter is applied
     private var exCatTotals : List<CategoryTotals> = emptyList()
@@ -66,12 +66,10 @@ class ChartViewModel : ViewModel() {
         // splits ctList into 2 lists according to type
         ctList.forEach {
 
-            if (it.type == "Expense") {
+            when (it.type) {
 
-                eCTs.add(it)
-            } else {
-
-                iCTs.add(it)
+                "Expense" -> eCTs.add(it)
+                else      -> iCTs.add(it)
             }
         }
         exCatTotals = eCTs
@@ -91,43 +89,40 @@ class ChartViewModel : ViewModel() {
      */
     fun prepareTotals(fCat : Boolean?, fCatName : String?, fType : String?) {
 
-        // Category filter is applied
-        if (fCat == true) {
+        // if fCatName = "All", add up all totals of given type
+        // else total is total of Category selected in filter if there exists entries else 0
+        // sets opposite type total to 0
+        when {
+            fCat == true && fType == "Expense" && fCatName == "All" -> {
 
-            // checks which type
-            when (fType) {
-
-                // if fCatName = "All", add up all totals of given type
-                // else total is total of Category selected in filter if there exists entries else 0
-                // sets opposite type total to 0
-                "Expense" ->  {
-
-                    exTotal = when (fCatName) {
-
-                        "All" -> exCatTotals.fold(BigDecimal.ZERO) {
-                                total : BigDecimal, next : CategoryTotals -> total + next.total }
-                        else  -> exCatTotals.find {it.category == fCatName}?.total ?: BigDecimal.ZERO
-                    }
-                    inTotal = BigDecimal.ZERO
-                }
-                "Income"  ->  {
-
-                    inTotal = when (fCatName) {
-
-                        "All" -> inCatTotals.fold(BigDecimal.ZERO) {
-                                total : BigDecimal, next : CategoryTotals -> total + next.total }
-                        else  -> inCatTotals.find {it.category == fCatName}?.total ?: BigDecimal.ZERO
-                    }
-                    exTotal = BigDecimal.ZERO
-                }
+                exTotal = exCatTotals.fold(BigDecimal.ZERO) {
+                        total : BigDecimal, next : CategoryTotals -> total + next.total }
+                inTotal = BigDecimal.ZERO
             }
-        } else {
+            fCat == true && fType == "Expense" -> {
 
-            // Category filter is not applied, so add up all the totals
-            exTotal = exCatTotals.fold(BigDecimal.ZERO) {
-                    total : BigDecimal, next : CategoryTotals -> total + next.total }
-            inTotal = inCatTotals.fold(BigDecimal.ZERO) {
-                    total : BigDecimal, next : CategoryTotals -> total + next.total }
+                exTotal = exCatTotals.find{it.category == fCatName}?.total ?: BigDecimal.ZERO
+                inTotal = BigDecimal.ZERO
+            }
+            fCat == true && fType == "Income" && fCatName == "All" -> {
+
+                inTotal = inCatTotals.fold(BigDecimal.ZERO) {
+                        total : BigDecimal, next : CategoryTotals -> total + next.total }
+                exTotal = BigDecimal.ZERO
+            }
+            fCat == true && fType == "Income" -> {
+
+                inTotal = inCatTotals.find{it.category == fCatName}?.total ?: BigDecimal.ZERO
+                exTotal = BigDecimal.ZERO
+            }
+            else -> {
+
+                // Category filter is not applied, so add up all the totals
+                exTotal = exCatTotals.fold(BigDecimal.ZERO) {
+                        total : BigDecimal, next : CategoryTotals -> total + next.total }
+                inTotal = inCatTotals.fold(BigDecimal.ZERO) {
+                        total : BigDecimal, next : CategoryTotals -> total + next.total }
+            }
         }
     }
 
@@ -145,8 +140,7 @@ class ChartViewModel : ViewModel() {
         val inIvc = ItemViewChart(inCatTotals, income , inTotText, inColors, fCat, fCatName, fType)
 
         ivcList = mutableListOf(exIvc, inIvc)
-        adapter.ivcList = ivcList
-        adapter.notifyDataSetChanged()
+        adapter.submitList(ivcList)
     }
 
     /**
@@ -165,18 +159,16 @@ class ChartViewModel : ViewModel() {
     fun filteredCategoryTotals(fAccount : Boolean?, fDate : Boolean?, fAccountName : String?,
                                fStart : Date?, fEnd : Date?) : LiveData<List<CategoryTotals>> {
 
-        return if (fAccount == true && fDate == true) {
+        return when {
 
-            transactionRepository.getLdCtAD(fAccountName, fStart, fEnd)
-        } else if (fAccount == true) {
-
-            transactionRepository.getLdCtA(fAccountName)
-        } else if (fDate == true) {
-
-            transactionRepository.getLdCtD(fStart, fEnd)
-        } else {
-
-            transactionRepository.getLdCt()
+            fAccount == true && fDate == true ->
+                transactionRepository.getLdCtAD(fAccountName, fStart, fEnd)
+            fAccount == true ->
+                transactionRepository.getLdCtA(fAccountName)
+            fDate == true ->
+                transactionRepository.getLdCtD(fStart, fEnd)
+            else ->
+                transactionRepository.getLdCt()
         }
     }
 }

@@ -132,7 +132,7 @@ class TransactionListFragment : BaseFragment() {
 
                     if (cflViewModel.filterChanged) {
 
-                        binding.tranlistRv.smoothScrollToPosition(transactions.size - 1)
+                        binding.tranlistRv.smoothScrollToPosition(transactions.size)
                         cflViewModel.filterChanged = false
                     }
                 }
