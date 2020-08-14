@@ -110,8 +110,8 @@ class TransactionRepository private constructor(context : Context){
      *  Account Queries
      */
     fun getLDAccounts() : LiveData<List<Account>> = accountDao.getLDAccounts()
-    suspend fun getAccountSizeAsync() : Deferred<Int?>                = withContext(Dispatchers.IO) {async {accountDao.getAccountSize()}}
-    suspend fun getAccountsAsync()    : Deferred<MutableList<String>> = withContext(Dispatchers.IO) {async {accountDao.getAccounts()}}
+    suspend fun getAccountSizeAsync()  : Deferred<Int?>                = withContext(Dispatchers.IO) {async {accountDao.getAccountSize()}}
+    suspend fun getAccountNamesAsync() : Deferred<MutableList<String>> = withContext(Dispatchers.IO) {async {accountDao.getAccountNames()}}
     suspend fun deleteAccount(account : Account) : Job = withContext(Dispatchers.IO) {launch {accountDao.delete(account)}}
     suspend fun insertAccount(account : Account) : Job = withContext(Dispatchers.IO) {launch {accountDao.insert(account)}}
     suspend fun updateAccount(account : Account) : Job = withContext(Dispatchers.IO) {launch {accountDao.update(account)}}

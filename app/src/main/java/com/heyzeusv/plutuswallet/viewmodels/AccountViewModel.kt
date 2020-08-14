@@ -2,37 +2,52 @@ package com.heyzeusv.plutuswallet.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.Account
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class AccountViewModel : ViewModel() {
 
     /**
      *  Stores handle to TransactionRepository.
      */
-    private val transactionRepository : TransactionRepository = TransactionRepository.get()
+    private val tranRepo : TransactionRepository = TransactionRepository.get()
+
+    // used to make sure there is always 1 Account left
+    var totalAccounts = 0
+
+    // lists used to tell which Accounts can be deleted and if name is taken already
+    var accountsUsed : List<String> = emptyList()
+    var accountNames : List<String> = emptyList()
 
     /**
      *  Account Queries
      */
-    val accountLiveData : LiveData<List<Account>> = transactionRepository.getLDAccounts()
+    val accountLD : LiveData<List<Account>> = tranRepo.getLDAccounts()
 
-    suspend fun deleteAccount(account : Account) {
+    suspend fun getAccountNamesAsync() : Deferred<MutableList<String>> {
 
-        transactionRepository.deleteAccount(account)
+        return tranRepo.getAccountNamesAsync()
     }
 
-    suspend fun updateAccount(account : Account) {
+    fun deleteAccount(account : Account) : Job = viewModelScope.launch {
 
-        transactionRepository.updateAccount(account)
+        tranRepo.deleteAccount(account)
+    }
+
+    fun updateAccount(account : Account) : Job = viewModelScope.launch {
+
+        tranRepo.updateAccount(account)
     }
 
     /**
      *  Transaction Queries
      */
-    suspend fun getDistinctAccountsAsync() : Deferred<List<String>> {
+     suspend fun getDistinctAccountsAsync() : Deferred<List<String>> {
 
-        return transactionRepository.getDistinctAccountsAsync()
+        return tranRepo.getDistinctAccountsAsync()
     }
 }

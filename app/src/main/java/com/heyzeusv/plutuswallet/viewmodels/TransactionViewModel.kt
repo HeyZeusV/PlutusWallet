@@ -249,7 +249,7 @@ class TransactionViewModel : ViewModel() {
 
     private suspend fun getAccountsAsync() : Deferred<MutableList<String>> {
 
-        return tranRepo.getAccountsAsync()
+        return tranRepo.getAccountNamesAsync()
     }
 
     private suspend fun getMaxIdAsync() : Deferred<Int?> {

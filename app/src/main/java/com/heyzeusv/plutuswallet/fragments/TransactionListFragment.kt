@@ -62,7 +62,7 @@ class TransactionListFragment : BaseFragment() {
     }
 
     // shared ViewModels
-    private lateinit var cflViewModel     : CFLViewModel
+    private lateinit var cflViewModel : CFLViewModel
 
     // RecyclerView Adapter/LayoutManager
     private val tranListAdapter = TranListAdapter()

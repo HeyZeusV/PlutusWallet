@@ -37,5 +37,5 @@ abstract class AccountDao : BaseDao<Account>() {
     @Query("""SELECT account
               FROM account
               ORDER BY account ASC""")
-    abstract suspend fun getAccounts() : MutableList<String>
+    abstract suspend fun getAccountNames() : MutableList<String>
 }

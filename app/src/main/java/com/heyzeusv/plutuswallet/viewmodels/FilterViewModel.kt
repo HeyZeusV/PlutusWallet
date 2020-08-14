@@ -70,7 +70,7 @@ class FilterViewModel : ViewModel() {
         viewModelScope.launch {
             
             // Account data
-            accList.value = transactionRepository.getAccountsAsync().await()
+            accList.value = transactionRepository.getAccountNamesAsync().await()
 
             // Category by type data
             val mExCatList : MutableList<String> = getCategoriesByTypeAsync("Expense").await()
