@@ -20,8 +20,6 @@ import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 
-private const val TAG = "PWMainActivity"
-
 /**
  *  Handles the loading and replacement of fragments into their containers, as well as
  *  starting Settings/About Activities.

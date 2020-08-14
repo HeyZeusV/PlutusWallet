@@ -21,8 +21,6 @@ import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.viewmodels.AccountViewModel
 import kotlinx.coroutines.launch
 
-private const val TAG = "PWAccountFragment"
-
 /**
  *  Shows all Accounts currently in database and allows users to either edit them or delete them.
  */

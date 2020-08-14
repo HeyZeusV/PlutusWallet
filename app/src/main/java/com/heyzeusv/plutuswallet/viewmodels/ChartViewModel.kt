@@ -9,8 +9,6 @@ import com.heyzeusv.plutuswallet.utilities.adapters.ChartAdapter
 import java.math.BigDecimal
 import java.util.Date
 
-private const val TAG = "PWChartViewModel"
-
 /**
  *  Data manager for GraphFragments.
  *

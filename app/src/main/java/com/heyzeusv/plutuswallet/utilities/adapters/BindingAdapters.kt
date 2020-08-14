@@ -18,8 +18,6 @@ import com.heyzeusv.plutuswallet.database.entities.ItemViewChart
 import com.heyzeusv.plutuswallet.database.entities.SettingsValues
 import com.heyzeusv.plutuswallet.utilities.CurrencyEditText
 
-private const val TAG = "PWBindingAdapters"
-
 /**
  *  DataBinding Custom Binding Adapters.
  *

@@ -29,8 +29,6 @@ import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.launch
 
-private const val TAG = "PWTransactionListFrag"
-
 /**
  *  Will show list of Transactions depending on filters applied.
  */

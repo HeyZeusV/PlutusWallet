@@ -23,8 +23,6 @@ import com.heyzeusv.plutuswallet.viewmodels.CategoryViewModel
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
 
-private const val TAG = "PWCategoriesFragment"
-
 /**
  *  Shows all Categories depending on type in database and allows users to either
  *  edit them or delete them.

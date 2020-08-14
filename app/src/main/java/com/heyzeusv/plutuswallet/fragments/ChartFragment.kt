@@ -20,8 +20,6 @@ import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.ChartViewModel
 
-private const val TAG = "PWChartFragment"
-
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.
  */

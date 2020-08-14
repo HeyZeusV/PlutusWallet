@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 
-private const val TAG     = "PWListViewModel"
 private const val EXPENSE = "Expense"
 private const val INCOME  = "Income"
 

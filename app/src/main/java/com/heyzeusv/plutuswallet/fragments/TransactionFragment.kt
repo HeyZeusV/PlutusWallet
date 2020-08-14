@@ -26,7 +26,6 @@ import java.text.DateFormat
 import java.util.Date
 import kotlin.math.hypot
 
-private const val TAG                 = "PWTransactionFragment"
 private const val ARG_TRANSACTION_ID  = "transaction_id"
 private const val ARG_FAB_X           = "fab_X"
 private const val ARG_FAB_Y           = "fab_Y"

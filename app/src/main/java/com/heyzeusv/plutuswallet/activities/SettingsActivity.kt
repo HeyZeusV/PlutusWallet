@@ -5,8 +5,6 @@ import android.view.MenuItem
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.fragments.SettingsFragment
 
-private const val TAG = "SettingsFragment"
-
 /**
  *  Activity that starts SettingsFragment
  */

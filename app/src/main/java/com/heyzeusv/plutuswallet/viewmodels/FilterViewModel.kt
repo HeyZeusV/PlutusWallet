@@ -10,7 +10,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import java.util.Date
 
-private const val TAG            = "PWFilterViewModel"
 private const val MIDNIGHT_MILLI = 86399999
 
 /**

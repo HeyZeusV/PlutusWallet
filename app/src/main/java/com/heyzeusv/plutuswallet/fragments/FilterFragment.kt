@@ -15,7 +15,6 @@ import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.FilterViewModel
 import java.util.Date
 
-private const val TAG            = "PWFilterFragment"
 private const val DIALOG_DATE    = "DialogDate"
 private const val REQUEST_DATE   = 0
 private const val MIDNIGHT_MILLI = 86399999
