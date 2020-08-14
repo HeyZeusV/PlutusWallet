@@ -257,6 +257,7 @@ class TransactionListFragment : BaseFragment() {
                 launch {
 
                     listVM.deleteTransaction(listVM.getTransactionAsync(binding.ivt!!.id).await())
+                    listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
                 }
             }
 

@@ -11,10 +11,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 
-@RunWith(androidx.test.runner.AndroidJUnit4::class)
+@RunWith(androidx.test.ext.junit.runners.AndroidJUnit4::class)
 class MigrationTests {
 
-    private val TEST_DB = "migration-test"
+    private val testDB = "migration-test"
 
     @get:Rule
     val helper : MigrationTestHelper = MigrationTestHelper(
@@ -25,9 +25,30 @@ class MigrationTests {
 
     @Test
     @Throws(IOException::class)
+    fun migrate22to23() {
+
+        val migration22to23 = object : Migration(22, 23) {
+
+            override fun migrate(database: SupportSQLiteDatabase) {
+
+                database.execSQL("""DROP TABLE ExpenseCategory""")
+                database.execSQL("""DROP TABLE IncomeCategory""")
+            }
+        }
+
+        helper.createDatabase(testDB, 22).apply {
+
+            close()
+        }
+
+        helper.runMigrationsAndValidate(testDB, 23, true, migration22to23)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun migrate21to22() {
 
-        val MIGRATION_21_22 = object : Migration(21, 22) {
+        val migration21to22 = object : Migration(21, 22) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
 
@@ -41,19 +62,19 @@ class MigrationTests {
             }
         }
 
-        var db : SupportSQLiteDatabase = helper.createDatabase(TEST_DB, 21).apply {
+        helper.createDatabase(testDB, 21).apply {
 
             close()
         }
 
-        db = helper.runMigrationsAndValidate(TEST_DB, 22, true, MIGRATION_21_22)
+        helper.runMigrationsAndValidate(testDB, 22, true, migration21to22)
     }
 
     @Test
     @Throws(IOException::class)
     fun migrate16to21() {
 
-        val MIGRATION_16_22 = object : Migration(16, 22) {
+        val migration16to21 = object : Migration(16, 22) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
 
@@ -98,19 +119,19 @@ class MigrationTests {
             }
         }
 
-        var db : SupportSQLiteDatabase = helper.createDatabase(TEST_DB, 16).apply {
+        helper.createDatabase(testDB, 16).apply {
 
             close()
         }
 
-        db = helper.runMigrationsAndValidate(TEST_DB, 22, true, MIGRATION_16_22)
+        helper.runMigrationsAndValidate(testDB, 22, true, migration16to21)
     }
 
     @Test
     @Throws(IOException::class)
     fun migrate20to21() {
 
-        val MIGRATION_20_21 = object : Migration(20, 21) {
+        val migration20to21 = object : Migration(20, 21) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
 
@@ -149,19 +170,16 @@ class MigrationTests {
             }
         }
 
-        var db : SupportSQLiteDatabase = helper.createDatabase(TEST_DB, 20).apply {
+        helper.createDatabase(testDB, 20).apply { close() }
 
-            close()
-        }
-
-        db = helper.runMigrationsAndValidate(TEST_DB, 21, true, MIGRATION_20_21)
+        helper.runMigrationsAndValidate(testDB, 21, true, migration20to21)
     }
 
     @Test
     @Throws(IOException::class)
     fun migrate19to20() {
 
-        val MIGRATION_19_20 = object : Migration(19, 20) {
+        val migration19to20 = object : Migration(19, 20) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
 
@@ -190,19 +208,15 @@ class MigrationTests {
             }
         }
 
-        var db : SupportSQLiteDatabase = helper.createDatabase(TEST_DB, 19).apply {
-
-            close()
-        }
-
-        db = helper.runMigrationsAndValidate(TEST_DB, 20, true, MIGRATION_19_20)
+        helper.createDatabase(testDB, 19).apply { close() }
+        helper.runMigrationsAndValidate(testDB, 20, true, migration19to20)
     }
 
     @Test
     @Throws(IOException::class)
     fun migrate18to19() {
 
-        val MIGRATION_18_19 = object : Migration(18, 19) {
+        val migration18to19 = object : Migration(18, 19) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
 
@@ -231,19 +245,15 @@ class MigrationTests {
             }
         }
 
-        var db : SupportSQLiteDatabase = helper.createDatabase(TEST_DB, 18).apply {
-
-            close()
-        }
-
-        db = helper.runMigrationsAndValidate(TEST_DB, 19, true, MIGRATION_18_19)
+        helper.createDatabase(testDB, 18).apply { close() }
+        helper.runMigrationsAndValidate(testDB, 19, true, migration18to19)
     }
 
     @Test
     @Throws(IOException::class)
     fun migrate17to18() {
 
-        val MIGRATION_17_18 = object : Migration(17, 18) {
+        val migration17to18 = object : Migration(17, 18) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
 
@@ -275,19 +285,15 @@ class MigrationTests {
             }
         }
 
-        var db : SupportSQLiteDatabase = helper.createDatabase(TEST_DB, 17).apply {
-
-            close()
-        }
-
-        db = helper.runMigrationsAndValidate(TEST_DB, 18, true, MIGRATION_17_18)
+        helper.createDatabase(testDB, 17).apply { close() }
+        helper.runMigrationsAndValidate(testDB, 18, true, migration17to18)
     }
 
     @Test
     @Throws(IOException::class)
     fun migrate16to17() {
 
-        val MIGRATION_16_17 = object : Migration(16, 17) {
+        val migration16to17 = object : Migration(16, 17) {
 
             override fun migrate(database: SupportSQLiteDatabase) {
 
@@ -298,11 +304,7 @@ class MigrationTests {
             }
         }
 
-        var db : SupportSQLiteDatabase = helper.createDatabase(TEST_DB, 16).apply {
-
-            close()
-        }
-
-        db = helper.runMigrationsAndValidate(TEST_DB, 17, true, MIGRATION_16_17)
+        helper.createDatabase(testDB, 16).apply { close() }
+        helper.runMigrationsAndValidate(testDB, 17, true, migration16to17)
     }
 }
