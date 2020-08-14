@@ -101,7 +101,8 @@ class ChartFragment : BaseFragment() {
         super.onResume()
 
         // checks if there has been a change in settings, updates changes, and updates list
-        if (sharedPreferences[Constants.KEY_CHART_CHANGE, false]!!) {
+        if (sharedPreferences[Constants.KEY_CHART_CHANGE, false]!!
+            && chartVM.adapter.currentList.size == 2) {
 
             setVals = Utils.prepareSettingValues(sharedPreferences)
             prepareTotalTexts()

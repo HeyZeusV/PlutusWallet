@@ -159,6 +159,7 @@ class TransactionRepository private constructor(context : Context){
     suspend fun deleteTransaction         (transaction  : Transaction)       : Job = withContext(Dispatchers.IO) {launch {transactionDao.delete(transaction )}}
     suspend fun insertTransaction         (transaction  : Transaction)       : Job = withContext(Dispatchers.IO) {launch {transactionDao.insert(transaction )}}
     suspend fun updateTransaction         (transaction  : Transaction)       : Job = withContext(Dispatchers.IO) {launch {transactionDao.update(transaction )}}
+    suspend fun upsertTransaction         (transaction  : Transaction)       : Job = withContext(Dispatchers.IO) {launch {transactionDao.upsert(transaction )}}
     suspend fun upsertTransactions        (transactions : List<Transaction>) : Job = withContext(Dispatchers.IO) {launch {transactionDao.upsert(transactions)}}
 
     companion object {

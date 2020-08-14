@@ -1,47 +1,29 @@
-package com.heyzeusv.plutuswallet.fragments
+ package com.heyzeusv.plutuswallet.fragments
 
 import android.animation.Animator
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
-import android.text.Editable
-import android.text.InputFilter
-import android.text.Spanned
-import android.text.TextWatcher
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Spinner
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.isVisible
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.database.entities.Account
-import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.Transaction
+import com.heyzeusv.plutuswallet.databinding.FragmentTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
-import com.heyzeusv.plutuswallet.utilities.CurrencyEditText
 import com.heyzeusv.plutuswallet.utilities.Utils
-import com.heyzeusv.plutuswallet.viewmodels.TransactionDetailViewModel
+import com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
-import java.util.Calendar
 import kotlin.math.hypot
 
 private const val TAG                 = "PWTransactionFragment"
@@ -59,103 +41,42 @@ private const val REQUEST_DATE        = 0
  *  @param tranID  id of current Transaction
  *  @param fromFab true if user clicked on FAB to create a new Transaction
  */
-class TransactionFragment(private val tranID : Int, private val fromFab: Boolean)
+class TransactionFragment(private val tranID : Int, private var fromFab : Boolean)
     : BaseFragment(), DatePickerFragment.Callbacks {
 
-    // views
-    private lateinit var repeatingCheckBox      : CheckBox
-    private lateinit var expenseChip            : Chip
-    private lateinit var incomeChip             : Chip
-    private lateinit var typeChipGroup          : ChipGroup
-    private lateinit var transactionLayout      : ConstraintLayout
-    private lateinit var totalField             : CurrencyEditText
-    private lateinit var titleField             : EditText
-    private lateinit var memoField              : EditText
-    private lateinit var frequencyField         : EditText
-    private lateinit var saveFab                : FloatingActionButton
-    private lateinit var dateButton             : MaterialButton
-    private lateinit var accountSpinner         : Spinner
-    private lateinit var expenseCategorySpinner : Spinner
-    private lateinit var incomeCategorySpinner  : Spinner
-    private lateinit var frequencyPeriodSpinner : Spinner
-    private lateinit var frequencyText          : TextView
-    private lateinit var symbolLeftText         : TextView
-    private lateinit var symbolRightText        : TextView
-    private lateinit var transaction            : Transaction
-
-    // array holding values for frequency spinner
-    private lateinit var frequencyArray : Array<String>
-
-    // used with accounts/categories
-    private var accountNameList          : MutableList<String> = mutableListOf()
-    private var expenseCategoryNamesList : MutableList<String> = mutableListOf()
-    private var incomeCategoryNamesList  : MutableList<String> = mutableListOf()
-
-    private var maxId : Int = 0
-
-    // used to determine whether to insert a new transaction or updated existing
-    private var newTransaction = false
-
-    // false = Expense, true = Income
-    private var typeSelected = false
-
-    // used to tell if date has been edited for re-repeating Transactions
-    private var dateChanged    = false
-    private var transLoaded    = false
-    private var oldDate : Date = Utils.startOfDay(Date())
-
-    // adapters to be used on Spinners
-    private var accountSpinnerAdapter : ArrayAdapter<String>? = null
-    private var expenseSpinnerAdapter : ArrayAdapter<String>? = null
-    private var incomeSpinnerAdapter  : ArrayAdapter<String>? = null
+    // DataBinding
+    private lateinit var binding : FragmentTransactionBinding
 
     // provides instance of ViewModel
-    private val transactionDetailViewModel : TransactionDetailViewModel by lazy {
-        ViewModelProvider(this).get(TransactionDetailViewModel::class.java)
+    private val tranVM : TransactionViewModel by lazy {
+        ViewModelProvider(this).get(TransactionViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        transaction = Transaction()
+        // retrieves Transaction if exists
+        tranVM.loadTransaction(tranID)
 
-        // retrieves arguments passed on (if any)
-        val transactionId : Int = tranID
-        transactionDetailViewModel.loadTransaction(transactionId)
+        // array used by PeriodSpinner
+        tranVM.periodArray.value = listOf(
+            getString(R.string.period_days), getString(R.string.period_weeks),
+            getString(R.string.period_months), getString(R.string.period_years))
 
-        // initialize array with Resource strings for localization
-        frequencyArray = arrayOf(getString(R.string.period_days), getString(R.string.period_weeks), getString(R.string.period_months), getString(R.string.period_years))
+        tranVM.prepareLists(getString(R.string.account_create), getString(R.string.category_create))
     }
 
     @SuppressLint("RtlHardcoded")
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
+    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
+                              savedInstanceState : Bundle?) : View? {
 
-        val view : View = inflater.inflate(R.layout.fragment_transaction, container, false)
+        // setting up DataBinding
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.tranVM         = tranVM
+        binding.setVals        = setVals
 
-        // initialize views
-        repeatingCheckBox      = view.findViewById(R.id.transaction_repeating       ) as CheckBox
-        expenseChip            = view.findViewById(R.id.transaction_expense_chip    ) as Chip
-        incomeChip             = view.findViewById(R.id.transaction_income_chip     ) as Chip
-        typeChipGroup          = view.findViewById(R.id.transaction_type_chips      ) as ChipGroup
-        transactionLayout      = view.findViewById(R.id.transaction_constraint      ) as ConstraintLayout
-        totalField             = view.findViewById(R.id.transaction_total           ) as CurrencyEditText
-        titleField             = view.findViewById(R.id.transaction_title           ) as EditText
-        memoField              = view.findViewById(R.id.transaction_memo            ) as EditText
-        frequencyField         = view.findViewById(R.id.transaction_frequency       ) as EditText
-        saveFab                = view.findViewById(R.id.transaction_save_fab        ) as FloatingActionButton
-        dateButton             = view.findViewById(R.id.transaction_date            ) as MaterialButton
-        accountSpinner         = view.findViewById(R.id.transaction_account         ) as Spinner
-        expenseCategorySpinner = view.findViewById(R.id.transaction_expense_category) as Spinner
-        incomeCategorySpinner  = view.findViewById(R.id.transaction_income_category ) as Spinner
-        frequencyPeriodSpinner = view.findViewById(R.id.transaction_frequency_period) as Spinner
-        frequencyText          = view.findViewById(R.id.frequencyTextView           ) as TextView
-        symbolLeftText         = view.findViewById(R.id.symbolLeftTextView          ) as TextView
-        symbolRightText        = view.findViewById(R.id.symbolRightTextView         ) as TextView
-
-        // set up for the frequencyPeriodSpinner
-        val frequencyPeriodSpinnerAdapter : ArrayAdapter<String> = ArrayAdapter(requireContext(), R.layout.spinner_item, frequencyArray)
-        frequencyPeriodSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-        frequencyPeriodSpinner       .adapter = frequencyPeriodSpinnerAdapter
+        val view : View = binding.root
 
         // checks to see how user arrived to TransactionFragment
         if (fromFab) {
@@ -163,162 +84,102 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
             // animation that plays on user presses FAB
             view.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
 
-                override fun onLayoutChange(v : View, left : Int, top : Int, right : Int, bottom : Int, oldLeft : Int, oldTop : Int, oldRight : Int, oldButton : Int) {
+                override fun onLayoutChange(v : View, left : Int, top : Int, right : Int, bot : Int,
+                                            oLeft : Int, oTop : Int, oRight : Int, oButton : Int) {
 
                     v.removeOnLayoutChangeListener(this)
                     val location = IntArray(2)
-                    saveFab.getLocationOnScreen(location)
-                    val fabX        : Int      = location[0] + saveFab.width/2
-                    val fabY        : Int      = location[1] - saveFab.height
-                    val finalRadius : Float    = hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
+                    binding.tranSave.getLocationOnScreen(location)
+                    val fabX        : Int   = location[0] + binding.tranSave.width/2
+                    val fabY        : Int   = location[1] - binding.tranSave.height
+                    val finalRadius : Float =
+                        hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
                     // view, initialX, initialY, startingRadius, endRadius
-                    val anim        : Animator = ViewAnimationUtils.createCircularReveal(v, fabX, fabY, 10.0F, finalRadius)
+                    val anim : Animator = ViewAnimationUtils.createCircularReveal(
+                        v, fabX, fabY, 10.0F, finalRadius)
                     // time to complete animation
-                    anim.duration              = 1000
+                    anim.duration = 1000
                     anim.start()
-                    updateUI()
                 }
             })
-        }
-
-        // if symbol on right side
-        if (!setVals.symbolSide) {
-
-            // used to change constraints
-            val totalConstraintSet = ConstraintSet()
-            totalConstraintSet.clone(transactionLayout)
-            totalConstraintSet.connect(
-                R.id.transaction_total, ConstraintSet.START,
-                R.id.totalTextView    , ConstraintSet.END  , 0)
-            totalConstraintSet.connect(
-                R.id.transaction_total  , ConstraintSet.END  ,
-                R.id.symbolRightTextView, ConstraintSet.START, 0)
-            totalConstraintSet.applyTo(transactionLayout)
-            // text starts to right
-            totalField     .gravity    = Gravity.RIGHT
-            symbolLeftText .isVisible  = false
-            symbolRightText.isVisible  = true
-        }
-
-        // user selects no decimal places
-        if (!setVals.decimalPlaces) {
-
-            // filter that prevents user from typing decimalSymbol thus only integers
-            val filter = object : InputFilter {
-
-                override fun filter(source : CharSequence?, start : Int, end : Int, dest : Spanned?, dstart : Int, dend : Int) : CharSequence? {
-
-                    for (i : Int in start until end) {
-
-                        if (source != null && source == setVals.decimalSymbol.toString()) {
-
-                            return ""
-                        }
-                    }
-                    return null
-                }
-            }
-            totalField.filters += filter
         }
 
         return view
     }
 
+    @ExperimentalStdlibApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        transactionDetailViewModel.transactionLiveData.observe(viewLifecycleOwner, Observer { transaction : Transaction? ->
-                // if not null
-                transaction?.let {
-                    this.transaction = transaction
-                    // only saves oldDate once rather than at every update
-                    if (!transLoaded) {
+        tranVM.tranLD.observe(viewLifecycleOwner, Observer { transaction : Transaction? ->
 
-                        oldDate = transaction.date
+            // assigns new Transaction if null, which will cause observer to be called again
+            // then assigns values from Transaction to LiveData used by XML
+            when (transaction) {
+                null -> tranVM.tranLD.value = Transaction()
+                else -> {
+                    tranVM.account.value = transaction.account
+                    // Date to String
+                    tranVM.date.value =
+                        DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
+                    // BigDecimal to String
+                    tranVM.total.value = when {
+                        setVals.decimalPlaces -> when (transaction.total.toString()) {
+                            "0"    -> ""
+                            "0.00" -> ""
+                            else   -> Utils.formatDecimal(transaction.total.toString(),
+                                setVals.thousandsSymbol, setVals.decimalSymbol)
+                        }
+                        else -> when (transaction.total.toString()) {
+                            "0"  -> ""
+                            else -> Utils.formatInteger(
+                                transaction.total.toString(), setVals.thousandsSymbol)
+                        }
                     }
-                    updateUI()
-                    transLoaded = true
+                    when(transaction.type) {
+                        "Expense" -> {
+                            tranVM.checkedChip.value = R.id.tran_expense_chip
+                            tranVM.expenseCat.value  = transaction.category
+                        }
+                        else -> {
+                            tranVM.checkedChip.value = R.id.tran_income_chip
+                            tranVM.incomeCat.value   = transaction.category
+                        }
+                    }
+                    tranVM.repeatCheck.value = transaction.repeating
                 }
             }
-        )
+        })
 
-        launch {
+        /**
+         *  Triggered whenever user changes selection in Account/Category Spinners.
+         *  Launches dialog whenever "Create New.." entry is selected.
+         */
+        tranVM.account.observe(viewLifecycleOwner, Observer { account : String ->
 
-            //retrieves list of Accounts from database
-            accountNameList = transactionDetailViewModel.getAccountsAsync().await()
-            // sorts list in alphabetical order
-            accountNameList.sort()
-            // "Create New Account will always be at bottom of list
-            accountNameList.add(getString(R.string.account_create))
-            // sets up the accountSpinner
-            accountSpinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, accountNameList)
-            accountSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            accountSpinner         .adapter = accountSpinnerAdapter
-            // sets selection of spinner
-            accountSpinner.setSelection(if (transaction.account == "") {
+            if (account == getString(R.string.account_create)) {
 
-                0
-            } else {
-
-                accountNameList.indexOf(transaction.account)
-            })
-
-            // retrieves list of Expense Categories from database
-            expenseCategoryNamesList = transactionDetailViewModel.getCategoriesByTypeAsync("Expense").await().toMutableList()
-            // "Create New Category" will always be at bottom of the list
-            expenseCategoryNamesList.add(getString(R.string.category_create))
-            // sets up the categorySpinner
-            expenseSpinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, expenseCategoryNamesList)
-            expenseSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            expenseCategorySpinner .adapter = expenseSpinnerAdapter
-
-            // retrieves list of Income Categories from database
-            incomeCategoryNamesList = transactionDetailViewModel.getCategoriesByTypeAsync("Income").await().toMutableList()
-            // "Create New Category" will always be at bottom of the list
-            incomeCategoryNamesList.add(getString(R.string.category_create))
-            // sets up the categorySpinner
-            incomeSpinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, incomeCategoryNamesList)
-            incomeSpinnerAdapter!!.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
-            incomeCategorySpinner .adapter = incomeSpinnerAdapter
-
-            // sets up correct Spinner to Category that is stored in Transaction (if any)
-            if (transaction.type == "Expense") {
-
-                // is -1 when user had language other than English at first run
-                if (expenseCategoryNamesList.indexOf(transaction.category) != -1) {
-
-                    expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
-                } else {
-
-                    expenseCategorySpinner.setSelection(0)
-                }
-            } else {
-
-                // is -1 when user had language other than English at first run
-                if (incomeCategoryNamesList.indexOf(transaction.category) != -1) {
-
-                    incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(transaction.category))
-                } else {
-
-                    incomeCategorySpinner.setSelection(0)
-                }
+                createDialog(binding.tranAccount, 0)
             }
+        })
 
-            // retrieves maxId or 0 if null
-            maxId = transactionDetailViewModel.getMaxIdAsync().await() ?: 0
+        tranVM.expenseCat.observe(viewLifecycleOwner, Observer { category : String ->
 
-            // only occurs if user wants to create new Transaction
-            if (fromFab) {
+            if (category == getString(R.string.category_create)) {
 
-                maxId += 1
-                transaction.id = maxId
-
-                // used for saveFab
-                newTransaction = true
+                createDialog(binding.tranExpenseCat, 1)
             }
-        }
+        })
+
+        tranVM.incomeCat.observe(viewLifecycleOwner, Observer { category : String ->
+
+            if (category == getString(R.string.category_create)) {
+
+                createDialog(binding.tranIncomeCat, 1)
+            }
+        })
     }
 
     @SuppressLint("SetTextI18n")
@@ -326,62 +187,10 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
     override fun onStart() {
         super.onStart()
 
-        // placed in onStart due to being triggered when view state is restored
-        val titleWatcher = object : TextWatcher {
+        // Launches DatePickerFragment which is essentially a Calender dialog
+        tranVM.dateOnClick.value = View.OnClickListener {
 
-            override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
-
-            override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int) {
-
-                transaction.title = sequence.toString()
-            }
-
-            override fun afterTextChanged(sequence : Editable?) {}
-        }
-
-        // placed in onStart due to being triggered when view state is restored
-        val memoWatcher = object : TextWatcher {
-
-            override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
-
-            override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int) {
-
-                transaction.memo = sequence.toString()
-            }
-
-            override fun afterTextChanged(sequence : Editable?) {}
-        }
-
-        // placed in onStart due to being triggered when view state is restored
-        val frequencyWatcher = object : TextWatcher {
-
-            override fun beforeTextChanged(sequence : CharSequence?, start : Int, count : Int, after : Int) {}
-
-            override fun onTextChanged(
-                sequence : CharSequence?, start : Int, before : Int, count : Int) {
-
-                try {
-
-                    transaction.frequency = Integer.parseInt(sequence.toString())
-                } catch (e : NumberFormatException) {
-
-                    transaction.frequency = 1
-                }
-            }
-
-            override fun afterTextChanged(sequence : Editable?) {}
-        }
-
-        titleField    .addTextChangedListener(titleWatcher)
-        memoField     .addTextChangedListener(memoWatcher)
-        frequencyField.addTextChangedListener(frequencyWatcher)
-
-        // OnClickListener not affected by state restoration, but nice to have listeners in one place
-        dateButton.setOnClickListener {
-
-            DatePickerFragment.newInstance(transaction.date).apply {
+            DatePickerFragment.newInstance(tranVM.tranLD.value!!.date).apply {
 
                 // fragment that will be target and request code
                 setTargetFragment(this@TransactionFragment, REQUEST_DATE)
@@ -390,188 +199,92 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
             }
         }
 
-        typeChipGroup.setOnCheckedChangeListener { group, checkedId ->
+        // reassigns LiveData values that couldn't be used directly from Transaction back to it
+        // and saves or updates Transaction
+        tranVM.saveOnClick.value = View.OnClickListener { view : View ->
 
-            // prevents no chips being selected
-            for (i : Int in 0 until group.childCount) {
+            tranVM.tranLD.value?.let {
 
-                val chip : View = group.getChildAt(i)
-                chip.isClickable = chip.id != group.checkedChipId
-            }
+                // assigns new id if new Transaction
+                if (fromFab) it.id = tranVM.maxId + 1
 
-            when (checkedId) {
+                // gives Transaction simple title if user doesn't enter any
+                if (it.title.trim().isEmpty()) it.title =
+                    getString(R.string.transaction_empty_title) + it.id
 
-                R.id.transaction_expense_chip -> {
-
-                    typeSelected                     = false
-                    expenseCategorySpinner.isVisible = true
-                    incomeCategorySpinner .isVisible = false
-                    transaction           .type      = "Expense"
-                    transaction           .category  = expenseCategorySpinner.selectedItem?.toString() ?: ""
+                // is empty if account hasn't been changed so defaults to first account
+                it.account = when(tranVM.account.value) {
+                    "" -> tranVM.accountList.value!![0]
+                    else -> tranVM.account.value!!
                 }
-                R.id.transaction_income_chip -> {
 
-                    typeSelected                     = true
-                    expenseCategorySpinner.isVisible = false
-                    incomeCategorySpinner .isVisible = true
-                    transaction           .type      = "Income"
-                    transaction           .category  = incomeCategorySpinner.selectedItem?.toString() ?: ""
+                // converts the totalField from String into BigDecimal
+                it.total = when {
+                    tranVM.total.value!!.isEmpty() && setVals.decimalPlaces -> BigDecimal("0.00")
+                    tranVM.total.value!!.isEmpty() -> BigDecimal("0")
+                    else -> BigDecimal(tranVM.total.value!!
+                        .replace(setVals.thousandsSymbol.toString(), "")
+                        .replace(setVals.decimalSymbol.toString(), "."))
                 }
-            }
-        }
 
-        accountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
-
-                if (position == accountNameList.size - 1) {
-
-                    createDialog(accountSpinner, 0)
-                }
-                // updates account to selected one
-                transaction.account = parent?.getItemAtPosition(position) as String
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        expenseCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
-
-                // only creates AlertDialog if user selects "Create New Category"
-                if (position == expenseCategoryNamesList.size - 1) {
-
-                    createDialog(expenseCategorySpinner, 1)
-                }
-                // updates the category to selected one
-                transaction.category = parent?.getItemAtPosition(position) as String
-            }
-
-            override fun onNothingSelected(parent : AdapterView<*>?) {}
-        }
-
-        incomeCategorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
-
-                // only creates AlertDialog if user selects "Create New Category"
-                if (position == incomeCategoryNamesList.size - 1) {
-
-                    createDialog(incomeCategorySpinner, 1)
-                }
-                // updates the category to selected one
-                transaction.category = parent?.getItemAtPosition(position) as String
-            }
-
-            override fun onNothingSelected(parent : AdapterView<*>?) {}
-        }
-
-        repeatingCheckBox.apply {
-
-            setOnCheckedChangeListener { _, isChecked ->
-                transaction.repeating = isChecked
-                if (isChecked) {
-
-                    frequencyText         .isVisible = true
-                    frequencyField        .isVisible = true
-                    frequencyPeriodSpinner.isVisible = true
-                } else {
-
-                    frequencyText         .isVisible = false
-                    frequencyField        .isVisible = false
-                    frequencyPeriodSpinner.isVisible = false
-                }
-            }
-        }
-
-        frequencyPeriodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent : AdapterView<*>?, view : View?, position : Int, id : Long) {
-
-                transaction.period = position
-            }
-
-            override fun onNothingSelected(parent : AdapterView<*>?) {}
-        }
-
-        saveFab.setOnClickListener {
-
-            // gives Transaction simple title if user doesn't enter any
-            if (transaction.title.trim().isEmpty()) {
-
-                transaction.title = getString(R.string.transaction_empty_title) + transaction.id
-            }
-
-            // frequency must always be at least 1
-            if (transaction.frequency < 1) {
-
-                transaction.frequency = 1
-            }
-
-            // sets up Total and totalField
-            if (totalField.text.toString() != "") {
-
-                // need to save to separate string or else format will be ruined after saving
-                var savedTotal : String = totalField.text.toString()
-                savedTotal = savedTotal.replace(setVals.thousandsSymbol.toString(), "" )
-                    .replace(setVals.decimalSymbol.toString(), ".")
-                // converts the totalField into BigDecimal
-                transaction.total = BigDecimal(savedTotal)
-            }
-
-
-            // deals with either creating, updating, or deleting a future Transaction
-            if (transaction.repeating) {
-
-                transaction.futureDate = createFutureDate()
-            } else {
-
-                // essentially 'deletes' it since Long.MAX_VALUE is a VERY long time in the future
-                transaction.futureDate = Date(Long.MAX_VALUE)
-            }
-
-            launch {
-
-                // AlertDialog that asks user if they want Transaction to repeat again
-                if (transaction.futureTCreated && dateChanged && transaction.repeating) {
-
-                    val posFun = DialogInterface.OnClickListener { _, _ ->
-
-                        transaction.futureTCreated = false
-                        updateTransaction(transaction)
-                        createSnackbar(it)
+                // sets type depending on Chip selected
+                // cat values are empty if they haven't been changed so defaults to first category
+                when (tranVM.checkedChip.value) {
+                    R.id.tran_expense_chip -> {
+                        it.type     = "Expense"
+                        it.category = when(tranVM.expenseCat.value) {
+                            ""   -> tranVM.expenseCatList.value!![0]
+                            else -> tranVM.expenseCat.value!!
+                        }
                     }
-                    val negFun = DialogInterface.OnClickListener { _, _ ->
-
-                        dateChanged = false
-                        updateTransaction(transaction)
-                        createSnackbar(it)
+                    else -> {
+                        it.type     = "Income"
+                        it.category = when(tranVM.incomeCat.value) {
+                            ""   -> tranVM.incomeCatList.value!![0]
+                            else -> tranVM.incomeCat.value!!
+                        }
                     }
+                }
 
-                    AlertDialogCreator.alertDialog(requireContext(),
-                        getString(R.string.alert_dialog_future_transaction),
-                        getString(R.string.alert_dialog_future_transaction_warning),
-                        getString(R.string.alert_dialog_yes), posFun,
-                        getString(R.string.alert_dialog_no), negFun)
+                it.repeating = tranVM.repeatCheck.value!!
+                if (it.repeating) it.futureDate = tranVM.createFutureDate()
 
-                // will insert Transaction if it is new, else updates existing
-                } else if (newTransaction) {
+                // frequency must always be at least 1
+                if (it.frequency < 1) it.frequency = 1
 
-                    transactionDetailViewModel.insertTransaction(transaction)
-                    newTransaction = false
-                    createSnackbar(it)
-                } else {
+                launch {
 
-                    transactionDetailViewModel.updateTransaction(transaction)
-                    createSnackbar(it)
+                    when {
+                        // AlertDialog that asks user if they want Transaction to repeat again
+                        it.futureTCreated && tranVM.dateChanged && it.repeating -> {
+                            val posFun = DialogInterface.OnClickListener { _, _ ->
+
+                                it.futureTCreated = false
+                                launch { tranVM.upsertTransaction(it) }
+                                createSnackbar(view)
+                            }
+                            val negFun = DialogInterface.OnClickListener { _, _ ->
+
+                                tranVM.dateChanged = false
+                                launch { tranVM.upsertTransaction(it) }
+                                createSnackbar(view)
+                            }
+
+                            AlertDialogCreator.alertDialog(requireContext(),
+                                getString(R.string.alert_dialog_future_transaction),
+                                getString(R.string.alert_dialog_future_transaction_warning),
+                                getString(R.string.alert_dialog_yes), posFun,
+                                getString(R.string.alert_dialog_no), negFun)
+                        }
+                        // upsert Transaction
+                        else -> {
+                            tranVM.upsertTransaction(it)
+                            createSnackbar(view)
+                            tranVM.loadTransaction(it.id)
+                        }
+                    }
                 }
             }
-            updateUI()
         }
     }
 
@@ -591,7 +304,6 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
         val input : EditText = viewInflated.findViewById(R.id.dialog_input)
 
         val title : String = when (type) {
-
             0    -> getString(R.string.account_create)
             else -> getString(R.string.category_create)
         }
@@ -608,9 +320,8 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
         val posListener = DialogInterface.OnClickListener { _, _ ->
 
             when (type) {
-
-                0    -> insertAccount(input.text.toString())
-                else -> insertCategory(input.text.toString())
+                0    -> tranVM.insertAccount(input.text.toString(), getString(R.string.account_create))
+                else -> tranVM.insertCategory(input.text.toString(), getString(R.string.category_create))
             }
         }
 
@@ -620,36 +331,6 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
             getString(R.string.alert_dialog_save), posListener,
             getString(R.string.alert_dialog_cancel), negListener,
             cancelListener)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // symbol side setting might have changed
-        symbolLeftText .text = setVals.currencySymbol
-        symbolRightText.text = setVals.currencySymbol
-    }
-
-    /**
-     *  Adds frequency * period to the date on Transaction.
-     */
-    private fun createFutureDate() : Date {
-
-        val calendar : Calendar = Calendar.getInstance()
-        // set to Transaction date rather than current time due to Users being able
-        // to select a Date in the past or future
-        calendar.time = transaction.date
-
-        // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-        when (transaction.period) {
-
-            0 -> calendar.add(Calendar.DAY_OF_MONTH, transaction.frequency)
-            1 -> calendar.add(Calendar.WEEK_OF_YEAR, transaction.frequency)
-            2 -> calendar.add(Calendar.MONTH       , transaction.frequency)
-            3 -> calendar.add(Calendar.YEAR        , transaction.frequency)
-        }
-
-        return Utils.startOfDay(calendar.time)
     }
 
     /**
@@ -666,166 +347,15 @@ class TransactionFragment(private val tranID : Int, private val fromFab: Boolean
     }
 
     /**
-     *  Inserts new Account into list or selects it in categorySpinner if it exists already.
-     *
-     *  @param name the Account to be inserted/selected.
-     */
-    @ExperimentalStdlibApi
-    private fun insertAccount(name : String) {
-
-
-        // -1 means it doesn't exist
-        if (accountNameList.indexOf(name) == -1) {
-
-            // creates new Account with name
-            launch {
-
-                val account = Account(0, name)
-                transactionDetailViewModel.insertAccount(account)
-            }
-
-            // adds new Account to list, sorts list, ensures "Create New Account" appears at bottom,
-            // updates SpinnerAdapter, and sets Spinner to new Account
-            accountNameList.remove(getString(R.string.account_create))
-            accountNameList.add(name)
-            accountNameList.sort()
-            accountNameList.add(getString(R.string.account_create))
-            accountSpinnerAdapter!!.notifyDataSetChanged()
-        }
-
-        accountSpinner.setSelection(accountNameList.indexOf(name))
-
-        transaction.account = name
-    }
-
-    /**
-     *  Inserts new Category into database or selects it in categorySpinner if it exists already.
-     *
-     *  @param name the category to be inserted/selected.
-     */
-    @ExperimentalStdlibApi
-    private fun insertCategory(name : String) {
-
-        if (!typeSelected) {
-
-            // -1 means it doesn't exist
-            if (expenseCategoryNamesList.indexOf(name) == -1) {
-
-                // creates new Category with name
-                launch {
-
-                    val category = Category(0, name, "Expense")
-                    transactionDetailViewModel.insertCategory(category)
-                }
-                // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
-                // updates SpinnerAdapter, and sets Spinner to new Category
-                expenseCategoryNamesList.remove(getString(R.string.category_create))
-                expenseCategoryNamesList.add(name)
-                expenseCategoryNamesList.sort()
-                expenseCategoryNamesList.add(getString(R.string.category_create))
-                expenseSpinnerAdapter!!.notifyDataSetChanged()
-            }
-            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(name))
-
-        } else if (typeSelected) {
-
-            // -1 means it doesn't exist
-            if (incomeCategoryNamesList.indexOf(name) == -1) {
-
-                // creates new Category with name
-                launch {
-
-                    val category = Category(0, name, "Income")
-                    transactionDetailViewModel.insertCategory(category)
-                }
-                // adds new Category to list, sorts list, ensures "Create New Category" appears at bottom,
-                // updates SpinnerAdapter, and sets Spinner to new Category
-                incomeCategoryNamesList.remove(getString(R.string.category_create))
-                incomeCategoryNamesList.add(name)
-                incomeCategoryNamesList.sort()
-                incomeCategoryNamesList.add(getString(R.string.category_create))
-                incomeSpinnerAdapter!!.notifyDataSetChanged()
-            }
-            incomeCategorySpinner.setSelection(incomeCategoryNamesList.indexOf(name))
-        }
-        transaction.category = name
-    }
-
-    /**
      *  Will update Transaction date with date selected from DatePickerFragment.
      *
      *  @param date the date selected by the user.
      */
     override fun onDateSelected(date : Date) {
 
-        transaction.date = date
-        dateButton .text = DateFormat.getDateInstance(setVals.dateFormat).format(this.transaction.date)
-        dateChanged      = transaction.date != oldDate
-    }
-
-    /**
-     *  Used in AlertDialog that appears after user switches date of Transaction
-     *  that has been repeated. It appears CoRoutines do not work directly in AlertDialog.
-     *
-     *  @param transaction The Transaction to be updated.
-     */
-    private fun updateTransaction(transaction : Transaction) {
-
-        launch {
-
-            transactionDetailViewModel.updateTransaction(transaction)
-        }
-    }
-
-    /**
-     *  Ensures that the UI is up to date with all the correct information on Transaction.
-     */
-    private fun updateUI() {
-
-        titleField    .setText(transaction.title)
-        memoField     .setText(transaction.memo)
-        frequencyField.setText(transaction.frequency.toString())
-        dateButton.text = DateFormat.getDateInstance(setVals.dateFormat).format(this.transaction.date)
-
-        // formats Total depending on decimalPlaces and if decimal separator is present
-        totalField.setText(getString(R.string.total_number, if (setVals.decimalPlaces && transaction.total.toString().contains(".")) {
-
-            Utils.formatDecimal(transaction.total.toString(), setVals.thousandsSymbol, setVals.decimalSymbol)
-        } else {
-
-            Utils.formatInteger(transaction.total.toString(), setVals.thousandsSymbol)
-        }))
-
-        accountSpinner.setSelection(accountNameList.indexOf(transaction.account))
-
-        if (transaction.type == "Income") {
-
-            typeSelected                     = true
-            expenseCategorySpinner.isVisible = false
-            incomeCategorySpinner .isVisible = true
-            expenseChip           .isChecked = false
-            incomeChip            .isChecked = true
-            incomeCategorySpinner .setSelection(incomeCategoryNamesList.indexOf(transaction.category))
-        } else {
-
-            typeSelected                     = false
-            expenseCategorySpinner.isVisible = true
-            incomeCategorySpinner .isVisible = false
-            expenseChip           .isChecked = true
-            incomeChip            .isChecked = false
-            expenseCategorySpinner.setSelection(expenseCategoryNamesList.indexOf(transaction.category))
-            // weird bug that only affected expenseChip where it was able to be
-            // deselected when Transaction is first started, this fixes it
-            expenseChip.isClickable = false
-            incomeChip .isClickable = true
-        }
-
-        repeatingCheckBox.apply {
-            isChecked = transaction.repeating
-            // skips animation
-            jumpDrawablesToCurrentState()
-        }
-        frequencyPeriodSpinner.setSelection(transaction.period)
+        tranVM.dateChanged = tranVM.tranLD.value!!.date != date
+        tranVM.tranLD.value!!.date = date
+        tranVM.date.value  = DateFormat.getDateInstance(setVals.dateFormat).format(date)
     }
 
     companion object {

@@ -138,7 +138,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             when (newValue) {
 
-                // if newValue == thousands then launch AlertDialog
                 dfPreference.value -> return@OnPreferenceChangeListener false
                 else -> {
 
@@ -212,8 +211,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
             val newDecimal   : String = tsPreference.value
             val newThousands : String = dsPreference.value
-            tsPreference.value = newDecimal
-            dsPreference.value = newThousands
+            tsPreference.value = newThousands
+            dsPreference.value = newDecimal
             sharedPreferences[Constants.KEY_CHART_CHANGE    ] = true
             sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = true
         }

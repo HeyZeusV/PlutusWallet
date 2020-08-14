@@ -80,14 +80,14 @@ class TransactionListFragment : BaseFragment() {
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
                               savedInstanceState : Bundle?) : View? {
 
-        //setting up LayoutManager
+        // setting up LayoutManager
         layoutManager = LinearLayoutManager(context)
         layoutManager.apply {
             reverseLayout = true
             stackFromEnd  = true
         }
 
-        //setting up DataBinding
+        // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_list, container, false)
         binding.lifecycleOwner     = viewLifecycleOwner
         binding.listVM             = listVM
