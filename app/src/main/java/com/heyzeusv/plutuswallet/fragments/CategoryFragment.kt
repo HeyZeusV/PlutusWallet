@@ -59,8 +59,8 @@ class CategoryFragment : BaseFragment() {
         val view : View = inflater.inflate(R.layout.fragment_category, container, false)
 
         // initialize views
-        circleIndicator     = view.findViewById(R.id.category_circle_indicator) as CircleIndicator3
-        categoriesViewPager = view.findViewById(R.id.category_view_pager      ) as ViewPager2
+        circleIndicator     = view.findViewById(R.id.category_ci) as CircleIndicator3
+        categoriesViewPager = view.findViewById(R.id.category_vp      ) as ViewPager2
 
         return view
     }
@@ -163,8 +163,8 @@ class CategoryFragment : BaseFragment() {
     private inner class CategoryListHolder(view : View) : RecyclerView.ViewHolder(view) {
 
         // views in ItemView
-        private val categoryTypeTextView : TextView     = itemView.findViewById(R.id.category_type         )
-        private val categoryRecyclerView : RecyclerView = itemView.findViewById(R.id.category_recycler_view)
+        private val categoryTypeTextView : TextView     = itemView.findViewById(R.id.ivcl_type         )
+        private val categoryRecyclerView : RecyclerView = itemView.findViewById(R.id.ivcl_rv)
 
         fun bind(categoryList : List<Category>, type : Int) {
 
@@ -219,9 +219,9 @@ class CategoryFragment : BaseFragment() {
         private inner class CategoryHolder(view : View) : RecyclerView.ViewHolder(view) {
 
             // views in ItemView
-            private val editButton       : MaterialButton = itemView.findViewById(R.id.category_edit  )
-            private val deleteButton     : MaterialButton = itemView.findViewById(R.id.category_delete)
-            private val categoryTextView : TextView       = itemView.findViewById(R.id.category_name  )
+            private val editButton       : MaterialButton = itemView.findViewById(R.id.ivcat_edit  )
+            private val deleteButton     : MaterialButton = itemView.findViewById(R.id.ivcat_delete)
+            private val categoryTextView : TextView       = itemView.findViewById(R.id.ivcat_name  )
 
             @SuppressLint("StringFormatInvalid")
             fun bind(category : Category) {

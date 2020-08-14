@@ -2,7 +2,6 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,7 +14,7 @@
         android:layout_height="match_parent">
 
         <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/category_view_pager"
+            android:id="@+id/category_vp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="36dp"
@@ -24,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <me.relex.circleindicator.CircleIndicator3
-            android:id="@+id/category_circle_indicator"
+            android:id="@+id/category_ci"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             app:ci_animator="@animator/indicator_animator"

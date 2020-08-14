@@ -386,7 +386,8 @@
                 android:focusable="true"
                 android:onClick="@{tranVM.saveOnClick}"
                 app:fabSize="auto"
-                app:srcCompat="@drawable/ic_round_save_24" />
+                app:srcCompat="@drawable/ic_round_save_24"
+                tools:ignore="ContentDescription" />
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

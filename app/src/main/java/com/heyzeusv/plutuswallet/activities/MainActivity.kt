@@ -45,7 +45,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         drawerLayout   = findViewById(R.id.activity_drawer         )
         fab            = findViewById(R.id.activity_fab            )
         backButton     = findViewById(R.id.activity_back           )
-        menuButton     = findViewById(R.id.activity_settings       )
+        menuButton     = findViewById(R.id.activity_menu       )
         navigationView = findViewById(R.id.activity_navigation_view)
 
         // disables swipe to open drawer
@@ -53,7 +53,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
         // FragmentManager adds fragments to an activity
         val currentFragment : Fragment? =
-            supportFragmentManager.findFragmentById(R.id.fragment_transaction_container)
+            supportFragmentManager.findFragmentById(R.id.fragment_tran_container)
 
         // would not be null if activity is destroyed and recreated
         // because FragmentManager saves list of fragments
@@ -64,7 +64,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             // Create a new fragment transaction, adds fragments, and then commit it
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_transaction_container, cflFragment)
+                .add(R.id.fragment_tran_container, cflFragment)
                 .commit()
         }
     }
@@ -78,7 +78,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             return@setNavigationItemSelectedListener when (it.itemId) {
 
                 // starts AccountFragment
-                R.id.accounts -> {
+                R.id.menu_accounts -> {
 
                     // changes buttons visibility
                     backButton.visibility = View.VISIBLE
@@ -89,7 +89,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
                     supportFragmentManager
                         .beginTransaction()
-                        .replace(R.id.fragment_transaction_container, accountFragment)
+                        .replace(R.id.fragment_tran_container, accountFragment)
                         .addToBackStack(null)
                         .commit()
 
@@ -97,7 +97,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                     true
                 }
                 // starts CategoryFragment
-                R.id.categories -> {
+                R.id.menu_categories -> {
 
                     // changes buttons visibility
                     backButton.visibility = View.VISIBLE
@@ -108,7 +108,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
                     supportFragmentManager
                         .beginTransaction()
-                        .replace(R.id.fragment_transaction_container, categoryFragment)
+                        .replace(R.id.fragment_tran_container, categoryFragment)
                         .addToBackStack(null)
                         .commit()
 
@@ -116,7 +116,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                     true
                 }
                 // starts SettingsActivity
-                R.id.settings -> {
+                R.id.fragment_set_container -> {
 
                     val settingsIntent = Intent(this, SettingsActivity::class.java)
                     startActivity(settingsIntent)
@@ -213,7 +213,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             .beginTransaction()
             .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
                 R.anim.enter_from_left, R.anim.exit_to_right)
-            .replace(R.id.fragment_transaction_container, transactionFragment)
+            .replace(R.id.fragment_tran_container, transactionFragment)
             .addToBackStack(null)
             .commit()
 

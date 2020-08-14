@@ -2,6 +2,7 @@
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_drawer"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -14,7 +15,7 @@
         android:background="@color/colorPrimary">
 
         <FrameLayout
-            android:id="@+id/fragment_transaction_container"
+            android:id="@+id/fragment_tran_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,10 +31,11 @@
             android:visibility="invisible"
             app:fabSize="auto"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ContentDescription" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/activity_settings"
+            android:id="@+id/activity_menu"
             style="@style/Widget.MaterialComponents.Button.Icon.Custom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

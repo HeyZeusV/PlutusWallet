@@ -151,7 +151,7 @@ class TransactionListFragment : BaseFragment() {
                 .beginTransaction()
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
                     R.anim.enter_from_left, R.anim.exit_to_right)
-                .replace(R.id.fragment_transaction_container, transFrag)
+                .replace(R.id.fragment_tran_container, transFrag)
                 .addToBackStack(null)
                 .commit()
         }
@@ -222,16 +222,16 @@ class TransactionListFragment : BaseFragment() {
             // formats the Total correctly
             when {
 
-                setVals.decimalPlaces && setVals.symbolSide -> binding.transactionTotal.text =
+                setVals.decimalPlaces && setVals.symbolSide -> binding.ivtTotal.text =
                     getString(R.string.total_number_symbol,
                         setVals.currencySymbol, setVals.decimalFormatter.format(ivt.total))
-                setVals.decimalPlaces -> binding.transactionTotal.text =
+                setVals.decimalPlaces -> binding.ivtTotal.text =
                     getString(R.string.total_number_symbol,
                         setVals.decimalFormatter.format(ivt.total), setVals.currencySymbol)
-                setVals.symbolSide -> binding.transactionTotal.text =
+                setVals.symbolSide -> binding.ivtTotal.text =
                     getString(R.string.total_number_symbol,
                         setVals.currencySymbol, setVals.integerFormatter.format(ivt.total))
-                else -> binding.transactionTotal.text =
+                else -> binding.ivtTotal.text =
                     getString(R.string.total_number_symbol,
                         setVals.integerFormatter.format(ivt.total), setVals.currencySymbol)
             }

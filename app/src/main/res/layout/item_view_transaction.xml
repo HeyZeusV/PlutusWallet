@@ -17,7 +17,7 @@
         android:background="?attr/selectableItemBackground">
 
         <TextView
-            android:id="@+id/transaction_title"
+            android:id="@+id/ivt_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -27,13 +27,13 @@
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:text="@{ivt.title}"
-            app:layout_constraintEnd_toStartOf="@+id/transaction_total"
+            app:layout_constraintEnd_toStartOf="@+id/ivt_total"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Transaction Title" />
 
         <TextView
-            android:id="@+id/transaction_account"
+            android:id="@+id/ivt_account"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -42,11 +42,11 @@
             android:text="@{ivt.account}"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/transaction_title"
+            app:layout_constraintTop_toBottomOf="@+id/ivt_title"
             tools:text="None" />
 
         <TextView
-            android:id="@+id/transaction_date"
+            android:id="@+id/ivt_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -55,11 +55,11 @@
             android:text="@{DateFormat.getDateInstance(0).format(ivt.date)}"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/transaction_account"
+            app:layout_constraintTop_toBottomOf="@+id/ivt_account"
             tools:text="Transaction Date" />
 
         <TextView
-            android:id="@+id/transaction_total"
+            android:id="@+id/ivt_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -68,12 +68,12 @@
             android:textColor='@{ivt.type.equals("Expense") ? @android:color/holo_red_dark : @android:color/holo_green_dark}'
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/transaction_title"
+            app:layout_constraintStart_toEndOf="@+id/ivt_title"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Transaction Total" />
 
         <TextView
-            android:id="@+id/transaction_category"
+            android:id="@+id/ivt_category"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -83,7 +83,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/transaction_total"
+            app:layout_constraintTop_toBottomOf="@+id/ivt_total"
             tools:ignore="RtlHardcoded"
             tools:text="Category" />
 

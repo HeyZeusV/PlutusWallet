@@ -100,7 +100,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
                     <CheckBox
-                        android:id="@+id/filter_category_check"
+                        android:id="@+id/filter_cat_check"
                         android:layout_width="42dp"
                         android:layout_height="42dp"
                         android:layout_marginTop="23dp"
@@ -139,7 +139,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
 
                     <Spinner
-                        android:id="@+id/filter_expense_category"
+                        android:id="@+id/filter_expense_cat"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
@@ -155,7 +155,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
                     <Spinner
-                        android:id="@+id/filter_income_category"
+                        android:id="@+id/filter_income_cat"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"

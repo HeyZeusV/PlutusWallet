@@ -19,7 +19,7 @@ class SettingsActivity : BaseActivity() {
             .beginTransaction()
             // container view ID (where fragment's view should appear)
             // fragment to be added
-            .replace(R.id.settings, SettingsFragment())
+            .replace(R.id.fragment_set_container, SettingsFragment())
             .commit()
 
         // displays back button

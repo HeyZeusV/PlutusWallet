@@ -90,7 +90,7 @@ class ChartFragment : BaseFragment() {
                 chartVM.prepareIvgAdapter(tInfo.category, tInfo.categoryName, tInfo.type)
 
                 // sets up Dots Indicator with ViewPager2
-                binding.chartCircleIndicator.setViewPager(binding.chartViewPager)
+                binding.chartCi.setViewPager(binding.chartVp)
             })
         })
     }
