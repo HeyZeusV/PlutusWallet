@@ -32,7 +32,7 @@ class AccountFragment : BaseFragment() {
     // DataBinding
     private lateinit var binding : FragmentAccountBinding
 
-    // RecyclerView Adapter/LayoutManager
+    // RecyclerView Adapter
     private val accountAdapter = AccountAdapter()
 
     // provides instance of ViewModel
@@ -61,7 +61,7 @@ class AccountFragment : BaseFragment() {
         // execute code whenever LiveData gets updated
         accountVM.accountLD.observe(viewLifecycleOwner, Observer {
 
-            accountVM.totalAccounts = it.size
+            // coroutine ensures that lists used by ViewHolders are ready before updating adapter
             launch {
 
                 accountVM.accountNames = accountVM.getAccountNamesAsync().await()
@@ -104,7 +104,8 @@ class AccountFragment : BaseFragment() {
         fun bind(account : Account) {
 
             // enables delete button if Account is not in use and if there is more than 1 Account
-            if (!accountVM.accountsUsed.contains(account.account) && accountVM.totalAccounts > 1) {
+            if (!accountVM.accountsUsed.contains(account.account)
+                && accountVM.accountLD.value!!.size > 1) {
 
                 binding.ivaDelete.isEnabled = true
 

@@ -16,12 +16,11 @@ class AccountViewModel : ViewModel() {
      */
     private val tranRepo : TransactionRepository = TransactionRepository.get()
 
-    // used to make sure there is always 1 Account left
-    var totalAccounts = 0
-
-    // lists used to tell which Accounts can be deleted and if name is taken already
-    var accountsUsed : List<String> = emptyList()
+    // list of all Account names used to prevent 2 Accounts from having same name
     var accountNames : List<String> = emptyList()
+
+    // list of Accounts unable to be deleted due to being used
+    var accountsUsed : List<String> = emptyList()
 
     /**
      *  Account Queries

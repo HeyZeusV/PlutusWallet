@@ -20,11 +20,20 @@ import java.util.Date
 abstract class TransactionDao : BaseDao<Transaction>() {
 
     /**
-     *  @return list of unique Accounts
+     *  @return list of unique Accounts.
      */
     @Query("""SELECT DISTINCT account
               FROM `transaction`""")
     abstract suspend fun getDistinctAccounts() : List<String>
+
+    /**
+     *  @param  type either "Expense" or "Income."
+     *  @return list of Categories of type entered.
+     */
+    @Query("""SELECT DISTINCT category
+              FROM `transaction`
+              WHERE type=(:type)""")
+    abstract suspend fun getDistinctCatsByType(type : String) : List<String>
 
     /**
      *  @param  currentDate the Date at which this query is ran at.
@@ -59,14 +68,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction`
               WHERE id=(:id)""")
     abstract fun getLDTransaction(id : Int) : LiveData<Transaction?>
-
-    /**
-     *  @return LiveData object with list of unique Categories by type.
-     */
-    @Query("""SELECT DISTINCT category
-              FROM `transaction`
-              WHERE type=(:type)""")
-    abstract fun getLDUniqueCategories(type : String) : LiveData<List<String>>
 
     /**
      *  Following Queries will using following abbreviations and Object types.

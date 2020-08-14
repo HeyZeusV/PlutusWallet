@@ -156,8 +156,8 @@ class TransactionRepository private constructor(context : Context){
     fun getLdCtD (                   start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtD (         start, end)
     fun getLdCtAD(account : String?, start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtAD(account, start, end)
     fun getLDTransaction     (id   : Int   ) : LiveData<Transaction?> = transactionDao.getLDTransaction     (id  )
-    fun getLDUniqueCategories(type : String) : LiveData<List<String>> = transactionDao.getLDUniqueCategories(type)
     suspend fun getDistinctAccountsAsync  (                  ) : Deferred<List<String>>      = withContext(Dispatchers.IO) {async {transactionDao.getDistinctAccounts()}}
+    suspend fun getDistinctCatsByTypeAsync(type : String     ) : Deferred<List<String>>      = withContext(Dispatchers.IO) {async {transactionDao.getDistinctCatsByType(type)}}
     suspend fun getFutureTransactionsAsync(currentDate : Date) : Deferred<List<Transaction>> = withContext(Dispatchers.IO) {async {transactionDao.getFutureTransactions(currentDate)}}
     suspend fun getMaxIdAsync             (                  ) : Deferred<Int?>              = withContext(Dispatchers.IO) {async {transactionDao.getMaxId()}}
     suspend fun getTransactionAsync       (id : Int          ) : Deferred<Transaction>       = withContext(Dispatchers.IO) {async {transactionDao.getTransaction(id)}}
