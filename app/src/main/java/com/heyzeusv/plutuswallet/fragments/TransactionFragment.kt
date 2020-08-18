@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Spinner
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
@@ -112,7 +111,7 @@ class TransactionFragment(private val tranID : Int, private var fromFab : Boolea
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        tranVM.tranLD.observe(viewLifecycleOwner, Observer { transaction : Transaction? ->
+        tranVM.tranLD.observe(viewLifecycleOwner, { transaction : Transaction? ->
 
             // assigns new Transaction if null, which will cause observer to be called again
             // then assigns values from Transaction to LiveData used by XML
@@ -156,7 +155,7 @@ class TransactionFragment(private val tranID : Int, private var fromFab : Boolea
          *  Triggered whenever user changes selection in Account/Category Spinners.
          *  Launches dialog whenever "Create New.." entry is selected.
          */
-        tranVM.account.observe(viewLifecycleOwner, Observer { account : String ->
+        tranVM.account.observe(viewLifecycleOwner, { account : String ->
 
             if (account == getString(R.string.account_create)) {
 
@@ -164,7 +163,7 @@ class TransactionFragment(private val tranID : Int, private var fromFab : Boolea
             }
         })
 
-        tranVM.expenseCat.observe(viewLifecycleOwner, Observer { category : String ->
+        tranVM.expenseCat.observe(viewLifecycleOwner, { category : String ->
 
             if (category == getString(R.string.category_create)) {
 
@@ -172,7 +171,7 @@ class TransactionFragment(private val tranID : Int, private var fromFab : Boolea
             }
         })
 
-        tranVM.incomeCat.observe(viewLifecycleOwner, Observer { category : String ->
+        tranVM.incomeCat.observe(viewLifecycleOwner, { category : String ->
 
             if (category == getString(R.string.category_create)) {
 

@@ -72,7 +72,7 @@ class ChartFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        cflViewModel.tInfoLiveData.observe(viewLifecycleOwner, Observer { tInfo : TransactionInfo ->
+        cflViewModel.tInfoLiveData.observe(viewLifecycleOwner, { tInfo : TransactionInfo ->
 
             // LiveData of list of CategoryTotals
             val ctLiveData : LiveData<List<CategoryTotals>> =
@@ -81,7 +81,7 @@ class ChartFragment : BaseFragment() {
 
             // register an observer on LiveData instance and tie life to this component
             // execute code whenever LiveData gets update
-            ctLiveData.observe( viewLifecycleOwner, Observer { ctList : List<CategoryTotals> ->
+            ctLiveData.observe( viewLifecycleOwner, { ctList : List<CategoryTotals> ->
 
                 // prepares list of ItemViewCharts that will be used to create PieCharts
                 chartVM.prepareLists(ctList)

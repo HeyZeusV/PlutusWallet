@@ -90,10 +90,10 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     // Room Compiler
     kapt "androidx.room:room-compiler:$room_version"
-    kapt "com.android.databinding:compiler:3.1.4"
+    kapt 'androidx.databinding:databinding-compiler:4.2.0-alpha07'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'android.arch.persistence.room:testing:1.1.1'
+    androidTestImplementation 'androidx.room:room-testing:2.2.5'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }

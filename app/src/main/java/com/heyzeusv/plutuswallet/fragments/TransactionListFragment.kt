@@ -111,14 +111,14 @@ class TransactionListFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        cflViewModel.tInfoLiveData.observe(viewLifecycleOwner, Observer { tInfo : TransactionInfo ->
+        cflViewModel.tInfoLiveData.observe(viewLifecycleOwner, { tInfo : TransactionInfo ->
 
             listVM.ivtList = listVM.filteredTransactionList(tInfo.account, tInfo.category, tInfo.date,
                 tInfo.type, tInfo.accountName, tInfo.categoryName, tInfo.start, tInfo.end)
 
             // register an observer on LiveData instance and tie life to this component
             // execute code whenever LiveData gets update
-            listVM.ivtList.observe(viewLifecycleOwner, Observer { transactions : List<ItemViewTransaction> ->
+            listVM.ivtList.observe(viewLifecycleOwner, { transactions : List<ItemViewTransaction> ->
 
                 // scrolls to saved position
                 binding.tranlistRv.scrollToPosition(listVM.rvPosition)

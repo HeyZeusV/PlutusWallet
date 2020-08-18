@@ -20,8 +20,8 @@ class CFLFragment : BaseFragment() {
 
         // starts fragment transaction, replaces fragments, and then commits it
         childFragmentManager.beginTransaction()
-            .replace(R.id.fragment_filter_container          , filterFragment         )
-            .replace(R.id.fragment_chart_container           , chartFragment          )
+            .replace(R.id.fragment_filter_container  , filterFragment         )
+            .replace(R.id.fragment_chart_container   , chartFragment          )
             .replace(R.id.fragment_tranlist_container, transactionListFragment)
             .addToBackStack(null)
             .commit()

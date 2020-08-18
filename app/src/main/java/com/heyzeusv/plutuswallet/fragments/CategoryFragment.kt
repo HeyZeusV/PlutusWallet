@@ -64,12 +64,12 @@ class CategoryFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        catVM.expenseCatsLD.observe(viewLifecycleOwner, Observer {
+        catVM.expenseCatsLD.observe(viewLifecycleOwner, {
 
             updateAdapters(it, expenseAdapter, "Expense", 0)
         })
 
-        catVM.incomeCatsLD.observe(viewLifecycleOwner, Observer {
+        catVM.incomeCatsLD.observe(viewLifecycleOwner, {
 
             updateAdapters(it, incomeAdapter, "Income", 1)
         })

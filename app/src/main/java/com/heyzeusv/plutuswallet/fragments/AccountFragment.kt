@@ -59,7 +59,7 @@ class AccountFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        accountVM.accountLD.observe(viewLifecycleOwner, Observer {
+        accountVM.accountLD.observe(viewLifecycleOwner, {
 
             // coroutine ensures that lists used by ViewHolders are ready before updating adapter
             launch {
