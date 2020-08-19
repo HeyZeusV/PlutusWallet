@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet.activities
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -11,6 +12,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.fragments.AboutFragment
 import com.heyzeusv.plutuswallet.fragments.AccountFragment
 import com.heyzeusv.plutuswallet.fragments.CategoryFragment
 import com.heyzeusv.plutuswallet.fragments.CFLFragment
@@ -124,14 +126,22 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
-                // starts AboutActivity
+                // starts AboutFragment
                 // R.id.about
                 else -> {
 
-                    val aboutIntent = Intent(this, AboutActivity::class.java)
-                    startActivity(aboutIntent)
+                    val aboutFragment = AboutFragment()
+
+                    supportFragmentManager
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right,
+                            R.anim.enter_from_right, R.anim.exit_to_left)
+                        .replace(R.id.fragment_tran_container, aboutFragment)
+                        .addToBackStack(null)
+                        .commit()
 
                     drawerLayout.closeDrawer(GravityCompat.START)
+                    menuButton.visibility = View.INVISIBLE
                     true
                 }
             }
@@ -234,5 +244,19 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         fab.getLocationOnScreen(fabLocationArray)
         fabX = fabLocationArray[0] + fab.width / 2
         fabY = fabLocationArray[1] - fab.height
+    }
+
+    override fun onOptionsItemSelected(item : MenuItem?) : Boolean {
+
+        when (item!!.itemId) {
+
+            // returns user to previous activity if they select back arrow
+            android.R.id.home -> {
+                menuButton.visibility = View.VISIBLE
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

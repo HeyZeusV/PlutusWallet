@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.heyzeusv.plutuswallet.R
 
 /**
@@ -30,6 +31,13 @@ class CFLFragment : BaseFragment() {
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View? {
 
         return inflater.inflate(R.layout.fragment_cfl, container, false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // will hide ActionBar if it is displayed
+        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
     companion object {

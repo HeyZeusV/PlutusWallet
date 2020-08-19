@@ -3,7 +3,10 @@ package com.heyzeusv.plutuswallet.utilities.adapters
 import android.graphics.Color
 import android.text.InputFilter
 import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.view.View
+import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
@@ -17,6 +20,9 @@ import com.google.android.material.chip.ChipGroup
 import com.heyzeusv.plutuswallet.database.entities.ItemViewChart
 import com.heyzeusv.plutuswallet.database.entities.SettingsValues
 import com.heyzeusv.plutuswallet.utilities.CurrencyEditText
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
 
 /**
  *  DataBinding Custom Binding Adapters.
@@ -188,5 +194,52 @@ fun CurrencyEditText.setFilter(setVals : SettingsValues) {
                 return null
             }
         }
+    }
+}
+
+/**
+ *  Changes given text into a clickable link.
+ *
+ *  @param link string to be changed to Link.
+ */
+@BindingAdapter("link")
+fun TextView.setLink(link : String) {
+
+    // changes HTML string into link
+    text = HtmlCompat.fromHtml(link, HtmlCompat.FROM_HTML_MODE_LEGACY)
+    // makes link clickable
+    movementMethod = LinkMovementMethod.getInstance()
+}
+
+/**
+ *  Loads in the file given and displays its text in TextView.
+ *
+ *  @param file to be read from.
+ */
+@BindingAdapter("file")
+fun TextView.loadFile(file : String) {
+
+    var fileText = ""
+    var reader : BufferedReader? = null
+
+    try {
+
+        // open file and read through it
+        reader = BufferedReader(InputStreamReader(context.assets.open(file)))
+        fileText = reader.readLines().joinToString("\n")
+    } catch (e : IOException) {
+
+        e.printStackTrace()
+    } finally {
+        try {
+
+            // close reader
+            reader?.close()
+        } catch (e : IOException) {
+
+            e.printStackTrace()
+        }
+        // sets text to content from file
+        text = fileText
     }
 }
