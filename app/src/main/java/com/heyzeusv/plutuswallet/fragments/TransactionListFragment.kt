@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,7 +61,7 @@ class TransactionListFragment : BaseFragment() {
     }
 
     // shared ViewModels
-    private lateinit var cflViewModel : CFLViewModel
+    private lateinit var cflVM : CFLViewModel
 
     // RecyclerView Adapter/LayoutManager
     private val tranListAdapter = TranListAdapter()
@@ -97,7 +96,7 @@ class TransactionListFragment : BaseFragment() {
         val view : View = binding.root
 
         // this ensures that this is same CFLViewModel as Filter/ChartFragment use
-        cflViewModel = requireActivity().let {
+        cflVM = requireActivity().let {
 
             ViewModelProvider(it).get(CFLViewModel::class.java)
         }
@@ -111,7 +110,7 @@ class TransactionListFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        cflViewModel.tInfoLiveData.observe(viewLifecycleOwner, { tInfo : TransactionInfo ->
+        cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo : TransactionInfo ->
 
             listVM.ivtList = listVM.filteredTransactionList(tInfo.account, tInfo.category, tInfo.date,
                 tInfo.type, tInfo.accountName, tInfo.categoryName, tInfo.start, tInfo.end)
@@ -128,10 +127,10 @@ class TransactionListFragment : BaseFragment() {
                 // and waits to be fully updated before running Runnable
                 tranListAdapter.submitList(transactions) {
 
-                    if (cflViewModel.filterChanged) {
+                    if (cflVM.filterChanged) {
 
                         binding.tranlistRv.smoothScrollToPosition(transactions.size)
-                        cflViewModel.filterChanged = false
+                        cflVM.filterChanged = false
                     }
                 }
             })
@@ -143,7 +142,7 @@ class TransactionListFragment : BaseFragment() {
         listVM.fabOnClick.value = View.OnClickListener {
 
             // scroll back to top of list
-            cflViewModel.filterChanged = true
+            cflVM.filterChanged = true
 
             val transFrag = TransactionFragment(0, true)
 

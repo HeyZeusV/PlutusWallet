@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -98,6 +97,8 @@ class CategoryFragment : BaseFragment() {
             adapter.submitList(catList)
         }
 
+        // sets up DotsIndicator with ViewPager2
+        binding.categoryCi.setViewPager(binding.categoryVp)
         // ensures ViewPager is showing correct list
         binding.categoryVp.setCurrentItem(catVM.listShown, false)
     }

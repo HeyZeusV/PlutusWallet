@@ -32,7 +32,7 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
     private var endButton   = false
 
     // shared ViewModel
-    private lateinit var cflViewModel : CFLViewModel
+    private lateinit var cflVM : CFLViewModel
 
     // provides instance of FilterViewModel
     private val filterVM : FilterViewModel by lazy {
@@ -64,7 +64,7 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
         prepareListeners()
 
         // this ensures that this is same CFLViewModel as Chart/ListFragment use
-        cflViewModel = requireActivity().let {
+        cflVM = requireActivity().let {
 
             ViewModelProvider(it).get(CFLViewModel::class.java)
         }
@@ -155,7 +155,7 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
                 dateBar.show()
             } else {
 
-                var category : String
+                var cat  : String
                 val type : String
                 // sets type and category applied
                 when (filterVM.typeSelected.value) {
@@ -163,34 +163,34 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
                     getString(R.string.type_expense) -> {
 
                         type = "Expense"
-                        category = filterVM.exCategory.value!!
+                        cat  = filterVM.exCategory.value!!
                     }
                     else -> {
 
                         type = "Income"
-                        category = filterVM.inCategory.value!!
+                        cat  = filterVM.inCategory.value!!
                     }
                 }
                 // translates "All"
-                if (category == getString(R.string.category_all)) {
+                if (cat == getString(R.string.category_all)) {
 
-                    category = "All"
+                    cat = "All"
                 }
 
                 // updating MutableLiveData value in ViewModel
                 val tInfo =
                     TransactionInfo(
                         filterVM.accCheck.value, filterVM.catCheck.value, filterVM.dateCheck.value,
-                        type, filterVM.account.value, category,
+                        type, filterVM.account.value, cat,
                         filterVM.startDate.value, filterVM.endDate.value)
                 // updates MutableLiveData, causing Chart/ListFragment refresh
-                cflViewModel.updateTInfo(tInfo)
+                cflVM.updateTInfo(tInfo)
                 // if all filters are unchecked
                 if (!filterVM.accCheck.value!! && !filterVM.catCheck.value!! && !filterVM.dateCheck.value!!) {
 
                     filterVM.resetFilter()
                 }
-                cflViewModel.filterChanged = true
+                cflVM.filterChanged = true
             }
         }
     }

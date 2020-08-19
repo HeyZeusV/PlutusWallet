@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
@@ -29,7 +28,7 @@ class ChartFragment : BaseFragment() {
     private lateinit var binding : FragmentChartBinding
 
     // shared ViewModel
-    private lateinit var cflViewModel : CFLViewModel
+    private lateinit var cflVM : CFLViewModel
 
     // provides instance of ChartViewModel
     private val chartVM : ChartViewModel by lazy {
@@ -59,7 +58,7 @@ class ChartFragment : BaseFragment() {
                                   ContextCompat.getColor(requireContext(), R.color.colorIncome4))
 
         // this ensures that this is same CFLViewModel as Filter/ListFragment use
-        cflViewModel = requireActivity().let {
+        cflVM = requireActivity().let {
 
             ViewModelProvider(it).get(CFLViewModel::class.java)
         }
@@ -72,7 +71,7 @@ class ChartFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        cflViewModel.tInfoLiveData.observe(viewLifecycleOwner, { tInfo : TransactionInfo ->
+        cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo : TransactionInfo ->
 
             // LiveData of list of CategoryTotals
             val ctLiveData : LiveData<List<CategoryTotals>> =
