@@ -24,7 +24,10 @@ class ChartViewModel : ViewModel() {
     private val emptyIvc = ItemViewChart(
         emptyList(), "", "", emptyList(), null, null, null)
     private var ivcList : MutableList<ItemViewChart> = mutableListOf(emptyIvc, emptyIvc)
-    var adapter = ChartAdapter()
+    var adapter = ChartAdapter().apply {
+
+        submitList(ivcList)
+    }
 
     // list of CategoryTotals after filter is applied
     private var exCatTotals : List<CategoryTotals> = emptyList()

@@ -25,7 +25,6 @@ class AboutFragment : Fragment() {
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_about, container, false)
 
-
         // shows toolbar and back icon
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.about)
