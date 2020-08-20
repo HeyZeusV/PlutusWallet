@@ -8,8 +8,10 @@ import java.math.BigDecimal
  *
  *  @param category the name of category.
  *  @param total    the total of all the Transactions of same Category.
+ *  @param type     either "Expense" or "Income".
  */
-data class CategoryTotals(
+class CategoryTotals(
     var category : String,
-    var total    : BigDecimal
-)
+    var total    : BigDecimal,
+    var type     : String)
+

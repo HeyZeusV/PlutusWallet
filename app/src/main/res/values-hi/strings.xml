@@ -32,7 +32,7 @@
     <string name="filter_reset">रीसेट</string>
     <string name="filter_start">शुरू</string>
     <string name="filter_type">प्रकार</string>
-    <string name="graph_total">संपूर्ण: %1$s%2$s</string>
+    <string name="chart_total">संपूर्ण: %1$s%2$s</string>
     <string name="period_days">दिन</string>
     <string name="period_months">महीने</string>
     <string name="period_weeks">सप्ताह</string>
@@ -68,7 +68,6 @@
     <string name="transaction_type">प्रकार:</string>
     <string name="type_expense">व्यय</string>
     <string name="type_income">आय</string>
-    <string name="remove_ads">विज्ञापन निकालें</string>
     <string name="categories">श्रेणियाँ</string>
     <string name="alert_dialog_edit_account">खाता संपादित करें</string>
     <string name="alert_dialog_input_hint">नाम डालें</string>
@@ -81,4 +80,5 @@
     <string name="snackbar_exists">%1$s पहले से मौजूद है!</string>
     <string name="alert_dialog_duplicate_symbols">डुप्लिकेट प्रतीक</string>
     <string name="alert_dialog_duplicate_symbols_warning">हजारों और दशमलव विभाजक समान नहीं हो सकते। क्या आप उन्हें बदलना चाहेंगे?</string>
+    <string name="accounts">हिसाब किताब</string>
 </resources>

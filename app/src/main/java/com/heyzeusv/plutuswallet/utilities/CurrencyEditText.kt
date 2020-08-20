@@ -5,12 +5,16 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
-import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.widget.EditText
 import androidx.appcompat.R
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
+import java.math.BigDecimal
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 /**
  *  Custom EditText to handle currency.
@@ -31,8 +35,19 @@ class CurrencyEditText @JvmOverloads constructor(
     private val sharedPreferences  : SharedPreferences = PreferenceHelper.sharedPrefs(context)
 
     // keys from separator symbols
-    private var decimalSymbolKey   : String = sharedPreferences[KEY_DECIMAL_SYMBOL  , "period"]!!
-    private var thousandsSymbolKey : String = sharedPreferences[KEY_THOUSANDS_SYMBOL, "comma" ]!!
+    private val decimalSymbolKey   : String  = sharedPreferences[Constants.KEY_DECIMAL_SYMBOL  , "period"]!!
+    private val thousandsSymbolKey : String  = sharedPreferences[Constants.KEY_THOUSANDS_SYMBOL, "comma" ]!!
+    private val decimalPlaces      : Boolean = sharedPreferences[Constants.KEY_DECIMAL_PLACES, true]!!
+
+    // formatters
+    private var decimal0Formatter : DecimalFormat = DecimalFormat()
+    private var decimal1Formatter : DecimalFormat = DecimalFormat()
+    private var decimal2Formatter : DecimalFormat = DecimalFormat()
+    private var integerFormatter  : DecimalFormat = DecimalFormat()
+
+    // symbols used
+    private var decimalSymbol   : Char = '.'
+    private var thousandsSymbol : Char = ','
 
     init {
 
@@ -40,14 +55,19 @@ class CurrencyEditText @JvmOverloads constructor(
         decimalSymbol   = Utils.getSeparatorSymbol(decimalSymbolKey)
         thousandsSymbol = Utils.getSeparatorSymbol(thousandsSymbolKey)
 
-        acceptedDecimal = accepted + decimalSymbol
+        // set up decimal/thousands symbol
+        val customSymbols = DecimalFormatSymbols(Locale.US)
+        customSymbols.decimalSeparator  = decimalSymbol
+        customSymbols.groupingSeparator = thousandsSymbol
+
+        // formatters using custom symbols
+        decimal0Formatter = DecimalFormat("#,##0.", customSymbols)
+        decimal1Formatter = DecimalFormat("#,##0.#", customSymbols)
+        decimal2Formatter = DecimalFormat("#,##0.##", customSymbols)
+        integerFormatter  = DecimalFormat("#,###"   , customSymbols)
 
         // forces numpad
         this.setRawInputType(Configuration.KEYBOARD_QWERTY)
-        // only allows char in accepted to be pressed
-        this.keyListener = DigitsKeyListener.getInstance(acceptedDecimal)
-        // numeric text class with decimal flag
-        this.hint      = context.getString(com.heyzeusv.plutuswallet.R.string.transaction_total_hint)
     }
 
     /**
@@ -72,85 +92,124 @@ class CurrencyEditText @JvmOverloads constructor(
      *  Also handles formatting the string and the cursor position.
      *  @constructor sets EditText to be watched.
      */
-    private class CurrencyTextWatcher
+    private inner class CurrencyTextWatcher
     internal constructor(private val editText : EditText) : TextWatcher {
 
-        private var previousCleanString : String = ""
+        private var beforeText : String = ""
 
-        override fun beforeTextChanged(s : CharSequence?, start : Int, count : Int, after : Int) {}
+        override fun beforeTextChanged(s : CharSequence?, start : Int, count : Int, after : Int) {
 
-        override fun onTextChanged(s : CharSequence?, start : Int, before : Int, count : Int) {}
+            beforeText = s.toString()
+        }
 
-        /**
-         *  Notifies when there has ben a changed in editable.
-         *
-         *  Will react according to what the text is changed to.
-         *
-         *  @param editable the text to be changed.
-         */
-        override fun afterTextChanged(editable : Editable?) {
+        override fun onTextChanged(s : CharSequence?, start : Int, before : Int, count : Int) {
 
-            val string : String = editable.toString()
+            if (s == null) return
 
-            // cleanString: doesn't contain thousands separator
-            val cleanString : String = string.replace(("[$thousandsSymbol]").toRegex(), "")
+            val initCursorPos : Int = start + before
 
-            // prevents afterTextChanged recursive call
-            if (cleanString == previousCleanString || cleanString.isEmpty()) {
-
-                return
-            }
-
-            previousCleanString = cleanString
-            // formats string depending if there is decimal places
-            val formattedString : String =
-                if (cleanString.contains(decimalSymbol)) {
-
-                    // this will prevent users from entering 2 decimal symbols causing a crash
-                    editText.keyListener = DigitsKeyListener.getInstance(accepted)
-                    Utils.formatDecimal(cleanString, thousandsSymbol, decimalSymbol)
-                } else {
-
-                    // allows user to enter any integer or decimalSymbol
-                    editText.keyListener = DigitsKeyListener.getInstance(acceptedDecimal)
-                    Utils.formatInteger(cleanString, thousandsSymbol)
-                }
+            val numCharsRightCursor : Int =
+                getNumberOfChars(beforeText.substring(initCursorPos, beforeText.length))
+            val newAmount : String = formatAmount(s.toString())
             editText.removeTextChangedListener(this)
-            editText.setText(formattedString)
-            // sets location of cursor
-            handleSelection()
+            editText.setText(newAmount)
+            editText.setSelection(getNewCursorPos(numCharsRightCursor, newAmount))
             editText.addTextChangedListener(this)
         }
 
+        override fun afterTextChanged(editable : Editable?) {}
 
         /**
-         *  Handles where cursor goes after input.
+         *  Takes in the text entered and leaves only digits and "." in order to be correctly
+         *  formatted.
          *
-         *  As long as length is less than MAX_LENGTH, cursor will move to the end of the string.
+         *  @param  amount text entered.
+         *  @return formatted string with correct thousands/decimal symbol according to settings.
          */
-        private fun handleSelection() {
+        private fun formatAmount(amount : String) : String {
 
-            if (editText.text.length <= MAX_LENGTH) {
-
-                editText.setSelection(editText.text.length)
-            } else {
-
-                editText.setSelection(MAX_LENGTH)
+            val result : String = removeThousandsSymbols(amount)
+            var empty = false
+            var amt = BigDecimal("0")
+            when (TextUtils.isEmpty(result)) {
+                true -> empty = true
+                else -> amt = BigDecimal(result)
+            }
+            // uses decimal formatter depending on number of decimal places entered
+            return when {
+                empty -> ""
+                decimalPlaces && result.contains(Regex("(\\.)\\d{2}")) ->
+                    decimal2Formatter.format(amt)
+                decimalPlaces && result.contains(Regex("(\\.)\\d")) ->
+                    decimal1Formatter.format(amt)
+                decimalPlaces && result.contains(".") ->
+                    decimal0Formatter.format(amt)
+                else -> integerFormatter.format(amt)
             }
         }
-    }
 
-    companion object {
+        /**
+         *  Removes thousands symbols if any and changes decimal symbol to be "." if different.
+         *
+         *  @param  numString string with possible thousands/different decimal symbols.
+         *  @return string without thousands symbol and "." as decimal symbol.
+         */
+        private fun removeThousandsSymbols(numString : String) : String {
 
-        private const val MAX_LENGTH = 15
+            var numbers = ""
+            for (i : Char in numString) {
 
-        // symbols used
-        private var decimalSymbol   : Char = '.'
-        private var thousandsSymbol : Char = ','
+                // ensures only 1 decimal symbol exists and returns if decimal setting is off and
+                // decimal symbol is detected
+                when {
+                    i.isDigit()-> numbers += i
+                    decimalPlaces && i == decimalSymbol && !numbers.contains(".") -> numbers += "."
+                    !decimalPlaces && i == decimalSymbol -> return numbers
+                }
+            }
+            return numbers
+        }
 
-        // only accepts numbers
-        private var accepted = "0123456789"
-        // accepts numbers and decimalSymbol
-        private var acceptedDecimal : String = accepted
+        /**
+         *  Calculates new location of cursor.
+         *
+         *  @param  numCharsRightCursor characters to right of cursor.
+         *  @param  numString           formatted string containing only digits and decimal symbol.
+         *  @return new position for cursor to be placed at.
+         */
+        private fun getNewCursorPos(numCharsRightCursor : Int, numString : String) : Int {
+
+            var rightOffset      = 0
+            var rightCount : Int = numCharsRightCursor
+
+            // thousands symbols increases offset, but doesn't decrease characters to right
+            for (i : Char in numString.reversed()) {
+
+                if (rightCount == 0) break
+                if (i.isDigit() || i == decimalSymbol) rightCount--
+                rightOffset++
+            }
+            return numString.length - rightOffset
+        }
+
+        /**
+         *  Determines the number of digits and decimal symbol in string.
+         *
+         *  @param  text string to be checked.
+         *  @return number of digits and decimal symbol.
+         */
+        private fun getNumberOfChars(text : String) : Int {
+
+            var count = 0
+            for (i : Char in text) {
+
+                // ends early if decimal symbol is detected, but turned off in settings
+                when {
+                    i.isDigit() || (decimalPlaces && i == decimalSymbol) -> count++
+                    !decimalPlaces && i == decimalSymbol                 -> return count
+                }
+            }
+            return count
+        }
     }
 }

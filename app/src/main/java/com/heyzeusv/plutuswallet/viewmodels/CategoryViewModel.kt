@@ -2,9 +2,13 @@ package com.heyzeusv.plutuswallet.viewmodels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.Category
+import com.heyzeusv.plutuswallet.fragments.CategoryFragment
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /**
  *  Data manager for CategoriesFragments.
@@ -17,27 +21,48 @@ class CategoryViewModel : ViewModel() {
     /**
      *  Stores handle to TransactionRepository.
      */
-    private val transactionRepository : TransactionRepository = TransactionRepository.get()
+    private val tranRepo : TransactionRepository = TransactionRepository.get()
+
+    // combined lists of LiveData values from below
+    val catLists : MutableList<List<Category>> = mutableListOf(emptyList(), emptyList())
+
+    // list shown by ViewPager, 0 = "Expense"; 1 = "Income"
+    var listShown = 0
+
+    // list of Categories by type used to prevent 2 Categories from having same name
+    // 0 = "Expense"; 1 = "Income"
+    val catNames : MutableList<List<String>> = mutableListOf(emptyList(), emptyList())
+
+    // list of Categories by type unable to be deleted due to being used
+    // 0 = "Expense"; 1 = "Income"
+    val catsUsed : MutableList<List<String>> = mutableListOf(emptyList(), emptyList())
 
     /**
      *  Category Queries
      */
-    val expenseCategoriesLiveData : LiveData<List<Category>> = transactionRepository.getLDCategoriesByType("Expense")
-    val incomeCategoriesLiveData  : LiveData<List<Category>> = transactionRepository.getLDCategoriesByType("Income" )
+    val expenseCatsLD : LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Expense")
+    val incomeCatsLD  : LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Income" )
 
-    suspend fun deleteCategory(category : Category) {
+    suspend fun getCatsByTypeAsync(type : String) : Deferred<MutableList<String>> {
 
-        transactionRepository.deleteCategory(category)
+        return tranRepo.getCategoriesByTypeAsync(type)
     }
 
-    suspend fun updateCategory(category : Category) {
+    fun deleteCategory(category : Category) : Job = viewModelScope.launch {
 
-        transactionRepository.updateCategory(category)
+        tranRepo.deleteCategory(category)
+    }
+
+    fun updateCategory(category : Category) : Job = viewModelScope.launch {
+
+        tranRepo.updateCategory(category)
     }
 
     /**
      *  Transaction Queries
      */
-    val uniqueExpenseLiveData : LiveData<List<String>> = transactionRepository.getLDUniqueCategories("Expense")
-    val uniqueIncomeLiveData  : LiveData<List<String>> = transactionRepository.getLDUniqueCategories("Income" )
+    suspend fun getDistinctCatsByTypeAsync(type : String) : Deferred<List<String>> {
+
+        return tranRepo.getDistinctCatsByTypeAsync(type)
+    }
 }

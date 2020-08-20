@@ -5,14 +5,14 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
-import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE_CHANGED
-import com.heyzeusv.plutuswallet.utilities.KEY_MANUAL_LANGUAGE
+import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 
@@ -25,55 +25,83 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var sharedPreferences : SharedPreferences
 
     // Preferences
+    private lateinit var csPreference : ListPreference
+    private lateinit var ssPreference : SwitchPreference
     private lateinit var tsPreference : ListPreference
     private lateinit var dpPreference : SwitchPreference
     private lateinit var dsPreference : ListPreference
+    private lateinit var dfPreference : ListPreference
     private lateinit var lgPreference : ListPreference
-
-    // used to tell if a new language is set or if the same is re-selected
-    private lateinit var languageSet : String
-
-    // used to tell which symbol is assigned
-    private lateinit var thousands   : String
-    private lateinit var decimal     : String
 
     @SuppressLint("CommitPrefEdits")
     override fun onCreatePreferences(savedInstanceState : Bundle?, rootKey : String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
         // initialize SharedPreferences
-        sharedPreferences = PreferenceHelper.sharedPrefs(activity!!)
+        sharedPreferences = PreferenceHelper.sharedPrefs(requireActivity())
 
         // initialize Preferences
-        tsPreference = findPreference("key_thousands_symbol")!!
-        dpPreference = findPreference("key_decimal_places"  )!!
-        dsPreference = findPreference("key_decimal_symbol"  )!!
-        lgPreference = findPreference("key_language"        )!!
+        csPreference = findPreference(Constants.KEY_CURRENCY_SYMBOL )!!
+        ssPreference = findPreference(Constants.KEY_SYMBOL_SIDE     )!!
+        tsPreference = findPreference(Constants.KEY_THOUSANDS_SYMBOL)!!
+        dpPreference = findPreference(Constants.KEY_DECIMAL_PLACES  )!!
+        dsPreference = findPreference(Constants.KEY_DECIMAL_SYMBOL  )!!
+        dfPreference = findPreference(Constants.KEY_DATE_FORMAT     )!!
+        lgPreference = findPreference(Constants.KEY_LANGUAGE        )!!
 
-        // initialize variables with Preference values
-        languageSet = lgPreference.value
-        thousands   = tsPreference.value
-        decimal     = dsPreference.value
+        // shows toolbar and back icon
+        (activity as AppCompatActivity).supportActionBar?.show()
+        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.settings)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onStart() {
         super.onStart()
 
+        // Currency Symbol
+        csPreference.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _ : Preference, newValue : Any ->
+
+             when (newValue) {
+
+                 csPreference.value -> return@OnPreferenceChangeListener false
+                 else -> {
+
+                     // used to tell if data in Chart/TranList Fragments should be updated
+                     sharedPreferences[Constants.KEY_CHART_CHANGE    ] = true
+                     sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = true
+                     return@OnPreferenceChangeListener true
+                 }
+             }
+        }
+
+        // Symbol Side
+        ssPreference.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _ : Preference, _ : Any ->
+
+            // used to tell if data in Chart/TranList Fragments should be updated
+            sharedPreferences[Constants.KEY_CHART_CHANGE    ] = true
+            sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = true
+            return@OnPreferenceChangeListener true
+        }
+
         // Thousands Symbol
-        tsPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, newValue : Any ->
+        tsPreference.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _ : Preference, newValue : Any ->
 
             when (newValue) {
 
                 // if newValue == decimal then launch AlertDialog
-                decimal -> {
+                dsPreference.value -> {
 
                     switchSymbolDialog()
                     return@OnPreferenceChangeListener false
                 }
-                // else switch to newValue
                 else -> {
 
-                    thousands = newValue.toString()
+                    // used to tell if data in Chart/TranList Fragments should be updated
+                    sharedPreferences[Constants.KEY_CHART_CHANGE    ] = true
+                    sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -81,7 +109,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         // Decimal Places
-        dpPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, _ : Any ->
+        dpPreference.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _ : Preference, _ : Any ->
 
             // asks the user if they do want to switch decimalPlacesPreference
             allowDecimalDialog(dpPreference.isChecked)
@@ -89,24 +118,41 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         // Decimal Symbol
-        dsPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, newValue : Any ->
+        dsPreference.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _ : Preference, newValue : Any ->
 
             when (newValue) {
 
                 // if newValue == thousands then launch AlertDialog
-                thousands -> {
+                tsPreference.value -> {
 
                     switchSymbolDialog()
                     return@OnPreferenceChangeListener false
                 }
-                // else switch to newValue
                 else -> {
 
-                    decimal = newValue.toString()
+                    // used to tell if data in Chart/TranList Fragments should be updated
+                    sharedPreferences[Constants.KEY_CHART_CHANGE    ] = true
+                    sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = true
                     return@OnPreferenceChangeListener true
                 }
             }
+        }
 
+        // Date Format
+        dfPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, newValue : Any ->
+
+            when (newValue) {
+
+                dfPreference.value -> return@OnPreferenceChangeListener false
+                else -> {
+
+                    // used to tell if data in Chart/TranList Fragments should be updated
+                    sharedPreferences[Constants.KEY_CHART_CHANGE    ] = true
+                    sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = true
+                    return@OnPreferenceChangeListener true
+                }
+            }
         }
 
         // only works on API26 and higher
@@ -116,17 +162,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         } else {
 
             // Language
-            lgPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _ : Preference, languageCode : Any ->
+            lgPreference.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { _ : Preference, languageCode : Any ->
 
                 // checks if a different language was selected
-                if (languageSet != languageCode.toString()) {
+                if (lgPreference.value != languageCode.toString()) {
 
                     // saving into SharedPreferences
-                    sharedPreferences[KEY_LANGUAGE_CHANGED] = true
-                    sharedPreferences[KEY_MANUAL_LANGUAGE ] = true
+                    sharedPreferences[Constants.KEY_LANGUAGE_CHANGED] = true
+                    sharedPreferences[Constants.KEY_MANUAL_LANGUAGE ] = true
 
                     // destroys then restarts Activity in order to have updated language
-                    activity!!.recreate()
+                    requireActivity().recreate()
                 }
                 return@OnPreferenceChangeListener true
             }
@@ -150,8 +197,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val posFun = DialogInterface.OnClickListener { _, _ ->
 
             dpPreference.isChecked = !dpPreference.isChecked
+            // used to tell if data in Chart/TranList Fragments should be updated
+            sharedPreferences[Constants.KEY_CHART_CHANGE    ] = true
+            sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = true
         }
-        AlertDialogCreator.alertDialog(context!!,
+        AlertDialogCreator.alertDialog(requireContext(),
             getString(R.string.alert_dialog_are_you_sure),
             message,
             getString(R.string.alert_dialog_switch), posFun,
@@ -165,13 +215,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val posFun = DialogInterface.OnClickListener { _, _ ->
 
-            tsPreference.value = decimal
-            dsPreference.value = thousands
-            decimal   = dsPreference.value
-            thousands = tsPreference.value
+            val newDecimal   : String = tsPreference.value
+            val newThousands : String = dsPreference.value
+            tsPreference.value = newThousands
+            dsPreference.value = newDecimal
+            sharedPreferences[Constants.KEY_CHART_CHANGE    ] = true
+            sharedPreferences[Constants.KEY_TRAN_LIST_CHANGE] = true
         }
 
-        AlertDialogCreator.alertDialog(context!!,
+        AlertDialogCreator.alertDialog(requireContext(),
             getString(R.string.alert_dialog_duplicate_symbols),
             getString(R.string.alert_dialog_duplicate_symbols_warning),
             getString(R.string.alert_dialog_switch), posFun,

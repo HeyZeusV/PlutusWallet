@@ -7,23 +7,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Category
+import com.heyzeusv.plutuswallet.databinding.FragmentCategoryBinding
+import com.heyzeusv.plutuswallet.databinding.ItemViewCategoryBinding
+import com.heyzeusv.plutuswallet.databinding.ItemViewCatlistBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
+import com.heyzeusv.plutuswallet.utilities.CatListDiffUtil
+import com.heyzeusv.plutuswallet.utilities.CategoryDiffUtil
 import com.heyzeusv.plutuswallet.viewmodels.CategoryViewModel
 import kotlinx.coroutines.launch
-import me.relex.circleindicator.CircleIndicator3
-
-private const val TAG = "PWCategoriesFragment"
 
 /**
  *  Shows all Categories depending on type in database and allows users to either
@@ -31,40 +31,31 @@ private const val TAG = "PWCategoriesFragment"
  */
 class CategoryFragment : BaseFragment() {
 
-    // views
-    private lateinit var circleIndicator     : CircleIndicator3
-    private lateinit var categoriesViewPager : ViewPager2
+    // DataBinding
+    private lateinit var binding : FragmentCategoryBinding
 
-    // list used to hold lists of Categories
-    private var categoryLists : MutableList<List<Category>>
-            = mutableListOf(emptyList(), emptyList())
+    // adapters used by ViewPager
+    private val catListAdapter = CategoryListAdapter()
 
-    // list used to hold list of Category names
-    private var categoryNameLists : MutableList<MutableList<String>>
-            = mutableListOf(mutableListOf(), mutableListOf())
-
-    // list used to hold lists of unique Categories by type being used
-    private var uniqueCategoryLists : MutableList<List<String>>
-            = mutableListOf(emptyList(), emptyList())
-
-    // used to tell which page of ViewPager2 to scroll to
-    private var typeChanged : Int = 0
+    // adapters used by RecyclerViews
+    private val expenseAdapter = CategoryAdapter()
+    private val incomeAdapter  = CategoryAdapter()
 
     // instance of ViewModel
-    private val categoryViewModel : CategoryViewModel by lazy {
-        ViewModelProviders.of(this).get(CategoryViewModel::class.java)
+    private val catVM : CategoryViewModel by lazy {
+        ViewModelProvider(this).get(CategoryViewModel::class.java)
     }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
                               savedInstanceState : Bundle?) : View? {
 
-        val view : View = inflater.inflate(R.layout.fragment_category, container, false)
+        // setting up DataBinding
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_category, container, false)
+        binding.lifecycleOwner     = viewLifecycleOwner
+        binding.categoryVp.adapter = catListAdapter
+        binding.categoryCi.setViewPager(binding.categoryVp)
 
-        // initialize views
-        circleIndicator     = view.findViewById(R.id.category_circle_indicator) as CircleIndicator3
-        categoriesViewPager = view.findViewById(R.id.category_view_pager      ) as ViewPager2
-
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
@@ -72,249 +63,194 @@ class CategoryFragment : BaseFragment() {
 
         // register an observer on LiveData instance and tie life to this component
         // execute code whenever LiveData gets updated
-        categoryViewModel.expenseCategoriesLiveData.observe(this, Observer {
+        catVM.expenseCatsLD.observe(viewLifecycleOwner, {
 
-            // clears list before adding names again since names can be added or dropped
-            categoryNameLists[0].clear()
-            it.forEach { category : Category ->
-
-                categoryNameLists[0].add(category.category)
-            }
-            categoryLists[0] = it
-            updateUI(categoryLists)
+            updateAdapters(it, expenseAdapter, "Expense", 0)
         })
 
-        // register an observer on LiveData instance and tie life to this component
-        // execute code whenever LiveData gets updated
-        categoryViewModel.incomeCategoriesLiveData.observe(this, Observer {
+        catVM.incomeCatsLD.observe(viewLifecycleOwner, {
 
-            // clears list before adding names again since names can be added or dropped
-            categoryNameLists[1].clear()
-            it.forEach { category : Category ->
-
-                categoryNameLists[1].add(category.category)
-            }
-            categoryLists[1] = it
-            updateUI(categoryLists)
-        })
-
-        // register an observer on LiveData instance and tie life to this component
-        // execute code whenever LiveData gets updated
-        categoryViewModel.uniqueExpenseLiveData.observe(this, Observer {
-
-            // list of Categories used by Transactions
-            uniqueCategoryLists[0] = it
-            updateUI(categoryLists)
-        })
-
-        // register an observer on LiveData instance and tie life to this component
-        // execute code whenever LiveData gets updated
-        categoryViewModel.uniqueIncomeLiveData.observe(this, Observer {
-
-            // list of Categories used by Transactions
-            uniqueCategoryLists[1] = it
-            updateUI(categoryLists)
+            updateAdapters(it, incomeAdapter, "Income", 1)
         })
     }
 
     /**
-     *  Ensures the UI is up to date with correct information.
+     *  Ensures adapters are up to date with correct information.
      *
-     *  @param categoryLists list of lists to be shown in RecyclerViews.
+     *  @param catList list of Categories to be passed
+     *  @param adapter adapter that will have data updated
+     *  @param type    "Expense" or "Income"
+     *  @param pos     0 = "Expense", 1 = "Income"
      */
-    private fun updateUI(categoryLists : MutableList<List<Category>>) {
+    private fun updateAdapters(catList : List<Category>, adapter : CategoryAdapter,
+                               type : String, pos : Int) {
 
-        // creates Adapter with MutableList of Lists of Categories and sets it to ViewPager2
-        categoriesViewPager.adapter = CategoryListAdapter(categoryLists)
-        categoriesViewPager.setCurrentItem(typeChanged, false)
-        // sets ViewPager2 to CircleIndicator
-        circleIndicator.setViewPager(categoriesViewPager)
+        catVM.catLists[pos] = catList
+        // tells ViewPager adapter there might be a change in data
+        catListAdapter.submitList(catVM.catLists)
+
+        // coroutine ensures that lists used by CatViewHolders are ready before updating adapter
+        launch {
+
+            catVM.catNames[pos] = catVM.getCatsByTypeAsync(type).await()
+            catVM.catsUsed[pos] = catVM.getDistinctCatsByTypeAsync(type).await()
+            adapter.submitList(catList)
+        }
+
+        // sets up DotsIndicator with ViewPager2
+        binding.categoryCi.setViewPager(binding.categoryVp)
+        // ensures ViewPager is showing correct list
+        binding.categoryVp.setCurrentItem(catVM.listShown, false)
     }
 
     /**
      *  Creates ViewHolder and binds ViewHolder to data from model layer.
-     *
-     *  @param categoryLists the list of lists of Categories.
      */
-    private inner class CategoryListAdapter(var categoryLists : MutableList<List<Category>>)
-        : RecyclerView.Adapter<CategoryListHolder>() {
+    private inner class CategoryListAdapter
+        : ListAdapter<List<Category>, CategoryListHolder>(CatListDiffUtil()) {
 
         // creates view to display, wraps the view in a ViewHolder and returns the result
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryListHolder {
+        override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : CategoryListHolder {
 
-            val view : View = layoutInflater.inflate(R.layout.item_view_category_list,
-                parent, false)
-            return CategoryListHolder(view)
+            val itemViewBinding : ItemViewCatlistBinding = ItemViewCatlistBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false)
+            return CategoryListHolder(itemViewBinding)
         }
 
-        override fun getItemCount() : Int = categoryLists.size
+        override fun onBindViewHolder(holder : CategoryListHolder, position : Int) {
 
-        // populates given holder with list of Category names from the given position in list
-        override fun onBindViewHolder(holder: CategoryListHolder, position: Int) {
-
-            val categoryList : List<Category> = categoryLists[position]
-            holder.bind(categoryList, position)
+            holder.bind(position)
         }
     }
 
     /**
      *  ViewHolder stores a reference to an item's view.
      *
-     *  @param view ViewPager2 layout.
+     *  @param binding DataBinding layout.
      */
-    private inner class CategoryListHolder(view : View) : RecyclerView.ViewHolder(view) {
+    private inner class CategoryListHolder(private var binding : ItemViewCatlistBinding)
+        : RecyclerView.ViewHolder(binding.root) {
 
-        // views in ItemView
-        private val categoryTypeTextView : TextView     = itemView.findViewById(R.id.category_type         )
-        private val categoryRecyclerView : RecyclerView = itemView.findViewById(R.id.category_recycler_view)
+        fun bind(type : Int) {
 
-        fun bind(categoryList : List<Category>, type : Int) {
-
-            if (type == 0) {
-
-                categoryTypeTextView.text = getString(R.string.type_expense)
-            } else {
-
-                categoryTypeTextView.text = getString(R.string.type_income)
+            binding.type = type
+            binding.executePendingBindings()
+            when (type) {
+                0    -> binding.ivclRv.adapter = expenseAdapter
+                else -> binding.ivclRv.adapter = incomeAdapter
             }
-            val linearLayoutManager = LinearLayoutManager(context)
-            // RecyclerView NEEDS a LayoutManager to work
-            categoryRecyclerView.layoutManager = linearLayoutManager
-            // set adapter for RecyclerView
-            categoryRecyclerView.adapter = CategoryAdapter(categoryList)
-            // adds horizontal divider between each item in RecyclerView
-            categoryRecyclerView.addItemDecoration(
-                DividerItemDecoration(categoryRecyclerView.context, DividerItemDecoration.VERTICAL))
+            binding.ivclRv.addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            binding.ivclRv.layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    /**
+     *  Creates ViewHolder and binds ViewHolder to data from model layer.
+     */
+    private inner class CategoryAdapter : ListAdapter<Category, CategoryHolder>(CategoryDiffUtil()) {
+
+        // creates view to display, wraps the view in a ViewHolder and returns the result
+        override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : CategoryHolder {
+
+            val itemViewBinding : ItemViewCategoryBinding = ItemViewCategoryBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false)
+            return CategoryHolder(itemViewBinding)
         }
 
-        /**
-         *  Creates ViewHolder and binds ViewHolder to data from model layer.
-         *
-         *  @param categoryList the list of Categories.
-         */
-        private inner class CategoryAdapter(var categoryList : List<Category>)
-            : RecyclerView.Adapter<CategoryHolder>() {
+        // populates given holder with Category from the given position in CategoryList
+        override fun onBindViewHolder(holder : CategoryHolder, position : Int) {
 
-            // creates view to display, wraps the view in a ViewHolder and returns the result
-            override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : CategoryHolder {
-
-                val view : View = layoutInflater.inflate(R.layout.item_view_category,
-                    parent, false)
-                return CategoryHolder(view)
-            }
-
-            override fun getItemCount() : Int = categoryList.size
-
-            // populates given holder with Category from the given position in CategoryList
-            override fun onBindViewHolder(holder : CategoryHolder, position : Int) {
-
-                val category : Category = categoryList[position]
-                holder.bind(category)
-            }
+            val category : Category = getItem(position)
+            holder.bind(category)
         }
+    }
 
-        /**
-         *  ViewHolder stores a reference to an item's.
-         *
-         *  @param view ItemView layout.
-         */
-        private inner class CategoryHolder(view : View) : RecyclerView.ViewHolder(view) {
+    /**
+     *  ViewHolder stores a reference to an item's view.
+     *
+     *  @param binding DataBinding layout.
+     */
+    private inner class CategoryHolder(private var binding : ItemViewCategoryBinding)
+        : RecyclerView.ViewHolder(binding.root) {
 
-            // views in ItemView
-            private val editButton       : MaterialButton = itemView.findViewById(R.id.category_edit  )
-            private val deleteButton     : MaterialButton = itemView.findViewById(R.id.category_delete)
-            private val categoryTextView : TextView       = itemView.findViewById(R.id.category_name  )
+        @SuppressLint("StringFormatInvalid")
+        fun bind(category : Category) {
 
-            @SuppressLint("StringFormatInvalid")
-            fun bind(category : Category) {
+            val type : Int = when (category.type) {
+                "Expense" -> 0
+                else      -> 1
+            }
 
-                val type : Int = when (category.type) {
+            // enables delete button if Category is not in use and if there is more than 1 Category
+            if (!catVM.catsUsed[type].contains(category.category)
+                && catVM.catLists[type].size > 1) {
 
-                    "Expense" -> 0
-                    else      -> 1
-                }
+                binding.ivcatDelete.isEnabled = true
 
-                categoryTextView.text = category.category
+                // AlertDialog to ensure user does want to delete Category
+                binding.ivcatDelete.setOnClickListener {
 
-                // enables delete button if Category is not in use and if there is more than 1 Category
-                if (!uniqueCategoryLists[type].contains(category.category)
-                    && categoryNameLists[type].size > 1) {
-
-                    deleteButton.isEnabled = true
-
-                    // AlertDialog to ensure user does want to delete Category
-                    deleteButton.setOnClickListener {
-
-                        val posFun = DialogInterface.OnClickListener { _, _ ->
-
-                            deleteCategory(category)
-                            typeChanged = type
-                        }
-
-                        AlertDialogCreator.alertDialog(context!!,
-                            getString(R.string.alert_dialog_delete_category),
-                            getString(R.string.alert_dialog_delete_warning, category.category),
-                            getString(R.string.alert_dialog_yes), posFun,
-                            getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing)
-                    }
-                }
-
-                // AlertDialog with EditText that allows input for new name
-                editButton.setOnClickListener {
-
-                    // inflates view that holds EditText
-                    val viewInflated : View = LayoutInflater.from(context)
-                        .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
-                    // the EditText to be used
-                    val input : EditText = viewInflated.findViewById(R.id.dialog_input)
                     val posFun = DialogInterface.OnClickListener { _, _ ->
 
-                        editCategory(input.text.toString(), category, type)
-                        typeChanged = type
+                        catVM.deleteCategory(category)
+                        catVM.listShown = type
                     }
 
-                    AlertDialogCreator.alertDialogInput(context!!,
-                        getString(R.string.alert_dialog_edit_category),
-                        viewInflated,
-                        getString(R.string.alert_dialog_save), posFun,
-                        getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing)
+                    AlertDialogCreator.alertDialog(context!!,
+                        getString(R.string.alert_dialog_delete_category),
+                        getString(R.string.alert_dialog_delete_warning, category.category),
+                        getString(R.string.alert_dialog_yes), posFun,
+                        getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing)
                 }
             }
 
-            /**
-             *  @param category the Category to be deleted
-             */
-            private fun deleteCategory(category : Category) {
+            // AlertDialog with EditText that allows input for new name
+            binding.ivcatEdit.setOnClickListener {
 
-                launch {
+                // inflates view that holds EditText
+                val viewInflated : View = LayoutInflater.from(context)
+                    .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
+                // the EditText to be used
+                val input : EditText = viewInflated.findViewById(R.id.dialog_input)
+                val posFun = DialogInterface.OnClickListener { _, _ ->
 
-                    categoryViewModel.deleteCategory(category)
+                    editCategory(input.text.toString(), category, type)
+                    catVM.listShown = type
                 }
+
+                AlertDialogCreator.alertDialogInput(context!!,
+                    getString(R.string.alert_dialog_edit_category),
+                    viewInflated,
+                    getString(R.string.alert_dialog_save), posFun,
+                    getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing)
             }
 
-            /**
-             *  Checks if name inputted exists already before editing.
-             *
-             *  @param updatedName new name of Category
-             *  @param category    Category to be changed
-             *  @param type        used to tell which name list to check (Expense/Income)
-             */
-            private fun editCategory(updatedName : String, category : Category, type : Int) {
+            binding.category = category
+            binding.executePendingBindings()
+        }
 
-                // if exists, Snackbar appears telling user so, else, updates Category
-                if (categoryNameLists[type].contains(updatedName)) {
+        /**
+         *  Checks if name inputted exists already before editing.
+         *
+         *  @param updatedName new name of Category
+         *  @param category    Category to be changed
+         *  @param type        used to tell which name list to check (Expense/Income)
+         */
+        private fun editCategory(updatedName : String, category : Category, type : Int) {
 
-                    val existBar : Snackbar = Snackbar.make(view!!,
+            // if exists, Snackbar appears telling user so, else, updates Category
+            when {
+                catVM.catNames[type].contains(updatedName) -> {
+                    val existBar: Snackbar = Snackbar.make(view!!,
                         getString(R.string.snackbar_exists, updatedName), Snackbar.LENGTH_SHORT)
-                    existBar.anchorView = circleIndicator
+                    existBar.anchorView = this@CategoryFragment.binding.categoryCi
                     existBar.show()
-                } else {
-
+                }
+                else -> {
                     category.category = updatedName
-                    launch {
-
-                        categoryViewModel.updateCategory(category)
-                    }
+                    binding.category = category
+                    catVM.updateCategory(category)
                 }
             }
         }

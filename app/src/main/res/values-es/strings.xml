@@ -32,7 +32,7 @@
     <string name="filter_reset">Reiniciar</string>
     <string name="filter_start">Comienzo</string>
     <string name="filter_type">Tipo</string>
-    <string name="graph_total">Total: %1$s%2$s</string>
+    <string name="chart_total">Total: %1$s%2$s</string>
     <string name="period_days">Días</string>
     <string name="period_months">Meses</string>
     <string name="period_weeks">Semanas</string>
@@ -68,7 +68,6 @@
     <string name="transaction_type">Tipo:</string>
     <string name="type_expense">Gastos</string>
     <string name="type_income">Ingresos</string>
-    <string name="remove_ads">Eliminar anuncios</string>
     <string name="categories">Categorias</string>
     <string name="alert_dialog_edit_account">Editar cuenta</string>
     <string name="alert_dialog_input_hint">Ingresa un nombre</string>
@@ -81,4 +80,5 @@
     <string name="snackbar_exists">%1$s ya existe!</string>
     <string name="alert_dialog_duplicate_symbols">Símbolos duplicados</string>
     <string name="alert_dialog_duplicate_symbols_warning">Miles y separadores decimales no pueden ser lo mismo. ¿Te gustaría cambiarlos?</string>
+    <string name="accounts">Cuentas</string>
 </resources>

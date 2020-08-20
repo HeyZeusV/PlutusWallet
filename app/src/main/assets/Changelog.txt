@@ -1,5 +1,6 @@
-v1.3.2
--Bugfix: Crash that occurred when switching between types on transaction screen and saving.
+v2.0.0
+-Major architecture update, updated from MVC to MVVM. Performance will be the same, but updating the app will be a lot easier for me.
+-Removed: All ads!
 
 v1.3.1
 -Fixed: Changed the logic for the "Create New Account/Category" dialog from appearing.

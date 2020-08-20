@@ -5,13 +5,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.heyzeusv.plutuswallet.database.daos.AccountDao
 import com.heyzeusv.plutuswallet.database.daos.CategoryDao
-import com.heyzeusv.plutuswallet.database.daos.ExpenseCategoryDao
-import com.heyzeusv.plutuswallet.database.daos.IncomeCategoryDao
 import com.heyzeusv.plutuswallet.database.daos.TransactionDao
 import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
-import com.heyzeusv.plutuswallet.database.entities.ExpenseCategory
-import com.heyzeusv.plutuswallet.database.entities.IncomeCategory
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 
 /**
@@ -24,10 +20,8 @@ import com.heyzeusv.plutuswallet.database.entities.Transaction
  */
 @Database(entities     = [Account::class,
                           Category::class,
-                          Transaction::class,
-                          ExpenseCategory::class,
-                          IncomeCategory::class],
-          version      = 22,
+                          Transaction::class],
+          version      = 23,
           exportSchema = true)
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {
@@ -35,6 +29,4 @@ abstract class TransactionDatabase : RoomDatabase() {
     abstract fun accountDao        () : AccountDao
     abstract fun categoryDao       () : CategoryDao
     abstract fun transactionDao    () : TransactionDao
-    abstract fun expenseCategoryDao() : ExpenseCategoryDao
-    abstract fun incomeCategoryDao () : IncomeCategoryDao
 }

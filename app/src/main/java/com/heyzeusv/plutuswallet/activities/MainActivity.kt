@@ -1,32 +1,25 @@
 package com.heyzeusv.plutuswallet.activities
 
 import android.animation.ObjectAnimator
-import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.GravityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.google.android.gms.ads.MobileAds
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.navigation.NavigationView
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.billingrepo.localdb.AugmentedSkuDetails
+import com.heyzeusv.plutuswallet.databinding.ActivityMainBinding
+import com.heyzeusv.plutuswallet.fragments.AboutFragment
 import com.heyzeusv.plutuswallet.fragments.AccountFragment
 import com.heyzeusv.plutuswallet.fragments.CategoryFragment
-import com.heyzeusv.plutuswallet.fragments.FGLFragment
+import com.heyzeusv.plutuswallet.fragments.CFLFragment
+import com.heyzeusv.plutuswallet.fragments.SettingsFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
-import com.heyzeusv.plutuswallet.utilities.KEY_LANGUAGE_CHANGED
+import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
-import com.heyzeusv.plutuswallet.viewmodels.BillingViewModel
-
-private const val TAG = "MainActivity"
 
 /**
  *  Handles the loading and replacement of fragments into their containers, as well as
@@ -34,177 +27,142 @@ private const val TAG = "MainActivity"
  */
 class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
-    // views
-    private lateinit var drawerLayout   : DrawerLayout
-    private lateinit var fab            : FloatingActionButton
-    private lateinit var backButton     : MaterialButton
-    private lateinit var menuButton     : MaterialButton
-    private lateinit var navigationView : NavigationView
-
-    // ViewModel
-    private lateinit var billingViewModel : BillingViewModel
-
-    // details for NoAds IAP
-    private lateinit var noAdsDetails : AugmentedSkuDetails
+    // DataBinding
+    private lateinit var binding : ActivityMainBinding
 
     // position of FAB, depends on device
     private var fabX = 0
     private var fabY = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        // initialize ads
-        MobileAds.initialize(this) {}
-
-        // initialize views
-        drawerLayout   = findViewById(R.id.activity_drawer         )
-        fab            = findViewById(R.id.activity_fab            )
-        backButton     = findViewById(R.id.activity_back           )
-        menuButton     = findViewById(R.id.activity_settings       )
-        navigationView = findViewById(R.id.activity_navigation_view)
+        // setting up DataBinding
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         // disables swipe to open drawer
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        binding.activityDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         // FragmentManager adds fragments to an activity
         val currentFragment : Fragment? =
-            supportFragmentManager.findFragmentById(R.id.fragment_transaction_container)
+            supportFragmentManager.findFragmentById(R.id.fragment_tran_container)
 
         // would not be null if activity is destroyed and recreated
         // because FragmentManager saves list of fragments
         if (currentFragment == null) {
 
-            val fglFragment : FGLFragment = FGLFragment.newInstance()
+            val cflFragment : CFLFragment = CFLFragment.newInstance()
 
             // Create a new fragment transaction, adds fragments, and then commit it
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_transaction_container, fglFragment)
+                .add(R.id.fragment_tran_container, cflFragment)
                 .commit()
         }
-
-        // getting instance of BillingViewModel
-        billingViewModel = ViewModelProviders.of(this).get(BillingViewModel::class.java)
-        // observing List of SKUDetails LiveData
-        billingViewModel.inappSkuDetailsListLiveData.observe(this, Observer {
-
-            it?.let {
-
-                if (it.isNotEmpty()) {
-
-                    noAdsDetails = it[0]
-                }
-            }
-        })
     }
 
     override fun onStart() {
         super.onStart()
 
         // Listener for NavigationDrawer
-        navigationView.setNavigationItemSelectedListener {
+        binding.activityNavView.setNavigationItemSelectedListener {
 
             return@setNavigationItemSelectedListener when (it.itemId) {
 
                 // starts AccountFragment
-                R.id.accounts -> {
-
+                R.id.menu_accounts -> {
                     // changes buttons visibility
-                    backButton.visibility = View.VISIBLE
-                    menuButton.visibility = View.INVISIBLE
+                    binding.activityBack.visibility = View.VISIBLE
+                    binding.activityMenu.visibility = View.INVISIBLE
 
                     // instance of AccountFragment
                     val accountFragment : AccountFragment = AccountFragment.newInstance()
 
                     supportFragmentManager
                         .beginTransaction()
-                        .replace(R.id.fragment_transaction_container, accountFragment)
+                        .replace(R.id.fragment_tran_container, accountFragment)
                         .addToBackStack(null)
                         .commit()
 
-                    drawerLayout.closeDrawer(GravityCompat.START)
+                    binding.activityDrawer.closeDrawer(GravityCompat.START)
                     true
                 }
                 // starts CategoryFragment
-                R.id.categories -> {
-
+                R.id.menu_categories -> {
                     // changes buttons visibility
-                    backButton.visibility = View.VISIBLE
-                    menuButton.visibility = View.INVISIBLE
+                    binding.activityBack.visibility = View.VISIBLE
+                    binding.activityMenu.visibility = View.INVISIBLE
 
                     // instance of CategoryFragment
                     val categoryFragment : CategoryFragment = CategoryFragment.newInstance()
 
                     supportFragmentManager
                         .beginTransaction()
-                        .replace(R.id.fragment_transaction_container, categoryFragment)
+                        .replace(R.id.fragment_tran_container, categoryFragment)
                         .addToBackStack(null)
                         .commit()
 
-                    drawerLayout.closeDrawer(GravityCompat.START)
+                    binding.activityDrawer.closeDrawer(GravityCompat.START)
                     true
                 }
                 // starts SettingsActivity
-                R.id.settings -> {
+                R.id.menu_set -> {
+                    val settingsFragment = SettingsFragment()
 
-                    val settingsIntent = Intent(this, SettingsActivity::class.java)
-                    startActivity(settingsIntent)
+                    supportFragmentManager
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right,
+                            R.anim.enter_from_right, R.anim.exit_to_left)
+                        .replace(R.id.fragment_tran_container, settingsFragment)
+                        .addToBackStack(null)
+                        .commit()
 
-                    drawerLayout.closeDrawer(GravityCompat.START)
+                    binding.activityDrawer.closeDrawer(GravityCompat.START)
+                    binding.activityMenu.visibility = View.INVISIBLE
                     true
                 }
-                // starts AboutActivity
-                R.id.about -> {
-
-                    val aboutIntent = Intent(this, AboutActivity::class.java)
-                    startActivity(aboutIntent)
-
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                // starts NoAds IAP
+                // starts AboutFragment
+                // R.id.about
                 else -> {
+                    val aboutFragment = AboutFragment()
 
-                    billingViewModel.makePurchase(this, noAdsDetails)
+                    supportFragmentManager
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right,
+                            R.anim.enter_from_right, R.anim.exit_to_left)
+                        .replace(R.id.fragment_tran_container, aboutFragment)
+                        .addToBackStack(null)
+                        .commit()
+
+                    binding.activityDrawer.closeDrawer(GravityCompat.START)
+                    binding.activityMenu.visibility = View.INVISIBLE
                     true
                 }
             }
         }
 
         // clicking the menuButton will open drawer
-        menuButton.setOnClickListener {
+        binding.activityMenu.setOnClickListener {
 
-            drawerLayout.openDrawer(GravityCompat.START)
+            binding.activityDrawer.openDrawer(GravityCompat.START)
         }
 
-        // clicking the backButton will return to FGLFragment
-        backButton.setOnClickListener {
+        // clicking the backButton will return to CFLFragment
+        binding.activityBack.setOnClickListener {
 
             onBackPressed()
         }
-
-        billingViewModel.noAdsLiveData.observe(this, Observer {
-
-            it?.let {
-
-                // makes No Ads option visible depending if user is entitled to it
-                val navMenu : Menu = navigationView.menu
-                navMenu.findItem(R.id.no_ads).isVisible = !it.entitled
-            }
-        })
     }
 
     override fun onResume() {
         super.onResume()
 
         // loads if language changed
-        val languageChanged : Boolean = sharedPreferences[KEY_LANGUAGE_CHANGED, false]!!
+        val languageChanged : Boolean = sharedPreferences[Constants.KEY_LANGUAGE_CHANGED, false]!!
         if (languageChanged) {
 
             // saving into SharedPreferences
-            sharedPreferences[KEY_LANGUAGE_CHANGED] = false
+            sharedPreferences[Constants.KEY_LANGUAGE_CHANGED] = false
 
             // destroys then restarts Activity in order to have updated language
             recreate()
@@ -215,22 +173,18 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
         when {
             // close drawer if it is open
-            drawerLayout.isDrawerOpen(GravityCompat.START) -> {
-
-                drawerLayout.closeDrawer(GravityCompat.START)
-            }
+            binding.activityDrawer.isDrawerOpen(GravityCompat.START) ->
+                binding.activityDrawer.closeDrawer(GravityCompat.START)
             // change visibility of buttons and go back
-            menuButton.visibility == View.INVISIBLE -> {
-
-                backButton.visibility = View.INVISIBLE
-                menuButton.visibility = View.VISIBLE
+            binding.activityMenu.visibility == View.INVISIBLE -> {
+                binding.activityBack.visibility = View.INVISIBLE
+                binding.activityMenu.visibility = View.VISIBLE
                 super.onBackPressed()
             }
             // animates menuButton back into screen and goes back
             else -> {
-
                 // moves menuButton back into view
-                ObjectAnimator.ofFloat(menuButton, "translationX", 0f).apply {
+                ObjectAnimator.ofFloat(binding.activityMenu, "translationX", 0f).apply {
 
                     duration = 400
                     start()
@@ -241,7 +195,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     }
 
     /**
-     *  Replaces TransactionListFragment, FilterFragment, and GraphFragment
+     *  Replaces TransactionListFragment, FilterFragment, and ChartFragment
      *  with TransactionFragment selected.
      *
      *  @param transactionId id of Transaction selected.
@@ -259,14 +213,14 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             .beginTransaction()
             .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
                 R.anim.enter_from_left, R.anim.exit_to_right)
-            .replace(R.id.fragment_transaction_container, transactionFragment)
+            .replace(R.id.fragment_tran_container, transactionFragment)
             .addToBackStack(null)
             .commit()
 
         // moves menuButton off screen
-        ObjectAnimator.ofFloat(menuButton, "translationX", -200f).apply {
+        ObjectAnimator.ofFloat(binding.activityMenu, "translationX", -200f).apply {
 
-            duration = 400
+            duration = 100
             start()
         }
     }
@@ -277,8 +231,21 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
     private fun getFabLocation() {
 
         val fabLocationArray = IntArray(2)
-        fab.getLocationOnScreen(fabLocationArray)
-        fabX = fabLocationArray[0] + fab.width / 2
-        fabY = fabLocationArray[1] - fab.height
+        binding.activityFab.getLocationOnScreen(fabLocationArray)
+        fabX = fabLocationArray[0] + binding.activityFab.width / 2
+        fabY = fabLocationArray[1] - binding.activityFab.height
+    }
+
+    override fun onOptionsItemSelected(item : MenuItem?) : Boolean {
+
+        when (item!!.itemId) {
+            // returns user to previous activity if they select back arrow
+            android.R.id.home -> {
+                binding.activityMenu.visibility = View.VISIBLE
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

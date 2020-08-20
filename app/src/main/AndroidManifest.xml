@@ -13,28 +13,12 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
+        android:theme="@style/AppTheme"
         android:fullBackupContent="@xml/backup_descriptor">
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7627627324882759~6989867808"/>
-
-        <activity
-            android:name=".activities.AboutActivity"
-            android:label="@string/about"
-            android:theme="@style/AppTheme"
-            android:screenOrientation="portrait"
-            android:configChanges="locale|orientation"
-            tools:ignore="LockedOrientationActivity"/>
-
-        <activity
-            android:name=".activities.SettingsActivity"
-            android:label="@string/settings"
-            android:theme="@style/AppTheme"
-            android:screenOrientation="portrait"
-            android:configChanges="locale|orientation"
-            tools:ignore="LockedOrientationActivity"/>
 
         <activity
             android:name=".activities.MainActivity"

@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.MaterialComponents.CardView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="4dp"
-    app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardUseCompatPadding="true">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/category_view_pager"
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.MaterialComponents.CardView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="36dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_margin="4dp"
+            android:background="@color/colorPrimary"
+            app:cardCornerRadius="@dimen/card_corner_radius"
+            app:cardUseCompatPadding="true">
 
-        <me.relex.circleindicator.CircleIndicator3
-            android:id="@+id/category_circle_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            app:ci_animator="@animator/indicator_animator"
-            app:ci_animator_reverse="@animator/indicator_reverse_animator"
-            app:ci_drawable="@drawable/indicator_shape"
-            app:ci_drawable_unselected="@drawable/indicator_shape"
-            app:ci_gravity="bottom|center"
-            app:ci_height="8dp"
-            app:ci_margin="5dp"
-            app:ci_width="25dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/category_vp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="36dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <me.relex.circleindicator.CircleIndicator3
+                    android:id="@+id/category_ci"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    app:ci_animator="@animator/indicator_animator"
+                    app:ci_animator_reverse="@animator/indicator_reverse_animator"
+                    app:ci_drawable="@drawable/indicator_shape"
+                    app:ci_drawable_unselected="@drawable/indicator_shape"
+                    app:ci_gravity="bottom|center"
+                    app:ci_height="8dp"
+                    app:ci_margin="5dp"
+                    app:ci_width="25dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+</layout>

@@ -32,7 +32,7 @@ abstract class CategoryDao : BaseDao<Category>() {
               FROM category
               WHERE type=(:type)
               ORDER BY category ASC""")
-    abstract suspend fun getCategoriesByType(type : String) : List<String>
+    abstract suspend fun getCategoriesByType(type : String) : MutableList<String>
 
     /**
      *  @return the size of table or null if empty.
