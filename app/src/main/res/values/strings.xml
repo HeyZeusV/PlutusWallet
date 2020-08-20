@@ -9,7 +9,7 @@
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="about_version" translatable="false">v1.3.1</string>
+    <string name="about_version" translatable="false">v2.0.0</string>
     <string name="account_create">Create New Account</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
