@@ -10,7 +10,8 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:theme="@style/AppBarRipple">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/account_topBar"
@@ -18,7 +19,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:title="@string/categories"
                 app:menu="@menu/category_menu"
-                app:navigationIcon="@drawable/ic_baseline_arrow_back_35"
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
         </com.google.android.material.appbar.AppBarLayout>
 

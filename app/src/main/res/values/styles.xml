@@ -25,4 +25,8 @@
         <item name="rippleColor">?colorOnBackground</item>
         <item name="cornerRadius">100dp</item>
     </style>
+
+    <style name="AppBarRipple">
+        <item name="colorControlHighlight">@color/ripple_material_dark</item>
+    </style>
 </resources>

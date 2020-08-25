@@ -10,7 +10,8 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:theme="@style/AppBarRipple">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/cfl_topBar"
@@ -18,7 +19,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:title="Overview"
                 app:menu="@menu/cfl_menu"
-                app:navigationIcon="@drawable/ic_baseline_menu_35"
+                app:navigationIcon="@drawable/ic_baseline_menu_24"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
         </com.google.android.material.appbar.AppBarLayout>
 

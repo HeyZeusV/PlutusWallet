@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
@@ -11,7 +12,6 @@ import com.heyzeusv.plutuswallet.fragments.AboutFragment
 import com.heyzeusv.plutuswallet.fragments.AccountFragment
 import com.heyzeusv.plutuswallet.fragments.CategoryFragment
 import com.heyzeusv.plutuswallet.fragments.CFLFragment
-import com.heyzeusv.plutuswallet.fragments.SettingsFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
 import com.heyzeusv.plutuswallet.utilities.Constants
@@ -94,28 +94,21 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
                 }
                 // starts SettingsActivity
                 R.id.menu_set -> {
-                    val settingsFragment = SettingsFragment()
 
-                    supportFragmentManager
-                        .beginTransaction()
-                        .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right,
-                            R.anim.enter_from_right, R.anim.exit_to_left)
-                        .replace(R.id.fragment_tran_container, settingsFragment)
-                        .addToBackStack(null)
-                        .commit()
+                    val settingsIntent = Intent(this, SettingsActivity::class.java)
+                    startActivity(settingsIntent)
                     binding.activityDrawer.closeDrawer(GravityCompat.START)
                     true
                 }
                 // starts AboutFragment
                 // R.id.about
                 else -> {
-                    val aboutFragment = AboutFragment()
 
                     supportFragmentManager
                         .beginTransaction()
                         .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right,
                             R.anim.enter_from_right, R.anim.exit_to_left)
-                        .replace(R.id.fragment_tran_container, aboutFragment)
+                        .replace(R.id.fragment_tran_container, AboutFragment())
                         .addToBackStack(null)
                         .commit()
 

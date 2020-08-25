@@ -5,8 +5,7 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.ListPreference
+ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
@@ -48,11 +47,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         dsPreference = findPreference(Constants.KEY_DECIMAL_SYMBOL  )!!
         dfPreference = findPreference(Constants.KEY_DATE_FORMAT     )!!
         lgPreference = findPreference(Constants.KEY_LANGUAGE        )!!
-
-        // shows toolbar and back icon
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.settings)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onStart() {

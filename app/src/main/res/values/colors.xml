@@ -21,4 +21,6 @@
 
     <color name="colorDisabled">#FF929292</color>
     <color name="colorLightGray">#FFCECECE</color>
+
+    <color name="ripple_material_dark">#33FFFFFF</color>
 </resources>
