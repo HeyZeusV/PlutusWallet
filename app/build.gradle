@@ -13,8 +13,8 @@ android {
         applicationId "com.heyzeusv.plutuswallet"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 17
-        versionName "2.0.0"
+        versionCode 18
+        versionName "2.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en", "es", "de", "hi", "ja", "ko", "th"
         javaCompileOptions {

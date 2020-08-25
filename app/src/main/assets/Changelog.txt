@@ -1,3 +1,7 @@
+v2.1.0
+-Changed the layout to include a tool bar on every page.
+-Floating buttons and icons and their functions have been moved to new tool bars.
+
 v2.0.0
 -Major architecture update, updated from MVC to MVVM. Performance will be the same, but updating the app will be a lot easier for me.
 -Removed: All ads!
