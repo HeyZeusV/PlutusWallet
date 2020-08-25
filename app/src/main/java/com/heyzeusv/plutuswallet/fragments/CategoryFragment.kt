@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Category
@@ -72,6 +74,57 @@ class CategoryFragment : BaseFragment() {
 
             updateAdapters(it, incomeAdapter, "Income", 1)
         })
+
+        binding.categoryVp.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+
+                catVM.listShown = position
+            }
+        })
+
+        // navigates user back to CFLFragment
+        binding.accountTopBar.setNavigationOnClickListener {
+
+            requireActivity().onBackPressed()
+        }
+
+        // handles menu selection
+        binding.accountTopBar.setOnMenuItemClickListener { item : MenuItem ->
+
+            when (item.itemId) {
+                R.id.category_new -> {
+
+                    createDialog()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    /**
+     *  Creates AlertDialog when user clicks New Category button in TopBar.
+     */
+    private fun createDialog() {
+
+        // inflates view that holds EditText
+        val viewInflated : View = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
+        // the EditText to be used
+        val input : EditText = viewInflated.findViewById(R.id.dialog_input)
+
+        val title : String = getString(R.string.category_create)
+
+        val posListener = DialogInterface.OnClickListener { _, _ ->
+
+            catVM.insertCategory(input.text.toString())
+        }
+
+        AlertDialogCreator.alertDialogInput(requireContext(), title, viewInflated,
+            getString(R.string.alert_dialog_save), posListener,
+            getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing)
     }
 
     /**
@@ -194,7 +247,6 @@ class CategoryFragment : BaseFragment() {
                     val posFun = DialogInterface.OnClickListener { _, _ ->
 
                         catVM.deleteCategory(category)
-                        catVM.listShown = type
                     }
 
                     AlertDialogCreator.alertDialog(context!!,
@@ -216,7 +268,6 @@ class CategoryFragment : BaseFragment() {
                 val posFun = DialogInterface.OnClickListener { _, _ ->
 
                     editCategory(input.text.toString(), category, type)
-                    catVM.listShown = type
                 }
 
                 AlertDialogCreator.alertDialogInput(context!!,

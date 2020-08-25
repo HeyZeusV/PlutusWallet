@@ -81,4 +81,8 @@
     <string name="alert_dialog_duplicate_symbols">중복 된 기호</string>
     <string name="alert_dialog_duplicate_symbols_warning">천 단위와 소수점 구분 기호는 같을 수 없습니다. 그것들을 바꾸시겠습니까?</string>
     <string name="accounts">계정</string>
+    <string name="account_new">새 계정</string>
+    <string name="category_new">새 분류</string>
+    <string name="transaction_new">새로운 거래</string>
+    <string name="transaction_save">거래 저장</string>
 </resources>

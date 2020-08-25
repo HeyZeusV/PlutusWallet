@@ -137,23 +137,6 @@ class TransactionListFragment : BaseFragment() {
         })
 
         listVM.initializeTables()
-
-    // When FAB is pressed, a new blank TransactionFragment will be created and displayed
-        listVM.fabOnClick.value = View.OnClickListener {
-
-            // scroll back to top of list
-            cflVM.filterChanged = true
-
-            val transFrag = TransactionFragment(0, true)
-
-            requireActivity().supportFragmentManager
-                .beginTransaction()
-                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
-                    R.anim.enter_from_left, R.anim.exit_to_right)
-                .replace(R.id.fragment_tran_container, transFrag)
-                .addToBackStack(null)
-                .commit()
-        }
     }
 
     override fun onResume() {

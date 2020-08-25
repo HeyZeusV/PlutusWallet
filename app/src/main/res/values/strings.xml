@@ -92,4 +92,8 @@
     <string name="alert_dialog_duplicate_symbols">Duplicate Symbols</string>
     <string name="alert_dialog_duplicate_symbols_warning">The thousands and decimal separators cannot be the same, would you like to switch them?</string>
     <string name="accounts">Accounts</string>
+    <string name="account_new">New Account</string>
+    <string name="category_new">New Category</string>
+    <string name="transaction_new">New Transaction</string>
+    <string name="transaction_save">Save Transaction</string>
 </resources>

@@ -81,4 +81,8 @@
     <string name="alert_dialog_duplicate_symbols">डुप्लिकेट प्रतीक</string>
     <string name="alert_dialog_duplicate_symbols_warning">हजारों और दशमलव विभाजक समान नहीं हो सकते। क्या आप उन्हें बदलना चाहेंगे?</string>
     <string name="accounts">हिसाब किताब</string>
+    <string name="account_new">नया खाता</string>
+    <string name="category_new">नई श्रेणी</string>
+    <string name="transaction_new">नया लेन-देन</string>
+    <string name="transaction_save">लेन-देन सहेजें</string>
 </resources>

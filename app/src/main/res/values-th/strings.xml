@@ -81,4 +81,8 @@
     <string name="alert_dialog_duplicate_symbols">สัญลักษณ์ที่ซ้ำกัน</string>
     <string name="alert_dialog_duplicate_symbols_warning">ตัวคั่นหลักพันและทศนิยมต้องไม่เหมือนกันคุณต้องการเปลี่ยนหรือไม่</string>
     <string name="accounts">บัญชี</string>
+    <string name="account_new">บัญชีใหม่</string>
+    <string name="category_new">หมวดหมู่ใหม่</string>
+    <string name="transaction_new">ธุรกรรมใหม่</string>
+    <string name="transaction_save">บันทึกธุรกรรม</string>
 </resources>

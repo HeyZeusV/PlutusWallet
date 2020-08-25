@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.Category
-import com.heyzeusv.plutuswallet.fragments.CategoryFragment
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -38,6 +37,25 @@ class CategoryViewModel : ViewModel() {
     val catsUsed : MutableList<List<String>> = mutableListOf(emptyList(), emptyList())
 
     /**
+     *  Checks if Category exists in type list, if not then creates new Category with given name
+     *  and type.
+     *
+     *  @param name name of new Category.
+     */
+    fun insertCategory(name : String) {
+
+        if (!catNames[listShown].contains(name)) {
+
+            // creates and inserts new Category with name and type depending on which list is shown
+            val category = Category(0, name, when (listShown) {
+                0    -> "Expense"
+                else -> "Income"
+            })
+            insertCategory(category)
+        }
+    }
+
+    /**
      *  Category Queries
      */
     val expenseCatsLD : LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Expense")
@@ -51,6 +69,11 @@ class CategoryViewModel : ViewModel() {
     fun deleteCategory(category : Category) : Job = viewModelScope.launch {
 
         tranRepo.deleteCategory(category)
+    }
+
+    private fun insertCategory(category : Category) : Job = viewModelScope.launch {
+
+        tranRepo.insertCategory(category)
     }
 
     fun updateCategory(category : Category) : Job = viewModelScope.launch {

@@ -81,4 +81,8 @@
     <string name="alert_dialog_duplicate_symbols">Símbolos duplicados</string>
     <string name="alert_dialog_duplicate_symbols_warning">Miles y separadores decimales no pueden ser lo mismo. ¿Te gustaría cambiarlos?</string>
     <string name="accounts">Cuentas</string>
+    <string name="account_new">Nueva cuenta</string>
+    <string name="category_new">Nueva categoría</string>
+    <string name="transaction_new">Nueva transacción</string>
+    <string name="transaction_save">Guardar transacción</string>
 </resources>

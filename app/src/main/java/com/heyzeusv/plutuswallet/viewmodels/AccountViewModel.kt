@@ -23,6 +23,21 @@ class AccountViewModel : ViewModel() {
     var accountsUsed : List<String> = emptyList()
 
     /**
+     *  Checks if Account exists, if not then creates new Account with given name.
+     *
+     *  @param name name of new Account.
+     */
+    fun insertAccount(name : String) {
+
+        if (!accountNames.contains(name)) {
+
+            // creates and inserts new Account with name
+            val account = Account(0, name)
+            insertAccount(account)
+        }
+    }
+
+    /**
      *  Account Queries
      */
     val accountLD : LiveData<List<Account>> = tranRepo.getLDAccounts()
@@ -35,6 +50,11 @@ class AccountViewModel : ViewModel() {
     fun deleteAccount(account : Account) : Job = viewModelScope.launch {
 
         tranRepo.deleteAccount(account)
+    }
+
+    private fun insertAccount(account : Account) : Job = viewModelScope.launch {
+
+        tranRepo.insertAccount(account)
     }
 
     fun updateAccount(account : Account) : Job = viewModelScope.launch {

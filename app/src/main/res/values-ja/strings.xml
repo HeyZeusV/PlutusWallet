@@ -81,4 +81,8 @@
     <string name="alert_dialog_duplicate_symbols">シンボルの複製</string>
     <string name="alert_dialog_duplicate_symbols_warning">桁区切り記号と小数点記号を同じにすることはできません。 それらを変更しますか？</string>
     <string name="accounts">アカウント</string>
+    <string name="account_new">新しいアカウント</string>
+    <string name="category_new">新たなカテゴリー</string>
+    <string name="transaction_new">新規取引</string>
+    <string name="transaction_save">トランザクションを保存</string>
 </resources>

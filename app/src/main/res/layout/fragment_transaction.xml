@@ -16,27 +16,44 @@
             type="com.heyzeusv.plutuswallet.database.entities.SettingsValues" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary">
+        android:orientation="vertical">
 
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.MaterialComponents.CardView"
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/tran_topBar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="Transaction"
+                app:menu="@menu/transaction_menu"
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_35"
+                style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="4dp"
-            app:cardCornerRadius="@dimen/card_corner_radius"
-            app:cardUseCompatPadding="true">
+            android:background="@color/colorPrimaryLight">
 
-            <RelativeLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/materialCardView"
+                style="@style/Widget.MaterialComponents.CardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                app:cardCornerRadius="@dimen/card_corner_radius"
+                app:cardUseCompatPadding="true"
+                tools:layout_editor_absoluteX="4dp"
+                tools:layout_editor_absoluteY="4dp">
 
                 <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="88dp">
+                    android:layout_height="match_parent">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/tran_constraint"
@@ -143,8 +160,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
-                            android:textSize="18sp"
                             android:text="@{setVals.currencySymbol}"
+                            android:textSize="18sp"
                             android:visibility="@{setVals.symbolSide ? View.VISIBLE : View.GONE}"
                             app:layout_constraintStart_toEndOf="@+id/totalTextView"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
@@ -155,12 +172,12 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="9dp"
                             android:layout_marginBottom="1dp"
+                            android:gravity="@{setVals.symbolSide ? Gravity.LEFT : Gravity.RIGHT}"
+                            android:hint="@string/transaction_total_hint"
                             android:importantForAutofill="no"
                             android:maxLength="21"
-                            android:textSize="18sp"
-                            android:gravity="@{setVals.symbolSide ? Gravity.LEFT : Gravity.RIGHT}"
                             android:text="@={tranVM.total}"
-                            android:hint="@string/transaction_total_hint"
+                            android:textSize="18sp"
                             app:filter="@{setVals}"
                             app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
                             app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
@@ -174,8 +191,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
-                            android:textSize="18sp"
                             android:text="@{setVals.currencySymbol}"
+                            android:textSize="18sp"
                             android:visibility="@{setVals.symbolSide ? View.GONE : View.VISIBLE}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
@@ -249,10 +266,10 @@
                             android:background="@null"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.expenseCatList}"
-                            app:selectedValue="@={tranVM.expenseCat}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/typeTextView"
+                            app:selectedValue="@={tranVM.expenseCat}" />
 
                         <Spinner
                             android:id="@+id/tran_income_cat"
@@ -263,10 +280,10 @@
                             android:background="@null"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.incomeCatList}"
-                            app:selectedValue="@={tranVM.incomeCat}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/typeTextView"
+                            app:selectedValue="@={tranVM.incomeCat}" />
 
                         <TextView
                             android:id="@+id/memoTextView"
@@ -375,25 +392,17 @@
                             app:layout_constraintStart_toEndOf="@+id/tran_period"
                             app:layout_constraintTop_toBottomOf="@+id/tran_repeating"
                             tools:visibility="visible" />
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </ScrollView>
+            </com.google.android.material.card.MaterialCardView>
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/tran_save"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_margin="16dp"
-                    android:backgroundTint="@color/colorSecondary"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:onClick="@{tranVM.saveOnClick}"
-                    app:fabSize="auto"
-                    app:srcCompat="@drawable/ic_round_save_24"
-                    tools:ignore="ContentDescription" />
-            </RelativeLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/tran_anchor"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </layout>

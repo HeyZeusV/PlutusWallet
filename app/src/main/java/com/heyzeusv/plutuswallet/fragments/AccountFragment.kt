@@ -4,11 +4,11 @@ import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,7 +36,7 @@ class AccountFragment : BaseFragment() {
     private val accountAdapter = AccountAdapter()
 
     // provides instance of ViewModel
-    private val accountVM: AccountViewModel by lazy {
+    private val accountVM : AccountViewModel by lazy {
         ViewModelProvider(this).get(AccountViewModel::class.java)
     }
 
@@ -69,6 +69,48 @@ class AccountFragment : BaseFragment() {
                 accountAdapter.submitList(it)
             }
         })
+
+        // navigates user back to CFLFragment
+        binding.accountTopBar.setNavigationOnClickListener {
+
+            requireActivity().onBackPressed()
+        }
+
+        // handles menu selection
+        binding.accountTopBar.setOnMenuItemClickListener { item : MenuItem ->
+
+            when (item.itemId) {
+                R.id.account_new -> {
+
+                    createDialog()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    /**
+     *  Creates AlertDialog when user clicks New Account button in TopBar.
+     */
+    private fun createDialog() {
+
+        // inflates view that holds EditText
+        val viewInflated : View = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
+        // the EditText to be used
+        val input : EditText = viewInflated.findViewById(R.id.dialog_input)
+
+        val title : String = getString(R.string.account_create)
+
+        val posListener = DialogInterface.OnClickListener { _, _ ->
+
+            accountVM.insertAccount(input.text.toString())
+        }
+
+        AlertDialogCreator.alertDialogInput(requireContext(), title, viewInflated,
+            getString(R.string.alert_dialog_save),
+            posListener, getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing)
     }
 
     /**

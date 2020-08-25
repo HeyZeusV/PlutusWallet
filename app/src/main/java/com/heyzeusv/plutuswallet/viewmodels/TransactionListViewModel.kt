@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -42,9 +41,6 @@ class TransactionListViewModel : ViewModel() {
 
     // tried using ivtList.empty in XML, but could not get it to work.. displays empty message
     val ivtEmpty : MutableLiveData<Boolean> = MutableLiveData(false)
-
-    // FAB ClickListener, requires Activity so defined here, created in Fragment
-    val fabOnClick : MutableLiveData<View.OnClickListener> = MutableLiveData()
 
     /**
      *  Runs when user first starts app or wipes data, adds Categories of both types in table and

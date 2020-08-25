@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -25,16 +24,17 @@ class AboutFragment : Fragment() {
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_about, container, false)
 
-        // shows toolbar and back icon
-        (activity as AppCompatActivity).supportActionBar?.show()
-        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.about)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         return binding.root
     }
 
     override fun onStart() {
         super.onStart()
+
+        // navigates user back to CFLFragment
+        binding.aboutTopBar.setNavigationOnClickListener {
+
+            requireActivity().onBackPressed()
+        }
 
         // setting up click listeners that display/hide text
         // have to change some constraints in order to properly display text
