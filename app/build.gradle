@@ -7,6 +7,8 @@ apply plugin: 'kotlin-android-extensions'
 // Kotlin annotation processor tool
 apply plugin: 'kotlin-kapt'
 
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
 android {
     compileSdkVersion 29
     defaultConfig {

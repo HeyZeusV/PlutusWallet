@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.Spinner
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Transaction
@@ -23,7 +24,7 @@ import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
 
- private const val ARG_TRANSACTION_ID  = "transaction_id"
+private const val ARG_TRANSACTION_ID  = "transaction_id"
 private const val ARG_FROM_FAB        = "from_fab"
 private const val DIALOG_DATE         = "DialogDate"
 private const val REQUEST_DATE        = 0
@@ -42,6 +43,9 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         ViewModelProvider(this).get(TransactionViewModel::class.java)
     }
 
+    // arguments from Navigation
+    private val args : TransactionFragmentArgs by navArgs()
+
     // arguments passed
     private var tranId  : Int     = -1
     private var fromFab : Boolean = false
@@ -50,8 +54,8 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         super.onCreate(savedInstanceState)
 
         // retrieve arguments
-        tranId  = requireArguments().getInt(ARG_TRANSACTION_ID, -1)
-        fromFab = requireArguments().getBoolean(ARG_FROM_FAB, false)
+        tranId  = args.tranId
+        fromFab = args.fromFab
 
         // retrieves Transaction if exists
         tranVM.loadTransaction(tranId)

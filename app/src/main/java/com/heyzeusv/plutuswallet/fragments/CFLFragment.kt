@@ -9,6 +9,8 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.databinding.FragmentCflBinding
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
@@ -65,17 +67,12 @@ class CFLFragment : BaseFragment() {
             when (item.itemId) {
                 R.id.cfl_new_tran -> {
 
+                    // creates action with parameters
+                    val action : NavDirections =
+                        CFLFragmentDirections.actionTransaction(-1, true)
+                    findNavController().navigate(action)
                     // scroll back to top of list
                     cflVM.filterChanged = true
-                    // show new TransactionFragment
-                    requireActivity().supportFragmentManager
-                        .beginTransaction()
-                        .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
-                            R.anim.enter_from_left, R.anim.exit_to_right)
-                        .replace(R.id.fragment_tran_container,
-                            TransactionFragment.newInstance(-1, true))
-                        .addToBackStack(null)
-                        .commit()
                     true
                 }
                 else -> false
@@ -83,16 +80,5 @@ class CFLFragment : BaseFragment() {
         }
 
         return binding.root
-    }
-
-    companion object {
-
-        /**
-         *  Initializes instance of CFLFragment.
-         */
-        fun newInstance() : CFLFragment {
-
-            return CFLFragment()
-        }
     }
 }

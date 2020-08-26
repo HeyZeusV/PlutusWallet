@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/CFLFragment">
+
+    <fragment
+        android:id="@+id/CFLFragment"
+        android:name="com.heyzeusv.plutuswallet.fragments.CFLFragment"
+        android:label="CFLFragment"
+        tools:layout="@layout/fragment_cfl">
+        <action
+            android:id="@+id/actionTransaction"
+            app:destination="@id/transactionFragment" />
+        <action
+            android:id="@+id/actionAbout"
+            app:destination="@id/aboutFragment" />
+        <action
+            android:id="@+id/actionCategory"
+            app:destination="@id/categoryFragment" />
+        <action
+            android:id="@+id/actionAccount"
+            app:destination="@id/accountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionFragment"
+        android:name="com.heyzeusv.plutuswallet.fragments.TransactionFragment"
+        android:label="TransactionFragment"
+        tools:layout="@layout/fragment_transaction">
+        <argument
+            android:name="tranId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="fromFab"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.heyzeusv.plutuswallet.fragments.AboutFragment"
+        android:label="AboutFragment"
+        tools:layout="@layout/fragment_about"/>
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.heyzeusv.plutuswallet.fragments.CategoryFragment"
+        android:label="CategoryFragment"
+        tools:layout="@layout/fragment_category"/>
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.heyzeusv.plutuswallet.fragments.AccountFragment"
+        android:label="AccountFragment"
+        tools:layout="@layout/fragment_account"/>
+</navigation>

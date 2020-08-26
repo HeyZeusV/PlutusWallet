@@ -1,17 +1,13 @@
 package com.heyzeusv.plutuswallet.activities
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.databinding.ActivityMainBinding
-import com.heyzeusv.plutuswallet.fragments.AboutFragment
-import com.heyzeusv.plutuswallet.fragments.AccountFragment
-import com.heyzeusv.plutuswallet.fragments.CategoryFragment
-import com.heyzeusv.plutuswallet.fragments.CFLFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionFragment
 import com.heyzeusv.plutuswallet.fragments.TransactionListFragment
 import com.heyzeusv.plutuswallet.utilities.Constants
@@ -35,88 +31,13 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
 
         // disables swipe to open drawer
         binding.activityDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-
-        // FragmentManager adds fragments to an activity
-        val currentFragment : Fragment? =
-            supportFragmentManager.findFragmentById(R.id.fragment_tran_container)
-
-        // would not be null if activity is destroyed and recreated
-        // because FragmentManager saves list of fragments
-        if (currentFragment == null) {
-
-            val cflFragment : CFLFragment = CFLFragment.newInstance()
-
-            // Create a new fragment transaction, adds fragments, and then commit it
-            supportFragmentManager
-                .beginTransaction()
-                .add(R.id.fragment_tran_container, cflFragment)
-                .commit()
-        }
     }
 
     override fun onStart() {
         super.onStart()
 
-        // Listener for NavigationDrawer
-        binding.activityNavView.setNavigationItemSelectedListener {
-
-            return@setNavigationItemSelectedListener when (it.itemId) {
-
-                // starts AccountFragment
-                R.id.menu_accounts -> {
-
-                    // instance of AccountFragment
-                    val accountFragment : AccountFragment = AccountFragment.newInstance()
-
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.fragment_tran_container, accountFragment)
-                        .addToBackStack(null)
-                        .commit()
-
-                    binding.activityDrawer.closeDrawer(GravityCompat.START)
-                    true
-                }
-                // starts CategoryFragment
-                R.id.menu_categories -> {
-
-                    // instance of CategoryFragment
-                    val categoryFragment : CategoryFragment = CategoryFragment.newInstance()
-
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.fragment_tran_container, categoryFragment)
-                        .addToBackStack(null)
-                        .commit()
-
-                    binding.activityDrawer.closeDrawer(GravityCompat.START)
-                    true
-                }
-                // starts SettingsActivity
-                R.id.menu_set -> {
-
-                    val settingsIntent = Intent(this, SettingsActivity::class.java)
-                    startActivity(settingsIntent)
-                    binding.activityDrawer.closeDrawer(GravityCompat.START)
-                    true
-                }
-                // starts AboutFragment
-                // R.id.about
-                else -> {
-
-                    supportFragmentManager
-                        .beginTransaction()
-                        .setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right,
-                            R.anim.enter_from_right, R.anim.exit_to_left)
-                        .replace(R.id.fragment_tran_container, AboutFragment())
-                        .addToBackStack(null)
-                        .commit()
-
-                    binding.activityDrawer.closeDrawer(GravityCompat.START)
-                    true
-                }
-            }
-        }
+        // uses nav_graph to determine where each button goes from NavigationView
+        binding.activityNavView.setupWithNavController(findNavController(R.id.fragment_container))
     }
 
     override fun onResume() {
@@ -144,6 +65,9 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
         }
     }
 
+    override fun onSupportNavigateUp() : Boolean =
+        findNavController(R.id.fragment_container).navigateUp()
+
     /**
      *  Replaces TransactionListFragment, FilterFragment, and ChartFragment
      *  with TransactionFragment selected.
@@ -161,7 +85,7 @@ class MainActivity : BaseActivity(), TransactionListFragment.Callbacks {
             .beginTransaction()
             .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
                 R.anim.enter_from_left, R.anim.exit_to_right)
-            .replace(R.id.fragment_tran_container, transactionFragment)
+            .replace(R.id.fragment_container, transactionFragment)
             .addToBackStack(null)
             .commit()
 
