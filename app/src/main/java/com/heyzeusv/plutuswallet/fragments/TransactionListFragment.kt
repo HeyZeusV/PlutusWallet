@@ -165,7 +165,8 @@ class TransactionListFragment : BaseFragment() {
         // sets the views with Transaction data
         fun bind(ivt : ItemViewTransaction) {
 
-            binding.ivt = ivt
+            binding.ivt     = ivt
+            binding.setVals = setVals
             binding.executePendingBindings()
 
             // formats the Total correctly

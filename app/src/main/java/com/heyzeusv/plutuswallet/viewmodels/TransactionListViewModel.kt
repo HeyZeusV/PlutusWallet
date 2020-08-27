@@ -208,21 +208,6 @@ class TransactionListViewModel : ViewModel() {
             else -> newTitle += " x2" // first time being repeated
         }
 
-        if (matchingString != null) {
-
-            // returns only the Int and increments it by one
-            var noPrefixInt : Int = matchingString.replace("x", "").toInt()
-            noPrefixInt += 1
-            // removes "x###" as this will be updated
-            newTitle = newTitle.replace(regex , "")
-            // appends the prefix and updated int onto the end of title
-            newTitle += "x$noPrefixInt"
-        } else {
-
-            // first time being repeated
-            newTitle += " x2"
-        }
-
         return newTitle
     }
 

@@ -1,3 +1,7 @@
+v2.2.1
+-Fixed: A transaction that was set to repeat would display "x2 x2" rather than just "x2."
+-Fixed: List of transactions would not display correct date format selected in settings.
+
 v2.2.0
 -Integrated Navigation, a Jetpack library, which handles transitioning from screen to screen.
 
