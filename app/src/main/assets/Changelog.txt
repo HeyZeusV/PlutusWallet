@@ -1,3 +1,6 @@
+v2.2.0
+-Integrated Navigation, a Jetpack library, which handles transitioning from screen to screen.
+
 v2.1.0
 -Changed the layout to include a tool bar on every page.
 -Floating buttons and icons and their functions have been moved to new tool bars.
