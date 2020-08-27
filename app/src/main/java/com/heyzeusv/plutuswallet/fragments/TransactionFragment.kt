@@ -24,10 +24,8 @@ import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
 
-private const val ARG_TRANSACTION_ID  = "transaction_id"
-private const val ARG_FROM_FAB        = "from_fab"
-private const val DIALOG_DATE         = "DialogDate"
-private const val REQUEST_DATE        = 0
+private const val DIALOG_DATE  = "DialogDate"
+private const val REQUEST_DATE = 0
 
 /**
  *  Shows all the information in database of one Transaction and allows users to
@@ -345,31 +343,5 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         tranVM.dateChanged = tranVM.tranLD.value!!.date != date
         tranVM.tranLD.value!!.date = date
         tranVM.date.value  = DateFormat.getDateInstance(setVals.dateFormat).format(date)
-    }
-
-    companion object {
-
-        /**
-         *  Initializes instance of TransactionFragment.
-         *
-         *  Creates arguments Bundle, creates a Fragment instance, and attaches the
-         *  arguments to the Fragment.
-         *
-         *  @param transactionId id of Transaction selected.
-         *  @param fromFab       true if user clicked on FAB to create Transaction.
-         */
-        fun newInstance(transactionId : Int, fromFab : Boolean) : TransactionFragment {
-
-            val args : Bundle = Bundle().apply {
-
-                putInt    (ARG_TRANSACTION_ID, transactionId)
-                putBoolean(ARG_FROM_FAB      , fromFab      )
-            }
-
-            return TransactionFragment().apply {
-
-                arguments = args
-            }
-        }
     }
 }

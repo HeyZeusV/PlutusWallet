@@ -194,15 +194,4 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
             }
         }
     }
-
-    companion object {
-
-        /**
-         *  Initializes instance of FilterFragment.
-         */
-        fun newInstance() : FilterFragment {
-
-            return FilterFragment()
-        }
-    }
 }

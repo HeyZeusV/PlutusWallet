@@ -1,7 +1,6 @@
 package com.heyzeusv.plutuswallet.fragments
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDirections
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -33,25 +34,6 @@ import kotlinx.coroutines.launch
  */
 class TransactionListFragment : BaseFragment() {
 
-    /**
-     *  Required interface for hosting fragments.
-     *
-     *  Defines work that the fragment needs done by hosting activity.
-     */
-    interface Callbacks {
-
-        /**
-         *  Replaces TransactionListFragment, FilterFragment, and ChartFragment
-         *  with TransactionFragment selected.
-         *
-         *  @param transactionId id of Transaction selected.
-         *  @param fromFab       true if user clicked on FAB to create Transaction.
-         */
-        fun onTransactionSelected(transactionId : Int, fromFab : Boolean)
-    }
-
-    private var callbacks : Callbacks? = null
-
     // DataBinding
     private lateinit var binding : FragmentTransactionListBinding
 
@@ -66,13 +48,6 @@ class TransactionListFragment : BaseFragment() {
     // RecyclerView Adapter/LayoutManager
     private val tranListAdapter = TranListAdapter()
     lateinit var layoutManager : LinearLayoutManager
-
-    override fun onAttach(context : Context) {
-        super.onAttach(context)
-
-        // stashing context into callbacks property which is the activity instance hosting fragment
-        callbacks = context as Callbacks?
-    }
 
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
                               savedInstanceState : Bundle?) : View? {
@@ -152,14 +127,6 @@ class TransactionListFragment : BaseFragment() {
         listVM.futureTransactions()
     }
 
-    override fun onDetach() {
-        super.onDetach()
-
-        // afterward you cannot access the activity
-        // or count on the activity continuing to exist
-        callbacks = null
-    }
-
     /**
      *  Creates ViewHolder and binds ViewHolder to data from model layer.
      */
@@ -224,8 +191,11 @@ class TransactionListFragment : BaseFragment() {
             // the position that the user clicked on
             listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
 
-            // notifies hosting activity which item was selected
-            callbacks?.onTransactionSelected(binding.ivt!!.id, false)
+            // creates action with parameters
+            val action : NavDirections =
+                CFLFragmentDirections.actionTransaction(binding.ivt!!.id, false)
+            // retrieves correct controller to send action to
+            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(action)
         }
 
         /**
@@ -250,17 +220,6 @@ class TransactionListFragment : BaseFragment() {
                 getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing)
 
             return true
-        }
-    }
-
-    companion object {
-
-        /**
-         *  Initializes instance of TransactionListFragment.
-         */
-        fun newInstance() : TransactionListFragment {
-
-            return TransactionListFragment()
         }
     }
 }

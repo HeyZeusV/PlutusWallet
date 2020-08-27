@@ -148,15 +148,4 @@ class ChartFragment : BaseFragment() {
             }
         }
     }
-
-    companion object {
-
-        /**
-         *  Initializes instance of ChartFragment
-         */
-        fun newInstance() : ChartFragment {
-
-            return ChartFragment()
-        }
-    }
 }

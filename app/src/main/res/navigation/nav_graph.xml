@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/CFLFragment">
+    app:startDestination="@id/cflFragment">
 
     <fragment
-        android:id="@+id/CFLFragment"
+        android:id="@+id/cflFragment"
         android:name="com.heyzeusv.plutuswallet.fragments.CFLFragment"
         android:label="CFLFragment"
         tools:layout="@layout/fragment_cfl">
@@ -23,6 +23,9 @@
         <action
             android:id="@+id/actionAccount"
             app:destination="@id/accountFragment" />
+        <action
+            android:id="@+id/actionSettings"
+            app:destination="@id/settingsActivity" />
     </fragment>
     <fragment
         android:id="@+id/transactionFragment"
@@ -53,4 +56,8 @@
         android:name="com.heyzeusv.plutuswallet.fragments.AccountFragment"
         android:label="AccountFragment"
         tools:layout="@layout/fragment_account"/>
+    <activity
+        android:id="@+id/settingsActivity"
+        android:name="com.heyzeusv.plutuswallet.activities.SettingsActivity"
+        android:label="SettingsActivity" />
 </navigation>

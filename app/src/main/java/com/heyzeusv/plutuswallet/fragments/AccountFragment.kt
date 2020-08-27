@@ -215,15 +215,4 @@ class AccountFragment : BaseFragment() {
             }
         }
     }
-
-    companion object {
-
-        /**
-         *  Initializes instance of AccountFragment
-         */
-        fun newInstance() : AccountFragment {
-
-            return AccountFragment()
-        }
-    }
 }

@@ -29,29 +29,38 @@
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryLight">
 
-            <FrameLayout
+            <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_chart_container"
+                android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                app:defaultNavHost="false"
+                app:navGraph="@navigation/chart_nav_graph"
                 app:layout_constraintHeight_percent="0.40"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.60"/>
 
-            <FrameLayout
+            <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_filter_container"
+                android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                app:defaultNavHost="false"
+                app:navGraph="@navigation/filter_nav_graph"
                 app:layout_constraintHeight_percent="0.40"
                 app:layout_constraintStart_toEndOf="@id/fragment_chart_container"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.40"/>
 
 
-            <FrameLayout
+            <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_tranlist_container"
+                android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                app:defaultNavHost="false"
+                app:navGraph="@navigation/list_nav_graph"
                 app:layout_constraintHeight_percent="0.60"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fragment_chart_container"/>

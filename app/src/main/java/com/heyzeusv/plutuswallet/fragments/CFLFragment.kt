@@ -26,22 +26,6 @@ class CFLFragment : BaseFragment() {
     // shared ViewModels
     private lateinit var cflVM : CFLViewModel
 
-    override fun onCreate(savedInstanceState : Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val filterFragment          : FilterFragment          = FilterFragment.newInstance()
-        val chartFragment           : ChartFragment           = ChartFragment.newInstance()
-        val transactionListFragment : TransactionListFragment = TransactionListFragment.newInstance()
-
-        // starts fragment transaction, replaces fragments, and then commits it
-        childFragmentManager.beginTransaction()
-            .replace(R.id.fragment_filter_container  , filterFragment         )
-            .replace(R.id.fragment_chart_container   , chartFragment          )
-            .replace(R.id.fragment_tranlist_container, transactionListFragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
                               savedInstanceState : Bundle?) : View? {
 

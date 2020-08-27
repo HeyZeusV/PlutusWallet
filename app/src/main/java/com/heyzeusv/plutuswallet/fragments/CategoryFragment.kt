@@ -306,15 +306,4 @@ class CategoryFragment : BaseFragment() {
             }
         }
     }
-
-    companion object {
-
-        /**
-         *  Initializes instance of CategoryFragment
-         */
-        fun newInstance() : CategoryFragment {
-
-            return CategoryFragment()
-        }
-    }
 }

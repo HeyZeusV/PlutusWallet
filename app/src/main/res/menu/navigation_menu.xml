@@ -13,7 +13,7 @@
         android:title="@string/categories"/>
 
     <item
-        android:id="@+id/menu_set"
+        android:id="@+id/actionSettings"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings"/>
 
