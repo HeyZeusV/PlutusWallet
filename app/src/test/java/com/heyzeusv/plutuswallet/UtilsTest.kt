@@ -52,11 +52,11 @@ internal class UtilsTest {
             val customSymbols = DecimalFormatSymbols(Locale.US)
             customSymbols.groupingSeparator = '-'
             formatter1 = DecimalFormat("#,###", customSymbols)
-            formatter1.roundingMode = RoundingMode.DOWN
+            formatter1.roundingMode = RoundingMode.HALF_UP
             customSymbols.groupingSeparator = ' '
             customSymbols.decimalSeparator  = ','
             formatter2 = DecimalFormat("#,###.00", customSymbols)
-            formatter2.roundingMode = RoundingMode.DOWN
+            formatter2.roundingMode = RoundingMode.HALF_UP
         }
 
         @Nested
@@ -67,11 +67,11 @@ internal class UtilsTest {
             @DisplayName("Then BigDecimal formatted to Integer")
             fun bigDecimalInteger() {
 
-                val num1 = BigDecimal("12345.67")
+                val num1 = BigDecimal("12346.67")
                 val num2 = BigDecimal("4381812")
                 val num3 = BigDecimal("9828.33")
 
-                assertEquals("12-345", formatter1.format(num1))
+                assertEquals("12-347", formatter1.format(num1))
                 assertEquals("4-381-812", formatter1.format(num2))
                 assertEquals("9-828", formatter1.format(num3))
             }

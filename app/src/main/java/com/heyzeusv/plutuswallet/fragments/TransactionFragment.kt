@@ -101,13 +101,12 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                         setVals.decimalPlaces -> when (transaction.total.toString()) {
                             "0"    -> ""
                             "0.00" -> ""
-                            else   -> Utils.formatDecimal(transaction.total.toString(),
+                            else   -> Utils.formatDecimal(transaction.total,
                                 setVals.thousandsSymbol, setVals.decimalSymbol)
                         }
                         else -> when (transaction.total.toString()) {
                             "0"  -> ""
-                            else -> Utils.formatInteger(
-                                transaction.total.toString(), setVals.thousandsSymbol)
+                            else -> Utils.formatInteger(transaction.total, setVals.thousandsSymbol)
                         }
                     }
                     when(transaction.type) {

@@ -48,69 +48,37 @@ class Utils {
         /**
          *  Will format string with thousands separators.
          *
-         *  @param  string    string to be formatted.
+         *  @param  num       BigDecimal to be formatted.
          *  @param  thousands thousands symbol
          *  @return the formatted string.
          */
-        fun formatInteger(string : String, thousands : Char) : String {
+        fun formatInteger(num : BigDecimal, thousands : Char) : String {
 
             val customSymbols = DecimalFormatSymbols(Locale.US)
             customSymbols.groupingSeparator = thousands
-            val parsed = BigDecimal(string)
             // every three numbers, a thousands symbol will be added
             val formatter = DecimalFormat("#,###", customSymbols)
-            return formatter.format(parsed)
+            formatter.roundingMode = RoundingMode.HALF_UP
+            return formatter.format(num)
         }
 
         /**
          *  Will format string with thousands and decimal separators.
          *
-         *  @param  string    the string to be formatted.
+         *  @param  num       BigDecimal to be formatted.
          *  @param  thousands thousands symbol
          *  @param  decimal   decimal symbol
          *  @return the formatted string.
          */
-        fun formatDecimal(string : String, thousands : Char, decimal : Char) : String {
+        fun formatDecimal(num : BigDecimal, thousands : Char, decimal : Char) : String {
 
             val customSymbols = DecimalFormatSymbols(Locale.US)
             customSymbols.groupingSeparator = thousands
             customSymbols.decimalSeparator = decimal
-            // adds leading zero if user only inputs decimal
-            if (string == customSymbols.decimalSeparator.toString()) {
-
-                return "0" + customSymbols.decimalSeparator.toString()
-            }
-            val parsed = BigDecimal(
-                string.replace(("[" + customSymbols.decimalSeparator +"]").toRegex(), "."))
             // every three numbers, a thousands symbol will be added
-            val formatter = DecimalFormat(
-                "#,##0." + getDecimalPattern(string, customSymbols), customSymbols)
-            formatter.roundingMode = RoundingMode.DOWN
-            return formatter.format(parsed)
-        }
-
-        /**
-         *  It will return suitable pattern for format decimal.
-         *  For example: 10.2 -> return 0 | 10.23 -> return 00, | 10.235 -> return 000
-         *
-         *  @param  string        used for formatter
-         *  @param  customSymbols contains decimal symbol
-         *  @return returns pattern to be used after decimal symbol
-         */
-        private fun getDecimalPattern(string : String, customSymbols : DecimalFormatSymbols)
-                : String {
-
-            // returns number of characters after decimal point
-            val decimalCount : Int =
-                string.length - string.indexOf(customSymbols.decimalSeparator) - 1
-            val decimalPattern     = StringBuilder()
-            var i = 0
-            while (i < decimalCount && i < 2) {
-
-                decimalPattern.append("0")
-                i++
-            }
-            return decimalPattern.toString()
+            val formatter = DecimalFormat("#,##0.00", customSymbols)
+            formatter.roundingMode = RoundingMode.HALF_UP
+            return formatter.format(num)
         }
 
         /**
