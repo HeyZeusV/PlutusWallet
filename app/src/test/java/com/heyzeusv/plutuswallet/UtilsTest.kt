@@ -1,12 +1,10 @@
 package com.heyzeusv.plutuswallet
 
-import io.mockk.junit5.MockKExtension
 import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -16,27 +14,16 @@ import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
 
-@ExtendWith(MockKExtension::class)
-internal class UtilsTest {
+class UtilsTest {
 
-    @Nested
-    @DisplayName("Given LanguageCode is set to 'en'")
-    inner class LanguageCodeEn {
+    @Test
+    @DisplayName("Check if JVM Locale is changed to English")
+    fun changeLanguageEnglish() {
 
-        @Nested
-        @DisplayName("When user Changes Language")
-        inner class LanguageChange {
+        val newLocale = Locale("en")
+        Locale.setDefault(newLocale)
 
-            @Test
-            @DisplayName("Then JVM Locale is changed to English")
-            fun changeLanguageEnglish() {
-
-                val newLocale = Locale("en")
-                Locale.setDefault(newLocale)
-
-                assertEquals(Locale.ENGLISH, Locale.getDefault())
-            }
-        }
+        assertEquals(Locale.ENGLISH, Locale.getDefault())
     }
 
     @Nested
@@ -96,28 +83,18 @@ internal class UtilsTest {
         }
     }
 
-    @Nested
-    @DisplayName("Given Date")
-    inner class DateTest {
+    @Test
+    @DisplayName("Change Date to start of its set day")
+    fun dateStartOfDay() {
 
-        @Nested
-        @DisplayName("When Called")
-        inner class DateFunctionCalled {
+        val calendar = GregorianCalendar()
+        calendar.timeInMillis = Date().time
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE     , 0)
+        calendar.set(Calendar.SECOND     , 0)
+        calendar.set(Calendar.MILLISECOND, 0)
 
-            @Test
-            @DisplayName("Change Date to start of its set day")
-            fun dateStartOfDay() {
-
-                val calendar = GregorianCalendar()
-                calendar.timeInMillis = Date().time
-                calendar.set(Calendar.HOUR_OF_DAY, 0)
-                calendar.set(Calendar.MINUTE     , 0)
-                calendar.set(Calendar.SECOND     , 0)
-                calendar.set(Calendar.MILLISECOND, 0)
-
-                // 0 in Date() is not the start of a day, 25,200,000 is the start of day for GMT -8
-                assertEquals(25200000, (calendar.timeInMillis % 86400000))
-            }
-        }
+        // 0 in Date() is not the start of a day, 25,200,000 is the start of day for GMT -8
+        assertEquals(25200000, (calendar.timeInMillis % 86400000))
     }
 }
