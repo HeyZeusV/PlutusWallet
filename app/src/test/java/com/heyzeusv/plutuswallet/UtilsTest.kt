@@ -14,6 +14,9 @@ import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
 
+/**
+ *  Unit tests for functions in Utils.kt
+ */
 class UtilsTest {
 
     @Test

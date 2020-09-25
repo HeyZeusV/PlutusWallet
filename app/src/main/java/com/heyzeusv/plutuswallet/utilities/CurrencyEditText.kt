@@ -5,13 +5,14 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.widget.EditText
 import androidx.appcompat.R
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
+import timber.log.Timber
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -61,10 +62,15 @@ class CurrencyEditText @JvmOverloads constructor(
         customSymbols.groupingSeparator = thousandsSymbol
 
         // formatters using custom symbols
-        decimal0Formatter = DecimalFormat("#,##0.", customSymbols)
-        decimal1Formatter = DecimalFormat("#,##0.#", customSymbols)
+        decimal0Formatter = DecimalFormat("#,##0."  , customSymbols)
+        decimal1Formatter = DecimalFormat("#,##0.#" , customSymbols)
         decimal2Formatter = DecimalFormat("#,##0.##", customSymbols)
         integerFormatter  = DecimalFormat("#,###"   , customSymbols)
+
+        decimal0Formatter.roundingMode = RoundingMode.HALF_UP
+        decimal1Formatter.roundingMode = RoundingMode.HALF_UP
+        decimal2Formatter.roundingMode = RoundingMode.HALF_UP
+        integerFormatter.roundingMode  = RoundingMode.HALF_UP
 
         // forces numpad
         this.setRawInputType(Configuration.KEYBOARD_QWERTY)
@@ -92,8 +98,7 @@ class CurrencyEditText @JvmOverloads constructor(
      *  Also handles formatting the string and the cursor position.
      *  @constructor sets EditText to be watched.
      */
-    private inner class CurrencyTextWatcher
-    internal constructor(private val editText : EditText) : TextWatcher {
+    private inner class CurrencyTextWatcher constructor(private val editText : EditText) : TextWatcher {
 
         private var beforeText : String = ""
 
@@ -128,12 +133,12 @@ class CurrencyEditText @JvmOverloads constructor(
          */
         private fun formatAmount(amount : String) : String {
 
-            val result : String = removeThousandsSymbols(amount)
+            val result : String = editSymbols(amount)
             var empty = false
             var amt = BigDecimal("0")
-            when (TextUtils.isEmpty(result)) {
+            when (result.isEmpty()) {
                 true -> empty = true
-                else -> amt = BigDecimal(result)
+                else -> amt   = BigDecimal(result)
             }
             // uses decimal formatter depending on number of decimal places entered
             return when {
@@ -154,7 +159,7 @@ class CurrencyEditText @JvmOverloads constructor(
          *  @param  numString string with possible thousands/different decimal symbols.
          *  @return string without thousands symbol and "." as decimal symbol.
          */
-        private fun removeThousandsSymbols(numString : String) : String {
+        private fun editSymbols(numString : String) : String {
 
             var numbers = ""
             for (i : Char in numString) {
@@ -162,7 +167,7 @@ class CurrencyEditText @JvmOverloads constructor(
                 // ensures only 1 decimal symbol exists and returns if decimal setting is off and
                 // decimal symbol is detected
                 when {
-                    i.isDigit()-> numbers += i
+                    i.isDigit() -> numbers += i
                     decimalPlaces && i == decimalSymbol && !numbers.contains(".") -> numbers += "."
                     !decimalPlaces && i == decimalSymbol -> return numbers
                 }
@@ -174,7 +179,7 @@ class CurrencyEditText @JvmOverloads constructor(
          *  Calculates new location of cursor.
          *
          *  @param  numCharsRightCursor characters to right of cursor.
-         *  @param  numString           formatted string containing only digits and decimal symbol.
+         *  @param  numString           formatted string with correct symbols.
          *  @return new position for cursor to be placed at.
          */
         private fun getNewCursorPos(numCharsRightCursor : Int, numString : String) : Int {
