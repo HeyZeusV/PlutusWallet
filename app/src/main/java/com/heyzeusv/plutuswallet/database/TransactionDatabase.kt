@@ -26,7 +26,7 @@ import com.heyzeusv.plutuswallet.database.entities.Transaction
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {
 
-    abstract fun accountDao        () : AccountDao
-    abstract fun categoryDao       () : CategoryDao
-    abstract fun transactionDao    () : TransactionDao
+    abstract fun accountDao()     : AccountDao
+    abstract fun categoryDao()    : CategoryDao
+    abstract fun transactionDao() : TransactionDao
 }

@@ -223,7 +223,7 @@ class TransactionViewModel : ViewModel() {
      */
     private suspend fun getCategoriesByTypeAsync(type : String) : Deferred<MutableList<String>> {
 
-        return tranRepo.getCategoriesByTypeAsync(type)
+        return tranRepo.getCategoryNamesByTypeAsync(type)
     }
 
     private suspend fun insertCategory(category : Category) {

@@ -105,6 +105,6 @@ class FilterViewModel : ViewModel() {
      */
     private suspend fun getCategoriesByTypeAsync(type : String) : Deferred<MutableList<String>> {
 
-        return transactionRepository.getCategoriesByTypeAsync(type)
+        return transactionRepository.getCategoryNamesByTypeAsync(type)
     }
 }

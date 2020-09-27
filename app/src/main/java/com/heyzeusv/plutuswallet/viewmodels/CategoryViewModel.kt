@@ -63,7 +63,7 @@ class CategoryViewModel : ViewModel() {
 
     suspend fun getCatsByTypeAsync(type : String) : Deferred<MutableList<String>> {
 
-        return tranRepo.getCategoriesByTypeAsync(type)
+        return tranRepo.getCategoryNamesByTypeAsync(type)
     }
 
     fun deleteCategory(category : Category) : Job = viewModelScope.launch {

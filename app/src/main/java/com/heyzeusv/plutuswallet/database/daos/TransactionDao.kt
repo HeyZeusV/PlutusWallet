@@ -28,7 +28,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
 
     /**
      *  @param  type either "Expense" or "Income."
-     *  @return list of Categories of type entered.
+     *  @return list of unique Categories of type.
      */
     @Query("""SELECT DISTINCT category
               FROM `transaction`
@@ -62,7 +62,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
 
     /**
      *  @param id id of Transaction to be returned.
-     *  @return LiveData object that holds Transaction to be returned.
+     *  @return LD of Transaction with given id.
      */
     @Query("""SELECT * 
               FROM `transaction`
@@ -70,7 +70,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLDTransaction(id : Int) : LiveData<Transaction?>
 
     /**
-     *  Following Queries will using following abbreviations and Object types.
+     *  Following Query function names will use the following abbreviations and Object types.
      *  Ld = LiveData
      *  Ct = CategoryTotals
      *  A  = Account
@@ -82,9 +82,17 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *                      chosen Category.
      *  ItemViewTransaction(IVT): Used For TransListFragment contains only what is needed
      *                            to be displayed.
+     *
+     *  List of parameters since many repeat
+     *  account : the account to be matched against
+     *  type    : either "Expense" or "Income"
+     *  category: the category name to be matched against
+     *  start   : the start Date to be compared with
+     *  end     : the end Date to be compared with
+     *
      */
     /**
-     *  @return LiveData obj holding list of CT of given type.
+     *  @return LD of list of CT w/ non-zero total.
      */
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
@@ -93,8 +101,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdCt() : LiveData<List<CategoryTotals>>
 
     /**
-     *  @param  account the Account to be matched against.
-     *  @return LiveData obj holding list of CT of given type and account.
+     *  @return LD of list of CT of given account w/ non-zero total.
      */
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
@@ -104,8 +111,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdCtA(account : String?) : LiveData<List<CategoryTotals>>
 
     /**
-     *  @param  start the start Date to be compared with.
-     *  @param  end   the end Date to be compared with.
      *  @return LiveData obj holding list of CT of given type and between dates.
      */
     @Query("""SELECT category, SUM(total) AS total, type
@@ -117,9 +122,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
             : LiveData<List<CategoryTotals>>
 
     /**
-     *  @param  account the Account to be matched against.
-     *  @param  start   the start Date to be compared with.
-     *  @param  end     the end Date to be compared with.
      *  @return LiveData obj holding list of CT of given type, account, and between dates.
      */
     @Query("""SELECT category, SUM(total) AS total, type
@@ -139,7 +141,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLd() : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  account the account to be matched against.
      *  @return LiveData obj holding list of IVT of given account ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  
@@ -149,8 +150,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdA(account : String?) : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  account the account to be matched against.
-     *  @param  type    either "Expense" or "Income".
      *  @return LiveData obj holding list of IVT of given account and type ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  
@@ -160,9 +159,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdAT(account : String?, type : String?) : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  account the account to be matched against.
-     *  @param  start   the start Date to be compared with.
-     *  @param  end     the end Date to be compared with.
      *  @return LiveData obj holding list of IVT of given account and dates ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  
@@ -173,9 +169,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
             : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  account  the account to be matched against.
-     *  @param  type     either "Expense" or "Income".
-     *  @param  category the category to be matched against.
      *  @return LiveData obj holding list of IVT of given account, type,
      *          and category ordered by date.
      */
@@ -187,10 +180,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
             : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  account the account to be matched against.
-     *  @param  type    either "Expense" or "Income".
-     *  @param  start   the start Date to be compared with.
-     *  @param  end     the end Date to be compared with.
      *  @return LiveData obj holding list of IVT of given account, type, and dates ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  
@@ -201,11 +190,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
             : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  account the account to be matched against.
-     *  @param  type    either "Expense" or "Income".
-     *  @param  category the category to be matched against.
-     *  @param  start   the start Date to be compared with.
-     *  @param  end     the end Date to be compared with.
      *  @return LiveData obj holding list of IVT of given account, type,
      *          category, and dates ordered by date.
      */
@@ -218,7 +202,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
                            start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  type either "Expense" or "Income".
      *  @return LiveData obj holding list of IVT of given type ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  
@@ -228,8 +211,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdT(type : String?) : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  type     either "Expense" or "Income".
-     *  @param  category the category to be matched against.
      *  @return LiveData obj holding list of IVT of given type and category ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  
@@ -239,9 +220,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdTC(type : String?, category : String?) : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  type     either "Expense" or "Income".
-     *  @param  start    the start Date to be compared with.
-     *  @param  end      the end Date to be compared with.
      *  @return LiveData obj holding list of IVT of given type and dates ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  
@@ -252,10 +230,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
             : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  type     either "Expense" or "Income".
-     *  @param  category the category to be matched against.
-     *  @param  start    the start Date to be compared with.
-     *  @param  end      the end Date to be compared with.
      *  @return LiveData obj holding list of IVT of given type, category, and dates ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  
@@ -266,8 +240,6 @@ abstract class TransactionDao : BaseDao<Transaction>() {
             : LiveData<List<ItemViewTransaction>>
 
     /**
-     *  @param  start the start Date to be compared with.
-     *  @param  end   the end Date to be compared with.
      *  @return LiveData obj holding list of IVT of given dates ordered by date.
      */
     @Query("""SELECT id, title, date, account, total, type, category  

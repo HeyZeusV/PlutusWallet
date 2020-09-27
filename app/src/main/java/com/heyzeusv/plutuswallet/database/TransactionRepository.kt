@@ -109,53 +109,27 @@ class TransactionRepository private constructor(context : Context){
     /**
      *  Account Queries
      */
-    fun getLDAccounts() : LiveData<List<Account>> = accountDao.getLDAccounts()
-    suspend fun getAccountSizeAsync()  : Deferred<Int?>                = withContext(Dispatchers.IO) {async {accountDao.getAccountSize()}}
     suspend fun getAccountNamesAsync() : Deferred<MutableList<String>> = withContext(Dispatchers.IO) {async {accountDao.getAccountNames()}}
+    suspend fun getAccountSizeAsync()  : Deferred<Int>                 = withContext(Dispatchers.IO) {async {accountDao.getAccountSize()}}
     suspend fun deleteAccount(account : Account) : Job = withContext(Dispatchers.IO) {launch {accountDao.delete(account)}}
     suspend fun insertAccount(account : Account) : Job = withContext(Dispatchers.IO) {launch {accountDao.insert(account)}}
     suspend fun updateAccount(account : Account) : Job = withContext(Dispatchers.IO) {launch {accountDao.update(account)}}
+    fun getLDAccounts() : LiveData<List<Account>> = accountDao.getLDAccounts()
 
     /**
      *  Category Queries
      */
-    fun getLDCategoriesByType(type : String) : LiveData<List<Category>> = categoryDao.getLDCategoriesByType(type)
-    suspend fun getCategoriesByTypeAsync(type : String) : Deferred<MutableList<String>> = withContext(Dispatchers.IO) {async {categoryDao.getCategoriesByType(type)}}
-    suspend fun getCategorySizeAsync()                  : Deferred<Int?>                = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize()}}
-    suspend fun deleteCategory(category : Category) : Job = withContext(Dispatchers.IO) {launch {categoryDao.delete(category)}}
-    suspend fun insertCategory(category : Category) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(category)}}
-    suspend fun updateCategory(category : Category) : Job = withContext(Dispatchers.IO) {launch {categoryDao.update(category)}}
+    suspend fun getCategoryNamesByTypeAsync(type : String) : Deferred<MutableList<String>> = withContext(Dispatchers.IO) {async {categoryDao.getCategoryNamesByType(type)}}
+    suspend fun getCategorySizeAsync()                     : Deferred<Int>                 = withContext(Dispatchers.IO) {async {categoryDao.getCategorySize()}}
+    suspend fun deleteCategory  (category : Category) : Job = withContext(Dispatchers.IO) {launch {categoryDao.delete(category)}}
+    suspend fun insertCategory  (category : Category) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(category)}}
+    suspend fun updateCategory  (category : Category) : Job = withContext(Dispatchers.IO) {launch {categoryDao.update(category)}}
     suspend fun insertCategories(categories : List<Category>) : Job = withContext(Dispatchers.IO) {launch {categoryDao.insert(categories)}}
-
+    fun getLDCategoriesByType(type : String) : LiveData<List<Category>> = categoryDao.getLDCategoriesByType(type)
 
     /**
      *  Transaction Queries
      */
-    /**
-     *  Ld = LiveData
-     *  Ct = CategoryTotals
-     *  A  = Account
-     *  C  = Category
-     *  D  = Date
-     *  T  = Type
-     */
-    fun getLd    (                                                                                 ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLd    (                                   )
-    fun getLdA   (account : String?                                                                ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdA   (account                            )
-    fun getLdAT  (account : String?, type : String?                                                ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdAT  (account, type                      )
-    fun getLdAD  (account : String?,                                     start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdAD  (account,                 start, end)
-    fun getLdATC (account : String?, type : String?, category : String?                            ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdATC (account, type, category            )
-    fun getLdATD (account : String?, type : String?,                     start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdATD (account, type,           start, end)
-    fun getLdATCD(account : String?, type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdATCD(account, type, category, start, end)
-    fun getLdT   (                   type : String?                                                ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdT   (         type                      )
-    fun getLdTC  (                   type : String?, category : String?                            ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTC  (         type, category            )
-    fun getLdTD  (                   type : String?,                     start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTD  (         type,           start, end)
-    fun getLdTCD (                   type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTCD (         type, category, start, end)
-    fun getLdD   (                                                       start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdD   (                         start, end)
-    fun getLdCt  (                                             ) : LiveData<List<CategoryTotals>> = transactionDao.getLdCt  (                   )
-    fun getLdCtA (account : String?                            ) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtA (account            )
-    fun getLdCtD (                   start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtD (         start, end)
-    fun getLdCtAD(account : String?, start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtAD(account, start, end)
-    fun getLDTransaction     (id   : Int   ) : LiveData<Transaction?> = transactionDao.getLDTransaction     (id  )
     suspend fun getDistinctAccountsAsync  (                  ) : Deferred<List<String>>      = withContext(Dispatchers.IO) {async {transactionDao.getDistinctAccounts()}}
     suspend fun getDistinctCatsByTypeAsync(type : String     ) : Deferred<List<String>>      = withContext(Dispatchers.IO) {async {transactionDao.getDistinctCatsByType(type)}}
     suspend fun getFutureTransactionsAsync(currentDate : Date) : Deferred<List<Transaction>> = withContext(Dispatchers.IO) {async {transactionDao.getFutureTransactions(currentDate)}}
@@ -164,6 +138,31 @@ class TransactionRepository private constructor(context : Context){
     suspend fun deleteTransaction (transaction  : Transaction)       : Job = withContext(Dispatchers.IO) {launch {transactionDao.delete(transaction)}}
     suspend fun upsertTransaction (transaction  : Transaction)       : Job = withContext(Dispatchers.IO) {launch {transactionDao.upsert(transaction)}}
     suspend fun upsertTransactions(transactions : List<Transaction>) : Job = withContext(Dispatchers.IO) {launch {transactionDao.upsert(transactions)}}
+    /**
+     *  Ld = LiveData
+     *  Ct = CategoryTotals
+     *  A  = Account
+     *  C  = Category
+     *  D  = Date
+     *  T  = Type
+     */
+    fun getLDTransaction(id : Int) : LiveData<Transaction?> = transactionDao.getLDTransaction(id)
+    fun getLd    (                                                                                 ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLd    (                                   )
+    fun getLdA   (account : String?                                                                ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdA   (account                            )
+    fun getLdAT  (account : String?, type : String?                                                ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdAT  (account, type                      )
+    fun getLdAD  (account : String?,                                     start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdAD  (account,                 start, end)
+    fun getLdATC (account : String?, type : String?, category : String?                            ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdATC (account, type, category            )
+    fun getLdATD (account : String?, type : String?,                     start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdATD (account, type,           start, end)
+    fun getLdATCD(account : String?, type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdATCD(account, type, category, start, end)
+    fun getLdD   (                                                       start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdD   (                         start, end)
+    fun getLdT   (                   type : String?                                                ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdT   (         type                      )
+    fun getLdTC  (                   type : String?, category : String?                            ) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTC  (         type, category            )
+    fun getLdTD  (                   type : String?,                     start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTD  (         type,           start, end)
+    fun getLdTCD (                   type : String?, category : String?, start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> = transactionDao.getLdTCD (         type, category, start, end)
+    fun getLdCt  (                                             ) : LiveData<List<CategoryTotals>> = transactionDao.getLdCt  (                   )
+    fun getLdCtA (account : String?                            ) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtA (account            )
+    fun getLdCtAD(account : String?, start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtAD(account, start, end)
+    fun getLdCtD (                   start : Date?, end : Date?) : LiveData<List<CategoryTotals>> = transactionDao.getLdCtD (         start, end)
 
     companion object {
 

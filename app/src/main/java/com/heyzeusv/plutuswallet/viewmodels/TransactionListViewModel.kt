@@ -50,7 +50,7 @@ class TransactionListViewModel : ViewModel() {
 
         viewModelScope.launch {
 
-            val catSize : Int = getCategorySizeAsync().await() ?: 0
+            val catSize : Int = getCategorySizeAsync().await()
 
             if (catSize == 0) {
 
@@ -72,7 +72,7 @@ class TransactionListViewModel : ViewModel() {
                 insertCategories(initialCategories)
             }
 
-            val accSize : Int = getAccountSizeAsync().await() ?: 0
+            val accSize : Int = getAccountSizeAsync().await()
 
             if (accSize == 0) {
 
@@ -214,7 +214,7 @@ class TransactionListViewModel : ViewModel() {
     /**
      *  Account queries
      */
-    private suspend fun getAccountSizeAsync() : Deferred<Int?> {
+    private suspend fun getAccountSizeAsync() : Deferred<Int> {
 
         return  transactionRepository.getAccountSizeAsync()
     }
@@ -227,7 +227,7 @@ class TransactionListViewModel : ViewModel() {
     /**
      *  Category queries
      */
-    private suspend fun getCategorySizeAsync() : Deferred<Int?> {
+    private suspend fun getCategorySizeAsync() : Deferred<Int> {
 
         return transactionRepository.getCategorySizeAsync()
     }
