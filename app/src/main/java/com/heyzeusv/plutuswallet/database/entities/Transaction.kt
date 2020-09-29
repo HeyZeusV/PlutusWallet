@@ -56,4 +56,5 @@ data class Transaction(
     var frequency      : Int        = 1,
     var period         : Int        = 0,
     var futureDate     : Date       = Date(Long.MAX_VALUE),
-    var futureTCreated : Boolean    = false)
+    var futureTCreated : Boolean    = false
+)

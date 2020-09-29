@@ -255,33 +255,33 @@ class TransactionListViewModel : ViewModel() {
      *  @param  end          ending Date for date filter.
      *  @return LiveData object holding list of Transactions.
      */
-    fun filteredTransactionList(account : Boolean?, category : Boolean?, date : Boolean?,
-                                type : String?, accountName : String?, categoryName : String?,
-                                start : Date?, end : Date?) : LiveData<List<ItemViewTransaction>> {
+    fun filteredTransactionList(account : Boolean, category : Boolean, date : Boolean,
+                                type : String, accountName : String, categoryName : String,
+                                start : Date, end : Date) : LiveData<List<ItemViewTransaction>> {
 
         return when {
 
-            account == true && category == true && date == true && categoryName == "All" ->
+            account && category && date && categoryName == "All" ->
                 transactionRepository.getLdATD(accountName, type, start, end)
-            account == true && category == true && date == true ->
+            account && category && date ->
                 transactionRepository.getLdATCD(accountName, type, categoryName, start, end)
-            account == true && category == true && categoryName == "All" ->
+            account && category && categoryName == "All" ->
                 transactionRepository.getLdAT(accountName, type)
-            account == true && category == true ->
+            account && category ->
                 transactionRepository.getLdATC(accountName, type, categoryName)
-            account == true && date == true ->
+            account && date ->
                 transactionRepository.getLdAD(accountName, start, end)
-            account == true ->
+            account ->
                 transactionRepository.getLdA(accountName)
-            category == true && date == true && categoryName == "All" ->
+            category && date && categoryName == "All" ->
                 transactionRepository.getLdTD(type, start, end)
-            category == true && date == true ->
+            category && date ->
                 transactionRepository.getLdTCD(type, categoryName, start, end)
-            category == true && categoryName == "All" ->
+            category && categoryName == "All" ->
                 transactionRepository.getLdT(type)
-            category == true ->
+            category ->
                 transactionRepository.getLdTC(type, categoryName)
-            date == true ->
+            date ->
                 transactionRepository.getLdD(start, end)
             else ->
                 transactionRepository.getLd()

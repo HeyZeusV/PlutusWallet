@@ -11,6 +11,7 @@ import java.util.Date
  *  @param title    title of Transaction.
  *  @param date     Date of Transaction.
  *  @param total    the total amount of Transaction.
+ *  @param account  account this IVT belongs to.
  *  @param type     either "Expense" or "Income".
  *  @param category the name of category selected.
  */
@@ -18,8 +19,8 @@ data class ItemViewTransaction(
     val id       : Int,
     val title    : String,
     val date     : Date,
-    val account  : String,
     val total    : BigDecimal,
+    val account  : String,
     val type     : String,
     val category : String
 )

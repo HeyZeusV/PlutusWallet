@@ -3,7 +3,6 @@ package com.heyzeusv.plutuswallet.database.entities
 import java.text.DecimalFormat
 
 data class SettingsValues(
-
     var currencySymbol   : String        = "",
     var symbolSide       : Boolean       = true,
     var thousandsSymbol  : Char          = ' ',

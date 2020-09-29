@@ -178,11 +178,10 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
                 }
 
                 // updating MutableLiveData value in ViewModel
-                val tInfo =
-                    TransactionInfo(
-                        filterVM.accCheck.value, filterVM.catCheck.value, filterVM.dateCheck.value,
-                        type, filterVM.account.value, cat,
-                        filterVM.startDate.value, filterVM.endDate.value)
+                val tInfo = TransactionInfo(
+                    filterVM.accCheck.value!!, filterVM.catCheck.value!!, filterVM.dateCheck.value!!,
+                    type, filterVM.account.value!!, cat,
+                    filterVM.startDate.value!!, filterVM.endDate.value!!)
                 // updates MutableLiveData, causing Chart/ListFragment refresh
                 cflVM.updateTInfo(tInfo)
                 // if all filters are unchecked

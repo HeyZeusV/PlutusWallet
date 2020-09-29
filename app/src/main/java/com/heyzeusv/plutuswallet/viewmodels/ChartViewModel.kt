@@ -157,16 +157,16 @@ class ChartViewModel : ViewModel() {
      *  @param  fEnd         ending Date for date filter.
      *  @return LiveData object holding list of Transactions.
      */
-    fun filteredCategoryTotals(fAccount : Boolean?, fDate : Boolean?, fAccountName : String?,
-                               fStart : Date?, fEnd : Date?) : LiveData<List<CategoryTotals>> {
+    fun filteredCategoryTotals(fAccount : Boolean, fDate : Boolean, fAccountName : String,
+                               fStart : Date, fEnd : Date) : LiveData<List<CategoryTotals>> {
 
         return when {
 
-            fAccount == true && fDate == true ->
+            fAccount && fDate ->
                 transactionRepository.getLdCtAD(fAccountName, fStart, fEnd)
-            fAccount == true ->
+            fAccount ->
                 transactionRepository.getLdCtA(fAccountName)
-            fDate == true ->
+            fDate ->
                 transactionRepository.getLdCtD(fStart, fEnd)
             else ->
                 transactionRepository.getLdCt()
