@@ -21,45 +21,42 @@ import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 class CFLFragment : BaseFragment() {
 
     // DataBinding
-    private lateinit var binding : FragmentCflBinding
+    private lateinit var binding: FragmentCflBinding
 
     // shared ViewModels
-    private lateinit var cflVM : CFLViewModel
+    private lateinit var cflVM: CFLViewModel
 
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
-                              savedInstanceState : Bundle?) : View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_cfl, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
 
         // this ensures that this is same CFLViewModel as Filter/ChartFragment use
-        cflVM = requireActivity().let {
-
-            ViewModelProvider(it).get(CFLViewModel::class.java)
-        }
+        cflVM = requireActivity().let { ViewModelProvider(it).get(CFLViewModel::class.java) }
 
         // opens NavigationDrawer
         binding.cflTopBar.setNavigationOnClickListener {
-
-            requireActivity().findViewById<DrawerLayout>(R.id.activity_drawer)
+            requireActivity()
+                .findViewById<DrawerLayout>(R.id.activity_drawer)
                 .openDrawer(GravityCompat.START)
         }
 
         // handles menu selection
-        binding.cflTopBar.setOnMenuItemClickListener { item : MenuItem ->
-
-            when (item.itemId) {
-                R.id.cfl_new_tran -> {
-
-                    // creates action with parameters
-                    val action : NavDirections =
-                        CFLFragmentDirections.actionTransaction(-1, true)
-                    findNavController().navigate(action)
-                    // scroll back to top of list
-                    cflVM.filterChanged = true
-                    true
-                }
-                else -> false
+        binding.cflTopBar.setOnMenuItemClickListener { item: MenuItem ->
+            if (item.itemId == R.id.cfl_new_tran) {
+                // creates action with parameters
+                val action: NavDirections =
+                    CFLFragmentDirections.actionTransaction(-1, true)
+                findNavController().navigate(action)
+                // scroll back to top of list
+                cflVM.filterChanged = true
+                true
+            } else {
+                false
             }
         }
 

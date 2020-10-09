@@ -16,14 +16,16 @@ import com.heyzeusv.plutuswallet.databinding.FragmentAboutBinding
 class AboutFragment : Fragment() {
 
     // DataBinding
-    private lateinit var binding : FragmentAboutBinding
+    private lateinit var binding: FragmentAboutBinding
 
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
-                              savedInstanceState : Bundle?) : View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_about, container, false)
-
         return binding.root
     }
 
@@ -31,62 +33,51 @@ class AboutFragment : Fragment() {
         super.onStart()
 
         // navigates user back to CFLFragment
-        binding.aboutTopBar.setNavigationOnClickListener {
-
-            requireActivity().onBackPressed()
-        }
+        binding.aboutTopBar.setNavigationOnClickListener { requireActivity().onBackPressed() }
 
         // setting up click listeners that display/hide text
         // have to change some constraints in order to properly display text
         binding.aboutChangelogMb.setOnClickListener {
-
-            when (binding.aboutChangelogSv.visibility) {
-                View.GONE -> {
-                    binding.aboutChangelogSv.visibility = View.VISIBLE
-                    setNewConstraints(R.id.about_developer_tv, R.id.spacer5)
-                }
-                else -> {
-                    binding.aboutChangelogSv.visibility = View.GONE
-                    setNewConstraints(R.id.about_developer_tv, R.id.spacer4)
-                }
+            if (binding.aboutChangelogSv.visibility == View.GONE) {
+                binding.aboutChangelogSv.visibility = View.VISIBLE
+                setNewConstraints(R.id.about_developer_tv, R.id.spacer5)
+            } else {
+                binding.aboutChangelogSv.visibility = View.GONE
+                setNewConstraints(R.id.about_developer_tv, R.id.spacer4)
             }
         }
 
         binding.aboutCiMb.setOnClickListener {
-
-            when (binding.aboutCiSv.visibility) {
-                View.GONE -> {
-                    binding.aboutCiSv.visibility = View.VISIBLE
-                    setNewConstraints(R.id.about_mpc_tv, R.id.spacer2)
-                }
-                else -> {
-                    binding.aboutCiSv.visibility = View.GONE
-                    setNewConstraints(R.id.about_mpc_tv, R.id.spacer1)
-                }
+            if (binding.aboutCiSv.visibility == View.GONE) {
+                binding.aboutCiSv.visibility = View.VISIBLE
+                setNewConstraints(R.id.about_mpc_tv, R.id.spacer2)
+            } else {
+                binding.aboutCiSv.visibility = View.GONE
+                setNewConstraints(R.id.about_mpc_tv, R.id.spacer1)
             }
         }
 
         binding.aboutMpcMb.setOnClickListener {
-
-            binding.aboutMpcSv.visibility = when (binding.aboutMpcSv.visibility) {
-                View.GONE -> View.VISIBLE
-                else      -> View.GONE
+            binding.aboutMpcSv.visibility = if (binding.aboutMpcSv.visibility == View.GONE) {
+                View.VISIBLE
+            } else {
+                View.GONE
             }
         }
     }
 
     /**
-     *  Changes the constraints of the given View Ids.
-     *
-     *  @param mainView TextView to be displayed
-     *  @param spacer   Id of view used to give proper spacing of mainView.
+     *  Changes the constraints of [mainView], the TextView to be displayed and
+     *  of [spacer], the empty TextView used to give proper spacing to [mainView].
      */
-    private fun setNewConstraints(mainView : Int, spacer : Int) {
+    private fun setNewConstraints(mainView: Int, spacer: Int) {
 
         val constraints = ConstraintSet()
         constraints.clone(binding.aboutConstraint)
-        constraints.connect(mainView, ConstraintSet.TOP,
-        spacer, ConstraintSet.BOTTOM, 0)
+        constraints.connect(
+            mainView, ConstraintSet.TOP,
+            spacer, ConstraintSet.BOTTOM, 0
+        )
         constraints.applyTo(binding.aboutConstraint)
     }
 }

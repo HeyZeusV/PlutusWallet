@@ -1,4 +1,4 @@
- package com.heyzeusv.plutuswallet.fragments
+package com.heyzeusv.plutuswallet.fragments
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface
@@ -24,7 +24,7 @@ import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
 
-private const val DIALOG_DATE  = "DialogDate"
+private const val DIALOG_DATE = "DialogDate"
 private const val REQUEST_DATE = 0
 
 /**
@@ -34,25 +34,25 @@ private const val REQUEST_DATE = 0
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // DataBinding
-    private lateinit var binding : FragmentTransactionBinding
+    private lateinit var binding: FragmentTransactionBinding
 
     // provides instance of ViewModel
-    private val tranVM : TransactionViewModel by lazy {
+    private val tranVM: TransactionViewModel by lazy {
         ViewModelProvider(this).get(TransactionViewModel::class.java)
     }
 
     // arguments from Navigation
-    private val args : TransactionFragmentArgs by navArgs()
+    private val args: TransactionFragmentArgs by navArgs()
 
     // arguments passed
-    private var tranId  : Int     = -1
-    private var fromFab : Boolean = false
+    private var tranId: Int = -1
+    private var fromFab: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // retrieve arguments
-        tranId  = args.tranId
+        tranId = args.tranId
         fromFab = args.fromFab
 
         // retrieves Transaction if exists
@@ -61,20 +61,24 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         // array used by PeriodSpinner
         tranVM.periodArray.value = listOf(
             getString(R.string.period_days), getString(R.string.period_weeks),
-            getString(R.string.period_months), getString(R.string.period_years))
+            getString(R.string.period_months), getString(R.string.period_years)
+        )
 
         tranVM.prepareLists(getString(R.string.account_create), getString(R.string.category_create))
     }
 
     @SuppressLint("RtlHardcoded")
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
-                              savedInstanceState : Bundle?) : View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
-        binding.tranVM         = tranVM
-        binding.setVals        = setVals
+        binding.tranVM = tranVM
+        binding.setVals = setVals
 
         return binding.root
     }
@@ -83,44 +87,41 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // register an observer on LiveData instance and tie life to this component
-        // execute code whenever LiveData gets updated
-        tranVM.tranLD.observe(viewLifecycleOwner, { transaction : Transaction? ->
-
+        tranVM.tranLD.observe(viewLifecycleOwner, { transaction: Transaction? ->
             // assigns new Transaction if null, which will cause observer to be called again
             // then assigns values from Transaction to LiveData used by XML
-            when (transaction) {
-                null -> tranVM.tranLD.value = Transaction()
-                else -> {
-                    tranVM.account.value = transaction.account
-                    // Date to String
-                    tranVM.date.value =
-                        DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
-                    // BigDecimal to String
-                    tranVM.total.value = when {
-                        setVals.decimalPlaces -> when (transaction.total.toString()) {
-                            "0"    -> ""
-                            "0.00" -> ""
-                            else   -> Utils.formatDecimal(transaction.total,
-                                setVals.thousandsSymbol, setVals.decimalSymbol)
-                        }
-                        else -> when (transaction.total.toString()) {
-                            "0"  -> ""
-                            else -> Utils.formatInteger(transaction.total, setVals.thousandsSymbol)
-                        }
+            if (transaction == null) {
+                tranVM.tranLD.value = Transaction()
+            } else {
+                tranVM.account.value = transaction.account
+                // Date to String
+                tranVM.date.value =
+                    DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
+                // BigDecimal to String
+                tranVM.total.value = if (setVals.decimalPlaces) {
+                    when (transaction.total.toString()) {
+                        "0" -> ""
+                        "0.00" -> ""
+                        else -> Utils.formatDecimal(
+                            transaction.total,
+                            setVals.thousandsSymbol, setVals.decimalSymbol
+                        )
                     }
-                    when(transaction.type) {
-                        "Expense" -> {
-                            tranVM.checkedChip.value = R.id.tran_expense_chip
-                            tranVM.expenseCat.value  = transaction.category
-                        }
-                        else -> {
-                            tranVM.checkedChip.value = R.id.tran_income_chip
-                            tranVM.incomeCat.value   = transaction.category
-                        }
+                } else {
+                    if (transaction.total.toString() == "0") {
+                        ""
+                    } else {
+                        Utils.formatInteger(transaction.total, setVals.thousandsSymbol)
                     }
-                    tranVM.repeatCheck.value = transaction.repeating
                 }
+                if (transaction.type == "Expense") {
+                    tranVM.checkedChip.value = R.id.tran_expense_chip
+                    tranVM.expenseCat.value = transaction.category
+                } else {
+                    tranVM.checkedChip.value = R.id.tran_income_chip
+                    tranVM.incomeCat.value = transaction.category
+                }
+                tranVM.repeatCheck.value = transaction.repeating
             }
         })
 
@@ -128,26 +129,20 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
          *  Triggered whenever user changes selection in Account/Category Spinners.
          *  Launches dialog whenever "Create New.." entry is selected.
          */
-        tranVM.account.observe(viewLifecycleOwner, { account : String ->
-
+        tranVM.account.observe(viewLifecycleOwner, { account: String ->
             if (account == getString(R.string.account_create)) {
-
                 createDialog(binding.tranAccount, 0)
             }
         })
 
-        tranVM.expenseCat.observe(viewLifecycleOwner, { category : String ->
-
+        tranVM.expenseCat.observe(viewLifecycleOwner, { category: String ->
             if (category == getString(R.string.category_create)) {
-
                 createDialog(binding.tranExpenseCat, 1)
             }
         })
 
-        tranVM.incomeCat.observe(viewLifecycleOwner, { category : String ->
-
+        tranVM.incomeCat.observe(viewLifecycleOwner, { category: String ->
             if (category == getString(R.string.category_create)) {
-
                 createDialog(binding.tranIncomeCat, 1)
             }
         })
@@ -160,9 +155,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
         // Launches DatePickerFragment which is essentially a Calender dialog
         tranVM.dateOnClick.value = View.OnClickListener {
-
             DatePickerFragment.newInstance(tranVM.tranLD.value!!.date).apply {
-
                 // fragment that will be target and request code
                 setTargetFragment(this@TransactionFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
@@ -171,154 +164,136 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         }
 
         // navigates user back to CFLFragment
-        binding.tranTopBar.setNavigationOnClickListener {
+        binding.tranTopBar.setNavigationOnClickListener { requireActivity().onBackPressed() }
 
-            requireActivity().onBackPressed()
-        }
+        binding.tranTopBar.setOnMenuItemClickListener { item: MenuItem ->
+            if (item.itemId == R.id.transaction_save) {
+                // reassigns LiveData values that couldn't be used directly from Transaction
+                // back to it and saves or updates Transaction
+                tranVM.tranLD.value?.let {
+                    // assigns new id if new Transaction
+                    if (fromFab) it.id = tranVM.maxId + 1
 
-        binding.tranTopBar.setOnMenuItemClickListener { item : MenuItem ->
+                    // gives Transaction simple title if user doesn't enter any
+                    if (it.title.trim().isEmpty()) it.title =
+                        getString(R.string.transaction_empty_title) + it.id
 
-            when (item.itemId) {
-                R.id.transaction_save -> {
+                    // is empty if account hasn't been changed so defaults to first account
+                    it.account = if (tranVM.account.value == "") {
+                        tranVM.accountList.value!![0]
+                    } else {
+                        tranVM.account.value!!
+                    }
 
-                    // reassigns LiveData values that couldn't be used directly from Transaction back to it
-                    // and saves or updates Transaction
-                    tranVM.tranLD.value?.let {
+                    // converts the totalField from String into BigDecimal
+                    it.total = when {
+                        tranVM.total.value!!.isEmpty() && setVals.decimalPlaces ->
+                            BigDecimal("0.00")
+                        tranVM.total.value!!.isEmpty() -> BigDecimal("0")
+                        else -> BigDecimal(
+                            tranVM.total.value!!
+                                .replace(setVals.thousandsSymbol.toString(), "")
+                                .replace(setVals.decimalSymbol.toString(), ".")
+                        )
+                    }
 
-                        // assigns new id if new Transaction
-                        if (fromFab) it.id = tranVM.maxId + 1
-
-                        // gives Transaction simple title if user doesn't enter any
-                        if (it.title.trim().isEmpty()) it.title =
-                            getString(R.string.transaction_empty_title) + it.id
-
-                        // is empty if account hasn't been changed so defaults to first account
-                        it.account = when (tranVM.account.value) {
-                            "" -> tranVM.accountList.value!![0]
-                            else -> tranVM.account.value!!
+                    // sets type depending on Chip selected
+                    // cat values are empty if they haven't been changed so defaults to first category
+                    if (tranVM.checkedChip.value == R.id.tran_expense_chip) {
+                        it.type = "Expense"
+                        it.category = if (tranVM.expenseCat.value == "") {
+                            tranVM.expenseCatList.value!![0]
+                        } else {
+                            tranVM.expenseCat.value!!
                         }
-
-                        // converts the totalField from String into BigDecimal
-                        it.total = when {
-                            tranVM.total.value!!.isEmpty() && setVals.decimalPlaces -> BigDecimal("0.00")
-                            tranVM.total.value!!.isEmpty() -> BigDecimal("0")
-                            else -> BigDecimal(
-                                tranVM.total.value!!
-                                    .replace(setVals.thousandsSymbol.toString(), "")
-                                    .replace(setVals.decimalSymbol.toString(), ".")
-                            )
-                        }
-
-                        // sets type depending on Chip selected
-                        // cat values are empty if they haven't been changed so defaults to first category
-                        when (tranVM.checkedChip.value) {
-                            R.id.tran_expense_chip -> {
-                                it.type = "Expense"
-                                it.category = when (tranVM.expenseCat.value) {
-                                    "" -> tranVM.expenseCatList.value!![0]
-                                    else -> tranVM.expenseCat.value!!
-                                }
-                            }
-                            else -> {
-                                it.type = "Income"
-                                it.category = when (tranVM.incomeCat.value) {
-                                    "" -> tranVM.incomeCatList.value!![0]
-                                    else -> tranVM.incomeCat.value!!
-                                }
-                            }
-                        }
-
-                        it.repeating = tranVM.repeatCheck.value!!
-                        if (it.repeating) it.futureDate = tranVM.createFutureDate()
-
-                        // frequency must always be at least 1
-                        if (it.frequency < 1) it.frequency = 1
-
-                        launch {
-
-                            when {
-                                // AlertDialog that asks user if they want Transaction to repeat again
-                                it.futureTCreated && tranVM.dateChanged && it.repeating -> {
-                                    val posFun = DialogInterface.OnClickListener { _, _ ->
-
-                                        it.futureTCreated = false
-                                        launch { tranVM.upsertTransaction(it) }
-                                        createSnackbar()
-                                    }
-                                    val negFun = DialogInterface.OnClickListener { _, _ ->
-
-                                        tranVM.dateChanged = false
-                                        launch { tranVM.upsertTransaction(it) }
-                                        createSnackbar()
-                                    }
-
-                                    AlertDialogCreator.alertDialog(
-                                        requireContext(),
-                                        getString(R.string.alert_dialog_future_transaction),
-                                        getString(R.string.alert_dialog_future_transaction_warning),
-                                        getString(R.string.alert_dialog_yes), posFun,
-                                        getString(R.string.alert_dialog_no), negFun
-                                    )
-                                }
-                                // upsert Transaction
-                                else -> {
-                                    tranVM.upsertTransaction(it)
-                                    createSnackbar()
-                                    tranVM.loadTransaction(it.id)
-                                }
-                            }
+                    } else {
+                        it.type = "Income"
+                        it.category = if (tranVM.incomeCat.value == "") {
+                            tranVM.incomeCatList.value!![0]
+                        } else {
+                            tranVM.incomeCat.value!!
                         }
                     }
-                    true
+
+                    it.repeating = tranVM.repeatCheck.value!!
+                    if (it.repeating) it.futureDate = tranVM.createFutureDate()
+                    // frequency must always be at least 1
+                    if (it.frequency < 1) it.frequency = 1
+
+                    // coroutine that Save/Updates/warns user of FutureDate
+                    launch {
+                        if (it.futureTCreated && tranVM.dateChanged && it.repeating) {
+                            // AlertDialog that asks user if they want Transaction to repeat again
+                            val posFun = DialogInterface.OnClickListener { _, _ ->
+                                it.futureTCreated = false
+                                launch { tranVM.upsertTransaction(it) }
+                                createSnackbar()
+                            }
+                            val negFun = DialogInterface.OnClickListener { _, _ ->
+                                tranVM.dateChanged = false
+                                launch { tranVM.upsertTransaction(it) }
+                                createSnackbar()
+                            }
+                            AlertDialogCreator.alertDialog(
+                                requireContext(),
+                                getString(R.string.alert_dialog_future_transaction),
+                                getString(R.string.alert_dialog_future_transaction_warning),
+                                getString(R.string.alert_dialog_yes), posFun,
+                                getString(R.string.alert_dialog_no), negFun
+                            )
+                        } else {
+                            // upsert Transaction
+                            tranVM.upsertTransaction(it)
+                            createSnackbar()
+                            tranVM.loadTransaction(it.id)
+                        }
+                    }
                 }
-                else -> false
+                true
+            } else {
+                false
             }
         }
     }
 
     /**
      *  Creates AlertDialog when user selects "Create New ..."
-     *
-     *  @param spinner Spinner to be applied to.
-     *  @param type    0 = Account, 1 = Category.
+     *  in [type] (Account/Category) of [spinner].
      */
     @ExperimentalStdlibApi
-    private fun createDialog(spinner : Spinner, type : Int) {
+    private fun createDialog(spinner: Spinner, type: Int) {
 
         // inflates view that holds EditText
-        val viewInflated : View = LayoutInflater.from(context)
+        val viewInflated: View = LayoutInflater.from(context)
             .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
         // the EditText to be used
-        val input : EditText = viewInflated.findViewById(R.id.dialog_input)
-
-        val title : String = when (type) {
-            0    -> getString(R.string.account_create)
-            else -> getString(R.string.category_create)
+        val input: EditText = viewInflated.findViewById(R.id.dialog_input)
+        val title: String = if (type == 0) {
+            getString(R.string.account_create)
+        } else {
+            getString(R.string.category_create)
         }
 
         // Listeners
-        val cancelListener = DialogInterface.OnCancelListener {
-
-            spinner.setSelection(0)
-        }
+        val cancelListener = DialogInterface.OnCancelListener { spinner.setSelection(0) }
         val negListener = DialogInterface.OnClickListener { _, _ ->
-
             spinner.setSelection(0)
         }
         val posListener = DialogInterface.OnClickListener { _, _ ->
-
-            when (type) {
-                0    -> tranVM.insertAccount(input.text.toString(), getString(R.string.account_create))
-                else -> tranVM.insertCategory(input.text.toString(), getString(R.string.category_create))
+            if (type == 0) {
+                tranVM.insertAccount(input.text.toString(), getString(R.string.account_create))
+            } else {
+                tranVM.insertCategory(input.text.toString(), getString(R.string.category_create))
             }
         }
 
-        AlertDialogCreator.alertDialogInputCancelable(requireContext(),
-            title,
-            viewInflated,
+        AlertDialogCreator.alertDialogInputCancelable(
+            requireContext(),
+            title, viewInflated,
             getString(R.string.alert_dialog_save), posListener,
             getString(R.string.alert_dialog_cancel), negListener,
-            cancelListener)
+            cancelListener
+        )
     }
 
     /**
@@ -326,21 +301,21 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
      */
     private fun createSnackbar() {
 
-        val savedBar : Snackbar = Snackbar.make(binding.root,
-            getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT)
+        val savedBar: Snackbar = Snackbar.make(
+            binding.root,
+            getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT
+        )
         savedBar.anchorView = binding.tranAnchor
         savedBar.show()
     }
 
     /**
-     *  Will update Transaction date with date selected from DatePickerFragment.
-     *
-     *  @param date the date selected by the user.
+     *  Will update Transaction date with [date] selected from DatePickerFragment.
      */
-    override fun onDateSelected(date : Date) {
+    override fun onDateSelected(date: Date) {
 
         tranVM.dateChanged = tranVM.tranLD.value!!.date != date
         tranVM.tranLD.value!!.date = date
-        tranVM.date.value  = DateFormat.getDateInstance(setVals.dateFormat).format(date)
+        tranVM.date.value = DateFormat.getDateInstance(setVals.dateFormat).format(date)
     }
 }

@@ -20,27 +20,24 @@ import kotlin.coroutines.CoroutineContext
  */
 abstract class BaseFragment : Fragment(), CoroutineScope {
 
-    private lateinit var job : Job
+    private lateinit var job: Job
 
     // SharedPreferences
-    protected lateinit var sharedPreferences : SharedPreferences
+    protected lateinit var sharedPref: SharedPreferences
 
-    protected var setVals : SettingsValues = SettingsValues()
+    protected var setVals: SettingsValues = SettingsValues()
 
-    override val coroutineContext : CoroutineContext
+    override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
 
-    val ioContext : CoroutineContext
-        get() = job + Dispatchers.IO
-
     @SuppressLint("CommitPrefEdits")
-    override fun onCreate(savedInstanceState : Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         job = Job()
 
-        sharedPreferences = PreferenceHelper.sharedPrefs(requireActivity())
-        setVals           = Utils.prepareSettingValues(sharedPreferences)
+        sharedPref = PreferenceHelper.sharedPrefs(requireActivity())
+        setVals = Utils.prepareSettingValues(sharedPref)
     }
 
     override fun onDestroy() {

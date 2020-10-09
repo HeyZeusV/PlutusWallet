@@ -15,8 +15,8 @@ import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.FilterViewModel
 import java.util.Date
 
-private const val DIALOG_DATE    = "DialogDate"
-private const val REQUEST_DATE   = 0
+private const val DIALOG_DATE = "DialogDate"
+private const val REQUEST_DATE = 0
 private const val MIDNIGHT_MILLI = 86399999
 
 /**
@@ -25,70 +25,64 @@ private const val MIDNIGHT_MILLI = 86399999
 class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
 
     // DataBinding
-    private lateinit var binding : FragmentFilterBinding
+    private lateinit var binding: FragmentFilterBinding
 
     // booleans used to tell which DateButton was pressed
     private var startButton = false
-    private var endButton   = false
+    private var endButton = false
 
     // shared ViewModel
-    private lateinit var cflVM : CFLViewModel
+    private lateinit var cflVM: CFLViewModel
 
     // provides instance of FilterViewModel
-    private val filterVM : FilterViewModel by lazy {
+    private val filterVM: FilterViewModel by lazy {
         ViewModelProvider(this).get(FilterViewModel::class.java)
     }
 
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?,
-                              savedInstanceState : Bundle?) : View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_filter, container, false)
         binding.lifecycleOwner = activity
-        binding.filterVM       = filterVM
-
-        val view : View = binding.root
+        binding.filterVM = filterVM
 
         // sending data that requires context to ViewModel
-        filterVM.all     = getString(R.string.category_all)
-        filterVM.apply   = getString(R.string.filter_apply)
-        filterVM.end     = getString(R.string.filter_end)
+        filterVM.all = getString(R.string.category_all)
+        filterVM.apply = getString(R.string.filter_apply)
+        filterVM.end = getString(R.string.filter_end)
         filterVM.expense = getString(R.string.type_expense)
-        filterVM.income  = getString(R.string.type_income)
-        filterVM.reset   = getString(R.string.filter_reset)
-        filterVM.start   = getString(R.string.filter_start)
-        filterVM.type    = getString(R.string.filter_type)
+        filterVM.income = getString(R.string.type_income)
+        filterVM.reset = getString(R.string.filter_reset)
+        filterVM.start = getString(R.string.filter_start)
+        filterVM.type = getString(R.string.filter_type)
 
         // preparing data/listeners
         filterVM.prepareSpinners()
         prepareListeners()
 
         // this ensures that this is same CFLViewModel as Chart/ListFragment use
-        cflVM = requireActivity().let {
+        cflVM = requireActivity().let { ViewModelProvider(it).get(CFLViewModel::class.java) }
 
-            ViewModelProvider(it).get(CFLViewModel::class.java)
-        }
-
-        return view
+        return binding.root
     }
 
     /**
-     *  Sets the Date selected on dateButtons and saves the Date to be used later in a query.
-     *
-     *  @param date the date the user selected in DatePickerFragment
+     *  Sets the [date] selected on dateButtons and saves the Date to be used later in a query.
      */
     override fun onDateSelected(date: Date) {
 
         if (startButton) {
-
             filterVM.startDate.value = date
-            startButton              = false
+            startButton = false
         }
         if (endButton) {
-
             // adds time to endDate to make it right before midnight of next day
             filterVM.endDate.value = Date(date.time + MIDNIGHT_MILLI)
-            endButton              = false
+            endButton = false
         }
     }
 
@@ -107,23 +101,18 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
 
         // will change which Category Spinner will be displayed
         filterVM.typeOnClick.value = View.OnClickListener {
-
             if (filterVM.typeSelected.value == filterVM.expense) {
-
                 filterVM.typeSelected.value = filterVM.income
-                filterVM.typeVisible .value = false
+                filterVM.typeVisible.value = false
             } else {
-
                 filterVM.typeSelected.value = filterVM.expense
-                filterVM.typeVisible .value = true
+                filterVM.typeVisible.value = true
             }
         }
 
         // starts up DatePickerFragment
         filterVM.startOnClick.value = View.OnClickListener {
-
             DatePickerFragment.newInstance(filterVM.startDate.value!!).apply {
-
                 // fragment that will be target and request code
                 setTargetFragment(this@FilterFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
@@ -134,9 +123,7 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
 
         // starts up DatePickerFragment
         filterVM.endOnClick.value = View.OnClickListener {
-
             DatePickerFragment.newInstance(filterVM.endDate.value!!).apply {
-
                 // fragment that will be target and request code
                 setTargetFragment(this@FilterFragment, REQUEST_DATE)
                 // want requireFragmentManager from TransactionFragment, so need outer scope
@@ -146,47 +133,44 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
         }
 
         filterVM.actionOnClick.value = View.OnClickListener {
-
-            // startDate must be before endDate else it displays Toast warning and doesn't apply filters
-            if (filterVM.startDate.value!! > filterVM.endDate.value!! && filterVM.dateCheck.value!!) {
-
-                val dateBar : Snackbar = Snackbar.make(it,
-                    getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT)
+            // startDate must be before endDate else it displays warning and doesn't apply filters
+            if (filterVM.startDate.value!! > filterVM.endDate.value!!
+                && filterVM.dateCheck.value!!
+            ) {
+                val dateBar: Snackbar = Snackbar.make(
+                    it,
+                    getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT
+                )
                 dateBar.show()
             } else {
-
-                var cat  : String
-                val type : String
+                var cat: String
+                val type: String
                 // sets type and category applied
-                when (filterVM.typeSelected.value) {
-
-                    getString(R.string.type_expense) -> {
-
-                        type = "Expense"
-                        cat  = filterVM.exCategory.value!!
-                    }
-                    else -> {
-
-                        type = "Income"
-                        cat  = filterVM.inCategory.value!!
-                    }
+                if (filterVM.typeSelected.value == getString(R.string.type_expense)) {
+                    type = "Expense"
+                    cat = filterVM.exCategory.value!!
+                } else {
+                    type = "Income"
+                    cat = filterVM.inCategory.value!!
                 }
+
                 // translates "All"
-                if (cat == getString(R.string.category_all)) {
-
-                    cat = "All"
-                }
+                if (cat == getString(R.string.category_all)) cat = "All"
 
                 // updating MutableLiveData value in ViewModel
                 val tInfo = TransactionInfo(
                     filterVM.accCheck.value!!, filterVM.catCheck.value!!, filterVM.dateCheck.value!!,
                     type, filterVM.account.value!!, cat,
-                    filterVM.startDate.value!!, filterVM.endDate.value!!)
+                    filterVM.startDate.value!!, filterVM.endDate.value!!
+                )
+
                 // updates MutableLiveData, causing Chart/ListFragment refresh
                 cflVM.updateTInfo(tInfo)
                 // if all filters are unchecked
-                if (!filterVM.accCheck.value!! && !filterVM.catCheck.value!! && !filterVM.dateCheck.value!!) {
-
+                if (!filterVM.accCheck.value!!
+                    && !filterVM.catCheck.value!!
+                    && !filterVM.dateCheck.value!!
+                ) {
                     filterVM.resetFilter()
                 }
                 cflVM.filterChanged = true
