@@ -16,11 +16,11 @@ import java.util.Date
  *  @param category the name of category selected.
  */
 data class ItemViewTransaction(
-    val id       : Int,
-    val title    : String,
-    val date     : Date,
-    val total    : BigDecimal,
-    val account  : String,
-    val type     : String,
-    val category : String
+    val id: Int,
+    val title: String,
+    val date: Date,
+    val total: BigDecimal,
+    val account: String,
+    val type: String,
+    val category: String
 )

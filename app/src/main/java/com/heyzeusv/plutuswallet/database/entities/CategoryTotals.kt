@@ -11,7 +11,7 @@ import java.math.BigDecimal
  *  @param type     either "Expense" or "Income".
  */
 data class CategoryTotals(
-    var category : String,
-    var total    : BigDecimal,
-    var type     : String
+    var category: String,
+    var total: BigDecimal,
+    var type: String
 )

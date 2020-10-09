@@ -14,28 +14,25 @@ import java.util.Date
 class TransactionTypeConverters {
 
     @TypeConverter
-    fun fromDate(date : Date?) : Long? {
+    fun fromDate(date: Date?): Long? {
 
         return date?.time
     }
 
     @TypeConverter
-    fun toDate(millisSinceEpoch : Long?) : Date? {
+    fun toDate(millisSinceEpoch: Long?): Date? {
 
-        return millisSinceEpoch?.let {
-
-            Date(it)
-        }
+        return millisSinceEpoch?.let { Date(it) }
     }
 
     @TypeConverter
-    fun fromBigDecimal(total : BigDecimal?) : String? {
+    fun fromBigDecimal(total: BigDecimal?): String? {
 
         return total?.toString()
     }
 
     @TypeConverter
-    fun toBigDecimal(total : String?) : BigDecimal? {
+    fun toBigDecimal(total: String?): BigDecimal? {
 
         return BigDecimal(total)
     }

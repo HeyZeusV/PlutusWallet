@@ -30,31 +30,31 @@ import java.util.Date
  *  @param futureDate     if repeating true, frequency * period + date.
  *  @param futureTCreated true if this Transaction has had a future Transaction created for it.
  */
-@Entity(foreignKeys = [ForeignKey(entity        = Account::class,
+@Entity(foreignKeys = [ForeignKey(entity = Account::class,
                                   parentColumns = arrayOf("account"),
-                                  childColumns  = arrayOf("account"),
-                                  onUpdate      = CASCADE),
-                       ForeignKey(entity        = Category::class,
+                                  childColumns = arrayOf("account"),
+                                  onUpdate = CASCADE),
+                       ForeignKey(entity = Category::class,
                                   parentColumns = arrayOf("category", "type"),
-                                  childColumns  = arrayOf("category", "type"),
-                                  onUpdate      = CASCADE)],
+                                  childColumns = arrayOf("category", "type"),
+                                  onUpdate = CASCADE)],
         indices = [Index(value = ["category", "type"],
-                         name  = "index_cat_name_type"),
+                         name = "index_cat_name_type"),
                    Index(value = ["account"],
-                         name  = "index_account_name")])
+                         name = "index_account_name")])
 data class Transaction(
     @PrimaryKey(autoGenerate = true)
-    var id             : Int        = 0,
-    var title          : String     = "",
-    var date           : Date       = Utils.startOfDay(Date()),
-    var total          : BigDecimal = BigDecimal("0"),
-    var account        : String     = "",
-    var type           : String     = "Expense",
-    var category       : String     = "",
-    var memo           : String     = "",
-    var repeating      : Boolean    = false,
-    var frequency      : Int        = 1,
-    var period         : Int        = 0,
-    var futureDate     : Date       = Date(Long.MAX_VALUE),
-    var futureTCreated : Boolean    = false
+    var id: Int = 0,
+    var title: String = "",
+    var date: Date = Utils.startOfDay(Date()),
+    var total: BigDecimal = BigDecimal("0"),
+    var account: String = "",
+    var type: String = "Expense",
+    var category: String = "",
+    var memo: String = "",
+    var repeating: Boolean = false,
+    var frequency: Int = 1,
+    var period: Int = 0,
+    var futureDate: Date = Date(Long.MAX_VALUE),
+    var futureTCreated: Boolean = false
 )

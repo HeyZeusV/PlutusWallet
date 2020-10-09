@@ -12,11 +12,11 @@ import androidx.room.PrimaryKey
  *  @param id      unique id of Account.
  *  @param account name of Account.
  */
-@Entity(indices = [Index(value  = ["account"],
-                         name   = "index_account",
+@Entity(indices = [Index(value = ["account"],
+                         name = "index_account",
                          unique = true)])
 data class Account(
     @PrimaryKey(autoGenerate = true)
-    var id      : Int,
-    var account : String
+    var id: Int,
+    var account: String
 )

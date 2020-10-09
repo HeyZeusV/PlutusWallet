@@ -10,32 +10,28 @@ import com.heyzeusv.plutuswallet.fragments.SettingsFragment
  */
 class SettingsActivity : BaseActivity() {
 
-    override fun onCreate(savedInstanceState : Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
         // Create a new fragment transaction, adds fragment, and then commit it
         supportFragmentManager
             .beginTransaction()
-            // container view ID (where fragment's view should appear)
-            // fragment to be added
             .replace(R.id.fragment_set_container, SettingsFragment())
             .commit()
 
-        // displays back button
+        // displays back button on ActionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    override fun onOptionsItemSelected(item : MenuItem?) : Boolean {
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
-        when (item!!.itemId) {
-
+        return if (item!!.itemId == android.R.id.home) {
             // returns user to previous activity if they select back arrow
-            android.R.id.home -> {
-                onBackPressed()
-                return true
-            }
+            onBackPressed()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 }

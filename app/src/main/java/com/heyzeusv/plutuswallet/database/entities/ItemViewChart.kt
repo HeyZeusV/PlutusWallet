@@ -13,11 +13,11 @@ package com.heyzeusv.plutuswallet.database.entities
  *  @param fCatName   string of Category selected from filter.
  */
 data class ItemViewChart(
-    val ctList     : List<CategoryTotals>,
-    val typeTrans  : String,
-    var totalText  : String,
-    val colorArray : List<Int>,
-    val fCategory  : Boolean?,
-    val fCatName   : String?,
-    val fType      : String?
+    val ctList: List<CategoryTotals>,
+    val typeTrans: String,
+    var totalText: String,
+    val colorArray: List<Int>,
+    val fCategory: Boolean?,
+    val fCatName: String?,
+    val fType: String?
 )

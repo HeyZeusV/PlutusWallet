@@ -19,14 +19,13 @@ import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 class MainActivity : BaseActivity() {
 
     // DataBinding
-     lateinit var binding : ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
 
-    override fun onCreate(savedInstanceState : Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // setting up DataBinding
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
         // disables swipe to open drawer
         binding.activityDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
@@ -42,12 +41,10 @@ class MainActivity : BaseActivity() {
         super.onResume()
 
         // loads if language changed
-        val languageChanged : Boolean = sharedPref[Constants.KEY_LANGUAGE_CHANGED, false]!!
+        val languageChanged: Boolean = sharedPref[Constants.KEY_LANGUAGE_CHANGED, false]!!
         if (languageChanged) {
-
             // saving into SharedPreferences
             sharedPref[Constants.KEY_LANGUAGE_CHANGED] = false
-
             // destroys then restarts Activity in order to have updated language
             recreate()
         }
@@ -55,11 +52,11 @@ class MainActivity : BaseActivity() {
 
     override fun onBackPressed() {
 
-        when {
+        if (binding.activityDrawer.isDrawerOpen(GravityCompat.START)) {
             // close drawer if it is open
-            binding.activityDrawer.isDrawerOpen(GravityCompat.START) ->
-                binding.activityDrawer.closeDrawer(GravityCompat.START)
-            else -> super.onBackPressed()
+            binding.activityDrawer.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
         }
     }
 }

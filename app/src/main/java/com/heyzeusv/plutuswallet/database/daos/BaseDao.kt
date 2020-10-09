@@ -20,75 +20,65 @@ import androidx.room.Update
 abstract class BaseDao<T> {
 
     /**
-     *  @param  obj the object to be inserted.
-     *  @return row id or -1 if there is conflict.
+     *  Inserts [obj] into table and returns row id or -1 if there is a conflict.
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insert(obj : T) : Long
+    abstract suspend fun insert(obj: T): Long
 
     /**
-     *  @param  obj list of objects to be inserted.
-     *  @return list of row ids or -1 where there is conflict.
+     *  Inserts [objs] into table and returns row id or -1 if there is a conflict.
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    abstract suspend fun insert(obj : List<T>) : List<Long>
+    abstract suspend fun insert(objs: List<T>): List<Long>
 
     /**
-     *  @param obj the object to be updated.
+     *  Updates [obj].
      */
     @Update
-    abstract suspend fun update(obj : T)
+    abstract suspend fun update(obj: T)
 
     /**
-     *  @param obj list of objects to be updated.
+     *  Updates [objs].
      */
     @Update
-    abstract suspend fun update(obj : List<T>)
+    abstract suspend fun update(objs: List<T>)
 
     /**
-     *  @param obj the object to be deleted.
+     *  Deletes [obj]
      */
     @Delete
-    abstract suspend fun delete(obj : T)
+    abstract suspend fun delete(obj: T)
 
     /**
-     *  Inserts object into database if it doesn't exist.
-     *  Updates object from database if it does exist.
-     *
-     *  @param obj the object to be inserted/updated.
+     *  Inserts [obj] into table if it doesn't exist.
+     *  Updates [obj] from table if it does exist.
      */
     @androidx.room.Transaction
-    open suspend fun upsert(obj : T) {
+    open suspend fun upsert(obj: T) {
 
-        val id : Long = insert(obj)
+        val id: Long = insert(obj)
         if (id == -1L) {
-
             update(obj)
         }
     }
 
     /**
-     *  Inserts objects from an array into database if they don't exist.
-     *  Updates objects from an array from database if they do exist.
-     *
-     *  @param obj the array of objects to be inserted/updated.
+     *  Inserts [objs] into table if they don't exist.
+     *  Updates [objs] from table if they do exist.
      */
     @Transaction
-    open suspend fun upsert(obj : List<T>) {
+    open suspend fun upsert(objs: List<T>) {
 
-        val insertResult : List<Long> = insert(obj)
-        val updateList                = ArrayList<T>()
+        val insertResult: List<Long> = insert(objs)
+        val updateList = ArrayList<T>()
 
-        for (i : Int in insertResult.indices) {
-
+        for (i: Int in insertResult.indices) {
             if (insertResult[i] == -1L) {
-
-                updateList.add(obj[i])
+                updateList.add(objs[i])
             }
         }
 
         if (updateList.isNotEmpty()) {
-
             update(updateList)
         }
     }

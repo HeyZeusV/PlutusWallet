@@ -17,27 +17,27 @@ import com.heyzeusv.plutuswallet.database.entities.Category
 abstract class CategoryDao : BaseDao<Category>() {
 
     /**
-     *  @return list of Category names of type in alphabetical order.
+     *  Returns list of Category names of [type] in alphabetical order.
      */
     @Query("""SELECT category
               FROM category
               WHERE type=(:type)
               ORDER BY category ASC""")
-    abstract suspend fun getCategoryNamesByType(type : String) : MutableList<String>
+    abstract suspend fun getCategoryNamesByType(type: String): MutableList<String>
 
     /**
-     *  @return the size of table.
+     *  Returns the size of table.
      */
     @Query("""SELECT COUNT(*) 
               FROM category""")
-    abstract suspend fun getCategorySize() : Int
+    abstract suspend fun getCategorySize(): Int
 
     /**
-     *  @return LD of list that holds all Categories of type in order of name.
+     *  Returns LD of list that holds all Categories of [type] in order of name.
      */
     @Query("""SELECT *
               FROM category
               WHERE type=(:type)
               ORDER BY category ASC""")
-    abstract fun getLDCategoriesByType(type : String) : LiveData<List<Category>>
+    abstract fun getLDCategoriesByType(type: String): LiveData<List<Category>>
 }

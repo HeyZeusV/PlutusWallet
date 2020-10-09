@@ -15,12 +15,12 @@ import java.util.Date
  *  @param  end          ending Date for date filter.
  */
 data class TransactionInfo(
-    val account      : Boolean = false,
-    val category     : Boolean = false,
-    val date         : Boolean = false,
-    val type         : String  = "",
-    val accountName  : String  = "",
-    val categoryName : String  = "",
-    val start        : Date    = Date(0),
-    val end          : Date    = Date(0)
+    val account: Boolean = false,
+    val category: Boolean = false,
+    val date: Boolean = false,
+    val type: String = "",
+    val accountName: String = "",
+    val categoryName: String = "",
+    val start: Date = Date(0),
+    val end: Date = Date(0)
 )
