@@ -111,7 +111,7 @@ class CategoryFragment : BaseFragment() {
         val input: EditText = viewInflated.findViewById(R.id.dialog_input)
 
         val posListener = DialogInterface.OnClickListener { _, _ ->
-            catVM.insertCategory(input.text.toString())
+            insertCategory(input.text.toString())
         }
 
         AlertDialogCreator.alertDialogInput(
@@ -120,6 +120,26 @@ class CategoryFragment : BaseFragment() {
             getString(R.string.alert_dialog_save), posListener,
             getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing
         )
+    }
+
+    /**
+     *  Checks if Category exists in type list, if not then creates new Category with given [name]
+     *  and type.
+     */
+    private fun insertCategory(name : String) {
+
+        if (catVM.catNames[catVM.listShown].contains(name)) {
+            val existBar: Snackbar = Snackbar.make(
+                binding.root,
+                getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
+            )
+            existBar.anchorView = binding.categoryCi
+            existBar.show()
+        } else {
+            // creates and inserts new Category with name and type depending on which list is shown
+            val category = Category(0, name, if (catVM.listShown == 0) "Expense" else "Income")
+            catVM.insertCategory(category)
+        }
     }
 
     /**

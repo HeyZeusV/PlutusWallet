@@ -14,50 +14,34 @@ class AccountViewModel : ViewModel() {
     /**
      *  Stores handle to TransactionRepository.
      */
-    private val tranRepo : TransactionRepository = TransactionRepository.get()
+    private val tranRepo: TransactionRepository = TransactionRepository.get()
 
     // list of all Account names used to prevent 2 Accounts from having same name
-    var accountNames : List<String> = emptyList()
-
+    var accountNames: List<String> = emptyList()
     // list of Accounts unable to be deleted due to being used
-    var accountsUsed : List<String> = emptyList()
-
-    /**
-     *  Checks if Account exists, if not then creates new Account with given name.
-     *
-     *  @param name name of new Account.
-     */
-    fun insertAccount(name : String) {
-
-        if (!accountNames.contains(name)) {
-
-            // creates and inserts new Account with name
-            val account = Account(0, name)
-            insertAccount(account)
-        }
-    }
+    var accountsUsed: List<String> = emptyList()
 
     /**
      *  Account Queries
      */
-    val accountLD : LiveData<List<Account>> = tranRepo.getLDAccounts()
+    val accountLD: LiveData<List<Account>> = tranRepo.getLDAccounts()
 
-    suspend fun getAccountNamesAsync() : Deferred<MutableList<String>> {
+    suspend fun getAccountNamesAsync(): Deferred<MutableList<String>> {
 
         return tranRepo.getAccountNamesAsync()
     }
 
-    fun deleteAccount(account : Account) : Job = viewModelScope.launch {
+    fun deleteAccount(account: Account): Job = viewModelScope.launch {
 
         tranRepo.deleteAccount(account)
     }
 
-    private fun insertAccount(account : Account) : Job = viewModelScope.launch {
+    fun insertAccount(account: Account): Job = viewModelScope.launch {
 
         tranRepo.insertAccount(account)
     }
 
-    fun updateAccount(account : Account) : Job = viewModelScope.launch {
+    fun updateAccount(account: Account): Job = viewModelScope.launch {
 
         tranRepo.updateAccount(account)
     }
@@ -65,7 +49,7 @@ class AccountViewModel : ViewModel() {
     /**
      *  Transaction Queries
      */
-     suspend fun getDistinctAccountsAsync() : Deferred<List<String>> {
+    suspend fun getDistinctAccountsAsync(): Deferred<List<String>> {
 
         return tranRepo.getDistinctAccountsAsync()
     }

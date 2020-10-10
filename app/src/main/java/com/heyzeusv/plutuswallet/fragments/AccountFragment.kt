@@ -96,7 +96,7 @@ class AccountFragment : BaseFragment() {
         val input: EditText = viewInflated.findViewById(R.id.dialog_input)
 
         val posListener = DialogInterface.OnClickListener { _, _ ->
-            accountVM.insertAccount(input.text.toString())
+            insertAccount(input.text.toString())
         }
 
         AlertDialogCreator.alertDialogInput(
@@ -105,6 +105,25 @@ class AccountFragment : BaseFragment() {
             getString(R.string.alert_dialog_save), posListener,
             getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing
         )
+    }
+
+    /**
+     *  Checks if Account exists, if not then creates new Account with given [name].
+     */
+    private fun insertAccount(name: String) {
+
+        if (accountVM.accountNames.contains(name)) {
+            val existBar: Snackbar = Snackbar.make(
+                binding.root,
+                getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
+            )
+            existBar.anchorView = binding.accountAnchor
+            existBar.show()
+        } else {
+            // creates and inserts new Account with name
+            val account = Account(0, name)
+            accountVM.insertAccount(account)
+        }
     }
 
     /**
