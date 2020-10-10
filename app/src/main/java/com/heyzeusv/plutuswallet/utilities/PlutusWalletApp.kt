@@ -8,7 +8,7 @@ import timber.log.Timber
 /**
  *  Maintains global application state and used to call one-time operations.
  */
-class PlutusWalletApp : Application(){
+class PlutusWalletApp : Application() {
 
     /**
      *  This gets called only once, when application is first started.
@@ -18,7 +18,7 @@ class PlutusWalletApp : Application(){
         super.onCreate()
 
         // plant Timber tree
-        if (BuildConfig.DEBUG) Timber.plant(object:Timber.DebugTree() {
+        if (BuildConfig.DEBUG) Timber.plant(object : Timber.DebugTree() {
             override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
                 super.log(priority, "PW_$tag", message, t)
             }

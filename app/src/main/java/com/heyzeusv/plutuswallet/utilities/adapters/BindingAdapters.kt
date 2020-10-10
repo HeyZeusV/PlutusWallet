@@ -30,48 +30,41 @@ import java.io.InputStreamReader
  *  Will end up splitting into specific files if this gets too large...
  */
 /**
- *  @param cAdapter ChartAdapter to be applied.
+ *  Sets [cAdapter] as ViewPager2 adapter
  */
 @BindingAdapter("setAdapter")
-fun ViewPager2.setChartAdapter(cAdapter : ChartAdapter?) {
+fun ViewPager2.setChartAdapter(cAdapter: ChartAdapter?) {
 
-    cAdapter?.let {
-
-        adapter = cAdapter
-    }
+    cAdapter?.let { adapter = cAdapter }
 }
 
 /**
- *  Sets up PieCharts used in ChartFragment.
- *
- *  @param ivc ItemViewChart object holding data needed to set up graph.
+ *  Sets up PieCharts used in ChartFragment using [ivc] data.
  */
 @BindingAdapter("setUpChart")
-fun PieChart.setUpChart(ivc : ItemViewChart) {
+fun PieChart.setUpChart(ivc: ItemViewChart) {
 
     // no chart to create if ctList is empty
     if (ivc.ctList.isEmpty()) return
 
     // either "Expense" or "Income"
-    val type : String = ivc.ctList[0].type
+    val type: String = ivc.ctList[0].type
 
     // list of values to be displayed in PieChart
-    val pieEntries : List<PieEntry> = ivc.ctList.map { PieEntry(it.total.toFloat(), it.category) }
+    val pieEntries: List<PieEntry> = ivc.ctList.map { PieEntry(it.total.toFloat(), it.category) }
 
     // PieDataSet set up
     val dataSet = PieDataSet(pieEntries, "Transactions")
     // distance between slices
-    dataSet.sliceSpace     = 2.5f
+    dataSet.sliceSpace = 2.5f
     // size of percent value
-    dataSet.valueTextSize  = 13f
+    dataSet.valueTextSize = 13f
     // colors used for slices
     dataSet.colors = ivc.colorArray
     // size of highlighted area
     if (ivc.fCategory == true && ivc.fType == type && ivc.fCatName != "All") {
-
         dataSet.selectionShift = 7.5f
     } else {
-
         dataSet.selectionShift = 0.0f
     }
 
@@ -79,7 +72,6 @@ fun PieChart.setUpChart(ivc : ItemViewChart) {
     val pData = PieData(dataSet)
     // makes values in form of percentages
     pData.setValueFormatter(PercentFormatter(this))
-
     // PieChart set up
     data = pData
     // displays translated type in center of chart
@@ -102,93 +94,82 @@ fun PieChart.setUpChart(ivc : ItemViewChart) {
     setUsePercentValues(true)
     // highlights Category selected if it exists with current filters applied
     if (ivc.fCategory == true && ivc.fType == type && ivc.fCatName != "All") {
-
         // finds position of Category selected in FilterFragment in ctList
-        val position : Int = ivc.ctList.indexOfFirst { it.category == ivc.fCatName }
+        val position: Int = ivc.ctList.indexOfFirst { it.category == ivc.fCatName }
         // -1 = doesn't exist
-        if (position != -1) {
+        if (position != -1) highlightValue(position.toFloat(), 0)
 
-            highlightValue(position.toFloat(), 0)
-        }
     }
     // refreshes PieChart
     invalidate()
 }
 
 /**
- *  @param bool View enabled state.
+ *  Views state depending on [enabled]
  */
 @BindingAdapter("isEnabled")
-fun View.setIsEnabled(bool : Boolean) {
+fun View.setIsEnabled(enabled: Boolean) {
 
-    isEnabled = bool
+    isEnabled = enabled
 }
 
 /**
- *  @param id of chip selected
+ *  Selects Chip with [id] in ChipGroup
  */
 @BindingAdapter("selectedChipId")
-fun ChipGroup.setSelectedChipId(id : Int) {
+fun ChipGroup.setSelectedChipId(id: Int) {
 
     if (id != checkedChipId) check(id)
 }
 
 /**
  *  InverseListener for ChipGroup 2-way DataBinding.
- *
- *  @param inverseBindingListener listener that gets triggered when a chip is selected.
+ *  [inverseBindingListener] gets triggered when a chip is selected.
  */
 @BindingAdapter("selectedChipIdAttrChanged")
-fun ChipGroup.chipIdInverseBindingListener(inverseBindingListener : InverseBindingListener?) {
+fun ChipGroup.chipIdInverseBindingListener(inverseBindingListener: InverseBindingListener?) {
 
-    when (inverseBindingListener) {
-        null -> setOnCheckedChangeListener(null)
-        else -> {
-
-            setOnCheckedChangeListener { group : ChipGroup, _ : Int ->
-
-                // ensures a chip is always selected
-                for (i: Int in 0 until group.childCount) {
-
-                    val chip : View = group.getChildAt(i)
-                    chip.isClickable = chip.id != group.checkedChipId
-                }
-                inverseBindingListener.onChange()
+    if (inverseBindingListener == null) {
+        setOnCheckedChangeListener(null)
+    } else {
+        setOnCheckedChangeListener { group: ChipGroup, _ ->
+            // ensures a chip is always selected
+            for (i: Int in 0 until group.childCount) {
+                val chip: View = group.getChildAt(i)
+                chip.isClickable = chip.id != group.checkedChipId
             }
+            inverseBindingListener.onChange()
         }
     }
 }
 
 /**
- *  Gets called when InverseListener is triggered.
- *
- *  @return selected Chip.
+ *  Returns selected Chip when InverseListener is triggered.
  */
 @InverseBindingAdapter(attribute = "selectedChipId", event = "selectedChipIdAttrChanged")
-fun ChipGroup.getSelectedChipId() : Int {
-
-    return checkedChipId
-}
+fun ChipGroup.getSelectedChipId(): Int = checkedChipId
 
 /**
- *  Sets filter that prevents user from typing decimal symbol when turned off in settings.
- *
- *  @param setVals holds Settings values.
+ *  Sets filter that prevents user from typing decimal symbol when turned off in [setVals].
  */
 @BindingAdapter("filter")
-fun CurrencyEditText.setFilter(setVals : SettingsValues) {
+fun CurrencyEditText.setFilter(setVals: SettingsValues) {
 
     // user selects no decimal places
     if (!setVals.decimalPlaces) {
-
         // filter that prevents user from typing decimalSymbol thus only integers
         filters += object : InputFilter {
 
-            override fun filter(source : CharSequence?, start : Int, end : Int, dest : Spanned?,
-                                dstart : Int, dend : Int) : CharSequence? {
+            override fun filter(
+                source: CharSequence?,
+                start: Int,
+                end: Int,
+                dest: Spanned?,
+                dstart: Int,
+                dend: Int
+            ): CharSequence? {
 
-                for (i : Int in start until end) {
-
+                for (i: Int in start until end) {
                     if (source == setVals.decimalSymbol.toString()) return ""
                 }
                 return null
@@ -198,12 +179,10 @@ fun CurrencyEditText.setFilter(setVals : SettingsValues) {
 }
 
 /**
- *  Changes given text into a clickable link.
- *
- *  @param link string to be changed to Link.
+ *  Changes given text into a clickable [link].
  */
 @BindingAdapter("link")
-fun TextView.setLink(link : String) {
+fun TextView.setLink(link: String) {
 
     // changes HTML string into link
     text = HtmlCompat.fromHtml(link, HtmlCompat.FROM_HTML_MODE_LEGACY)
@@ -212,31 +191,25 @@ fun TextView.setLink(link : String) {
 }
 
 /**
- *  Loads in the file given and displays its text in TextView.
- *
- *  @param file to be read from.
+ *  Loads in the [file] given and displays its text in TextView.
  */
 @BindingAdapter("file")
-fun TextView.loadFile(file : String) {
+fun TextView.loadFile(file: String) {
 
     var fileText = ""
-    var reader : BufferedReader? = null
+    var reader: BufferedReader? = null
 
     try {
-
         // open file and read through it
         reader = BufferedReader(InputStreamReader(context.assets.open(file)))
         fileText = reader.readLines().joinToString("\n")
-    } catch (e : IOException) {
-
+    } catch (e: IOException) {
         e.printStackTrace()
     } finally {
         try {
-
             // close reader
             reader?.close()
-        } catch (e : IOException) {
-
+        } catch (e: IOException) {
             e.printStackTrace()
         }
         // sets text to content from file

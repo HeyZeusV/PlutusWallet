@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.widget.EditText
 import androidx.appcompat.R
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
-import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -26,63 +25,61 @@ import java.util.Locale
  *  @constructor standard EditText constructor
  */
 class CurrencyEditText @JvmOverloads constructor(
-    context : Context, attributeSet : AttributeSet,
-    defStyleAttr : Int = R.attr.editTextStyle) :
-    androidx.appcompat.widget.AppCompatEditText(context, attributeSet, defStyleAttr) {
+    context: Context,
+    attributeSet: AttributeSet,
+    defStyleAttr: Int = R.attr.editTextStyle
+) : androidx.appcompat.widget.AppCompatEditText(context, attributeSet, defStyleAttr) {
 
     private val currencyTextWatcher = CurrencyTextWatcher(this)
 
     // SharedPreference
-    private val sharedPreferences  : SharedPreferences = PreferenceHelper.sharedPrefs(context)
+    private val sharedPref: SharedPreferences = PreferenceHelper.sharedPrefs(context)
 
     // keys from separator symbols
-    private val decimalSymbolKey   : String  = sharedPreferences[Constants.KEY_DECIMAL_SYMBOL  , "period"]!!
-    private val thousandsSymbolKey : String  = sharedPreferences[Constants.KEY_THOUSANDS_SYMBOL, "comma" ]!!
-    private val decimalPlaces      : Boolean = sharedPreferences[Constants.KEY_DECIMAL_PLACES, true]!!
+    private val decimalKey: String = sharedPref[Constants.KEY_DECIMAL_SYMBOL, "period"]!!
+    private val thousandsKey: String = sharedPref[Constants.KEY_THOUSANDS_SYMBOL, "comma"]!!
+    private val decimalPlaces: Boolean = sharedPref[Constants.KEY_DECIMAL_PLACES, true]!!
 
     // formatters
-    private var decimal0Formatter : DecimalFormat = DecimalFormat()
-    private var decimal1Formatter : DecimalFormat = DecimalFormat()
-    private var decimal2Formatter : DecimalFormat = DecimalFormat()
-    private var integerFormatter  : DecimalFormat = DecimalFormat()
+    private var decimal0Formatter: DecimalFormat = DecimalFormat()
+    private var decimal1Formatter: DecimalFormat = DecimalFormat()
+    private var decimal2Formatter: DecimalFormat = DecimalFormat()
+    private var integerFormatter: DecimalFormat = DecimalFormat()
 
     // symbols used
-    private var decimalSymbol   : Char = '.'
-    private var thousandsSymbol : Char = ','
+    private var decimalSymbol: Char = '.'
+    private var thousandsSymbol: Char = ','
 
     init {
 
         // retrieves separator symbols from keys
-        decimalSymbol   = Utils.getSeparatorSymbol(decimalSymbolKey)
-        thousandsSymbol = Utils.getSeparatorSymbol(thousandsSymbolKey)
+        decimalSymbol = SettingsUtils.getSeparatorSymbol(decimalKey)
+        thousandsSymbol = SettingsUtils.getSeparatorSymbol(thousandsKey)
 
         // set up decimal/thousands symbol
         val customSymbols = DecimalFormatSymbols(Locale.US)
-        customSymbols.decimalSeparator  = decimalSymbol
+        customSymbols.decimalSeparator = decimalSymbol
         customSymbols.groupingSeparator = thousandsSymbol
 
         // formatters using custom symbols
-        decimal0Formatter = DecimalFormat("#,##0."  , customSymbols)
-        decimal1Formatter = DecimalFormat("#,##0.#" , customSymbols)
+        decimal0Formatter = DecimalFormat("#,##0.", customSymbols)
+        decimal1Formatter = DecimalFormat("#,##0.#", customSymbols)
         decimal2Formatter = DecimalFormat("#,##0.##", customSymbols)
-        integerFormatter  = DecimalFormat("#,###"   , customSymbols)
+        integerFormatter = DecimalFormat("#,###", customSymbols)
 
         decimal0Formatter.roundingMode = RoundingMode.HALF_UP
         decimal1Formatter.roundingMode = RoundingMode.HALF_UP
         decimal2Formatter.roundingMode = RoundingMode.HALF_UP
-        integerFormatter.roundingMode  = RoundingMode.HALF_UP
+        integerFormatter.roundingMode = RoundingMode.HALF_UP
 
         // forces numpad
         this.setRawInputType(Configuration.KEYBOARD_QWERTY)
     }
 
     /**
-     *  Used to tell when this View is focused by user.
-     *
-     *  @param focused true when user selects this view, false when deselected.
+     *  Used to tell when this View is [focused] by user.
      */
-    override fun onFocusChanged(focused : Boolean, direction : Int, previouslyFocusRect : Rect?) {
-
+    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusRect: Rect?) {
         super.onFocusChanged(focused, direction, previouslyFocusRect)
 
         if (focused) {
@@ -98,51 +95,45 @@ class CurrencyEditText @JvmOverloads constructor(
      *  Also handles formatting the string and the cursor position.
      *  @constructor sets EditText to be watched.
      */
-    private inner class CurrencyTextWatcher constructor(private val editText : EditText) : TextWatcher {
+    private inner class CurrencyTextWatcher constructor(private val editText: EditText) :
+        TextWatcher {
 
-        private var beforeText : String = ""
+        private var beforeText: String = ""
 
-        override fun beforeTextChanged(s : CharSequence?, start : Int, count : Int, after : Int) {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             beforeText = s.toString()
         }
 
-        override fun onTextChanged(s : CharSequence?, start : Int, before : Int, count : Int) {
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
             if (s == null) return
 
-            val initCursorPos : Int = start + before
+            val initCursorPos: Int = start + before
 
-            val numCharsRightCursor : Int =
+            val numCharsRightCursor: Int =
                 getNumberOfChars(beforeText.substring(initCursorPos, beforeText.length))
-            val newAmount : String = formatAmount(s.toString())
+            val newAmount: String = formatAmount(s.toString())
             editText.removeTextChangedListener(this)
             editText.setText(newAmount)
             editText.setSelection(getNewCursorPos(numCharsRightCursor, newAmount))
             editText.addTextChangedListener(this)
         }
 
-        override fun afterTextChanged(editable : Editable?) {}
+        override fun afterTextChanged(editable: Editable?) {}
 
         /**
-         *  Takes in the text entered and leaves only digits and "." in order to be correctly
-         *  formatted.
-         *
-         *  @param  amount text entered.
-         *  @return formatted string with correct thousands/decimal symbol according to settings.
+         *  Takes in the [amount] entered and returns formatted string with correct
+         *  thousands/decimal symbol according to settings.
          */
-        private fun formatAmount(amount : String) : String {
+        private fun formatAmount(amount: String): String {
 
-            val result : String = editSymbols(amount)
-            var empty = false
-            var amt = BigDecimal("0")
-            when (result.isEmpty()) {
-                true -> empty = true
-                else -> amt   = BigDecimal(result)
-            }
+            val result: String = editSymbols(amount)
+            val amt: BigDecimal
+            if (result.isEmpty()) return "" else amt = BigDecimal(result)
+
             // uses decimal formatter depending on number of decimal places entered
             return when {
-                empty -> ""
                 decimalPlaces && result.contains(Regex("(\\.)\\d{2}")) ->
                     decimal2Formatter.format(amt)
                 decimalPlaces && result.contains(Regex("(\\.)\\d")) ->
@@ -154,16 +145,13 @@ class CurrencyEditText @JvmOverloads constructor(
         }
 
         /**
-         *  Removes thousands symbols if any and changes decimal symbol to be "." if different.
-         *
-         *  @param  numString string with possible thousands/different decimal symbols.
-         *  @return string without thousands symbol and "." as decimal symbol.
+         *  Removes thousands symbols from [numString] if any, changes decimal symbol to be "."
+         *  if different, and returns formatted string.
          */
-        private fun editSymbols(numString : String) : String {
+        private fun editSymbols(numString: String): String {
 
             var numbers = ""
-            for (i : Char in numString) {
-
+            for (i: Char in numString) {
                 // ensures only 1 decimal symbol exists and returns if decimal setting is off and
                 // decimal symbol is detected
                 when {
@@ -176,20 +164,15 @@ class CurrencyEditText @JvmOverloads constructor(
         }
 
         /**
-         *  Calculates new location of cursor.
-         *
-         *  @param  numCharsRightCursor characters to right of cursor.
-         *  @param  numString           formatted string with correct symbols.
-         *  @return new position for cursor to be placed at.
+         *  Uses [numCharsRightCursor] to calculate the new location of cursor within [numString].
          */
-        private fun getNewCursorPos(numCharsRightCursor : Int, numString : String) : Int {
+        private fun getNewCursorPos(numCharsRightCursor: Int, numString: String): Int {
 
-            var rightOffset      = 0
-            var rightCount : Int = numCharsRightCursor
+            var rightOffset = 0
+            var rightCount: Int = numCharsRightCursor
 
             // thousands symbols increases offset, but doesn't decrease characters to right
-            for (i : Char in numString.reversed()) {
-
+            for (i: Char in numString.reversed()) {
                 if (rightCount == 0) break
                 if (i.isDigit() || i == decimalSymbol) rightCount--
                 rightOffset++
@@ -198,20 +181,16 @@ class CurrencyEditText @JvmOverloads constructor(
         }
 
         /**
-         *  Determines the number of digits and decimal symbol in string.
-         *
-         *  @param  text string to be checked.
-         *  @return number of digits and decimal symbol.
+         *  Returns the number of digits and decimal symbol in [text].
          */
-        private fun getNumberOfChars(text : String) : Int {
+        private fun getNumberOfChars(text: String): Int {
 
             var count = 0
-            for (i : Char in text) {
-
+            for (i: Char in text) {
                 // ends early if decimal symbol is detected, but turned off in settings
                 when {
                     i.isDigit() || (decimalPlaces && i == decimalSymbol) -> count++
-                    !decimalPlaces && i == decimalSymbol                 -> return count
+                    !decimalPlaces && i == decimalSymbol -> return count
                 }
             }
             return count

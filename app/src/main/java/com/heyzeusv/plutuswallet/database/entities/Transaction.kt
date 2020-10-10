@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.heyzeusv.plutuswallet.utilities.Utils
+import com.heyzeusv.plutuswallet.utilities.DateUtils
 import java.math.BigDecimal
 import java.util.Date
 
@@ -46,7 +46,7 @@ data class Transaction(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     var title: String = "",
-    var date: Date = Utils.startOfDay(Date()),
+    var date: Date = DateUtils.startOfDay(Date()),
     var total: BigDecimal = BigDecimal("0"),
     var account: String = "",
     var type: String = "Expense",

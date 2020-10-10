@@ -12,8 +12,13 @@ import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 /**
  *  Data manager for TransactionFragments.
@@ -110,6 +115,33 @@ class TransactionViewModel : ViewModel() {
         }
 
         return calendar.time
+    }
+
+    /**
+     *  Returns formatted [num] using [thousands] symbol.
+     */
+    fun formatInteger(num: BigDecimal, thousands: Char): String {
+
+        val customSymbols = DecimalFormatSymbols(Locale.US)
+        customSymbols.groupingSeparator = thousands
+        // every three numbers, a thousands symbol will be added
+        val formatter = DecimalFormat("#,###", customSymbols)
+        formatter.roundingMode = RoundingMode.HALF_UP
+        return formatter.format(num)
+    }
+
+    /**
+     *  Returns formatted [num] using [thousands] and [decimal] symbols.
+     */
+    fun formatDecimal(num: BigDecimal, thousands: Char, decimal: Char): String {
+
+        val customSymbols = DecimalFormatSymbols(Locale.US)
+        customSymbols.groupingSeparator = thousands
+        customSymbols.decimalSeparator = decimal
+        // every three numbers, a thousands symbol will be added
+        val formatter = DecimalFormat("#,##0.00", customSymbols)
+        formatter.roundingMode = RoundingMode.HALF_UP
+        return formatter.format(num)
     }
 
     /**

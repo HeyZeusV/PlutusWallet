@@ -24,7 +24,7 @@ import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import com.heyzeusv.plutuswallet.utilities.TranListDiffUtil
-import com.heyzeusv.plutuswallet.utilities.Utils
+import com.heyzeusv.plutuswallet.utilities.SettingsUtils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.launch
@@ -112,7 +112,7 @@ class TransactionListFragment : BaseFragment() {
 
         // checks if there has been a change in settings, updates changes, and updates list
         if (sharedPref[Constants.KEY_TRAN_LIST_CHANGE, false]!!) {
-            setVals = Utils.prepareSettingValues(sharedPref)
+            setVals = SettingsUtils.prepareSettingValues(sharedPref)
             tranListAdapter.notifyDataSetChanged()
             sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = false
         }

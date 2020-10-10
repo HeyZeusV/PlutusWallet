@@ -17,7 +17,6 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
-import com.heyzeusv.plutuswallet.utilities.Utils
 import com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -102,7 +101,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     when (transaction.total.toString()) {
                         "0" -> ""
                         "0.00" -> ""
-                        else -> Utils.formatDecimal(
+                        else -> tranVM.formatDecimal(
                             transaction.total,
                             setVals.thousandsSymbol, setVals.decimalSymbol
                         )
@@ -111,7 +110,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
                     if (transaction.total.toString() == "0") {
                         ""
                     } else {
-                        Utils.formatInteger(transaction.total, setVals.thousandsSymbol)
+                        tranVM.formatInteger(transaction.total, setVals.thousandsSymbol)
                     }
                 }
                 if (transaction.type == "Expense") {

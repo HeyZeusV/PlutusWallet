@@ -15,7 +15,7 @@ import com.heyzeusv.plutuswallet.databinding.FragmentChartBinding
 import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
-import com.heyzeusv.plutuswallet.utilities.Utils
+import com.heyzeusv.plutuswallet.utilities.SettingsUtils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.ChartViewModel
 
@@ -98,7 +98,7 @@ class ChartFragment : BaseFragment() {
         if (sharedPref[Constants.KEY_CHART_CHANGE, false]!!
             && chartVM.adapter.currentList.size == 2
         ) {
-            setVals = Utils.prepareSettingValues(sharedPref)
+            setVals = SettingsUtils.prepareSettingValues(sharedPref)
             prepareTotalTexts()
             chartVM.adapter.currentList[0].totalText = chartVM.exTotText
             chartVM.adapter.currentList[1].totalText = chartVM.inTotText

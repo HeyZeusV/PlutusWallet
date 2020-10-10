@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.heyzeusv.plutuswallet.database.entities.SettingsValues
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper
-import com.heyzeusv.plutuswallet.utilities.Utils
+import com.heyzeusv.plutuswallet.utilities.SettingsUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,7 +37,7 @@ abstract class BaseFragment : Fragment(), CoroutineScope {
         job = Job()
 
         sharedPref = PreferenceHelper.sharedPrefs(requireActivity())
-        setVals = Utils.prepareSettingValues(sharedPref)
+        setVals = SettingsUtils.prepareSettingValues(sharedPref)
     }
 
     override fun onDestroy() {

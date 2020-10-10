@@ -15,9 +15,9 @@ import java.util.GregorianCalendar
 import java.util.Locale
 
 /**
- *  Unit tests for functions in Utils.kt
+ *  Unit tests for functions in SettingsUtils.kt
  */
-class UtilsTest {
+class SettingsUtilsTest {
 
     @Test
     @DisplayName("Check if JVM Locale is changed to English")

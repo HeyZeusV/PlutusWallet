@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.database.TransactionRepository
-import com.heyzeusv.plutuswallet.utilities.Utils
+import com.heyzeusv.plutuswallet.utilities.DateUtils
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -48,7 +48,7 @@ class FilterViewModel : ViewModel() {
     val inCatList  : MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
     // Date values
-    val startDate : MutableLiveData<Date> = MutableLiveData(Utils.startOfDay(Date()))
+    val startDate : MutableLiveData<Date> = MutableLiveData(DateUtils.startOfDay(Date()))
     val endDate   : MutableLiveData<Date> = MutableLiveData(Date(startDate.value!!.time + MIDNIGHT_MILLI))
 
     // CheckBox status
@@ -91,7 +91,7 @@ class FilterViewModel : ViewModel() {
     fun resetFilter() {
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDate.value = Utils.startOfDay(Date())
+        startDate.value = DateUtils.startOfDay(Date())
         endDate  .value = startDate.value
 
         // resets type Button and Spinner selections

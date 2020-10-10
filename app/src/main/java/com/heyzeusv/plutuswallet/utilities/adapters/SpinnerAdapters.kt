@@ -13,16 +13,13 @@ import com.heyzeusv.plutuswallet.R
  *  DataBinding Custom Spinner Binding Adapters.
  */
 /**
- *  Creates ArrayAdapter with data and attaches it to Spinner.
- *
- *  @param entries data to be displayed by Spinner.
+ *  Creates ArrayAdapter with [entries] and attaches it to Spinner.
  */
 @BindingAdapter("entries")
-fun Spinner.setEntries(entries : List<String>?) {
+fun Spinner.setEntries(entries: List<String>?) {
 
     if (entries != null) {
-
-        val arrayAdapter : ArrayAdapter<String> =
+        val arrayAdapter: ArrayAdapter<String> =
             ArrayAdapter(context, R.layout.spinner_item, entries)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         adapter = arrayAdapter
@@ -30,15 +27,14 @@ fun Spinner.setEntries(entries : List<String>?) {
 }
 
 /**
- *  @param selection value to set Spinner to.
+ *  Sets Spinner to [selection].
  */
 @BindingAdapter("selectedValue")
-fun Spinner.setSelectedValue(selection : String?) {
+fun Spinner.setSelectedValue(selection: String?) {
 
-    if (adapter != null ) {
-
+    if (adapter != null) {
         @Suppress("UNCHECKED_CAST")
-        val position : Int = (adapter as ArrayAdapter<String>).getPosition(selection)
+        val position: Int = (adapter as ArrayAdapter<String>).getPosition(selection)
         setSelection(position, false)
         tag = position
     }
@@ -46,20 +42,19 @@ fun Spinner.setSelectedValue(selection : String?) {
 
 /**
  *  Sets listener for when selectedValue is changed allowing InverseBinding.
- *
- *  @param inverseBindingListener listener that gets triggered when there is a change in selection.
+ *  [inverseBindingListener] gets triggered when there is a change in selection.
  */
 @BindingAdapter("selectedValueAttrChanged")
-fun Spinner.selectedInverseBindingListener(inverseBindingListener : InverseBindingListener?) {
+fun Spinner.selectedInverseBindingListener(inverseBindingListener: InverseBindingListener?) {
 
-    onItemSelectedListener = when (inverseBindingListener) {
-        null -> null
-        else -> object : AdapterView.OnItemSelectedListener {
+    onItemSelectedListener = if (inverseBindingListener == null) {
+        null
+    } else {
+        object : AdapterView.OnItemSelectedListener {
 
-            override fun onItemSelected(parent: AdapterView<*>, view: View?,
-                                        position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
 
-                if (tag != position) inverseBindingListener.onChange()
+                if (tag != pos) inverseBindingListener.onChange()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -68,25 +63,18 @@ fun Spinner.selectedInverseBindingListener(inverseBindingListener : InverseBindi
 }
 
 /**
- *  Gets called when above InverseBindingListener is triggered.
- *
- *  @return currently selected item in Spinner.
+ *  Returns selection when InverseBindingListener is triggered.
  */
 @InverseBindingAdapter(attribute = "selectedValue", event = "selectedValueAttrChanged")
-fun Spinner.getSelectedValue() : String? {
-
-    return selectedItem as String?
-}
+fun Spinner.getSelectedValue(): String? = selectedItem as String?
 
 /**
- *  @param position position to set Spinner to.
+ *  Sets Spinner selection to [position].
  */
 @BindingAdapter("selectedPosition")
-fun Spinner.setSelectedPosition(position : Int) {
+fun Spinner.setSelectedPosition(position: Int) {
 
-    if (adapter != null ) {
-
-        @Suppress("UNCHECKED_CAST")
+    if (adapter != null) {
         setSelection(position, false)
         tag = position
     }
@@ -94,20 +82,19 @@ fun Spinner.setSelectedPosition(position : Int) {
 
 /**
  *  Sets listener for when selectedPosition is changed allowing InverseBinding.
- *
- *  @param inverseBindingListener listener that gets triggered when there is a change in position.
+ *  [inverseBindingListener] gets triggered when there is a change in position.
  */
 @BindingAdapter("selectedPositionAttrChanged")
-fun Spinner.positionInverseBindingListener(inverseBindingListener : InverseBindingListener?) {
+fun Spinner.positionInverseBindingListener(inverseBindingListener: InverseBindingListener?) {
 
-    onItemSelectedListener = when (inverseBindingListener) {
-        null -> null
-        else -> object : AdapterView.OnItemSelectedListener {
+    onItemSelectedListener = if (inverseBindingListener == null) {
+        null
+    } else {
+        object : AdapterView.OnItemSelectedListener {
 
-            override fun onItemSelected(parent: AdapterView<*>, view: View?,
-                                        position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
 
-                if (tag != position) inverseBindingListener.onChange()
+                if (tag != pos) inverseBindingListener.onChange()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -116,12 +103,7 @@ fun Spinner.positionInverseBindingListener(inverseBindingListener : InverseBindi
 }
 
 /**
- *  Gets called when above InverseBindingListener is triggered.
- *
- *  @return position of currently selected item in Spinner.
+ *  Returns position of selected item if InverseBindingListener is triggered.
  */
 @InverseBindingAdapter(attribute = "selectedPosition", event = "selectedPositionAttrChanged")
-fun Spinner.getSelectedPosition() : Int? {
-
-    return selectedItemPosition
-}
+fun Spinner.getSelectedPosition(): Int? = selectedItemPosition

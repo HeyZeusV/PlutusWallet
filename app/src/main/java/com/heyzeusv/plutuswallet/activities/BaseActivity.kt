@@ -2,13 +2,15 @@ package com.heyzeusv.plutuswallet.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
-import com.heyzeusv.plutuswallet.utilities.Utils
+import java.util.Locale
 
 /**
  *  Base Activity that all Activities will extend
@@ -32,11 +34,30 @@ abstract class BaseActivity : AppCompatActivity() {
             // retrieves language selected
             val languageCode: String = sharedPref[Constants.KEY_LANGUAGE, "en"]!!
             // sets context with language
-            val context: Context = Utils.changeLanguage(newBase, languageCode)
+            val context: Context = changeLanguage(newBase, languageCode)
 
             super.attachBaseContext(context)
         } else {
             super.attachBaseContext(newBase)
         }
+    }
+
+    /**
+     *  Uses app [context] to return a new Context containing language selected
+     *  using [languageCode].
+     */
+    fun changeLanguage(context: Context, languageCode: String): ContextWrapper {
+
+        val config: Configuration = context.resources.configuration
+        val newContext: Context
+        val newLocale = Locale(languageCode)
+        // sets locale for JVM
+        Locale.setDefault(newLocale)
+        // sets locale for context
+        config.setLocale(newLocale)
+        // new context needed since parameters are final
+        newContext = context.createConfigurationContext(config)
+
+        return ContextWrapper(newContext)
     }
 }

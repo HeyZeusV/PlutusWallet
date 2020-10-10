@@ -26,14 +26,18 @@ class AlertDialogCreator {
          *  @param negButton negative button text.
          *  @param negFun    function launched on negative button click.
          */
-        fun alertDialog(context   : Context,
-                        title     : String,
-                        message   : String,
-                        posButton : String, posFun : DialogInterface.OnClickListener,
-                        negButton : String, negFun : DialogInterface.OnClickListener) {
+        fun alertDialog(
+            context: Context,
+            title: String,
+            message: String,
+            posButton: String,
+            posFun: DialogInterface.OnClickListener,
+            negButton: String,
+            negFun: DialogInterface.OnClickListener
+        ) {
 
             // initialize and set up Builder
-            val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+            val builder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                 // set title
                 .setTitle(title)
                 // set message
@@ -43,7 +47,7 @@ class AlertDialogCreator {
                 // set negative button and its action
                 .setNegativeButton(negButton, negFun)
             // create AlertDialog using builder
-            val alertDialog : AlertDialog = builder.create()
+            val alertDialog: AlertDialog = builder.create()
             // display AlertDialog
             alertDialog.show()
         }
@@ -59,14 +63,18 @@ class AlertDialogCreator {
          *  @param negButton negative button text.
          *  @param negFun    function launched on negative button click.
          */
-        fun alertDialogInput(context   : Context,
-                             title     : String,
-                             view      : View,
-                             posButton : String, posFun : DialogInterface.OnClickListener,
-                             negButton : String, negFun : DialogInterface.OnClickListener) {
+        fun alertDialogInput(
+            context: Context,
+            title: String,
+            view: View,
+            posButton: String,
+            posFun: DialogInterface.OnClickListener,
+            negButton: String,
+            negFun: DialogInterface.OnClickListener
+        ) {
 
             // initialize and set up Builder
-            val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+            val builder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                 // set title
                 .setTitle(title)
                 // sets the view
@@ -76,7 +84,7 @@ class AlertDialogCreator {
                 // set negative button and its action
                 .setNegativeButton(negButton, negFun)
             // create AlertDialog using builder
-            val alertDialog : AlertDialog = builder.create()
+            val alertDialog: AlertDialog = builder.create()
             // display AlertDialog
             alertDialog.show()
         }
@@ -92,15 +100,19 @@ class AlertDialogCreator {
          *  @param negButton negative button text.
          *  @param negFun    function launched on negative button click.
          */
-        fun alertDialogInputCancelable(context   : Context,
-                                       title     : String,
-                                       view      : View,
-                                       posButton : String, posFun : DialogInterface.OnClickListener,
-                                       negButton : String, negFun : DialogInterface.OnClickListener,
-                                       cancelFun : DialogInterface.OnCancelListener) {
+        fun alertDialogInputCancelable(
+            context: Context,
+            title: String,
+            view: View,
+            posButton: String,
+            posFun: DialogInterface.OnClickListener,
+            negButton: String,
+            negFun: DialogInterface.OnClickListener,
+            cancelFun: DialogInterface.OnCancelListener
+        ) {
 
             // initialize and set up Builder
-            val builder : MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
+            val builder: MaterialAlertDialogBuilder = MaterialAlertDialogBuilder(context)
                 // set title
                 .setTitle(title)
                 // sets the view
@@ -112,7 +124,7 @@ class AlertDialogCreator {
                 // set action when user cancels dialog
                 .setOnCancelListener(cancelFun)
             // create AlertDialog using builder
-            val alertDialog : AlertDialog = builder.create()
+            val alertDialog: AlertDialog = builder.create()
             // display AlertDialog
             alertDialog.show()
         }

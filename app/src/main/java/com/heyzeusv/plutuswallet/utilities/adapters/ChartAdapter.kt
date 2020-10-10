@@ -14,27 +14,27 @@ import com.heyzeusv.plutuswallet.utilities.ChartDiffUtil
  */
 class ChartAdapter : ListAdapter<ItemViewChart, ChartHolder>(ChartDiffUtil()) {
 
-    override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ChartHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChartHolder {
 
-        val itemViewBinding : ItemViewChartBinding = ItemViewChartBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false)
+        val itemViewBinding: ItemViewChartBinding = ItemViewChartBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
         return ChartHolder(itemViewBinding)
     }
 
-    override fun onBindViewHolder(holder : ChartHolder, position : Int) {
+    override fun onBindViewHolder(holder: ChartHolder, position: Int) {
 
-        val ivc : ItemViewChart = getItem(position)
+        val ivc: ItemViewChart = getItem(position)
         holder.bind(ivc)
     }
 }
 
 /**
- *  @param binding DataBinding layout
+ *  ViewHolder stores a reference to an item's view using [binding] as its layout.
  */
-class ChartHolder(var binding : ItemViewChartBinding)
-    : RecyclerView.ViewHolder(binding.root) {
+class ChartHolder(var binding: ItemViewChartBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(ivc : ItemViewChart) {
+    fun bind(ivc: ItemViewChart) {
 
         binding.ivc = ivc
         binding.executePendingBindings()
