@@ -9,6 +9,12 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+/**
+ *  Data manager for CategoryFragment.
+ *
+ *  Stores and manages UI-related data in a lifecycle conscious way.
+ *  Data can survive configuration changes.
+ */
 class AccountViewModel : ViewModel() {
 
     /**

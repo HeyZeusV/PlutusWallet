@@ -18,61 +18,50 @@ import java.util.Date
 class ChartViewModel : ViewModel() {
 
     // stores handle to TransactionRepository
-    private val transactionRepository : TransactionRepository = TransactionRepository.get()
+    private val tranRepo: TransactionRepository = TransactionRepository.get()
 
     // used to make list of 2 ItemViewChart objects to initialize ChartAdapter
     private val emptyIvc = ItemViewChart(
-        emptyList(), "", "", emptyList(), null, null, null)
-    private var ivcList : MutableList<ItemViewChart> = mutableListOf(emptyIvc, emptyIvc)
-    var adapter = ChartAdapter().apply {
-
-        submitList(ivcList)
-    }
+        emptyList(), "", "", emptyList(), null, null, null
+    )
+    private var ivcList: MutableList<ItemViewChart> = mutableListOf(emptyIvc, emptyIvc)
+    var adapter: ChartAdapter = ChartAdapter().apply { submitList(ivcList) }
 
     // list of CategoryTotals after filter is applied
-    private var exCatTotals : List<CategoryTotals> = emptyList()
-    private var inCatTotals : List<CategoryTotals> = emptyList()
+    private var exCatTotals: List<CategoryTotals> = emptyList()
+    private var inCatTotals: List<CategoryTotals> = emptyList()
 
     // list of names from list of CategoryTotals
-    private var exNames : List<String> = emptyList()
-    private var inNames : List<String> = emptyList()
+    private var exNames: List<String> = emptyList()
+    private var inNames: List<String> = emptyList()
 
     // total from each list of CategoryTotals
-    var exTotal : BigDecimal = BigDecimal("0.0")
-    var inTotal : BigDecimal = BigDecimal("0.0")
+    var exTotal: BigDecimal = BigDecimal("0.0")
+    var inTotal: BigDecimal = BigDecimal("0.0")
 
     // formatted text that displays total
-    var exTotText : String = ""
-    var inTotText : String = ""
+    var exTotText: String = ""
+    var inTotText: String = ""
 
     // translated versions
-    var expense : String = "Expense"
-    var income  : String = "Income"
+    var expense: String = "Expense"
+    var income: String = "Income"
 
     // list of Int that represent colors resources to be used for charts
-    var exColors : List<Int> = emptyList()
-    var inColors : List<Int> = emptyList()
+    var exColors: List<Int> = emptyList()
+    var inColors: List<Int> = emptyList()
 
     /**
-     *  Splits ctList into 2 lists according to type and retrieves Category names.
-     *
-     *  @param ctList list containing all CategoryTotals that pass filters applied.
+     *  Splits [ctList] into 2 lists according to type and retrieves Category names.
      */
-    fun prepareLists(ctList : List<CategoryTotals>) {
+    fun prepareLists(ctList: List<CategoryTotals>) {
 
-        // list by type
-        val eCTs : MutableList<CategoryTotals> = mutableListOf()
-        val iCTs : MutableList<CategoryTotals> = mutableListOf()
+        // CategoryTotals list by type
+        val eCTs: MutableList<CategoryTotals> = mutableListOf()
+        val iCTs: MutableList<CategoryTotals> = mutableListOf()
 
         // splits ctList into 2 lists according to type
-        ctList.forEach {
-
-            when (it.type) {
-
-                "Expense" -> eCTs.add(it)
-                else      -> iCTs.add(it)
-            }
-        }
+        ctList.forEach { if (it.type == "Expense") eCTs.add(it) else iCTs.add(it) }
         exCatTotals = eCTs
         inCatTotals = iCTs
 
@@ -82,63 +71,61 @@ class ChartViewModel : ViewModel() {
     }
 
     /**
-     *  Calculates totals for each list.
-     *
-     *  @param fCat     true if Category filter is applied.
-     *  @param fCatName Category selected when Category filter is applied.
-     *  @param fType    type of Category selected from filter.
+     *  Calculates totals for each list depending on category filter [fCat],
+     *  category selected filter [fCatName], and type of category filter [fType].
      */
-    fun prepareTotals(fCat : Boolean?, fCatName : String?, fType : String?) {
+    fun prepareTotals(fCat: Boolean?, fCatName: String?, fType: String?) {
 
         // if fCatName = "All", add up all totals of given type
         // else total is total of Category selected in filter if there exists entries else 0
         // sets opposite type total to 0
         when {
             fCat == true && fType == "Expense" && fCatName == "All" -> {
-
-                exTotal = exCatTotals.fold(BigDecimal.ZERO) {
-                        total : BigDecimal, next : CategoryTotals -> total + next.total }
+                exTotal =
+                    exCatTotals.fold(BigDecimal.ZERO) { total: BigDecimal, next: CategoryTotals ->
+                        total + next.total
+                    }
                 inTotal = BigDecimal.ZERO
             }
             fCat == true && fType == "Expense" -> {
-
-                exTotal = exCatTotals.find{it.category == fCatName}?.total ?: BigDecimal.ZERO
+                exTotal = exCatTotals.find { it.category == fCatName }?.total ?: BigDecimal.ZERO
                 inTotal = BigDecimal.ZERO
             }
             fCat == true && fType == "Income" && fCatName == "All" -> {
-
-                inTotal = inCatTotals.fold(BigDecimal.ZERO) {
-                        total : BigDecimal, next : CategoryTotals -> total + next.total }
                 exTotal = BigDecimal.ZERO
+                inTotal =
+                    inCatTotals.fold(BigDecimal.ZERO) { total: BigDecimal, next: CategoryTotals ->
+                        total + next.total
+                    }
             }
             fCat == true && fType == "Income" -> {
-
-                inTotal = inCatTotals.find{it.category == fCatName}?.total ?: BigDecimal.ZERO
                 exTotal = BigDecimal.ZERO
+                inTotal = inCatTotals.find { it.category == fCatName }?.total ?: BigDecimal.ZERO
             }
             else -> {
-
                 // Category filter is not applied, so add up all the totals
-                exTotal = exCatTotals.fold(BigDecimal.ZERO) {
-                        total : BigDecimal, next : CategoryTotals -> total + next.total }
-                inTotal = inCatTotals.fold(BigDecimal.ZERO) {
-                        total : BigDecimal, next : CategoryTotals -> total + next.total }
+                exTotal =
+                    exCatTotals.fold(BigDecimal.ZERO) { total: BigDecimal, next: CategoryTotals ->
+                        total + next.total
+                    }
+                inTotal =
+                    inCatTotals.fold(BigDecimal.ZERO) { total: BigDecimal, next: CategoryTotals ->
+                        total + next.total
+                    }
             }
         }
     }
 
     /**
-     *  Creates ItemViewChart objects using data calculated using above functions, passes them
+     *  Creates ItemViewChart objects using data calculated using above functions and
+     *  depending on category filter [fCat], category selected filter [fCatName],
+     *  and type of category filter [fType], passes them
      *  to adapter, and notifies of changes.
-     *
-     *  @param fCat     true if Category filter is applied.
-     *  @param fCatName Category selected when Category filter is applied.
-     *  @param fType    type of Category selected from filter.
      */
-    fun prepareIvgAdapter(fCat : Boolean?, fCatName : String?, fType : String?) {
+    fun prepareIvgAdapter(fCat: Boolean?, fCatName: String?, fType: String?) {
 
         val exIvc = ItemViewChart(exCatTotals, expense, exTotText, exColors, fCat, fCatName, fType)
-        val inIvc = ItemViewChart(inCatTotals, income , inTotText, inColors, fCat, fCatName, fType)
+        val inIvc = ItemViewChart(inCatTotals, income, inTotText, inColors, fCat, fCatName, fType)
 
         ivcList = mutableListOf(exIvc, inIvc)
         adapter.submitList(ivcList)
@@ -148,28 +135,23 @@ class ChartViewModel : ViewModel() {
      *  Transaction queries
      */
     /**
-     *  Tells Repository which CategoryTotals list to return.
-     *
-     *  @param  fAccount     boolean for account filter
-     *  @param  fDate        boolean for date filter.
-     *  @param  fAccountName Account name for account filter.
-     *  @param  fStart       starting Date for date filter.
-     *  @param  fEnd         ending Date for date filter.
-     *  @return LiveData object holding list of Transactions.
+     *  Tells Repository which CategoryTotals list to return depending on
+     *  [fAccount] and [fDate] filters, account name [fAccountName],
+     *  and the start/end dates [fStart]/[fEnd]
      */
-    fun filteredCategoryTotals(fAccount : Boolean, fDate : Boolean, fAccountName : String,
-                               fStart : Date, fEnd : Date) : LiveData<List<CategoryTotals>> {
+    fun filteredCategoryTotals(
+        fAccount: Boolean,
+        fDate: Boolean,
+        fAccountName: String,
+        fStart: Date,
+        fEnd: Date
+    ): LiveData<List<CategoryTotals>> {
 
         return when {
-
-            fAccount && fDate ->
-                transactionRepository.getLdCtAD(fAccountName, fStart, fEnd)
-            fAccount ->
-                transactionRepository.getLdCtA(fAccountName)
-            fDate ->
-                transactionRepository.getLdCtD(fStart, fEnd)
-            else ->
-                transactionRepository.getLdCt()
+            fAccount && fDate -> tranRepo.getLdCtAD(fAccountName, fStart, fEnd)
+            fAccount -> tranRepo.getLdCtA(fAccountName)
+            fDate -> tranRepo.getLdCtD(fStart, fEnd)
+            else -> tranRepo.getLdCt()
         }
     }
 }
