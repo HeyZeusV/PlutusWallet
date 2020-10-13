@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.heyzeusv.plutuswallet.database.TransactionDatabase
 import com.heyzeusv.plutuswallet.database.daos.AccountDao
 import com.heyzeusv.plutuswallet.database.daos.CategoryDao
@@ -16,13 +17,17 @@ import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.Transaction
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
+import org.junit.Rule
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.runner.RunWith
 import java.io.IOException
 import java.math.BigDecimal
 import java.util.Date
@@ -35,7 +40,12 @@ import java.util.concurrent.TimeUnit
  *  CT  = CategoryTotals
  *  IVT = ItemViewTransaction
  */
+@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class DatabaseTest {
+
+    @get:Rule
+    var hiltRule = HiltAndroidRule(this)
 
     @Nested
     @DisplayName("Account Queries")

@@ -1,14 +1,9 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-
-// Kotlin annotation processor tool
 apply plugin: 'kotlin-kapt'
-
 apply plugin: "androidx.navigation.safeargs.kotlin"
-
+apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'de.mannodermaus.android-junit5'
 
 android {
@@ -19,7 +14,7 @@ android {
         targetSdkVersion 29
         versionCode 20
         versionName "2.2.1"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.heyzeusv.plutuswallet.CustomTestRunner"
         testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
         resConfigs "en", "es", "de", "hi", "ja", "ko", "th"
         javaCompileOptions {
@@ -76,6 +71,9 @@ dependencies {
     // CoRoutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
+    // Hilt
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -117,6 +115,10 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params:$jupiter_version"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiter_version"
 
-    // Testing Navigation
+    // Hilt testing
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    // Navigation testing
     androidTestImplementation "androidx.navigation:navigation-testing:$navigation_version"
 }
