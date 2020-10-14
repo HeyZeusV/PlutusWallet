@@ -3,11 +3,13 @@ package com.heyzeusv.plutuswallet.utilities
 import android.app.Application
 import com.heyzeusv.plutuswallet.BuildConfig
 import com.heyzeusv.plutuswallet.database.TransactionRepository
+import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
 /**
  *  Maintains global application state and used to call one-time operations.
  */
+@HiltAndroidApp
 class PlutusWalletApp : Application() {
 
     /**
