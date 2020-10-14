@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProvider
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
@@ -18,22 +19,21 @@ import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import com.heyzeusv.plutuswallet.utilities.SettingsUtils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.ChartViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.
  */
+@AndroidEntryPoint
 class ChartFragment : BaseFragment() {
 
     // DataBinding
     private lateinit var binding: FragmentChartBinding
 
-    // shared ViewModel
-    private lateinit var cflVM: CFLViewModel
-
     // provides instance of ChartViewModel
-    private val chartVM: ChartViewModel by lazy {
-        ViewModelProvider(this).get(ChartViewModel::class.java)
-    }
+    private val chartVM: ChartViewModel by viewModels()
+    // shared ViewModel
+    private val cflVM: CFLViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,8 +62,6 @@ class ChartFragment : BaseFragment() {
             ContextCompat.getColor(requireContext(), R.color.colorIncome4)
         )
 
-        // this ensures that this is same CFLViewModel as Filter/ListFragment use
-        cflVM = requireActivity().let { ViewModelProvider(it).get(CFLViewModel::class.java) }
 
         return binding.root
     }

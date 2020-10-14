@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentFilterBinding
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.FilterViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Date
 
 private const val DIALOG_DATE = "DialogDate"
@@ -22,6 +24,7 @@ private const val MIDNIGHT_MILLI = 86399999
 /**
  *  Used to apply filters and tell TransactionListFragment which Transaction list to load
  */
+@AndroidEntryPoint
 class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
 
     // DataBinding
@@ -31,13 +34,10 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
     private var startButton = false
     private var endButton = false
 
-    // shared ViewModel
-    private lateinit var cflVM: CFLViewModel
-
     // provides instance of FilterViewModel
-    private val filterVM: FilterViewModel by lazy {
-        ViewModelProvider(this).get(FilterViewModel::class.java)
-    }
+    private val filterVM: FilterViewModel by viewModels()
+    // shared ViewModel
+    private val cflVM: CFLViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,9 +63,6 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
         // preparing data/listeners
         filterVM.prepareSpinners()
         prepareListeners()
-
-        // this ensures that this is same CFLViewModel as Chart/ListFragment use
-        cflVM = requireActivity().let { ViewModelProvider(it).get(CFLViewModel::class.java) }
 
         return binding.root
     }

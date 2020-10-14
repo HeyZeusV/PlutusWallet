@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,12 +16,9 @@ import kotlinx.coroutines.launch
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class CategoryViewModel : ViewModel() {
-
-    /**
-     *  Stores handle to TransactionRepository.
-     */
-    private val tranRepo: TransactionRepository = TransactionRepository.get()
+class CategoryViewModel @ViewModelInject constructor(
+    private val tranRepo: TransactionRepository
+) : ViewModel() {
 
     // combined lists of LiveData values from below
     val catLists: MutableList<List<Category>> = mutableListOf(emptyList(), emptyList())

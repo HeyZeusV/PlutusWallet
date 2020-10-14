@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -25,12 +25,14 @@ import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.CatListDiffUtil
 import com.heyzeusv.plutuswallet.utilities.CategoryDiffUtil
 import com.heyzeusv.plutuswallet.viewmodels.CategoryViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  *  Shows all Categories depending on type in database and allows users to either
  *  edit them or delete them.
  */
+@AndroidEntryPoint
 class CategoryFragment : BaseFragment() {
 
     // DataBinding
@@ -43,10 +45,8 @@ class CategoryFragment : BaseFragment() {
     private val expenseAdapter = CategoryAdapter()
     private val incomeAdapter = CategoryAdapter()
 
-    // instance of ViewModel
-    private val catVM: CategoryViewModel by lazy {
-        ViewModelProvider(this).get(CategoryViewModel::class.java)
-    }
+    // instance of CategoryViewModel
+    private val catVM: CategoryViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -22,11 +22,13 @@ import com.heyzeusv.plutuswallet.databinding.ItemViewAccountBinding
 import com.heyzeusv.plutuswallet.utilities.AccountDiffUtil
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.viewmodels.AccountViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  *  Shows all Accounts currently in database and allows users to either edit them or delete them.
  */
+@AndroidEntryPoint
 class AccountFragment : BaseFragment() {
 
     // DataBinding
@@ -35,10 +37,8 @@ class AccountFragment : BaseFragment() {
     // RecyclerView Adapter
     private val accountAdapter = AccountAdapter()
 
-    // provides instance of ViewModel
-    private val accountVM: AccountViewModel by lazy {
-        ViewModelProvider(this).get(AccountViewModel::class.java)
-    }
+    // provides instance of AccountViewModel
+    private val accountVM: AccountViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

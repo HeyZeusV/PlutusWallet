@@ -7,7 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -27,23 +28,22 @@ import com.heyzeusv.plutuswallet.utilities.TranListDiffUtil
 import com.heyzeusv.plutuswallet.utilities.SettingsUtils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  *  Will show list of Transactions depending on filters applied.
  */
+@AndroidEntryPoint
 class TransactionListFragment : BaseFragment() {
 
     // DataBinding
     private lateinit var binding: FragmentTransactionListBinding
 
-    // provides instance of ViewModel
-    private val listVM: TransactionListViewModel by lazy {
-        ViewModelProvider(this).get(TransactionListViewModel::class.java)
-    }
-
+    // provides instance of TransactionListViewModel
+    private val listVM: TransactionListViewModel by viewModels()
     // shared ViewModels
-    private lateinit var cflVM: CFLViewModel
+    private val cflVM: CFLViewModel by activityViewModels()
 
     // RecyclerView Adapter/LayoutManager
     private val tranListAdapter = TranListAdapter()
@@ -72,9 +72,6 @@ class TransactionListFragment : BaseFragment() {
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         )
         binding.tranlistRv.layoutManager = layoutManager
-
-        // this ensures that this is same CFLViewModel as Filter/ChartFragment use
-        cflVM = requireActivity().let { ViewModelProvider(it).get(CFLViewModel::class.java) }
 
         return binding.root
     }

@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Spinner
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
@@ -18,6 +18,7 @@ import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
@@ -30,15 +31,14 @@ private const val REQUEST_DATE = 0
  *  Shows all the information in database of one Transaction and allows users to
  *  edit any field and save changes.
  */
+@AndroidEntryPoint
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // DataBinding
     private lateinit var binding: FragmentTransactionBinding
 
     // provides instance of ViewModel
-    private val tranVM: TransactionViewModel by lazy {
-        ViewModelProvider(this).get(TransactionViewModel::class.java)
-    }
+    private val tranVM: TransactionViewModel by viewModels()
 
     // arguments from Navigation
     private val args: TransactionFragmentArgs by navArgs()

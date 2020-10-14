@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
 import android.view.View
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,10 +19,9 @@ private const val MIDNIGHT_MILLI = 86399999
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class FilterViewModel : ViewModel() {
-
-    // stores handle to TransactionRepository
-    private val tranRepo: TransactionRepository = TransactionRepository.get()
+class FilterViewModel @ViewModelInject constructor(
+    private val tranRepo: TransactionRepository
+) : ViewModel() {
 
     // localized Strings
     var all: String = ""

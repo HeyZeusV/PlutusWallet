@@ -11,11 +11,13 @@ import com.heyzeusv.plutuswallet.databinding.ActivityMainBinding
 import com.heyzeusv.plutuswallet.utilities.Constants
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  *  Handles the loading and replacement of fragments into their containers, as well as
  *  starting Settings/About Activities.
  */
+@AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     // DataBinding

@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.database.TransactionRepository
@@ -15,10 +16,9 @@ import java.util.Date
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class ChartViewModel : ViewModel() {
-
-    // stores handle to TransactionRepository
-    private val tranRepo: TransactionRepository = TransactionRepository.get()
+class ChartViewModel @ViewModelInject constructor(
+    private val tranRepo: TransactionRepository
+) : ViewModel() {
 
     // used to make list of 2 ItemViewChart objects to initialize ChartAdapter
     private val emptyIvc = ItemViewChart(

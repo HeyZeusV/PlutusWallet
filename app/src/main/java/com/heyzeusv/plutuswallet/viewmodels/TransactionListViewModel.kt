@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,10 +26,9 @@ private const val INCOME = "Income"
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class TransactionListViewModel : ViewModel() {
-
-    // stores handle to TransactionRepository
-    private val tranRepo: TransactionRepository = TransactionRepository.get()
+class TransactionListViewModel @ViewModelInject constructor(
+    private val tranRepo: TransactionRepository
+) : ViewModel() {
 
     // true if there are more Transactions that repeat with futureDate before Date()
     private var moreToCreate: Boolean = false

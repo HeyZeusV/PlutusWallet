@@ -25,8 +25,5 @@ class PlutusWalletApp : Application() {
                 super.log(priority, "PW_$tag", message, t)
             }
         })
-
-        // call TransactionRepository here since we only ever need one
-        TransactionRepository.initialize(this)
     }
 }

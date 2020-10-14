@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
 import android.view.View
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
@@ -26,10 +27,9 @@ import java.util.Locale
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class TransactionViewModel : ViewModel() {
-
-    // stores handle to TransactionRepository
-    private val tranRepo: TransactionRepository = TransactionRepository.get()
+class TransactionViewModel @ViewModelInject constructor(
+    private val tranRepo: TransactionRepository
+) : ViewModel() {
 
     // stores ID of Transaction displayed.
     private val tranIdLD = MutableLiveData<Int>()

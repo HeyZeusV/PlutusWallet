@@ -1,8 +1,6 @@
 package com.heyzeusv.plutuswallet.database
 
-import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.room.Room
 import com.heyzeusv.plutuswallet.database.daos.AccountDao
 import com.heyzeusv.plutuswallet.database.daos.CategoryDao
 import com.heyzeusv.plutuswallet.database.daos.TransactionDao
@@ -14,39 +12,19 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
-
-private const val DATABASE_NAME = "transaction-database"
+import javax.inject.Inject
 
 /**
  *  Interacts with Room database on behalf of the ViewModels
  *
- *  Creates instance of database and DAOs. Calls upon the queries within the Daos.
+ *  Calls upon the queries within the Daos.
  *  Each query must be run using a CoRoutine unless it returns a LiveData object.
- *
- *  @constructor Used to make this class a singleton.
  */
-class TransactionRepository private constructor(context: Context) {
-
-    /**
-     *  Creates database.
-     *
-     *  Since this class is a singleton, we don't have to worry about the Database
-     *  being create more than once.
-     */
-    private val database: TransactionDatabase = Room.databaseBuilder(
-        context.applicationContext,
-        TransactionDatabase::class.java,
-        DATABASE_NAME
-    )
-        .addMigrations(Migrations.migration16to22, Migrations.migration22to23)
-        .build()
-
-    /**
-     *  DAOs
-     */
-    private val accountDao: AccountDao = database.accountDao()
-    private val categoryDao: CategoryDao = database.categoryDao()
-    private val transactionDao: TransactionDao = database.transactionDao()
+class TransactionRepository @Inject constructor(
+    private val accountDao: AccountDao,
+    private val categoryDao: CategoryDao,
+    private val transactionDao: TransactionDao
+) {
 
     /**
      *  Account Queries
@@ -189,34 +167,4 @@ class TransactionRepository private constructor(context: Context) {
 
     fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> =
         transactionDao.getLdCtD(start, end)
-
-    companion object {
-
-        private var INSTANCE: TransactionRepository? = null
-
-        /**
-         *  Initializes instance of TransactionRepository.
-         *
-         *  Ensures that this class is a singleton.
-         *
-         *  @param context environment data.
-         */
-        fun initialize(context: Context) {
-
-            if (INSTANCE == null) {
-                INSTANCE = TransactionRepository(context)
-            }
-        }
-
-        /**
-         *  Returns the instance of TransactionRepository.
-         *
-         *  Will throw an exception if an instance hasn't been initialized.
-         */
-        fun get(): TransactionRepository {
-
-            return INSTANCE
-                ?: throw IllegalStateException("TransactionRepository must be initialized")
-        }
-    }
 }
