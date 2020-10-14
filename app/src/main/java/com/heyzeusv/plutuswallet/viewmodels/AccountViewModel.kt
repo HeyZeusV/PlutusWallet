@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,12 +16,14 @@ import kotlinx.coroutines.launch
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class AccountViewModel : ViewModel() {
+class AccountViewModel @ViewModelInject constructor(
+    private val tranRepo: TransactionRepository
+) : ViewModel() {
 
-    /**
-     *  Stores handle to TransactionRepository.
-     */
-    private val tranRepo: TransactionRepository = TransactionRepository.get()
+//    /**
+//     *  Stores handle to TransactionRepository.
+//     */
+//    private val tranRepo: TransactionRepository = TransactionRepository.get()
 
     // list of all Account names used to prevent 2 Accounts from having same name
     var accountNames: List<String> = emptyList()
