@@ -1,18 +1,11 @@
 package com.heyzeusv.plutuswallet.utilities
 
-import android.content.Context
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
 
 /**
  *  Helper class for SharedPreferences using extension functions.
  */
 object PreferenceHelper {
-
-    // initializes SharedPreferences
-    fun sharedPrefs(context: Context): SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
-
 
     private inline fun SharedPreferences.edit(operation: (SharedPreferences.Editor) -> Unit) {
         val editor: SharedPreferences.Editor = this.edit()

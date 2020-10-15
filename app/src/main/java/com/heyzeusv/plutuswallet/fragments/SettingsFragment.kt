@@ -12,16 +12,18 @@ import androidx.preference.SwitchPreference
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.Constants
-import com.heyzeusv.plutuswallet.utilities.PreferenceHelper
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  *  Shows different options users can change to better their experience
  */
+@AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
 
     // SharedPreferences
-    private lateinit var sharedPref: SharedPreferences
+    @Inject lateinit var sharedPref: SharedPreferences
 
     // Preferences
     private lateinit var csPref: ListPreference
@@ -35,9 +37,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     @SuppressLint("CommitPrefEdits")
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
-
-        // initialize SharedPreferences
-        sharedPref = PreferenceHelper.sharedPrefs(requireActivity())
 
         // initialize Preferences
         csPref = findPreference(Constants.KEY_CURRENCY_SYMBOL)!!

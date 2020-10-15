@@ -15,7 +15,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Singleton
 
 /**
- *  Hilt Module that tells Hilt how to provide Database and DAOs where they are injected.
+ *  Tells Hilt how to provide Database and DAOs.
  */
 @InstallIn(ApplicationComponent::class)
 @Module

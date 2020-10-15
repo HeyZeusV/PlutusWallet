@@ -22,13 +22,11 @@ import com.heyzeusv.plutuswallet.databinding.ItemViewAccountBinding
 import com.heyzeusv.plutuswallet.utilities.AccountDiffUtil
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.viewmodels.AccountViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  *  Shows all Accounts currently in database and allows users to either edit them or delete them.
  */
-@AndroidEntryPoint
 class AccountFragment : BaseFragment() {
 
     // DataBinding

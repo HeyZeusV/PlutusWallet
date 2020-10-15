@@ -10,11 +10,13 @@ import android.util.AttributeSet
 import android.widget.EditText
 import androidx.appcompat.R
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
+import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import javax.inject.Inject
 
 /**
  *  Custom EditText to handle currency.
@@ -24,6 +26,7 @@ import java.util.Locale
  *
  *  @constructor standard EditText constructor
  */
+@AndroidEntryPoint
 class CurrencyEditText @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet,
@@ -33,7 +36,7 @@ class CurrencyEditText @JvmOverloads constructor(
     private val currencyTextWatcher = CurrencyTextWatcher(this)
 
     // SharedPreference
-    private val sharedPref: SharedPreferences = PreferenceHelper.sharedPrefs(context)
+    @Inject lateinit var sharedPref: SharedPreferences
 
     // keys from separator symbols
     private val decimalKey: String = sharedPref[Constants.KEY_DECIMAL_SYMBOL, "period"]!!

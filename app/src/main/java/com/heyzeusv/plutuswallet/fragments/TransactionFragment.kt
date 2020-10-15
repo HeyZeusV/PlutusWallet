@@ -18,7 +18,6 @@ import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
@@ -31,7 +30,6 @@ private const val REQUEST_DATE = 0
  *  Shows all the information in database of one Transaction and allows users to
  *  edit any field and save changes.
  */
-@AndroidEntryPoint
 class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
 
     // DataBinding

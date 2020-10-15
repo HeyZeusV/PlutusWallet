@@ -19,12 +19,10 @@ import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import com.heyzeusv.plutuswallet.utilities.SettingsUtils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.ChartViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 /**
  *   Creates and populates charts with Transaction data depending on filter applied.
  */
-@AndroidEntryPoint
 class ChartFragment : BaseFragment() {
 
     // DataBinding

@@ -7,8 +7,8 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.utilities.Constants
-import com.heyzeusv.plutuswallet.utilities.PreferenceHelper
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import java.util.Locale
 
@@ -19,13 +19,13 @@ import java.util.Locale
  */
 abstract class BaseActivity : AppCompatActivity() {
 
+    // cannot inject because injection occurs in onCreate()
     protected lateinit var sharedPref: SharedPreferences
 
     @SuppressLint("CommitPrefEdits")
     override fun attachBaseContext(newBase: Context?) {
 
-        // SharedPreference/Editor will be available to all Activities that inherit this class
-        sharedPref = PreferenceHelper.sharedPrefs(newBase!!)
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(newBase!!)
         val manualChange: Boolean = sharedPref[Constants.KEY_MANUAL_LANGUAGE, false]!!
 
         // API 26 or higher, can't get manual language change to work API 25 and below, but user
@@ -46,7 +46,7 @@ abstract class BaseActivity : AppCompatActivity() {
      *  Uses app [context] to return a new Context containing language selected
      *  using [languageCode].
      */
-    fun changeLanguage(context: Context, languageCode: String): ContextWrapper {
+    private fun changeLanguage(context: Context, languageCode: String): ContextWrapper {
 
         val config: Configuration = context.resources.configuration
         val newContext: Context

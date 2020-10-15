@@ -28,13 +28,11 @@ import com.heyzeusv.plutuswallet.utilities.TranListDiffUtil
 import com.heyzeusv.plutuswallet.utilities.SettingsUtils
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  *  Will show list of Transactions depending on filters applied.
  */
-@AndroidEntryPoint
 class TransactionListFragment : BaseFragment() {
 
     // DataBinding

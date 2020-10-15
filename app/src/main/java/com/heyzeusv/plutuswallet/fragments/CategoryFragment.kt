@@ -25,14 +25,12 @@ import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.CatListDiffUtil
 import com.heyzeusv.plutuswallet.utilities.CategoryDiffUtil
 import com.heyzeusv.plutuswallet.viewmodels.CategoryViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  *  Shows all Categories depending on type in database and allows users to either
  *  edit them or delete them.
  */
-@AndroidEntryPoint
 class CategoryFragment : BaseFragment() {
 
     // DataBinding
