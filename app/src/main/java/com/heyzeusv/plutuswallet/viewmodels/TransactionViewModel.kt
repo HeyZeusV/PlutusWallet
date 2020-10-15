@@ -164,7 +164,7 @@ class TransactionViewModel @ViewModelInject constructor(
      */
     fun insertCategory(name: String, catCreate: String) {
 
-        // checks which type is currectly selected
+        // checks which type is currently selected
         if (checkedChip.value == R.id.tran_expense_chip) {
 
             expenseCatList.value?.let {

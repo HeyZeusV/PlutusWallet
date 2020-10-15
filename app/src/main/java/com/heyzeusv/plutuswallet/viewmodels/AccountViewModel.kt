@@ -20,11 +20,6 @@ class AccountViewModel @ViewModelInject constructor(
     private val tranRepo: TransactionRepository
 ) : ViewModel() {
 
-//    /**
-//     *  Stores handle to TransactionRepository.
-//     */
-//    private val tranRepo: TransactionRepository = TransactionRepository.get()
-
     // list of all Account names used to prevent 2 Accounts from having same name
     var accountNames: List<String> = emptyList()
     // list of Accounts unable to be deleted due to being used

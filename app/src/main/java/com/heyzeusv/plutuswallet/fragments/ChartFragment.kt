@@ -60,7 +60,6 @@ class ChartFragment : BaseFragment() {
             ContextCompat.getColor(requireContext(), R.color.colorIncome4)
         )
 
-
         return binding.root
     }
 

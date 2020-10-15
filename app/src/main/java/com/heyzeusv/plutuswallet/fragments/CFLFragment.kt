@@ -8,7 +8,8 @@ import android.view.ViewGroup
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.heyzeusv.plutuswallet.R
@@ -18,13 +19,13 @@ import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 /**
  *  This Fragment will be used to nest Chart/Filter/List Fragments.
  */
-class CFLFragment : BaseFragment() {
+class CFLFragment : Fragment() {
 
     // DataBinding
     private lateinit var binding: FragmentCflBinding
 
     // shared ViewModels
-    private lateinit var cflVM: CFLViewModel
+    private val cflVM: CFLViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,9 +35,6 @@ class CFLFragment : BaseFragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_cfl, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
-
-        // this ensures that this is same CFLViewModel as Filter/ChartFragment use
-        cflVM = requireActivity().let { ViewModelProvider(it).get(CFLViewModel::class.java) }
 
         // opens NavigationDrawer
         binding.cflTopBar.setNavigationOnClickListener {
