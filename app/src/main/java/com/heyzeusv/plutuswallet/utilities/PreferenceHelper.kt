@@ -31,20 +31,19 @@ object PreferenceHelper {
     /**
      * Finds value on given [key].
      * T is the type of value
-     * [defaultValue] optional default value - will take null for strings,
-     * false for bool and -1 for numeric values if [defaultValue] is not specified
+     * [defaultValue] will be used if no value is found for key.
      */
     inline operator fun <reified T : Any> SharedPreferences.get(
         key: String,
-        defaultValue: T? = null
-    ): T? {
+        defaultValue: T
+    ): T {
 
         return when (T::class) {
-            String::class -> getString(key, defaultValue as? String ?: "") as T?
-            Int::class -> getInt(key, defaultValue as? Int ?: -1) as T?
-            Boolean::class -> getBoolean(key, defaultValue as? Boolean ?: false) as T?
-            Float::class -> getFloat(key, defaultValue as? Float ?: -1f) as T?
-            Long::class -> getLong(key, defaultValue as? Long ?: -1) as T?
+            String::class -> getString(key, defaultValue as String) as T
+            Int::class -> getInt(key, defaultValue as Int) as T
+            Boolean::class -> getBoolean(key, defaultValue as Boolean) as T
+            Float::class -> getFloat(key, defaultValue as Float) as T
+            Long::class -> getLong(key, defaultValue as Long) as T
             else -> throw UnsupportedOperationException("Not yet implemented")
         }
     }

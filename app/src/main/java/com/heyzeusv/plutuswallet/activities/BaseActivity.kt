@@ -26,13 +26,13 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context?) {
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(newBase!!)
-        val manualChange: Boolean = sharedPref[Constants.KEY_MANUAL_LANGUAGE, false]!!
+        val manualChange: Boolean = sharedPref[Constants.KEY_MANUAL_LANGUAGE, false]
 
         // API 26 or higher, can't get manual language change to work API 25 and below, but user
         // can change system language and app will change
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && manualChange) {
             // retrieves language selected
-            val languageCode: String = sharedPref[Constants.KEY_LANGUAGE, "en"]!!
+            val languageCode: String = sharedPref[Constants.KEY_LANGUAGE, "en"]
             // sets context with language
             val context: Context = changeLanguage(newBase, languageCode)
 

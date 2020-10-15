@@ -43,7 +43,7 @@ class MainActivity : BaseActivity() {
         super.onResume()
 
         // loads if language changed
-        val languageChanged: Boolean = sharedPref[Constants.KEY_LANGUAGE_CHANGED, false]!!
+        val languageChanged: Boolean = sharedPref[Constants.KEY_LANGUAGE_CHANGED, false]
         if (languageChanged) {
             // saving into SharedPreferences
             sharedPref[Constants.KEY_LANGUAGE_CHANGED] = false

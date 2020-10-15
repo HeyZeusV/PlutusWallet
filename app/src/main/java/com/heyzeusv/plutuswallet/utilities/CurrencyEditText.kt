@@ -39,9 +39,9 @@ class CurrencyEditText @JvmOverloads constructor(
     @Inject lateinit var sharedPref: SharedPreferences
 
     // keys from separator symbols
-    private val decimalKey: String = sharedPref[Constants.KEY_DECIMAL_SYMBOL, "period"]!!
-    private val thousandsKey: String = sharedPref[Constants.KEY_THOUSANDS_SYMBOL, "comma"]!!
-    private val decimalPlaces: Boolean = sharedPref[Constants.KEY_DECIMAL_PLACES, true]!!
+    private val decimalKey: String = sharedPref[Constants.KEY_DECIMAL_SYMBOL, "period"]
+    private val thousandsKey: String = sharedPref[Constants.KEY_THOUSANDS_SYMBOL, "comma"]
+    private val decimalPlaces: Boolean = sharedPref[Constants.KEY_DECIMAL_PLACES, true]
 
     // formatters
     private var decimal0Formatter: DecimalFormat = DecimalFormat()
