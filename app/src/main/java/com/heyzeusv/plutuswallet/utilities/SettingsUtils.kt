@@ -62,12 +62,12 @@ class SettingsUtils {
         fun prepareSettingValues(sharedPref: SharedPreferences): SettingsValues {
 
             // retrieving SharedPreferences values
-            val currencySymbolKey: String = sharedPref[Constants.KEY_CURRENCY_SYMBOL, "dollar"]
-            val dateFormatKey: String = sharedPref[Constants.KEY_DATE_FORMAT, "0"]
-            val decimalSymbolKey: String = sharedPref[Constants.KEY_DECIMAL_SYMBOL, "period"]
-            val thousandsSymbolKey: String = sharedPref[Constants.KEY_THOUSANDS_SYMBOL, "comma"]
-            val decimalPlaces: Boolean = sharedPref[Constants.KEY_DECIMAL_PLACES, true]
-            val symbolSide: Boolean = sharedPref[Constants.KEY_SYMBOL_SIDE, true]
+            val currencySymbolKey: String = sharedPref[Key.KEY_CURRENCY_SYMBOL, "dollar"]
+            val dateFormatKey: String = sharedPref[Key.KEY_DATE_FORMAT, "0"]
+            val decimalSymbolKey: String = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
+            val thousandsSymbolKey: String = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
+            val decimalPlaces: Boolean = sharedPref[Key.KEY_DECIMAL_PLACES, true]
+            val symbolSide: Boolean = sharedPref[Key.KEY_SYMBOL_SIDE, true]
 
             // converting keys to values
             val currencySymbol: String = getCurrencySymbol(currencySymbolKey)

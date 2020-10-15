@@ -13,7 +13,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.CategoryTotals
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentChartBinding
-import com.heyzeusv.plutuswallet.utilities.Constants
+import com.heyzeusv.plutuswallet.utilities.Key
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import com.heyzeusv.plutuswallet.utilities.SettingsUtils
@@ -90,7 +90,7 @@ class ChartFragment : BaseFragment() {
         super.onResume()
 
         // checks if there has been a change in settings, updates changes, and updates list
-        if (sharedPref[Constants.KEY_CHART_CHANGE, false]
+        if (sharedPref[Key.KEY_CHART_CHANGE, false]
             && chartVM.adapter.currentList.size == 2
         ) {
             setVals = SettingsUtils.prepareSettingValues(sharedPref)
@@ -98,7 +98,7 @@ class ChartFragment : BaseFragment() {
             chartVM.adapter.currentList[0].totalText = chartVM.exTotText
             chartVM.adapter.currentList[1].totalText = chartVM.inTotText
             chartVM.adapter.notifyDataSetChanged()
-            sharedPref[Constants.KEY_CHART_CHANGE] = false
+            sharedPref[Key.KEY_CHART_CHANGE] = false
         }
     }
 

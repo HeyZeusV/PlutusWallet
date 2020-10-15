@@ -11,7 +11,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
-import com.heyzeusv.plutuswallet.utilities.Constants
+import com.heyzeusv.plutuswallet.utilities.Key
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -39,13 +39,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
         // initialize Preferences
-        csPref = findPreference(Constants.KEY_CURRENCY_SYMBOL)!!
-        ssPref = findPreference(Constants.KEY_SYMBOL_SIDE)!!
-        tsPref = findPreference(Constants.KEY_THOUSANDS_SYMBOL)!!
-        dpPref = findPreference(Constants.KEY_DECIMAL_PLACES)!!
-        dsPref = findPreference(Constants.KEY_DECIMAL_SYMBOL)!!
-        dfPref = findPreference(Constants.KEY_DATE_FORMAT)!!
-        lgPref = findPreference(Constants.KEY_LANGUAGE)!!
+        csPref = findPreference(Key.KEY_CURRENCY_SYMBOL.key)!!
+        ssPref = findPreference(Key.KEY_SYMBOL_SIDE.key)!!
+        tsPref = findPreference(Key.KEY_THOUSANDS_SYMBOL.key)!!
+        dpPref = findPreference(Key.KEY_DECIMAL_PLACES.key)!!
+        dsPref = findPreference(Key.KEY_DECIMAL_SYMBOL.key)!!
+        dfPref = findPreference(Key.KEY_DATE_FORMAT.key)!!
+        lgPref = findPreference(Key.KEY_LANGUAGE.key)!!
     }
 
     override fun onStart() {
@@ -58,8 +58,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     return@OnPreferenceChangeListener false
                 } else {
                     // used to tell if data in Chart/TranList Fragments should be updated
-                    sharedPref[Constants.KEY_CHART_CHANGE] = true
-                    sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = true
+                    sharedPref[Key.KEY_CHART_CHANGE] = true
+                    sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -68,8 +68,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         ssPref.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, _ ->
                 // used to tell if data in Chart/TranList Fragments should be updated
-                sharedPref[Constants.KEY_CHART_CHANGE] = true
-                sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = true
+                sharedPref[Key.KEY_CHART_CHANGE] = true
+                sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
                 return@OnPreferenceChangeListener true
             }
 
@@ -82,8 +82,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     return@OnPreferenceChangeListener false
                 } else {
                     // used to tell if data in Chart/TranList Fragments should be updated
-                    sharedPref[Constants.KEY_CHART_CHANGE] = true
-                    sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = true
+                    sharedPref[Key.KEY_CHART_CHANGE] = true
+                    sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -106,8 +106,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     return@OnPreferenceChangeListener false
                 } else {
                     // used to tell if data in Chart/TranList Fragments should be updated
-                    sharedPref[Constants.KEY_CHART_CHANGE] = true
-                    sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = true
+                    sharedPref[Key.KEY_CHART_CHANGE] = true
+                    sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -119,8 +119,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     return@OnPreferenceChangeListener false
                 } else {
                     // used to tell if data in Chart/TranList Fragments should be updated
-                    sharedPref[Constants.KEY_CHART_CHANGE] = true
-                    sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = true
+                    sharedPref[Key.KEY_CHART_CHANGE] = true
+                    sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -135,8 +135,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     // checks if a different language was selected
                     if (lgPref.value != languageCode.toString()) {
                         // saving into SharedPreferences
-                        sharedPref[Constants.KEY_LANGUAGE_CHANGED] = true
-                        sharedPref[Constants.KEY_MANUAL_LANGUAGE] = true
+                        sharedPref[Key.KEY_LANGUAGE_CHANGED] = true
+                        sharedPref[Key.KEY_MANUAL_LANGUAGE] = true
                         // destroys then restarts Activity in order to have updated language
                         requireActivity().recreate()
                     }
@@ -159,8 +159,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val posFun = DialogInterface.OnClickListener { _, _ ->
             dpPref.isChecked = !dpPref.isChecked
             // used to tell if data in Chart/TranList Fragments should be updated
-            sharedPref[Constants.KEY_CHART_CHANGE] = true
-            sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = true
+            sharedPref[Key.KEY_CHART_CHANGE] = true
+            sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
         }
         AlertDialogCreator.alertDialog(
             requireContext(),
@@ -180,8 +180,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newThousands: String = dsPref.value
             tsPref.value = newThousands
             dsPref.value = newDecimal
-            sharedPref[Constants.KEY_CHART_CHANGE] = true
-            sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = true
+            sharedPref[Key.KEY_CHART_CHANGE] = true
+            sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
         }
 
         AlertDialogCreator.alertDialog(

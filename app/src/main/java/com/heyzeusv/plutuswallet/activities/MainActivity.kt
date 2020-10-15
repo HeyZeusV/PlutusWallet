@@ -8,7 +8,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.databinding.ActivityMainBinding
-import com.heyzeusv.plutuswallet.utilities.Constants
+import com.heyzeusv.plutuswallet.utilities.Key
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,10 +43,10 @@ class MainActivity : BaseActivity() {
         super.onResume()
 
         // loads if language changed
-        val languageChanged: Boolean = sharedPref[Constants.KEY_LANGUAGE_CHANGED, false]
+        val languageChanged: Boolean = sharedPref[Key.KEY_LANGUAGE_CHANGED, false]
         if (languageChanged) {
             // saving into SharedPreferences
-            sharedPref[Constants.KEY_LANGUAGE_CHANGED] = false
+            sharedPref[Key.KEY_LANGUAGE_CHANGED] = false
             // destroys then restarts Activity in order to have updated language
             recreate()
         }

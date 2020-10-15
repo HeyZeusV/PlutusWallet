@@ -21,7 +21,7 @@ import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
 import com.heyzeusv.plutuswallet.databinding.ItemViewTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
-import com.heyzeusv.plutuswallet.utilities.Constants
+import com.heyzeusv.plutuswallet.utilities.Key
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
 import com.heyzeusv.plutuswallet.utilities.TranListDiffUtil
@@ -106,10 +106,10 @@ class TransactionListFragment : BaseFragment() {
         super.onResume()
 
         // checks if there has been a change in settings, updates changes, and updates list
-        if (sharedPref[Constants.KEY_TRAN_LIST_CHANGE, false]) {
+        if (sharedPref[Key.KEY_TRAN_LIST_CHANGE, false]) {
             setVals = SettingsUtils.prepareSettingValues(sharedPref)
             tranListAdapter.notifyDataSetChanged()
-            sharedPref[Constants.KEY_TRAN_LIST_CHANGE] = false
+            sharedPref[Key.KEY_TRAN_LIST_CHANGE] = false
         }
         listVM.futureTransactions()
     }
