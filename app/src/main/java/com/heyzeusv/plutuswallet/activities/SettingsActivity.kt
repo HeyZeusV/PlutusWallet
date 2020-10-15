@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.MenuItem
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.fragments.SettingsFragment
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  *  Activity that starts SettingsFragment
  */
+@AndroidEntryPoint
 class SettingsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
