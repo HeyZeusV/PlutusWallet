@@ -44,27 +44,24 @@ class ChartFragment : BaseFragment() {
         binding.lifecycleOwner = activity
         binding.chartVM = chartVM
 
-        // sending data that requires context to ViewModel
-        chartVM.expense = getString(R.string.type_expense)
-        chartVM.income = getString(R.string.type_income)
-        chartVM.exColors = listOf(
-            ContextCompat.getColor(requireContext(), R.color.colorExpense1),
-            ContextCompat.getColor(requireContext(), R.color.colorExpense2),
-            ContextCompat.getColor(requireContext(), R.color.colorExpense3),
-            ContextCompat.getColor(requireContext(), R.color.colorExpense4)
-        )
-        chartVM.inColors = listOf(
-            ContextCompat.getColor(requireContext(), R.color.colorIncome1),
-            ContextCompat.getColor(requireContext(), R.color.colorIncome2),
-            ContextCompat.getColor(requireContext(), R.color.colorIncome3),
-            ContextCompat.getColor(requireContext(), R.color.colorIncome4)
-        )
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val exColors: List<Int> = listOf(
+            ContextCompat.getColor(requireContext(), R.color.colorIncome1),
+            ContextCompat.getColor(requireContext(), R.color.colorIncome2),
+            ContextCompat.getColor(requireContext(), R.color.colorIncome3),
+            ContextCompat.getColor(requireContext(), R.color.colorIncome4)
+        )
+        val inColors: List<Int> = listOf(
+            ContextCompat.getColor(requireContext(), R.color.colorExpense1),
+            ContextCompat.getColor(requireContext(), R.color.colorExpense2),
+            ContextCompat.getColor(requireContext(), R.color.colorExpense3),
+            ContextCompat.getColor(requireContext(), R.color.colorExpense4)
+        )
 
         cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: TransactionInfo ->
             // LiveData of list of CategoryTotals
@@ -78,7 +75,11 @@ class ChartFragment : BaseFragment() {
                 chartVM.prepareLists(ctList)
                 chartVM.prepareTotals(tInfo.category, tInfo.categoryName, tInfo.type)
                 prepareTotalTexts()
-                chartVM.prepareIvgAdapter(tInfo.category, tInfo.categoryName, tInfo.type)
+                chartVM.prepareIvgAdapter(
+                    tInfo.category, tInfo.categoryName, tInfo.type,
+                    getString(R.string.type_expense), getString(R.string.type_income),
+                    exColors, inColors
+                )
 
                 // sets up Dots Indicator with ViewPager2
                 binding.chartCi.setViewPager(binding.chartVp)

@@ -43,14 +43,6 @@ class ChartViewModel @ViewModelInject constructor(
     var exTotText: String = ""
     var inTotText: String = ""
 
-    // translated versions
-    var expense: String = "Expense"
-    var income: String = "Income"
-
-    // list of Int that represent colors resources to be used for charts
-    var exColors: List<Int> = emptyList()
-    var inColors: List<Int> = emptyList()
-
     /**
      *  Splits [ctList] into 2 lists according to type and retrieves Category names.
      */
@@ -119,10 +111,18 @@ class ChartViewModel @ViewModelInject constructor(
     /**
      *  Creates ItemViewChart objects using data calculated using above functions and
      *  depending on category filter [fCat], category selected filter [fCatName],
-     *  and type of category filter [fType], passes them
-     *  to adapter, and notifies of changes.
+     *  and type of category filter [fType], passes them translated strings [expense]/[income],
+     *  colors used for Chart [exColors]/[inColors], and passes them to adapter, and notifies changes.
      */
-    fun prepareIvgAdapter(fCat: Boolean?, fCatName: String?, fType: String?) {
+    fun prepareIvgAdapter(
+        fCat: Boolean?,
+        fCatName: String?,
+        fType: String?,
+        expense: String,
+        income: String,
+        exColors: List<Int>,
+        inColors: List<Int>
+    ) {
 
         val exIvc = ItemViewChart(exCatTotals, expense, exTotText, exColors, fCat, fCatName, fType)
         val inIvc = ItemViewChart(inCatTotals, income, inTotText, inColors, fCat, fCatName, fType)
