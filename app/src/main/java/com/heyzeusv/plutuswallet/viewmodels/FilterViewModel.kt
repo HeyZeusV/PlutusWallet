@@ -23,22 +23,11 @@ class FilterViewModel @ViewModelInject constructor(
     private val tranRepo: TransactionRepository
 ) : ViewModel() {
 
-    // localized Strings
-    var all: String = ""
-    var apply: String = ""
-    var end: String = ""
-    var expense: String = ""
-    var income: String = ""
-    var reset: String = ""
-    var start: String = ""
-    var type: String = ""
-
     // current Account selected and Account list
     val account: MutableLiveData<String> = MutableLiveData("None")
     val accList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
     // type of Category selected and which is visible, true = "Expense" false = "Income"
-    var typeSelected: MutableLiveData<String> = MutableLiveData("")
     var typeVisible: MutableLiveData<Boolean> = MutableLiveData(true)
 
     // current Category selected and Category list, both by type
@@ -66,7 +55,7 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Retrieves data that will be displayed in Spinners from Repository.
      */
-    fun prepareSpinners() {
+    fun prepareSpinners(all: String) {
 
         viewModelScope.launch {
             // Account data
@@ -89,7 +78,7 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Resets all filters.
      */
-    fun resetFilter() {
+    fun resetFilter(all: String) {
 
         // sets the startDate to very start of current day and endDate to right before the next day
         startDate.value = DateUtils.startOfDay(Date())
@@ -98,7 +87,6 @@ class FilterViewModel @ViewModelInject constructor(
         // resets type Button and Spinner selections
         exCategory.value = all
         inCategory.value = all
-        typeSelected.value = expense
     }
 
     /**

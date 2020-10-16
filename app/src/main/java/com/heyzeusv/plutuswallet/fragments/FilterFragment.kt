@@ -50,18 +50,8 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
         binding.lifecycleOwner = activity
         binding.filterVM = filterVM
 
-        // sending data that requires context to ViewModel
-        filterVM.all = getString(R.string.category_all)
-        filterVM.apply = getString(R.string.filter_apply)
-        filterVM.end = getString(R.string.filter_end)
-        filterVM.expense = getString(R.string.type_expense)
-        filterVM.income = getString(R.string.type_income)
-        filterVM.reset = getString(R.string.filter_reset)
-        filterVM.start = getString(R.string.filter_start)
-        filterVM.type = getString(R.string.filter_type)
-
         // preparing data/listeners
-        filterVM.prepareSpinners()
+        filterVM.prepareSpinners(getString(R.string.category_all))
         prepareListeners()
 
         return binding.root
@@ -93,18 +83,9 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
      */
     private fun prepareListeners() {
 
-        // sets up typeButton with initial value
-        if (filterVM.typeSelected.value == "") filterVM.typeSelected.value = filterVM.expense
-
         // will change which Category Spinner will be displayed
         filterVM.typeOnClick.value = View.OnClickListener {
-            if (filterVM.typeSelected.value == filterVM.expense) {
-                filterVM.typeSelected.value = filterVM.income
-                filterVM.typeVisible.value = false
-            } else {
-                filterVM.typeSelected.value = filterVM.expense
-                filterVM.typeVisible.value = true
-            }
+            filterVM.typeVisible.value = !filterVM.typeVisible.value!!
         }
 
         // starts up DatePickerFragment
@@ -143,7 +124,7 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
                 var cat: String
                 val type: String
                 // sets type and category applied
-                if (filterVM.typeSelected.value == getString(R.string.type_expense)) {
+                if (filterVM.typeVisible.value!!) {
                     type = "Expense"
                     cat = filterVM.exCategory.value!!
                 } else {
@@ -168,7 +149,7 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
                     && !filterVM.catCheck.value!!
                     && !filterVM.dateCheck.value!!
                 ) {
-                    filterVM.resetFilter()
+                    filterVM.resetFilter(getString(R.string.category_all))
                 }
                 cflVM.filterChanged = true
             }
