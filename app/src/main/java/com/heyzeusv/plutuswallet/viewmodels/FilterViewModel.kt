@@ -1,10 +1,12 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
+import android.app.DatePickerDialog
 import android.view.View
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.utilities.DateUtils
 import kotlinx.coroutines.Deferred
@@ -48,9 +50,37 @@ class FilterViewModel @ViewModelInject constructor(
 
     // OnClickListeners for MaterialButtons
     val typeOnClick: MutableLiveData<View.OnClickListener> = MutableLiveData()
-    val startOnClick: MutableLiveData<View.OnClickListener> = MutableLiveData()
-    val endOnClick: MutableLiveData<View.OnClickListener> = MutableLiveData()
     val actionOnClick: MutableLiveData<View.OnClickListener> = MutableLiveData()
+
+    /**
+     *  Runs on Date button [view] on click. Creates DatePickerDialog and shows it.
+     *  Uses different arguments depending on start/end button selected.
+     */
+    fun onDateClicked(view: View) {
+
+        val dateDialog: DatePickerDialog = if (view.id == R.id.filter_start_date) {
+            DateUtils.datePickerDialog(view, startDate.value!!, this::onDateSelectedStart)
+        } else {
+            DateUtils.datePickerDialog(view, endDate.value!!, this::onDateSelectedEnd)
+        }
+        dateDialog.show()
+    }
+
+    /**
+     *  Takes [newDate] user selected on Start button and saves to be used in query
+     */
+    private fun onDateSelectedStart(newDate: Date) {
+
+        startDate.value = newDate
+    }
+
+    /**
+     *  Takes [newDate] user selected on End button and saves to be used in query
+     */
+    private fun onDateSelectedEnd(newDate: Date) {
+
+        endDate.value = newDate
+    }
 
     /**
      *  Retrieves data that will be displayed in Spinners from Repository.

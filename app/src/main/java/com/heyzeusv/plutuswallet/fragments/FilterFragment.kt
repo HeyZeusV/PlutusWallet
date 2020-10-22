@@ -15,24 +15,15 @@ import com.heyzeusv.plutuswallet.databinding.FragmentFilterBinding
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.FilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Date
-
-private const val DIALOG_DATE = "DialogDate"
-private const val REQUEST_DATE = 0
-private const val MIDNIGHT_MILLI = 86399999
 
 /**
  *  Used to apply filters and tell TransactionListFragment which Transaction list to load
  */
 @AndroidEntryPoint
-class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
+class FilterFragment : Fragment() {
 
     // DataBinding
     private lateinit var binding: FragmentFilterBinding
-
-    // booleans used to tell which DateButton was pressed
-    private var startButton = false
-    private var endButton = false
 
     // provides instance of FilterViewModel
     private val filterVM: FilterViewModel by viewModels()
@@ -58,22 +49,6 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
     }
 
     /**
-     *  Sets the [date] selected on dateButtons and saves the Date to be used later in a query.
-     */
-    override fun onDateSelected(date: Date) {
-
-        if (startButton) {
-            filterVM.startDate.value = date
-            startButton = false
-        }
-        if (endButton) {
-            // adds time to endDate to make it right before midnight of next day
-            filterVM.endDate.value = Date(date.time + MIDNIGHT_MILLI)
-            endButton = false
-        }
-    }
-
-    /**
      *  Sets up OnClickListeners for MaterialButtons and sets them to MutableLiveData in ViewModel.
      *
      *  I wanted all these to be in ViewModel, but several required context. I know that
@@ -86,28 +61,6 @@ class FilterFragment : Fragment(), DatePickerFragment.Callbacks {
         // will change which Category Spinner will be displayed
         filterVM.typeOnClick.value = View.OnClickListener {
             filterVM.typeVisible.value = !filterVM.typeVisible.value!!
-        }
-
-        // starts up DatePickerFragment
-        filterVM.startOnClick.value = View.OnClickListener {
-            DatePickerFragment.newInstance(filterVM.startDate.value!!).apply {
-                // fragment that will be target and request code
-                setTargetFragment(this@FilterFragment, REQUEST_DATE)
-                // want requireFragmentManager from TransactionFragment, so need outer scope
-                show(this@FilterFragment.parentFragmentManager, DIALOG_DATE)
-                startButton = true
-            }
-        }
-
-        // starts up DatePickerFragment
-        filterVM.endOnClick.value = View.OnClickListener {
-            DatePickerFragment.newInstance(filterVM.endDate.value!!).apply {
-                // fragment that will be target and request code
-                setTargetFragment(this@FilterFragment, REQUEST_DATE)
-                // want requireFragmentManager from TransactionFragment, so need outer scope
-                show(this@FilterFragment.parentFragmentManager, DIALOG_DATE)
-                endButton = true
-            }
         }
 
         filterVM.actionOnClick.value = View.OnClickListener {
