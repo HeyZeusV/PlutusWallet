@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
+import android.app.DatePickerDialog
 import android.view.View
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
@@ -10,11 +11,14 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
+import com.heyzeusv.plutuswallet.database.entities.SettingsValues
 import com.heyzeusv.plutuswallet.database.entities.Transaction
+import com.heyzeusv.plutuswallet.utilities.DateUtils
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Calendar
@@ -63,8 +67,8 @@ class TransactionViewModel @ViewModelInject constructor(
     val incomeCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     val periodArray: MutableLiveData<List<String>> = MutableLiveData(emptyList())
 
-    // OnClick defined in Fragment
-    val dateOnClick: MutableLiveData<View.OnClickListener> = MutableLiveData()
+    // SettingsValues will be retrieved from Fragment
+    var setVals: SettingsValues = SettingsValues()
 
     var maxId: Int = 0
 
@@ -193,6 +197,28 @@ class TransactionViewModel @ViewModelInject constructor(
             }
             incomeCat.value = name
         }
+    }
+
+    /**
+     *  Runs on Date button [view] on click. Creates DatePickerDialog and shows it.
+     */
+    fun onDateClicked(view: View) {
+
+        val dateDialog: DatePickerDialog =
+            DateUtils.datePickerDialog(view, tranLD.value!!.date, this::onDateSelected)
+        dateDialog.show()
+    }
+
+    /**
+     *  Takes [newDate] user selects, changes Transaction date, and formats it to be displayed.
+     */
+    private fun onDateSelected(newDate: Date) {
+
+        // true if newDate is different from previous date
+        dateChanged = tranLD.value!!.date != newDate
+        tranLD.value!!.date = newDate
+        // turns date selected into Date type
+        date.value = DateFormat.getDateInstance(setVals.dateFormat).format(newDate)
     }
 
     /**

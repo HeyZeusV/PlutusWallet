@@ -21,16 +21,12 @@ import com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
-import java.util.Date
-
-private const val DIALOG_DATE = "DialogDate"
-private const val REQUEST_DATE = 0
 
 /**
  *  Shows all the information in database of one Transaction and allows users to
  *  edit any field and save changes.
  */
-class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
+class TransactionFragment : BaseFragment() {
 
     // DataBinding
     private lateinit var binding: FragmentTransactionBinding
@@ -61,6 +57,7 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
             getString(R.string.period_months), getString(R.string.period_years)
         )
 
+        tranVM.setVals = setVals
         tranVM.prepareLists(getString(R.string.account_create), getString(R.string.category_create))
     }
 
@@ -75,7 +72,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.tranVM = tranVM
-        binding.setVals = setVals
 
         return binding.root
     }
@@ -149,16 +145,6 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
     @ExperimentalStdlibApi
     override fun onStart() {
         super.onStart()
-
-        // Launches DatePickerFragment which is essentially a Calender dialog
-        tranVM.dateOnClick.value = View.OnClickListener {
-            DatePickerFragment.newInstance(tranVM.tranLD.value!!.date).apply {
-                // fragment that will be target and request code
-                setTargetFragment(this@TransactionFragment, REQUEST_DATE)
-                // want requireFragmentManager from TransactionFragment, so need outer scope
-                show(this@TransactionFragment.parentFragmentManager, DIALOG_DATE)
-            }
-        }
 
         // navigates user back to CFLFragment
         binding.tranTopBar.setNavigationOnClickListener { requireActivity().onBackPressed() }
@@ -304,15 +290,5 @@ class TransactionFragment : BaseFragment(), DatePickerFragment.Callbacks {
         )
         savedBar.anchorView = binding.tranAnchor
         savedBar.show()
-    }
-
-    /**
-     *  Will update Transaction date with [date] selected from DatePickerFragment.
-     */
-    override fun onDateSelected(date: Date) {
-
-        tranVM.dateChanged = tranVM.tranLD.value!!.date != date
-        tranVM.tranLD.value!!.date = date
-        tranVM.date.value = DateFormat.getDateInstance(setVals.dateFormat).format(date)
     }
 }

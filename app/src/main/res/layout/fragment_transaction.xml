@@ -8,12 +8,10 @@
         <import type="android.view.View" />
         <import type="android.view.Gravity" />
         <import type="com.heyzeusv.plutuswallet.R" />
+        <import type="com.heyzeusv.plutuswallet.utilities.DateUtils" />
         <variable
             name="tranVM"
             type="com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel" />
-        <variable
-            name="setVals"
-            type="com.heyzeusv.plutuswallet.database.entities.SettingsValues" />
     </data>
 
     <LinearLayout
@@ -107,7 +105,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
                             android:backgroundTint="@color/colorSecondary"
-                            android:onClick="@{tranVM.dateOnClick}"
+                            android:onClick="@{(view) -> tranVM.onDateClicked(view)}"
                             android:text="@{tranVM.date}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -161,9 +159,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
-                            android:text="@{setVals.currencySymbol}"
+                            android:text="@{tranVM.setVals.currencySymbol}"
                             android:textSize="18sp"
-                            android:visibility="@{setVals.symbolSide ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{tranVM.setVals.symbolSide ? View.VISIBLE : View.GONE}"
                             app:layout_constraintStart_toEndOf="@+id/totalTextView"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
@@ -173,13 +171,13 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="9dp"
                             android:layout_marginBottom="1dp"
-                            android:gravity="@{setVals.symbolSide ? Gravity.LEFT : Gravity.RIGHT}"
+                            android:gravity="@{tranVM.setVals.symbolSide ? Gravity.LEFT : Gravity.RIGHT}"
                             android:hint="@string/transaction_total_hint"
                             android:importantForAutofill="no"
                             android:maxLength="21"
                             android:text="@={tranVM.total}"
                             android:textSize="18sp"
-                            app:filter="@{setVals}"
+                            app:filter="@{tranVM.setVals}"
                             app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
                             app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
                             app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
@@ -192,9 +190,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
-                            android:text="@{setVals.currencySymbol}"
+                            android:text="@{tranVM.setVals.currencySymbol}"
                             android:textSize="18sp"
-                            android:visibility="@{setVals.symbolSide ? View.GONE : View.VISIBLE}"
+                            android:visibility="@{tranVM.setVals.symbolSide ? View.GONE : View.VISIBLE}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
