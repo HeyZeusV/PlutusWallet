@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.utilities
 
 import android.app.DatePickerDialog
 import android.view.View
-import com.heyzeusv.plutuswallet.database.entities.SettingsValues
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar

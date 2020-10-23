@@ -61,20 +61,3 @@ class ChartDiffUtil : DiffUtil.ItemCallback<ItemViewChart>() {
         return oldItem == newItem
     }
 }
-
-class TranListDiffUtil : DiffUtil.ItemCallback<ItemViewTransaction>() {
-
-    override fun areItemsTheSame(
-        oldItem: ItemViewTransaction, newItem: ItemViewTransaction
-    ): Boolean {
-
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(
-        oldItem: ItemViewTransaction, newItem: ItemViewTransaction
-    ): Boolean {
-
-        return oldItem == newItem
-    }
-}

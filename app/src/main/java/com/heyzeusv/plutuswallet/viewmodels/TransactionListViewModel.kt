@@ -9,6 +9,7 @@ import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
+import com.heyzeusv.plutuswallet.database.entities.SettingsValues
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +42,29 @@ class TransactionListViewModel @ViewModelInject constructor(
 
     // tried using ivtList.empty in XML, but could not get it to work.. displays empty message
     val ivtEmpty: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    // onClick/onLong/Click events for ViewHolder
+    val openTran: MutableLiveData<Int?> = MutableLiveData()
+    val deleteTran: MutableLiveData<ItemViewTransaction?> = MutableLiveData()
+
+    var setVals: SettingsValues = SettingsValues()
+
+    /**
+     *  onClick for ViewHolder to navigate user to Transaction with selected [tranId].
+     */
+    fun openTran(tranId: Int) {
+
+        openTran.value = tranId
+    }
+
+    /**
+     *  onLongClick for ViewHolder to delete selected [ivt]. Must return Boolean.
+     */
+    fun deleteTran(ivt: ItemViewTransaction): Boolean {
+
+        deleteTran.value = ivt
+        return true
+    }
 
     /**
      *  Runs when user first starts app or wipes data, adds Categories of both types in table and

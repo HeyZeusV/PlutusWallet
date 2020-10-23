@@ -49,9 +49,12 @@ class FilterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         filterVM.cflChange.observe(viewLifecycleOwner, {
-            // updates MutableLiveData, causing Chart/ListFragment refresh
-            cflVM.updateTInfo(filterVM.cflTInfo)
-            cflVM.filterChanged = true
+            if (it != null) {
+                // updates MutableLiveData, causing Chart/ListFragment refresh
+                cflVM.updateTInfo(filterVM.cflTInfo)
+                cflVM.filterChanged = true
+                filterVM.cflChange.value = null
+            }
         })
     }
 }

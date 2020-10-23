@@ -51,7 +51,7 @@ class FilterViewModel @ViewModelInject constructor(
     val dateCheck: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // used to pass TransactionInfo to CFLViewModel
-    val cflChange: MutableLiveData<Boolean> = MutableLiveData(false)
+    val cflChange: MutableLiveData<Boolean?> = MutableLiveData(null)
     var cflTInfo: TransactionInfo = TransactionInfo()
 
     /**

@@ -13,19 +13,16 @@ import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
-import com.heyzeusv.plutuswallet.databinding.ItemViewTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.Key
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
-import com.heyzeusv.plutuswallet.utilities.TranListDiffUtil
 import com.heyzeusv.plutuswallet.utilities.SettingsUtils
+import com.heyzeusv.plutuswallet.utilities.adapters.TranListAdapter
 import com.heyzeusv.plutuswallet.viewmodels.CFLViewModel
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 import kotlinx.coroutines.launch
@@ -44,14 +41,17 @@ class TransactionListFragment : BaseFragment() {
     private val cflVM: CFLViewModel by activityViewModels()
 
     // RecyclerView Adapter/LayoutManager
-    private val tranListAdapter = TranListAdapter()
-    lateinit var layoutManager: LinearLayoutManager
+    private lateinit var tranListAdapter: TranListAdapter
+    private lateinit var layoutManager: LinearLayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        listVM.setVals = setVals
+        tranListAdapter = TranListAdapter(listVM)
 
         // setting up LayoutManager
         layoutManager = LinearLayoutManager(context)
@@ -74,6 +74,7 @@ class TransactionListFragment : BaseFragment() {
         return binding.root
     }
 
+    @SuppressLint("StringFormatInvalid")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -84,10 +85,6 @@ class TransactionListFragment : BaseFragment() {
             )
 
             listVM.ivtList.observe(viewLifecycleOwner, { transactions: List<ItemViewTransaction> ->
-                // scrolls to saved position
-                binding.tranlistRv.scrollToPosition(listVM.rvPosition)
-                // will display empty string
-                listVM.ivtEmpty.value = transactions.isEmpty()
                 // update adapter with new list to check for any changes
                 // and waits to be fully updated before running Runnable
                 tranListAdapter.submitList(transactions) {
@@ -96,7 +93,46 @@ class TransactionListFragment : BaseFragment() {
                         cflVM.filterChanged = false
                     }
                 }
+                // scrolls to saved position
+                binding.tranlistRv.scrollToPosition(listVM.rvPosition)
+                // will display empty string
+                listVM.ivtEmpty.value = transactions.isEmpty()
             })
+        })
+
+        listVM.openTran.observe(viewLifecycleOwner, { tranId: Int? ->
+            if (tranId != null) {
+                listVM.openTran.value = null
+                // the position that the user clicked on
+                listVM.rvPosition = layoutManager.findLastCompletelyVisibleItemPosition()
+                // creates action with parameters
+                val action: NavDirections =
+                    CFLFragmentDirections.actionTransaction(tranId, false)
+                // retrieves correct controller to send action to
+                Navigation
+                    .findNavController(requireActivity(), R.id.fragment_container)
+                    .navigate(action)
+            }
+        })
+
+        listVM.deleteTran.observe(viewLifecycleOwner, {
+            if (it != null) {
+                val posFun = DialogInterface.OnClickListener { _, _ ->
+                    launch {
+                        listVM.deleteTransaction(listVM.getTransactionAsync(it.id).await())
+                    }
+                }
+
+                AlertDialogCreator.alertDialog(
+                    requireContext(),
+                    requireContext().getString(R.string.alert_dialog_delete_transaction),
+                    requireContext().getString(R.string.alert_dialog_delete_warning, it.title),
+                    requireContext().getString(R.string.alert_dialog_yes), posFun,
+                    requireContext().getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
+                )
+                listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+                listVM.deleteTran.value = null
+            }
         })
 
         listVM.initializeTables()
@@ -112,110 +148,5 @@ class TransactionListFragment : BaseFragment() {
             sharedPref[Key.KEY_TRAN_LIST_CHANGE] = false
         }
         listVM.futureTransactions()
-    }
-
-    /**
-     *  Creates ViewHolder and binds ViewHolder to data from model layer.
-     */
-    inner class TranListAdapter :
-        ListAdapter<ItemViewTransaction, TranListHolder>(TranListDiffUtil()) {
-
-        // creates view to display, wraps the view in a ViewHolder and returns the result
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TranListHolder {
-
-            val itemViewBinding: ItemViewTransactionBinding = ItemViewTransactionBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
-            return TranListHolder(itemViewBinding)
-        }
-
-        // populates given holder with Transaction from the given position in list
-        override fun onBindViewHolder(holder: TranListHolder, position: Int) {
-
-            val ivt: ItemViewTransaction = getItem(position)
-            holder.bind(ivt)
-        }
-    }
-
-    /**
-     *  ViewHolder stores a reference to an item's view using [binding] as its layout.
-     */
-    inner class TranListHolder(private var binding: ItemViewTransactionBinding) :
-        RecyclerView.ViewHolder(binding.root), View.OnClickListener, View.OnLongClickListener {
-
-        init {
-            itemView.setOnClickListener(this)
-            itemView.setOnLongClickListener(this)
-        }
-
-        // sets the views with Transaction data
-        fun bind(ivt: ItemViewTransaction) {
-
-            binding.ivt = ivt
-            binding.setVals = setVals
-            binding.executePendingBindings()
-
-            // formats the Total correctly
-            when {
-                setVals.decimalPlaces && setVals.symbolSide -> binding.ivtTotal.text =
-                    getString(
-                        R.string.total_number_symbol,
-                        setVals.currencySymbol, setVals.decimalFormatter.format(ivt.total)
-                    )
-                setVals.decimalPlaces -> binding.ivtTotal.text =
-                    getString(
-                        R.string.total_number_symbol,
-                        setVals.decimalFormatter.format(ivt.total), setVals.currencySymbol
-                    )
-                setVals.symbolSide -> binding.ivtTotal.text =
-                    getString(
-                        R.string.total_number_symbol,
-                        setVals.currencySymbol, setVals.integerFormatter.format(ivt.total)
-                    )
-                else -> binding.ivtTotal.text =
-                    getString(
-                        R.string.total_number_symbol,
-                        setVals.integerFormatter.format(ivt.total), setVals.currencySymbol
-                    )
-            }
-        }
-
-        override fun onClick(v: View?) {
-
-            // the position that the user clicked on
-            listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-
-            // creates action with parameters
-            val action: NavDirections =
-                CFLFragmentDirections.actionTransaction(binding.ivt!!.id, false)
-            // retrieves correct controller to send action to
-            Navigation
-                .findNavController(requireActivity(), R.id.fragment_container)
-                .navigate(action)
-        }
-
-        /**
-         *  Shows AlertDialog asking user if they want to delete Transaction.
-         */
-        @SuppressLint("StringFormatInvalid")
-        override fun onLongClick(v: View?): Boolean {
-
-            val posFun = DialogInterface.OnClickListener { _, _ ->
-                launch {
-                    listVM.deleteTransaction(listVM.getTransactionAsync(binding.ivt!!.id).await())
-                    listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-                }
-            }
-
-            AlertDialogCreator.alertDialog(
-                context!!,
-                getString(R.string.alert_dialog_delete_transaction),
-                getString(R.string.alert_dialog_delete_warning, binding.ivt!!.title),
-                getString(R.string.alert_dialog_yes), posFun,
-                getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
-            )
-
-            return true
-        }
     }
 }

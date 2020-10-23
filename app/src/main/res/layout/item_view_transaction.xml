@@ -10,14 +10,16 @@
             name="ivt"
             type="com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction" />
         <variable
-            name="setVals"
-            type="com.heyzeusv.plutuswallet.database.entities.SettingsValues" />
+            name="listVM"
+            type="com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground">
+        android:background="?attr/selectableItemBackground"
+        android:onClick="@{() -> listVM.openTran(ivt.id)}"
+        android:onLongClick="@{() -> listVM.deleteTran(ivt)}">
 
         <TextView
             android:id="@+id/ivt_title"
@@ -55,7 +57,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="2dp"
             android:singleLine="true"
-            android:text="@{DateFormat.getDateInstance(setVals.dateFormat).format(ivt.date)}"
+            android:text="@{DateFormat.getDateInstance(listVM.setVals.dateFormat).format(ivt.date)}"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivt_account"
