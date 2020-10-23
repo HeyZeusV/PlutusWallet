@@ -6,8 +6,10 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.TransactionRepository
+import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.utilities.DateUtils
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
@@ -48,9 +50,40 @@ class FilterViewModel @ViewModelInject constructor(
     val catCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val dateCheck: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    // OnClickListeners for MaterialButtons
-    val typeOnClick: MutableLiveData<View.OnClickListener> = MutableLiveData()
-    val actionOnClick: MutableLiveData<View.OnClickListener> = MutableLiveData()
+    // used to pass TransactionInfo to CFLViewModel
+    val cflChange: MutableLiveData<Boolean> = MutableLiveData(false)
+    var cflTInfo: TransactionInfo = TransactionInfo()
+
+    /**
+     *  Retrieves data that will be displayed in Spinners from Repository.
+     */
+    fun prepareSpinners(all: String) {
+
+        viewModelScope.launch {
+            // Account data
+            accList.value = tranRepo.getAccountNamesAsync().await()
+
+            // Category by type data
+            val mExCatList: MutableList<String> = getCategoriesByTypeAsync("Expense").await()
+            val mInCatList: MutableList<String> = getCategoriesByTypeAsync("Income").await()
+            mExCatList.add(0, all)
+            mInCatList.add(0, all)
+            exCatList.value = mExCatList
+            inCatList.value = mInCatList
+
+            // sets Spinner to previous value since it might have moved position in list
+            exCategory.value = exCategory.value
+            inCategory.value = inCategory.value
+        }
+    }
+
+    /**
+     *  Changes what Transaction type is visible
+     */
+    fun onTypeClicked() {
+
+        typeVisible.value = !typeVisible.value!!
+    }
 
     /**
      *  Runs on Date button [view] on click. Creates DatePickerDialog and shows it.
@@ -83,32 +116,56 @@ class FilterViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  Retrieves data that will be displayed in Spinners from Repository.
+     *  Applies filters or shows Snackbar warning if end date is before start date.
+     *  [view] is used for Snackbar and translations.
      */
-    fun prepareSpinners(all: String) {
+    fun onActionClicked(view: View) {
 
-        viewModelScope.launch {
-            // Account data
-            accList.value = tranRepo.getAccountNamesAsync().await()
+        // startDate must be before endDate else it displays warning and doesn't apply filters
+        if (startDate.value!! > endDate.value!!
+            && dateCheck.value!!
+        ) {
+            val dateBar: Snackbar = Snackbar.make(
+                view, view.context.getString(R.string.filter_date_warning),
+                Snackbar.LENGTH_SHORT
+            )
+            dateBar.show()
+        } else {
+            var cat: String
+            val type: String
+            // sets type and category applied
+            if (typeVisible.value!!) {
+                type = "Expense"
+                cat = exCategory.value!!
+            } else {
+                type = "Income"
+                cat = inCategory.value!!
+            }
 
-            // Category by type data
-            val mExCatList: MutableList<String> = getCategoriesByTypeAsync("Expense").await()
-            val mInCatList: MutableList<String> = getCategoriesByTypeAsync("Income").await()
-            mExCatList.add(0, all)
-            mInCatList.add(0, all)
-            exCatList.value = mExCatList
-            inCatList.value = mInCatList
+            // translates "All"
+            if (cat == view.context.getString(R.string.category_all)) cat = "All"
 
-            // sets Spinner to previous value since it might have moved position in list
-            exCategory.value = exCategory.value
-            inCategory.value = inCategory.value
+            // updating MutableLiveData value in ViewModel
+            cflTInfo = TransactionInfo(
+                accCheck.value!!, catCheck.value!!, dateCheck.value!!,
+                type, account.value!!, cat,
+                startDate.value!!, endDate.value!!
+            )
+            // if all filters are unchecked
+            if (!accCheck.value!!
+                && !catCheck.value!!
+                && !dateCheck.value!!
+            ) {
+                resetFilter(view.context.getString(R.string.category_all))
+            }
+            cflChange.value = true
         }
     }
 
     /**
      *  Resets all filters.
      */
-    fun resetFilter(all: String) {
+    private fun resetFilter(all: String) {
 
         // sets the startDate to very start of current day and endDate to right before the next day
         startDate.value = DateUtils.startOfDay(Date())
