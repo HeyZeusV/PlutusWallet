@@ -18,8 +18,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:onClick="@{() -> listVM.openTran(ivt.id)}"
-        android:onLongClick="@{() -> listVM.deleteTran(ivt)}">
+        android:onClick="@{() -> listVM.openTranOC(ivt.id)}"
+        android:onLongClick="@{() -> listVM.deleteTranOC(ivt)}">
 
         <TextView
             android:id="@+id/ivt_title"

@@ -12,15 +12,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.databinding.FragmentAccountBinding
-import com.heyzeusv.plutuswallet.databinding.ItemViewAccountBinding
-import com.heyzeusv.plutuswallet.utilities.AccountDiffUtil
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
+import com.heyzeusv.plutuswallet.utilities.adapters.AccountAdapter
 import com.heyzeusv.plutuswallet.viewmodels.AccountViewModel
 import kotlinx.coroutines.launch
 
@@ -33,7 +30,7 @@ class AccountFragment : BaseFragment() {
     private lateinit var binding: FragmentAccountBinding
 
     // RecyclerView Adapter
-    private val accountAdapter = AccountAdapter()
+    private lateinit var accountAdapter: AccountAdapter
 
     // provides instance of AccountViewModel
     private val accountVM: AccountViewModel by viewModels()
@@ -43,6 +40,9 @@ class AccountFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        accountAdapter = AccountAdapter(accountVM)
+        accountVM.accountAdapter = accountAdapter
 
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false)
@@ -56,15 +56,55 @@ class AccountFragment : BaseFragment() {
         return binding.root
     }
 
+    @SuppressLint("StringFormatInvalid")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        accountVM.accountLD.observe(viewLifecycleOwner, {
-            // coroutine ensures that lists used by ViewHolders are ready before updating adapter
-            launch {
-                accountVM.accountNames = accountVM.getAccountNamesAsync().await()
-                accountVM.accountsUsed = accountVM.getDistinctAccountsAsync().await()
-                accountAdapter.submitList(it)
+        accountVM.accountLD.observe(viewLifecycleOwner, { list: List<Account> ->
+            // only need to retrieve all names/in use lists once
+            if (accountVM.accountNames.isEmpty()) {
+                launch {
+                    accountVM.accountNames = accountVM.getAccountNamesAsync().await()
+                    accountVM.accountsUsed = accountVM.getDistinctAccountsAsync().await()
+                    accountAdapter.submitList(list)
+                }
+            } else {
+                accountAdapter.submitList(list)
+            }
+        })
+
+        accountVM.editAccount.observe(viewLifecycleOwner, { account: Account? ->
+            if (account != null) {
+                createDialog(getString(R.string.alert_dialog_edit_account), accountVM::editAccountName)
+            }
+        })
+
+        accountVM.existsAccount.observe(viewLifecycleOwner, { name: String? ->
+            if (name != null) {
+                val existBar: Snackbar = Snackbar.make(
+                    view, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
+                )
+                existBar.show()
+                accountVM.existsAccount.value = null
+            }
+        })
+
+        accountVM.deleteAccount.observe(viewLifecycleOwner, { account: Account? ->
+            if (account != null) {
+                val posFun = DialogInterface.OnClickListener { _, _ ->
+                    accountVM.accountNames.remove(account.account)
+                    accountVM.accountsUsed.remove(account.account)
+                    accountVM.deleteAccount(account)
+                }
+
+                AlertDialogCreator.alertDialog(
+                    requireContext(),
+                    getString(R.string.alert_dialog_delete_account),
+                    getString(R.string.alert_dialog_delete_warning, account.account),
+                    getString(R.string.alert_dialog_yes), posFun,
+                    getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
+                )
+                accountVM.deleteAccount.value = null
             }
         })
 
@@ -74,7 +114,7 @@ class AccountFragment : BaseFragment() {
         // handles menu selection
         binding.accountTopBar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.account_new) {
-                createDialog()
+                createDialog(getString(R.string.account_create), accountVM::insertNewAccount)
                 true
             } else {
                 false
@@ -83,9 +123,10 @@ class AccountFragment : BaseFragment() {
     }
 
     /**
-     *  Creates AlertDialog when user clicks New Account button in TopBar.
+     *  Creates AlertDialog that allows user input for given [action]
+     *  that performs [posFun] on positive button click.
      */
-    private fun createDialog() {
+    private fun createDialog(action: String, posFun: (String) -> Unit) {
 
         // inflates view that holds EditText
         val viewInflated: View = LayoutInflater.from(context)
@@ -94,129 +135,14 @@ class AccountFragment : BaseFragment() {
         val input: EditText = viewInflated.findViewById(R.id.dialog_input)
 
         val posListener = DialogInterface.OnClickListener { _, _ ->
-            insertAccount(input.text.toString())
+            posFun(input.text.toString())
         }
 
         AlertDialogCreator.alertDialogInput(
             requireContext(),
-            getString(R.string.account_create), viewInflated,
+            action, viewInflated,
             getString(R.string.alert_dialog_save), posListener,
             getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing
         )
-    }
-
-    /**
-     *  Checks if Account exists, if not then creates new Account with given [name].
-     */
-    private fun insertAccount(name: String) {
-
-        if (accountVM.accountNames.contains(name)) {
-            val existBar: Snackbar = Snackbar.make(
-                binding.root,
-                getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
-            )
-            existBar.anchorView = binding.accountAnchor
-            existBar.show()
-        } else {
-            // creates and inserts new Account with name
-            val account = Account(0, name)
-            accountVM.insertAccount(account)
-        }
-    }
-
-    /**
-     *  Creates ViewHolder and binds ViewHolder to data from model layer.
-     */
-    private inner class AccountAdapter : ListAdapter<Account, AccountHolder>(AccountDiffUtil()) {
-
-        // creates view to display, wraps the view in a ViewHolder and returns the result
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AccountHolder {
-
-            val accountBinding: ItemViewAccountBinding = ItemViewAccountBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            )
-            return AccountHolder(accountBinding)
-        }
-
-        // populates given holder with Account from the given position in list
-        override fun onBindViewHolder(holder: AccountHolder, position: Int) {
-
-            val account: Account = getItem(position)
-            holder.bind(account)
-        }
-    }
-
-    /**
-     *  ViewHolder stores a reference to an item's view using [binding] as its layout.
-     */
-    private inner class AccountHolder(private var binding: ItemViewAccountBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        @SuppressLint("StringFormatInvalid")
-        fun bind(account: Account) {
-
-            // enables delete button if Account is not in use and if there is more than 1 Account
-            if (!accountVM.accountsUsed.contains(account.account)
-                && accountVM.accountLD.value!!.size > 1
-            ) {
-                binding.ivaDelete.isEnabled = true
-                // AlertDialog to ensure user does want to delete Account
-                binding.ivaDelete.setOnClickListener {
-                    val posFun = DialogInterface.OnClickListener { _, _ ->
-                        accountVM.deleteAccount(account)
-                    }
-
-                    AlertDialogCreator.alertDialog(
-                        context!!,
-                        getString(R.string.alert_dialog_delete_account),
-                        getString(R.string.alert_dialog_delete_warning, account.account),
-                        getString(R.string.alert_dialog_yes), posFun,
-                        getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
-                    )
-                }
-            }
-
-            // AlertDialog with EditText that allows input for new name
-            binding.ivaEdit.setOnClickListener {
-                // inflates view that holds EditText
-                val viewInflated: View = LayoutInflater.from(context)
-                    .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
-                // the EditText to be used
-                val input: EditText = viewInflated.findViewById(R.id.dialog_input)
-                val posFun = DialogInterface.OnClickListener { _, _ ->
-                    editAccount(input.text.toString(), account)
-                }
-
-                AlertDialogCreator.alertDialogInput(
-                    context!!,
-                    getString(R.string.alert_dialog_edit_account), viewInflated,
-                    getString(R.string.alert_dialog_save), posFun,
-                    getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing
-                )
-            }
-
-            binding.account = account
-            binding.executePendingBindings()
-        }
-
-        /**
-         *  Checks if [updatedName] exists already in Account table before updating [account].
-         */
-        private fun editAccount(updatedName: String, account: Account) {
-
-            // if exists, Snackbar appears telling user so, else, updates Account
-            if (accountVM.accountNames.contains(updatedName)) {
-                val existBar: Snackbar = Snackbar.make(
-                    view!!,
-                    getString(R.string.snackbar_exists, updatedName), Snackbar.LENGTH_SHORT
-                )
-                existBar.anchorView = this@AccountFragment.binding.accountAnchor
-                existBar.show()
-            } else {
-                account.account = updatedName
-                binding.account = account
-                accountVM.updateAccount(account)
-            }
-        }
     }
 }

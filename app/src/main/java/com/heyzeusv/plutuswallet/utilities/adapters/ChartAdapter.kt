@@ -2,17 +2,16 @@ package com.heyzeusv.plutuswallet.utilities.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.heyzeusv.plutuswallet.database.entities.ItemViewChart
 import com.heyzeusv.plutuswallet.databinding.ItemViewChartBinding
-import com.heyzeusv.plutuswallet.utilities.ChartDiffUtil
 
 /**
- *  Creates ViewHolder and binds ViewHolder with data from ViewModel for ChartFragment.
- *
+ *  Adapter for Charts.
  */
-class ChartAdapter : ListAdapter<ItemViewChart, ChartHolder>(ChartDiffUtil()) {
+class ChartAdapter : ListAdapter<ItemViewChart, ChartAdapter.ChartHolder>(ChartDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChartHolder {
 
@@ -27,16 +26,29 @@ class ChartAdapter : ListAdapter<ItemViewChart, ChartHolder>(ChartDiffUtil()) {
         val ivc: ItemViewChart = getItem(position)
         holder.bind(ivc)
     }
+
+    class ChartHolder(var binding: ItemViewChartBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(ivc: ItemViewChart) {
+
+            binding.ivc = ivc
+            binding.executePendingBindings()
+        }
+    }
 }
 
 /**
- *  ViewHolder stores a reference to an item's view using [binding] as its layout.
+ *  Callback for calculating the diff between two non-null items in a list.
  */
-class ChartHolder(var binding: ItemViewChartBinding) : RecyclerView.ViewHolder(binding.root) {
+class ChartDiffUtil : DiffUtil.ItemCallback<ItemViewChart>() {
 
-    fun bind(ivc: ItemViewChart) {
+    override fun areItemsTheSame(oldItem: ItemViewChart, newItem: ItemViewChart): Boolean {
 
-        binding.ivc = ivc
-        binding.executePendingBindings()
+        return oldItem.fType == newItem.fType
+    }
+
+    override fun areContentsTheSame(oldItem: ItemViewChart, newItem: ItemViewChart): Boolean {
+
+        return oldItem == newItem
     }
 }

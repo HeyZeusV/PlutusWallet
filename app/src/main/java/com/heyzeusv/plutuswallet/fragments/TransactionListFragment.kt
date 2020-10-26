@@ -115,18 +115,18 @@ class TransactionListFragment : BaseFragment() {
             }
         })
 
-        listVM.deleteTran.observe(viewLifecycleOwner, {
-            if (it != null) {
+        listVM.deleteTran.observe(viewLifecycleOwner, { ivt: ItemViewTransaction? ->
+            if (ivt != null) {
                 val posFun = DialogInterface.OnClickListener { _, _ ->
                     launch {
-                        listVM.deleteTransaction(listVM.getTransactionAsync(it.id).await())
+                        listVM.deleteTransaction(listVM.getTransactionAsync(ivt.id).await())
                     }
                 }
 
                 AlertDialogCreator.alertDialog(
                     requireContext(),
                     requireContext().getString(R.string.alert_dialog_delete_transaction),
-                    requireContext().getString(R.string.alert_dialog_delete_warning, it.title),
+                    requireContext().getString(R.string.alert_dialog_delete_warning, ivt.title),
                     requireContext().getString(R.string.alert_dialog_yes), posFun,
                     requireContext().getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
                 )

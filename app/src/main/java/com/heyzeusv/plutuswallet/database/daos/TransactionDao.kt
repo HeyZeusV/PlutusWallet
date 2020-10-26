@@ -24,7 +24,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT DISTINCT account
               FROM `transaction`""")
-    abstract suspend fun getDistinctAccounts(): List<String>
+    abstract suspend fun getDistinctAccounts(): MutableList<String>
 
     /**
      *  Returns list of unique Categories of [type].

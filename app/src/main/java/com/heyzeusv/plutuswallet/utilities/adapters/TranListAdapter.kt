@@ -10,6 +10,10 @@ import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.databinding.ItemViewTransactionBinding
 import com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel
 
+/**
+ *  Adapter for Transaction list.
+ *  Has a reference to [TransactionListViewModel] to send actions back to it.
+ */
 class TranListAdapter(private val listVM: TransactionListViewModel) :
     ListAdapter<ItemViewTransaction, TranListAdapter.TranListHolder>(TranListDiffUtil()) {
 
@@ -24,13 +28,13 @@ class TranListAdapter(private val listVM: TransactionListViewModel) :
     override fun onBindViewHolder(holder: TranListHolder, position: Int) {
 
         val ivt: ItemViewTransaction = getItem(position)
-        holder.bind(listVM, ivt)
+        holder.bind(ivt, listVM)
     }
 
     class TranListHolder(val binding: ItemViewTransactionBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(listVM: TransactionListViewModel, ivt: ItemViewTransaction) {
+        fun bind(ivt: ItemViewTransaction, listVM: TransactionListViewModel) {
 
             binding.ivt = ivt
             binding.listVM = listVM

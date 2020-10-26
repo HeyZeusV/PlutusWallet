@@ -80,7 +80,7 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Changes what Transaction type is visible
      */
-    fun onTypeClicked() {
+    fun typeVisibleOC() {
 
         typeVisible.value = !typeVisible.value!!
     }
@@ -89,12 +89,12 @@ class FilterViewModel @ViewModelInject constructor(
      *  Runs on Date button [view] on click. Creates DatePickerDialog and shows it.
      *  Uses different arguments depending on start/end button selected.
      */
-    fun onDateClicked(view: View) {
+    fun selectDateOC(view: View) {
 
         val dateDialog: DatePickerDialog = if (view.id == R.id.filter_start_date) {
-            DateUtils.datePickerDialog(view, startDate.value!!, this::onDateSelectedStart)
+            DateUtils.datePickerDialog(view, startDate.value!!, this::startDateSelected)
         } else {
-            DateUtils.datePickerDialog(view, endDate.value!!, this::onDateSelectedEnd)
+            DateUtils.datePickerDialog(view, endDate.value!!, this::endDateSelected)
         }
         dateDialog.show()
     }
@@ -102,7 +102,7 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Takes [newDate] user selected on Start button and saves to be used in query
      */
-    private fun onDateSelectedStart(newDate: Date) {
+    private fun startDateSelected(newDate: Date) {
 
         startDate.value = newDate
     }
@@ -110,7 +110,7 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Takes [newDate] user selected on End button and saves to be used in query
      */
-    private fun onDateSelectedEnd(newDate: Date) {
+    private fun endDateSelected(newDate: Date) {
 
         endDate.value = newDate
     }
@@ -119,7 +119,7 @@ class FilterViewModel @ViewModelInject constructor(
      *  Applies filters or shows Snackbar warning if end date is before start date.
      *  [view] is used for Snackbar and translations.
      */
-    fun onActionClicked(view: View) {
+    fun applyFilterOC(view: View) {
 
         // startDate must be before endDate else it displays warning and doesn't apply filters
         if (startDate.value!! > endDate.value!!

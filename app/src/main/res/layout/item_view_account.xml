@@ -8,6 +8,9 @@
         <variable
             name="account"
             type="com.heyzeusv.plutuswallet.database.entities.Account" />
+            <variable
+            name="accountVM"
+            type="com.heyzeusv.plutuswallet.viewmodels.AccountViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,6 +44,7 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
+            android:onClick="@{() -> accountVM.editAccountOC(account)}"
             app:icon="@drawable/ic_baseline_edit_24"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
@@ -60,6 +64,8 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
+            android:onClick="@{() -> accountVM.deleteAccountOC(account)}"
+            app:isEnabled="@{(!accountVM.accountsUsed.contains(account.account) &amp;&amp; accountVM.accountLD.size() > 1) ? true : false}"
             app:icon="@drawable/ic_baseline_delete_24"
             app:iconGravity="textStart"
             app:iconPadding="0dp"

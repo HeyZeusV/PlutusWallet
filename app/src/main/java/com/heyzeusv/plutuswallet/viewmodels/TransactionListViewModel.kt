@@ -43,24 +43,24 @@ class TransactionListViewModel @ViewModelInject constructor(
     // tried using ivtList.empty in XML, but could not get it to work.. displays empty message
     val ivtEmpty: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    // onClick/onLong/Click events for ViewHolder
+    // onClick/onLongClick Events for ViewHolder
     val openTran: MutableLiveData<Int?> = MutableLiveData()
     val deleteTran: MutableLiveData<ItemViewTransaction?> = MutableLiveData()
 
     var setVals: SettingsValues = SettingsValues()
 
     /**
-     *  onClick for ViewHolder to navigate user to Transaction with selected [tranId].
+     *  Event that navigates user to Transaction with selected [tranId].
      */
-    fun openTran(tranId: Int) {
+    fun openTranOC(tranId: Int) {
 
         openTran.value = tranId
     }
 
     /**
-     *  onLongClick for ViewHolder to delete selected [ivt]. Must return Boolean.
+     *  Event that deletes selected [ivt]. Must return Boolean.
      */
-    fun deleteTran(ivt: ItemViewTransaction): Boolean {
+    fun deleteTranOC(ivt: ItemViewTransaction): Boolean {
 
         deleteTran.value = ivt
         return true
