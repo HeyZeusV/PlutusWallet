@@ -76,7 +76,7 @@ class TransactionRepository @Inject constructor(
     suspend fun getDistinctAccountsAsync(): Deferred<MutableList<String>> =
         withContext(Dispatchers.IO) { async { transactionDao.getDistinctAccounts() } }
 
-    suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<List<String>> =
+    suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>> =
         withContext(Dispatchers.IO) { async { transactionDao.getDistinctCatsByType(type) } }
 
     suspend fun getFutureTransactionsAsync(currentDate: Date): Deferred<List<Transaction>> =

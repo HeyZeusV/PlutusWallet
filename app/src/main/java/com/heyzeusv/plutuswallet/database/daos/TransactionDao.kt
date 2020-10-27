@@ -32,7 +32,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT DISTINCT category
               FROM `transaction`
               WHERE type=(:type)""")
-    abstract suspend fun getDistinctCatsByType(type: String): List<String>
+    abstract suspend fun getDistinctCatsByType(type: String): MutableList<String>
 
     /**
      *  Returns list of all Transactions with futureDate before [currentDate]

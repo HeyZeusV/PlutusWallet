@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.utilities.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -22,23 +21,19 @@ class AccountAdapter(private val accountVM: AccountViewModel) :
         val accountBinding: ItemViewAccountBinding = ItemViewAccountBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return AccountHolder(accountBinding, accountVM)
+        return AccountHolder(accountBinding)
     }
 
-    // populates given holder with Account from the given position in list
     override fun onBindViewHolder(holder: AccountHolder, position: Int) {
 
         val account: Account = getItem(position)
-        holder.bind(account)
+        holder.bind(account, accountVM)
     }
 
-    class AccountHolder(
-        private var binding: ItemViewAccountBinding,
-        private var accountVM: AccountViewModel
-    ) : RecyclerView.ViewHolder(binding.root) {
+    class AccountHolder(private var binding: ItemViewAccountBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        @SuppressLint("StringFormatInvalid")
-        fun bind(account: Account) {
+        fun bind(account: Account, accountVM: AccountViewModel) {
 
             binding.account = account
             binding.accountVM = accountVM

@@ -75,14 +75,17 @@ class AccountFragment : BaseFragment() {
 
         accountVM.editAccount.observe(viewLifecycleOwner, { account: Account? ->
             if (account != null) {
-                createDialog(getString(R.string.alert_dialog_edit_account), accountVM::editAccountName)
+                createDialog(
+                    getString(R.string.alert_dialog_edit_account),
+                    accountVM::editAccountName
+                )
             }
         })
 
         accountVM.existsAccount.observe(viewLifecycleOwner, { name: String? ->
             if (name != null) {
                 val existBar: Snackbar = Snackbar.make(
-                    view, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
+                    binding.root, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
                 )
                 existBar.show()
                 accountVM.existsAccount.value = null
@@ -98,8 +101,7 @@ class AccountFragment : BaseFragment() {
                 }
 
                 AlertDialogCreator.alertDialog(
-                    requireContext(),
-                    getString(R.string.alert_dialog_delete_account),
+                    requireContext(), getString(R.string.alert_dialog_delete_account),
                     getString(R.string.alert_dialog_delete_warning, account.account),
                     getString(R.string.alert_dialog_yes), posFun,
                     getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
@@ -114,7 +116,10 @@ class AccountFragment : BaseFragment() {
         // handles menu selection
         binding.accountTopBar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.account_new) {
-                createDialog(getString(R.string.account_create), accountVM::insertNewAccount)
+                createDialog(
+                    getString(R.string.alert_dialog_create_account),
+                    accountVM::insertNewAccount
+                )
                 true
             } else {
                 false
