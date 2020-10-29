@@ -120,7 +120,7 @@ class AccountFragment : BaseFragment() {
 
     /**
      *  Creates AlertDialog that allows user input for given [action]
-     *  that performs [posFun] on positive button click.
+     *  that performs [posFun] on positive button click on [account].
      */
     private fun createDialog(action: String, account: Account, posFun: (Account, String) -> Unit) {
 

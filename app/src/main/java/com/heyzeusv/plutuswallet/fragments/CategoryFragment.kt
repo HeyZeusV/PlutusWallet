@@ -15,6 +15,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.databinding.FragmentCategoryBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
+import com.heyzeusv.plutuswallet.utilities.EventObserver
 import com.heyzeusv.plutuswallet.utilities.adapters.CategoryAdapter
 import com.heyzeusv.plutuswallet.utilities.adapters.CategoryListAdapter
 import com.heyzeusv.plutuswallet.viewmodels.CategoryViewModel
@@ -76,44 +77,35 @@ class CategoryFragment : BaseFragment() {
             updateAdapters(list, incomeAdapter, "Income", 1)
         })
 
-        catVM.editCategory.observe(viewLifecycleOwner, { category: Category? ->
-            if (category != null) {
-                val type: Int = if (category.type == "Expense") 0 else 1
-                createDialog(
-                    getString(R.string.alert_dialog_edit_category),
-                    type, catVM::editCategoryName
-                )
-            }
+        catVM.editCategoryEvent.observe(viewLifecycleOwner, EventObserver { category: Category ->
+            val type: Int = if (category.type == "Expense") 0 else 1
+            createDialog(
+                getString(R.string.alert_dialog_edit_category), category,
+                type, catVM::editCategoryName
+            )
         })
 
-        catVM.existsCategory.observe(viewLifecycleOwner, { name: String? ->
-            if (name != null) {
-                val existBar: Snackbar = Snackbar.make(
-                    binding.root, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
-                )
-                existBar.anchorView = binding.categoryCi
-                existBar.show()
-                catVM.existsCategory.value = null
-            }
+        catVM.existsCategoryEvent.observe(viewLifecycleOwner, EventObserver { name: String ->
+            val existBar: Snackbar = Snackbar.make(
+                binding.root, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
+            )
+            existBar.anchorView = binding.categoryCi
+            existBar.show()
+
         })
 
-        catVM.deleteCategory.observe(viewLifecycleOwner, { category: Category? ->
-            if (category != null) {
-                val type: Int = if (category.type == "Expense") 0 else 1
-                val posFun = DialogInterface.OnClickListener { _, _ ->
-                    catVM.catNames[type].remove(category.category)
-                    catVM.catsUsed[type].remove(category.category)
-                    catVM.deleteCategory(category)
-                }
-
-                AlertDialogCreator.alertDialog(
-                    requireContext(), getString(R.string.alert_dialog_delete_category),
-                    getString(R.string.alert_dialog_delete_warning, category.category),
-                    getString(R.string.alert_dialog_yes), posFun,
-                    getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
-                )
-                catVM.deleteCategory.value = null
+        catVM.deleteCategoryEvent.observe(viewLifecycleOwner, EventObserver { category: Category ->
+            val type: Int = if (category.type == "Expense") 0 else 1
+            val posFun = DialogInterface.OnClickListener { _, _ ->
+                catVM.deleteCategoryPosFun(category, type)
             }
+
+            AlertDialogCreator.alertDialog(
+                requireContext(), getString(R.string.alert_dialog_delete_category),
+                getString(R.string.alert_dialog_delete_warning, category.category),
+                getString(R.string.alert_dialog_yes), posFun,
+                getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
+            )
         })
 
         // navigates user back to CFLFragment
@@ -122,8 +114,9 @@ class CategoryFragment : BaseFragment() {
         // handles menu selection
         binding.accountTopBar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.category_new) {
+                val category = Category(0, "", "Expense")
                 createDialog(
-                    getString(R.string.alert_dialog_create_category),
+                    getString(R.string.alert_dialog_create_category), category,
                     binding.categoryVp.currentItem, catVM::insertNewCategory
                 )
                 true
@@ -135,9 +128,9 @@ class CategoryFragment : BaseFragment() {
 
     /**
      *  Creates AlertDialog that allows user input for given [action]
-     *  that performs [posFun] on [type] list on positive button click.
+     *  that performs [posFun] on [type] list on positive button click on [category].
      */
-    private fun createDialog(action: String, type: Int, posFun: (String, Int) -> Unit) {
+    private fun createDialog(action: String, category: Category, type: Int, posFun: (Category, String, Int) -> Unit) {
 
         // inflates view that holds EditText
         val viewInflated: View = LayoutInflater.from(context)
@@ -146,7 +139,7 @@ class CategoryFragment : BaseFragment() {
         val input: EditText = viewInflated.findViewById(R.id.dialog_input)
 
         val posListener = DialogInterface.OnClickListener { _, _ ->
-            posFun(input.text.toString(), type)
+            posFun(category, input.text.toString(), type)
         }
 
         AlertDialogCreator.alertDialogInput(
@@ -172,8 +165,7 @@ class CategoryFragment : BaseFragment() {
         // only need to retrieve all names/in use lists once
         if (catVM.catNames[pos].isEmpty()) {
             launch {
-                catVM.catNames[pos] = catVM.getCatsByTypeAsync(type).await()
-                catVM.catsUsed[pos] = catVM.getDistinctCatsByTypeAsync(type).await()
+                catVM.initNamesUsedLists(type, pos)
                 adapter.submitList(catList)
             }
         } else {

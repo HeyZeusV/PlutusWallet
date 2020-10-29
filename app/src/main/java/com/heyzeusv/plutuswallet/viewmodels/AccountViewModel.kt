@@ -32,7 +32,6 @@ class AccountViewModel @ViewModelInject constructor(
     // list of Accounts unable to be deleted due to being used
     var accountsUsed: MutableList<String> = mutableListOf()
 
-    // used for various Events
     private val _editAccountEvent = MutableLiveData<Event<Account>>()
     val editAccountEvent: LiveData<Event<Account>> = _editAccountEvent
 

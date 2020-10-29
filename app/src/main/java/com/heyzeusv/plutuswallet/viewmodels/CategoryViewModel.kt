@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.Category
+import com.heyzeusv.plutuswallet.utilities.Event
 import com.heyzeusv.plutuswallet.utilities.adapters.CategoryAdapter
 import com.heyzeusv.plutuswallet.utilities.replace
 import kotlinx.coroutines.Deferred
@@ -34,26 +35,61 @@ class CategoryViewModel @ViewModelInject constructor(
     // 0 = "Expense"; 1 = "Income"
     val catsUsed: MutableList<MutableList<String>> = mutableListOf(mutableListOf(), mutableListOf())
 
-    val editCategory: MutableLiveData<Category?> = MutableLiveData()
-    val deleteCategory: MutableLiveData<Category?> = MutableLiveData()
-    val existsCategory: MutableLiveData<String?> = MutableLiveData()
+    private val _editCategoryEvent = MutableLiveData<Event<Category>>()
+    val editCategoryEvent: LiveData<Event<Category>> = _editCategoryEvent
 
+    private val _existsCategoryEvent = MutableLiveData<Event<String>>()
+    val existsCategoryEvent: LiveData<Event<String>> = _existsCategoryEvent
+
+    private val _deleteCategoryEvent = MutableLiveData<Event<Category>>()
+    val deleteCategoryEvent: LiveData<Event<Category>> = _deleteCategoryEvent
+
+    /**
+     *  Event to edit name of selected [category].
+     */
     fun editCategoryOC(category: Category) {
 
-        editCategory.value = category
+        _editCategoryEvent.value = Event(category)
     }
 
+    /**
+     *  Event to delete selected [category].
+     */
     fun deleteCategoryOC(category: Category) {
 
-        deleteCategory.value = category
+        _deleteCategoryEvent.value = Event(category)
     }
 
-    fun editCategoryName(newName: String, type: Int) {
+    /**
+     *  Initializes [type] lists containing all Category names
+     *  and Categories being used into catNames/catUsed[pos].
+     */
+    suspend fun initNamesUsedLists(type: String, pos: Int) {
+
+        catNames[pos] = getCatsByTypeAsync(type).await()
+        catsUsed[pos] = getDistinctCatsByTypeAsync(type).await()
+    }
+
+    /**
+     *  Positive button function for deleteCategoryDialog.
+     *  Removes [category] name from [type] lists and deletes it from database.
+     */
+    fun deleteCategoryPosFun(category: Category, type: Int) {
+
+        catNames[type].remove(category.category)
+        catsUsed[type].remove(category.category)
+        deleteCategory(category)
+    }
+
+    /**
+     *  If name exists, creates Snackbar event telling user so,
+     *  else updates [category] in [type] list with [newName].
+     */
+    fun editCategoryName(category: Category, newName: String, type: Int) {
 
         if (catNames[type].contains(newName)) {
-            existsCategory.value = newName
+            _existsCategoryEvent.value = Event(newName)
         } else {
-            val category: Category = editCategory.value!!
             // replaces previous name in lists with new value
             catNames[type].replace(category.category, newName)
             if (catsUsed[type].contains(category.category)) {
@@ -71,14 +107,19 @@ class CategoryViewModel @ViewModelInject constructor(
         }
     }
 
-    fun insertNewCategory(name: String, type: Int) {
+    /**
+     *  If Category exists, creates SnackBar event telling user so,
+     *  else creates and inserts [category] in [type] list with [name].
+     */
+    fun insertNewCategory(category: Category, name: String, type: Int) {
 
         if (catNames[type].contains(name)) {
-            existsCategory.value = name
+            _existsCategoryEvent.value = Event(name)
         } else {
             // adds new name to list to prevent new Category with same name
             catNames[type].add(name)
-            val category = Category(0, name, if (type == 0) "Expense" else "Income")
+            category.category = name
+            category.type = if (type == 0) "Expense" else "Income"
             insertCategory(category)
         }
     }
@@ -89,12 +130,12 @@ class CategoryViewModel @ViewModelInject constructor(
     val expenseCatsLD: LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Expense")
     val incomeCatsLD: LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Income")
 
-    suspend fun getCatsByTypeAsync(type: String): Deferred<MutableList<String>> {
+    private suspend fun getCatsByTypeAsync(type: String): Deferred<MutableList<String>> {
 
         return tranRepo.getCategoryNamesByTypeAsync(type)
     }
 
-    fun deleteCategory(category: Category): Job = viewModelScope.launch {
+    private fun deleteCategory(category: Category): Job = viewModelScope.launch {
 
         tranRepo.deleteCategory(category)
     }
@@ -112,7 +153,7 @@ class CategoryViewModel @ViewModelInject constructor(
     /**
      *  Transaction Queries
      */
-    suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>> {
+    private suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>> {
 
         return tranRepo.getDistinctCatsByTypeAsync(type)
     }
