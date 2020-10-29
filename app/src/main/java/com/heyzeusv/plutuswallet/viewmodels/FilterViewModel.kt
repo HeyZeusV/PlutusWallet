@@ -1,16 +1,14 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
-import android.app.DatePickerDialog
-import android.view.View
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.material.snackbar.Snackbar
-import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.utilities.DateUtils
+import com.heyzeusv.plutuswallet.utilities.Event
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -26,6 +24,9 @@ private const val MIDNIGHT_MILLI = 86399999
 class FilterViewModel @ViewModelInject constructor(
     private val tranRepo: TransactionRepository
 ) : ViewModel() {
+
+    // translated "All"
+    var all = ""
 
     // current Account selected and Account list
     val account: MutableLiveData<String> = MutableLiveData("None")
@@ -50,14 +51,21 @@ class FilterViewModel @ViewModelInject constructor(
     val catCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val dateCheck: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    private val _dateErrorEvent = MutableLiveData<Event<Boolean>>()
+    val dateErrorEvent: LiveData<Event<Boolean>> = _dateErrorEvent
+
+    private val _selectDateEvent = MutableLiveData<Event<Int>>()
+    val selectDateEvent: LiveData<Event<Int>> = _selectDateEvent
+
     // used to pass TransactionInfo to CFLViewModel
-    val cflChange: MutableLiveData<Boolean?> = MutableLiveData(null)
+    private val _cflChange = MutableLiveData<Event<Boolean>>()
+    val cflChange: LiveData<Event<Boolean>> = _cflChange
     var cflTInfo: TransactionInfo = TransactionInfo()
 
     /**
      *  Retrieves data that will be displayed in Spinners from Repository.
      */
-    fun prepareSpinners(all: String) {
+    fun prepareSpinners() {
 
         viewModelScope.launch {
             // Account data
@@ -78,7 +86,7 @@ class FilterViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  Changes what Transaction type is visible
+     *  Changes what Transaction type is visible.
      */
     fun typeVisibleOC() {
 
@@ -86,23 +94,17 @@ class FilterViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  Runs on Date button [view] on click. Creates DatePickerDialog and shows it.
-     *  Uses different arguments depending on start/end button selected.
+     *  Event to show DatePickerDialog. Uses [viewId] to determine if Start or End was selected.
      */
-    fun selectDateOC(view: View) {
+    fun selectDateOC(viewId: Int) {
 
-        val dateDialog: DatePickerDialog = if (view.id == R.id.filter_start_date) {
-            DateUtils.datePickerDialog(view, startDate.value!!, this::startDateSelected)
-        } else {
-            DateUtils.datePickerDialog(view, endDate.value!!, this::endDateSelected)
-        }
-        dateDialog.show()
+        _selectDateEvent.value = Event(viewId)
     }
 
     /**
-     *  Takes [newDate] user selected on Start button and saves to be used in query
+     *  Takes [newDate] user selected on Start button and saves to be used in query.
      */
-    private fun startDateSelected(newDate: Date) {
+    fun startDateSelected(newDate: Date) {
 
         startDate.value = newDate
     }
@@ -110,26 +112,21 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Takes [newDate] user selected on End button and saves to be used in query
      */
-    private fun endDateSelected(newDate: Date) {
+    fun endDateSelected(newDate: Date) {
 
         endDate.value = newDate
     }
 
     /**
      *  Applies filters or shows Snackbar warning if end date is before start date.
-     *  [view] is used for Snackbar and translations.
      */
-    fun applyFilterOC(view: View) {
+    fun applyFilterOC() {
 
         // startDate must be before endDate else it displays warning and doesn't apply filters
         if (startDate.value!! > endDate.value!!
             && dateCheck.value!!
         ) {
-            val dateBar: Snackbar = Snackbar.make(
-                view, view.context.getString(R.string.filter_date_warning),
-                Snackbar.LENGTH_SHORT
-            )
-            dateBar.show()
+            _dateErrorEvent.value = Event(true)
         } else {
             var cat: String
             val type: String
@@ -143,7 +140,7 @@ class FilterViewModel @ViewModelInject constructor(
             }
 
             // translates "All"
-            if (cat == view.context.getString(R.string.category_all)) cat = "All"
+            if (cat == all) cat = "All"
 
             // updating MutableLiveData value in ViewModel
             cflTInfo = TransactionInfo(
@@ -156,16 +153,16 @@ class FilterViewModel @ViewModelInject constructor(
                 && !catCheck.value!!
                 && !dateCheck.value!!
             ) {
-                resetFilter(view.context.getString(R.string.category_all))
+                resetFilter()
             }
-            cflChange.value = true
+            _cflChange.value = Event(true)
         }
     }
 
     /**
      *  Resets all filters.
      */
-    private fun resetFilter(all: String) {
+    private fun resetFilter() {
 
         // sets the startDate to very start of current day and endDate to right before the next day
         startDate.value = DateUtils.startOfDay(Date())
