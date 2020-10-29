@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.database.TransactionRepository
 import com.heyzeusv.plutuswallet.database.entities.Account
+import com.heyzeusv.plutuswallet.utilities.Event
 import com.heyzeusv.plutuswallet.utilities.adapters.AccountAdapter
 import com.heyzeusv.plutuswallet.utilities.replace
 import kotlinx.coroutines.Deferred
@@ -32,16 +33,21 @@ class AccountViewModel @ViewModelInject constructor(
     var accountsUsed: MutableList<String> = mutableListOf()
 
     // used for various Events
-    val editAccount: MutableLiveData<Account?> = MutableLiveData()
-    val deleteAccount: MutableLiveData<Account?> = MutableLiveData()
-    val existsAccount: MutableLiveData<String?> = MutableLiveData()
+    private val _editAccountEvent = MutableLiveData<Event<Account>>()
+    val editAccountEvent: LiveData<Event<Account>> = _editAccountEvent
+
+    private val _existsAccountEvent = MutableLiveData<Event<String>>()
+    val existsAccountEvent: LiveData<Event<String>> = _existsAccountEvent
+
+    private val _deleteAccountEvent = MutableLiveData<Event<Account>>()
+    val deleteAccountEvent: LiveData<Event<Account>> = _deleteAccountEvent
 
     /**
      *  Event to edit name of selected [account].
      */
     fun editAccountOC(account: Account) {
 
-        editAccount.value = account
+        _editAccountEvent.value = Event(account)
     }
 
     /**
@@ -49,19 +55,37 @@ class AccountViewModel @ViewModelInject constructor(
      */
     fun deleteAccountOC(account: Account) {
 
-        deleteAccount.value = account
+        _deleteAccountEvent.value = Event(account)
+    }
+
+    /**
+     *  Initializes lists containing all Account names and Accounts being used.
+     */
+    suspend fun initNamesUsedLists() {
+        accountNames = getAccountNamesAsync().await()
+        accountsUsed = getDistinctAccountsAsync().await()
+    }
+
+    /**
+     *  Positive button function for deleteAccountDialog.
+     *  Removes [account] name from lists and deletes it from database.
+     */
+    fun deleteAccountPosFun(account: Account) {
+
+        accountNames.remove(account.account)
+        accountsUsed.remove(account.account)
+        deleteAccount(account)
     }
 
     /**
      *  If name exists, creates Snackbar event telling user so,
-     *  else updates Account with [newName].
+     *  else updates [account] with [newName].
      */
-    fun editAccountName(newName: String) {
+    fun editAccountName(account: Account, newName: String) {
 
         if (accountNames.contains(newName)) {
-            existsAccount.value = newName
+            _existsAccountEvent.value = Event(newName)
         } else {
-            val account: Account = editAccount.value!!
             // replaces previous name in lists with new value
             accountNames.replace(account.account, newName)
             if (accountsUsed.contains(account.account)) {
@@ -77,16 +101,16 @@ class AccountViewModel @ViewModelInject constructor(
 
     /**
      *  If Account exists, creates SnackBar event telling user so,
-     *  else creates and inserts new Account with [name].
+     *  else creates and inserts [account] with [name].
      */
-    fun insertNewAccount(name: String) {
+    fun insertNewAccount(account: Account, name: String) {
 
         if (accountNames.contains(name)) {
-            existsAccount.value = name
+            _existsAccountEvent.value = Event(name)
         } else {
             // adds new name to list to prevent new Account with same name
             accountNames.add(name)
-            val account = Account(0, name)
+            account.account = name
             insertAccount(account)
         }
     }
@@ -96,12 +120,12 @@ class AccountViewModel @ViewModelInject constructor(
      */
     val accountLD: LiveData<List<Account>> = tranRepo.getLDAccounts()
 
-    suspend fun getAccountNamesAsync(): Deferred<MutableList<String>> {
+    private suspend fun getAccountNamesAsync(): Deferred<MutableList<String>> {
 
         return tranRepo.getAccountNamesAsync()
     }
 
-    fun deleteAccount(account: Account): Job = viewModelScope.launch {
+    private fun deleteAccount(account: Account): Job = viewModelScope.launch {
 
         tranRepo.deleteAccount(account)
     }
@@ -119,7 +143,7 @@ class AccountViewModel @ViewModelInject constructor(
     /**
      *  Transaction Queries
      */
-    suspend fun getDistinctAccountsAsync(): Deferred<MutableList<String>> {
+    private suspend fun getDistinctAccountsAsync(): Deferred<MutableList<String>> {
 
         return tranRepo.getDistinctAccountsAsync()
     }

@@ -17,6 +17,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.databinding.FragmentAccountBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
+import com.heyzeusv.plutuswallet.utilities.EventObserver
 import com.heyzeusv.plutuswallet.utilities.adapters.AccountAdapter
 import com.heyzeusv.plutuswallet.viewmodels.AccountViewModel
 import kotlinx.coroutines.launch
@@ -64,8 +65,7 @@ class AccountFragment : BaseFragment() {
             // only need to retrieve all names/in use lists once
             if (accountVM.accountNames.isEmpty()) {
                 launch {
-                    accountVM.accountNames = accountVM.getAccountNamesAsync().await()
-                    accountVM.accountsUsed = accountVM.getDistinctAccountsAsync().await()
+                    accountVM.initNamesUsedLists()
                     accountAdapter.submitList(list)
                 }
             } else {
@@ -73,41 +73,31 @@ class AccountFragment : BaseFragment() {
             }
         })
 
-        accountVM.editAccount.observe(viewLifecycleOwner, { account: Account? ->
-            if (account != null) {
-                createDialog(
-                    getString(R.string.alert_dialog_edit_account),
-                    accountVM::editAccountName
-                )
-            }
+        accountVM.editAccountEvent.observe(viewLifecycleOwner, EventObserver { account: Account ->
+            createDialog(
+                getString(R.string.alert_dialog_edit_account),
+                account, accountVM::editAccountName
+            )
         })
 
-        accountVM.existsAccount.observe(viewLifecycleOwner, { name: String? ->
-            if (name != null) {
-                val existBar: Snackbar = Snackbar.make(
-                    binding.root, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
-                )
-                existBar.show()
-                accountVM.existsAccount.value = null
-            }
+        accountVM.existsAccountEvent.observe(viewLifecycleOwner, EventObserver { name: String ->
+            val existBar: Snackbar = Snackbar.make(
+                binding.root, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
+            )
+            existBar.show()
         })
 
-        accountVM.deleteAccount.observe(viewLifecycleOwner, { account: Account? ->
-            if (account != null) {
-                val posFun = DialogInterface.OnClickListener { _, _ ->
-                    accountVM.accountNames.remove(account.account)
-                    accountVM.accountsUsed.remove(account.account)
-                    accountVM.deleteAccount(account)
-                }
-
-                AlertDialogCreator.alertDialog(
-                    requireContext(), getString(R.string.alert_dialog_delete_account),
-                    getString(R.string.alert_dialog_delete_warning, account.account),
-                    getString(R.string.alert_dialog_yes), posFun,
-                    getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
-                )
-                accountVM.deleteAccount.value = null
+        accountVM.deleteAccountEvent.observe(viewLifecycleOwner, EventObserver { account: Account ->
+            val posFun = DialogInterface.OnClickListener { _, _ ->
+                accountVM.deleteAccountPosFun(account)
             }
+
+            AlertDialogCreator.alertDialog(
+                requireContext(), getString(R.string.alert_dialog_delete_account),
+                getString(R.string.alert_dialog_delete_warning, account.account),
+                getString(R.string.alert_dialog_yes), posFun,
+                getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
+            )
         })
 
         // navigates user back to CFLFragment
@@ -116,9 +106,10 @@ class AccountFragment : BaseFragment() {
         // handles menu selection
         binding.accountTopBar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.account_new) {
+                val newAccount = Account(0, "")
                 createDialog(
                     getString(R.string.alert_dialog_create_account),
-                    accountVM::insertNewAccount
+                    newAccount, accountVM::insertNewAccount
                 )
                 true
             } else {
@@ -131,7 +122,7 @@ class AccountFragment : BaseFragment() {
      *  Creates AlertDialog that allows user input for given [action]
      *  that performs [posFun] on positive button click.
      */
-    private fun createDialog(action: String, posFun: (String) -> Unit) {
+    private fun createDialog(action: String, account: Account, posFun: (Account, String) -> Unit) {
 
         // inflates view that holds EditText
         val viewInflated: View = LayoutInflater.from(context)
@@ -140,7 +131,7 @@ class AccountFragment : BaseFragment() {
         val input: EditText = viewInflated.findViewById(R.id.dialog_input)
 
         val posListener = DialogInterface.OnClickListener { _, _ ->
-            posFun(input.text.toString())
+            posFun(account, input.text.toString())
         }
 
         AlertDialogCreator.alertDialogInput(
