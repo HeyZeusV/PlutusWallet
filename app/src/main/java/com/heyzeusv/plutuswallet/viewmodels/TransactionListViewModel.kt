@@ -11,6 +11,7 @@ import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.SettingsValues
 import com.heyzeusv.plutuswallet.database.entities.Transaction
+import com.heyzeusv.plutuswallet.utilities.Event
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -43,9 +44,11 @@ class TransactionListViewModel @ViewModelInject constructor(
     // tried using ivtList.empty in XML, but could not get it to work.. displays empty message
     val ivtEmpty: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    // onClick/onLongClick Events for ViewHolder
-    val openTran: MutableLiveData<Int?> = MutableLiveData()
-    val deleteTran: MutableLiveData<ItemViewTransaction?> = MutableLiveData()
+    private val _openTranEvent = MutableLiveData<Event<Int>>()
+    val openTranEvent: LiveData<Event<Int>> = _openTranEvent
+
+    private val _deleteTranEvent = MutableLiveData<Event<ItemViewTransaction>>()
+    val deleteTranEvent: LiveData<Event<ItemViewTransaction>> = _deleteTranEvent
 
     var setVals: SettingsValues = SettingsValues()
 
@@ -54,7 +57,7 @@ class TransactionListViewModel @ViewModelInject constructor(
      */
     fun openTranOC(tranId: Int) {
 
-        openTran.value = tranId
+        _openTranEvent.value = Event(tranId)
     }
 
     /**
@@ -62,8 +65,17 @@ class TransactionListViewModel @ViewModelInject constructor(
      */
     fun deleteTranOC(ivt: ItemViewTransaction): Boolean {
 
-        deleteTran.value = ivt
+        _deleteTranEvent.value = Event(ivt)
         return true
+    }
+
+    /**
+     *  Positive button for deleteTranDialog.
+     *  Removes Transaction with [ivt].id from database.
+     */
+    suspend fun deleteTranPosFun(ivt: ItemViewTransaction) {
+
+        deleteTransaction(getTransactionAsync(ivt.id).await())
     }
 
     /**
@@ -284,12 +296,12 @@ class TransactionListViewModel @ViewModelInject constructor(
         return tranRepo.getFutureTransactionsAsync(currentDate)
     }
 
-    suspend fun getTransactionAsync(id: Int): Deferred<Transaction> {
+    private suspend fun getTransactionAsync(id: Int): Deferred<Transaction> {
 
         return tranRepo.getTransactionAsync(id)
     }
 
-    suspend fun deleteTransaction(transaction: Transaction) {
+    private suspend fun deleteTransaction(transaction: Transaction) {
 
         tranRepo.deleteTransaction(transaction)
     }

@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.fragments
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,10 +18,13 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.database.entities.Transaction
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
+import com.heyzeusv.plutuswallet.utilities.DateUtils
+import com.heyzeusv.plutuswallet.utilities.EventObserver
 import com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.text.DateFormat
+import java.util.Date
 
 /**
  *  Shows all the information in database of one Transaction and allows users to
@@ -116,6 +120,12 @@ class TransactionFragment : BaseFragment() {
                 }
                 tranVM.repeatCheck.value = transaction.repeating
             }
+        })
+
+        tranVM.selectDateEvent.observe(viewLifecycleOwner, EventObserver { date: Date ->
+            val dateDialog: DatePickerDialog =
+                DateUtils.datePickerDialog(binding.root, date, tranVM::onDateSelected)
+            dateDialog.show()
         })
 
         /**

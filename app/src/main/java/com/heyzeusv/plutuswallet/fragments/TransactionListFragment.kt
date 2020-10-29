@@ -18,6 +18,7 @@ import com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction
 import com.heyzeusv.plutuswallet.database.entities.TransactionInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
 import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
+import com.heyzeusv.plutuswallet.utilities.EventObserver
 import com.heyzeusv.plutuswallet.utilities.Key
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.utilities.PreferenceHelper.set
@@ -37,6 +38,7 @@ class TransactionListFragment : BaseFragment() {
 
     // provides instance of TransactionListViewModel
     private val listVM: TransactionListViewModel by viewModels()
+
     // shared ViewModels
     private val cflVM: CFLViewModel by activityViewModels()
 
@@ -100,26 +102,25 @@ class TransactionListFragment : BaseFragment() {
             })
         })
 
-        listVM.openTran.observe(viewLifecycleOwner, { tranId: Int? ->
-            if (tranId != null) {
-                listVM.openTran.value = null
-                // the position that the user clicked on
-                listVM.rvPosition = layoutManager.findLastCompletelyVisibleItemPosition()
-                // creates action with parameters
-                val action: NavDirections =
-                    CFLFragmentDirections.actionTransaction(tranId, false)
-                // retrieves correct controller to send action to
-                Navigation
-                    .findNavController(requireActivity(), R.id.fragment_container)
-                    .navigate(action)
-            }
+        listVM.openTranEvent.observe(viewLifecycleOwner, EventObserver { tranId: Int ->
+            // the position that the user clicked on
+            listVM.rvPosition = layoutManager.findLastCompletelyVisibleItemPosition()
+            // creates action with parameters
+            val action: NavDirections =
+                CFLFragmentDirections.actionTransaction(tranId, false)
+            // retrieves correct controller to send action to
+            Navigation
+                .findNavController(requireActivity(), R.id.fragment_container)
+                .navigate(action)
+
         })
 
-        listVM.deleteTran.observe(viewLifecycleOwner, { ivt: ItemViewTransaction? ->
-            if (ivt != null) {
+        listVM.deleteTranEvent.observe(
+            viewLifecycleOwner,
+            EventObserver { ivt: ItemViewTransaction ->
                 val posFun = DialogInterface.OnClickListener { _, _ ->
                     launch {
-                        listVM.deleteTransaction(listVM.getTransactionAsync(ivt.id).await())
+                        listVM.deleteTranPosFun(ivt)
                     }
                 }
 
@@ -128,12 +129,12 @@ class TransactionListFragment : BaseFragment() {
                     requireContext().getString(R.string.alert_dialog_delete_transaction),
                     requireContext().getString(R.string.alert_dialog_delete_warning, ivt.title),
                     requireContext().getString(R.string.alert_dialog_yes), posFun,
-                    requireContext().getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
+                    requireContext().getString(R.string.alert_dialog_no),
+                    AlertDialogCreator.doNothing
                 )
+                // the position that the user clicked on
                 listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-                listVM.deleteTran.value = null
-            }
-        })
+            })
 
         listVM.initializeTables()
     }

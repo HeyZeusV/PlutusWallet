@@ -1,8 +1,7 @@
 package com.heyzeusv.plutuswallet.viewmodels
 
-import android.app.DatePickerDialog
-import android.view.View
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
@@ -13,7 +12,7 @@ import com.heyzeusv.plutuswallet.database.entities.Account
 import com.heyzeusv.plutuswallet.database.entities.Category
 import com.heyzeusv.plutuswallet.database.entities.SettingsValues
 import com.heyzeusv.plutuswallet.database.entities.Transaction
-import com.heyzeusv.plutuswallet.utilities.DateUtils
+import com.heyzeusv.plutuswallet.utilities.Event
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -66,6 +65,9 @@ class TransactionViewModel @ViewModelInject constructor(
     val expenseCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     val incomeCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     val periodArray: MutableLiveData<List<String>> = MutableLiveData(emptyList())
+
+    private val _selectDateEvent = MutableLiveData<Event<Date>>()
+    val selectDateEvent: LiveData<Event<Date>> = _selectDateEvent
 
     // SettingsValues will be retrieved from Fragment
     var setVals: SettingsValues = SettingsValues()
@@ -200,19 +202,17 @@ class TransactionViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  Runs on Date button [view] on click. Creates DatePickerDialog and shows it.
+     *  Event to show DatePickerDialog starting at [date].
      */
-    fun onDateClicked(view: View) {
+    fun selectDateOC(date: Date) {
 
-        val dateDialog: DatePickerDialog =
-            DateUtils.datePickerDialog(view, tranLD.value!!.date, this::onDateSelected)
-        dateDialog.show()
+        _selectDateEvent.value = Event(date)
     }
 
     /**
      *  Takes [newDate] user selects, changes Transaction date, and formats it to be displayed.
      */
-    private fun onDateSelected(newDate: Date) {
+    fun onDateSelected(newDate: Date) {
 
         // true if newDate is different from previous date
         dateChanged = tranLD.value!!.date != newDate
