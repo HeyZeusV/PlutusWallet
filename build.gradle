@@ -8,15 +8,15 @@ buildscript {
     ext.junit5_version = '1.0.0'
     ext.kotlin_version = '1.4.10'
     ext.lifecycle_version = '2.3.0-beta01'
-    ext.navigation_version = "2.3.0"
-    ext.room_version = '2.3.0-alpha02'
+    ext.navigation_version = "2.3.1"
+    ext.room_version = '2.3.0-alpha03'
     repositories {
         google()
         jcenter()
         maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0-alpha13'
+        classpath 'com.android.tools.build:gradle:4.2.0-alpha15'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigation_version"
         classpath "de.mannodermaus.gradle.plugins:android-junit5:1.6.2.0"
