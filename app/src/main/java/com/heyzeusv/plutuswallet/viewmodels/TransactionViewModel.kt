@@ -37,11 +37,6 @@ class TransactionViewModel @ViewModelInject constructor(
     // stores ID of Transaction displayed.
     private val tranIdLD = MutableLiveData<Int>()
 
-    // manually refresh on LiveData
-    private fun refresh() {
-        tranIdLD.postValue(tranIdLD.value)
-    }
-
     /**
      * Returns LiveData of a Transaction that gets updated every time a
      * new value gets set on the trigger LiveData instance.
@@ -52,7 +47,8 @@ class TransactionViewModel @ViewModelInject constructor(
         } as MutableLiveData<Transaction?>
 
     // used for various Transaction Fields since property changes don't cause LiveDate updates
-    val date: MutableLiveData<String> = MutableLiveData("")
+    private val _date: MutableLiveData<String> = MutableLiveData("")
+    val date: LiveData<String> = _date
     val account: MutableLiveData<String> = MutableLiveData("")
     val total: MutableLiveData<String> = MutableLiveData("")
     val checkedChip: MutableLiveData<Int> = MutableLiveData(R.id.tran_expense_chip)
@@ -66,35 +62,154 @@ class TransactionViewModel @ViewModelInject constructor(
     val incomeCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     val periodArray: MutableLiveData<List<String>> = MutableLiveData(emptyList())
 
+    private val _futureTranEvent: MutableLiveData<Event<Transaction>> =
+        MutableLiveData<Event<Transaction>>()
+    val futureTranEvent: LiveData<Event<Transaction>> = _futureTranEvent
+
+    private val _saveTranEvent: MutableLiveData<Event<Boolean>> = MutableLiveData<Event<Boolean>>()
+    val saveTranEvent: LiveData<Event<Boolean>> = _saveTranEvent
+
     private val _selectDateEvent = MutableLiveData<Event<Date>>()
     val selectDateEvent: LiveData<Event<Date>> = _selectDateEvent
 
     // SettingsValues will be retrieved from Fragment
     var setVals: SettingsValues = SettingsValues()
 
-    var maxId: Int = 0
+    private var maxId: Int = 0
+
+    // argument from Navigation
+    var newTran = false
 
     // used to tell if date has been edited for re-repeating Transactions
-    var dateChanged = false
+    private var dateChanged = false
 
     /**
-     *  Takes given [list], removes "Create New..", adds new entry with [name], sorts list, re-adds
-     *  [create] ("Create New.." translated), and returns list.
+     *  Uses [transaction] to pass values to LiveData to be displayed.
      */
-    private fun addNewToList(list: MutableList<String>, name: String, create: String)
-            : MutableList<String> {
+    fun setTranData(transaction: Transaction) {
+        // Date to String
+        _date.value =
+            DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
+        account.value = transaction.account
+        // BigDecimal to String
+        total.value = if (setVals.decimalPlaces) {
+            when (transaction.total.toString()) {
+                "0" -> ""
+                "0.00" -> ""
+                else -> formatDecimal(
+                    transaction.total,
+                    setVals.thousandsSymbol, setVals.decimalSymbol
+                )
+            }
+        } else {
+            if (transaction.total.toString() == "0") {
+                ""
+            } else {
+                formatInteger(transaction.total, setVals.thousandsSymbol)
+            }
+        }
+        if (transaction.type == "Expense") {
+            checkedChip.value = R.id.tran_expense_chip
+            expenseCat.value = transaction.category
+        } else {
+            checkedChip.value = R.id.tran_income_chip
+            incomeCat.value = transaction.category
+        }
+        repeatCheck.value = transaction.repeating
+    }
 
-        list.remove(create)
-        list.add(name)
-        list.sort()
-        list.add(create)
-        return list
+    /**
+     *  Reassigns LiveData values that couldn't be assigned directly
+     *  from Transaction using DataBinding back to Transaction and saves or updates it.
+     *  [emptyTitle] is translated string to be used when user does not enter a title.
+     */
+    fun saveTransaction(emptyTitle: String) {
+
+        tranLD.value!!.let { tran: Transaction ->
+            // assigns new id if new Transaction
+            if (newTran) tran.id = maxId + 1
+
+            // gives Transaction simple title if user doesn't enter any
+            if (tran.title.isBlank()) tran.title = emptyTitle + tran.id
+
+            // is empty if account hasn't been changed so defaults to first account
+            tran.account = if (account.value == "") accountList.value!![0] else account.value!!
+
+            // converts the totalField from String into BigDecimal
+            tran.total = when {
+                total.value!!.isEmpty() && setVals.decimalPlaces -> BigDecimal("0.00")
+                total.value!!.isEmpty() -> BigDecimal("0")
+                else -> BigDecimal(
+                    total.value!!
+                        .replace(setVals.thousandsSymbol.toString(), "")
+                        .replace(setVals.decimalSymbol.toString(), ".")
+                )
+            }
+
+            // sets type depending on Chip selected
+            // cat values are empty if they haven't been changed so defaults to first category
+            if (checkedChip.value == R.id.tran_expense_chip) {
+                tran.type = "Expense"
+                tran.category = if (expenseCat.value == "") {
+                    expenseCatList.value!![0]
+                } else {
+                    expenseCat.value!!
+                }
+            } else {
+                tran.type = "Income"
+                tran.category = if (incomeCat.value == "") {
+                    incomeCatList.value!![0]
+                } else {
+                    incomeCat.value!!
+                }
+            }
+
+            tran.repeating = repeatCheck.value!!
+            if (tran.repeating) tran.futureDate = createFutureDate()
+            // frequency must always be at least 1
+            if (tran.frequency < 1) tran.frequency = 1
+
+            // Coroutine that Save/Updates/warns user of FutureDate
+            viewModelScope.launch {
+                if (tran.futureTCreated && dateChanged && tran.repeating) {
+                    _futureTranEvent.value = Event(tran)
+                } else {
+                    // upsert Transaction
+                    upsertTransaction(tran)
+                    loadTransaction(tran.id)
+                    _saveTranEvent.value = Event(true)
+                }
+            }
+        }
+    }
+
+    /**
+     *  Positive button function for futureTranDialog.
+     *  Changes [tran] to recreate its future date and updates it in database.
+     */
+    fun futureTranPosFun(tran: Transaction) {
+
+        tran.futureTCreated = false
+        viewModelScope.launch { upsertTransaction(tran) }
+        _saveTranEvent.value = Event(true)
+    }
+
+    /**
+     *  Negative button function for futureTranDialog.
+     *  Stops warning from appearing again, unless user changes Date again.
+     *  Updates [tran] in database.
+     */
+    fun futureTranNegFun(tran: Transaction) {
+
+        dateChanged = false
+        viewModelScope.launch { upsertTransaction(tran) }
+        _saveTranEvent.value = Event(true)
     }
 
     /**
      *  Returns date from Transaction after adding frequency * period.
      */
-    fun createFutureDate(): Date {
+    private fun createFutureDate(): Date {
 
         val calendar: Calendar = Calendar.getInstance()
         tranLD.value?.let {
@@ -120,7 +235,7 @@ class TransactionViewModel @ViewModelInject constructor(
     /**
      *  Returns formatted [num] using [thousands] symbol.
      */
-    fun formatInteger(num: BigDecimal, thousands: Char): String {
+    private fun formatInteger(num: BigDecimal, thousands: Char): String {
 
         val customSymbols = DecimalFormatSymbols(Locale.US)
         customSymbols.groupingSeparator = thousands
@@ -133,7 +248,7 @@ class TransactionViewModel @ViewModelInject constructor(
     /**
      *  Returns formatted [num] using [thousands] and [decimal] symbols.
      */
-    fun formatDecimal(num: BigDecimal, thousands: Char, decimal: Char): String {
+    private fun formatDecimal(num: BigDecimal, thousands: Char, decimal: Char): String {
 
         val customSymbols = DecimalFormatSymbols(Locale.US)
         customSymbols.groupingSeparator = thousands
@@ -172,7 +287,6 @@ class TransactionViewModel @ViewModelInject constructor(
 
         // checks which type is currently selected
         if (checkedChip.value == R.id.tran_expense_chip) {
-
             expenseCatList.value?.let {
                 // create if doesn't exist
                 if (!it.contains(name)) {
@@ -202,6 +316,20 @@ class TransactionViewModel @ViewModelInject constructor(
     }
 
     /**
+     *  Takes given [list], removes "Create New..", adds new entry with [name], sorts list, re-adds
+     *  [create] ("Create New.." translated), and returns list.
+     */
+    private fun addNewToList(list: MutableList<String>, name: String, create: String)
+            : MutableList<String> {
+
+        list.remove(create)
+        list.add(name)
+        list.sort()
+        list.add(create)
+        return list
+    }
+
+    /**
      *  Event to show DatePickerDialog starting at [date].
      */
     fun selectDateOC(date: Date) {
@@ -218,7 +346,7 @@ class TransactionViewModel @ViewModelInject constructor(
         dateChanged = tranLD.value!!.date != newDate
         tranLD.value!!.date = newDate
         // turns date selected into Date type
-        date.value = DateFormat.getDateInstance(setVals.dateFormat).format(newDate)
+        _date.value = DateFormat.getDateInstance(setVals.dateFormat).format(newDate)
     }
 
     /**
@@ -239,6 +367,13 @@ class TransactionViewModel @ViewModelInject constructor(
             refresh()
         }
     }
+
+    // manually refresh on LiveData
+    private fun refresh() {
+
+        tranIdLD.postValue(tranIdLD.value)
+    }
+
 
     /**
      *  Account queries
@@ -284,7 +419,7 @@ class TransactionViewModel @ViewModelInject constructor(
         return tranRepo.getMaxIdAsync()
     }
 
-    suspend fun upsertTransaction(transaction: Transaction) {
+    private suspend fun upsertTransaction(transaction: Transaction) {
 
         tranRepo.upsertTransaction(transaction)
     }

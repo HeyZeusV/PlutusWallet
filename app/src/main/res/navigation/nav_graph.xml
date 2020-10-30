@@ -37,7 +37,7 @@
             app:argType="integer"
             android:defaultValue="-1" />
         <argument
-            android:name="fromFab"
+            android:name="newTran"
             app:argType="boolean"
             android:defaultValue="false" />
     </fragment>

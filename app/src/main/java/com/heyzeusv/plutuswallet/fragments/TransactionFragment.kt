@@ -21,9 +21,6 @@ import com.heyzeusv.plutuswallet.utilities.AlertDialogCreator
 import com.heyzeusv.plutuswallet.utilities.DateUtils
 import com.heyzeusv.plutuswallet.utilities.EventObserver
 import com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel
-import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.text.DateFormat
 import java.util.Date
 
 /**
@@ -41,19 +38,14 @@ class TransactionFragment : BaseFragment() {
     // arguments from Navigation
     private val args: TransactionFragmentArgs by navArgs()
 
-    // arguments passed
-    private var tranId: Int = -1
-    private var fromFab: Boolean = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // retrieve arguments
-        tranId = args.tranId
-        fromFab = args.fromFab
+        // pass argument to ViewModel
+        tranVM.newTran = args.newTran
 
         // retrieves Transaction if exists
-        tranVM.loadTransaction(tranId)
+        tranVM.loadTransaction(args.tranId)
 
         // array used by PeriodSpinner
         tranVM.periodArray.value = listOf(
@@ -90,42 +82,8 @@ class TransactionFragment : BaseFragment() {
             if (transaction == null) {
                 tranVM.tranLD.value = Transaction()
             } else {
-                tranVM.account.value = transaction.account
-                // Date to String
-                tranVM.date.value =
-                    DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
-                // BigDecimal to String
-                tranVM.total.value = if (setVals.decimalPlaces) {
-                    when (transaction.total.toString()) {
-                        "0" -> ""
-                        "0.00" -> ""
-                        else -> tranVM.formatDecimal(
-                            transaction.total,
-                            setVals.thousandsSymbol, setVals.decimalSymbol
-                        )
-                    }
-                } else {
-                    if (transaction.total.toString() == "0") {
-                        ""
-                    } else {
-                        tranVM.formatInteger(transaction.total, setVals.thousandsSymbol)
-                    }
-                }
-                if (transaction.type == "Expense") {
-                    tranVM.checkedChip.value = R.id.tran_expense_chip
-                    tranVM.expenseCat.value = transaction.category
-                } else {
-                    tranVM.checkedChip.value = R.id.tran_income_chip
-                    tranVM.incomeCat.value = transaction.category
-                }
-                tranVM.repeatCheck.value = transaction.repeating
+                tranVM.setTranData(transaction)
             }
-        })
-
-        tranVM.selectDateEvent.observe(viewLifecycleOwner, EventObserver { date: Date ->
-            val dateDialog: DatePickerDialog =
-                DateUtils.datePickerDialog(binding.root, date, tranVM::onDateSelected)
-            dateDialog.show()
         })
 
         /**
@@ -134,20 +92,39 @@ class TransactionFragment : BaseFragment() {
          */
         tranVM.account.observe(viewLifecycleOwner, { account: String ->
             if (account == getString(R.string.account_create)) {
-                createDialog(binding.tranAccount, 0)
+                createNewDialog(binding.tranAccount, account, 0)
             }
         })
 
         tranVM.expenseCat.observe(viewLifecycleOwner, { category: String ->
             if (category == getString(R.string.category_create)) {
-                createDialog(binding.tranExpenseCat, 1)
+                createNewDialog(binding.tranExpenseCat, category, 1)
             }
         })
 
         tranVM.incomeCat.observe(viewLifecycleOwner, { category: String ->
             if (category == getString(R.string.category_create)) {
-                createDialog(binding.tranIncomeCat, 1)
+                createNewDialog(binding.tranIncomeCat, category, 1)
             }
+        })
+
+        tranVM.futureTranEvent.observe(viewLifecycleOwner, EventObserver { tran: Transaction ->
+            futureTranDialog(tran, tranVM::futureTranPosFun, tranVM::futureTranNegFun)
+        })
+
+        tranVM.saveTranEvent.observe(viewLifecycleOwner, EventObserver {
+            // Snackbar alerting user that Transaction has been saved.
+            val savedBar: Snackbar = Snackbar.make(
+                binding.root, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT
+            )
+            savedBar.anchorView = binding.tranAnchor
+            savedBar.show()
+        })
+
+        tranVM.selectDateEvent.observe(viewLifecycleOwner, EventObserver { date: Date ->
+            val dateDialog: DatePickerDialog =
+                DateUtils.datePickerDialog(binding.root, date, tranVM::onDateSelected)
+            dateDialog.show()
         })
     }
 
@@ -161,87 +138,7 @@ class TransactionFragment : BaseFragment() {
 
         binding.tranTopBar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.transaction_save) {
-                // reassigns LiveData values that couldn't be used directly from Transaction
-                // back to it and saves or updates Transaction
-                tranVM.tranLD.value?.let {
-                    // assigns new id if new Transaction
-                    if (fromFab) it.id = tranVM.maxId + 1
-
-                    // gives Transaction simple title if user doesn't enter any
-                    if (it.title.trim().isEmpty()) it.title =
-                        getString(R.string.transaction_empty_title) + it.id
-
-                    // is empty if account hasn't been changed so defaults to first account
-                    it.account = if (tranVM.account.value == "") {
-                        tranVM.accountList.value!![0]
-                    } else {
-                        tranVM.account.value!!
-                    }
-
-                    // converts the totalField from String into BigDecimal
-                    it.total = when {
-                        tranVM.total.value!!.isEmpty() && setVals.decimalPlaces ->
-                            BigDecimal("0.00")
-                        tranVM.total.value!!.isEmpty() -> BigDecimal("0")
-                        else -> BigDecimal(
-                            tranVM.total.value!!
-                                .replace(setVals.thousandsSymbol.toString(), "")
-                                .replace(setVals.decimalSymbol.toString(), ".")
-                        )
-                    }
-
-                    // sets type depending on Chip selected
-                    // cat values are empty if they haven't been changed so defaults to first category
-                    if (tranVM.checkedChip.value == R.id.tran_expense_chip) {
-                        it.type = "Expense"
-                        it.category = if (tranVM.expenseCat.value == "") {
-                            tranVM.expenseCatList.value!![0]
-                        } else {
-                            tranVM.expenseCat.value!!
-                        }
-                    } else {
-                        it.type = "Income"
-                        it.category = if (tranVM.incomeCat.value == "") {
-                            tranVM.incomeCatList.value!![0]
-                        } else {
-                            tranVM.incomeCat.value!!
-                        }
-                    }
-
-                    it.repeating = tranVM.repeatCheck.value!!
-                    if (it.repeating) it.futureDate = tranVM.createFutureDate()
-                    // frequency must always be at least 1
-                    if (it.frequency < 1) it.frequency = 1
-
-                    // coroutine that Save/Updates/warns user of FutureDate
-                    launch {
-                        if (it.futureTCreated && tranVM.dateChanged && it.repeating) {
-                            // AlertDialog that asks user if they want Transaction to repeat again
-                            val posFun = DialogInterface.OnClickListener { _, _ ->
-                                it.futureTCreated = false
-                                launch { tranVM.upsertTransaction(it) }
-                                createSnackbar()
-                            }
-                            val negFun = DialogInterface.OnClickListener { _, _ ->
-                                tranVM.dateChanged = false
-                                launch { tranVM.upsertTransaction(it) }
-                                createSnackbar()
-                            }
-                            AlertDialogCreator.alertDialog(
-                                requireContext(),
-                                getString(R.string.alert_dialog_future_transaction),
-                                getString(R.string.alert_dialog_future_transaction_warning),
-                                getString(R.string.alert_dialog_yes), posFun,
-                                getString(R.string.alert_dialog_no), negFun
-                            )
-                        } else {
-                            // upsert Transaction
-                            tranVM.upsertTransaction(it)
-                            createSnackbar()
-                            tranVM.loadTransaction(it.id)
-                        }
-                    }
-                }
+                tranVM.saveTransaction(getString(R.string.transaction_empty_title))
                 true
             } else {
                 false
@@ -250,22 +147,16 @@ class TransactionFragment : BaseFragment() {
     }
 
     /**
-     *  Creates AlertDialog when user selects "Create New ..."
+     *  Creates AlertDialog when user selects "Create New ..." with [title]
      *  in [type] (Account/Category) of [spinner].
      */
-    @ExperimentalStdlibApi
-    private fun createDialog(spinner: Spinner, type: Int) {
+    private fun createNewDialog(spinner: Spinner, title: String, type: Int) {
 
         // inflates view that holds EditText
         val viewInflated: View = LayoutInflater.from(context)
             .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
         // the EditText to be used
         val input: EditText = viewInflated.findViewById(R.id.dialog_input)
-        val title: String = if (type == 0) {
-            getString(R.string.account_create)
-        } else {
-            getString(R.string.category_create)
-        }
 
         // Listeners
         val cancelListener = DialogInterface.OnCancelListener { spinner.setSelection(0) }
@@ -290,15 +181,28 @@ class TransactionFragment : BaseFragment() {
     }
 
     /**
-     *  Snackbar alerting user that Transaction has been saved.
+     *  Creates AlertDialog if user changes [tran] date and [tran] has been repeated before.
+     *  [posFun]/[negFun] are used as the positive and negative button functions.
      */
-    private fun createSnackbar() {
+    private fun futureTranDialog(
+        tran: Transaction,
+        posFun: (Transaction) -> Unit,
+        negFun: (Transaction) -> Unit
+    ) {
 
-        val savedBar: Snackbar = Snackbar.make(
-            binding.root,
-            getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT
+        val posListener = DialogInterface.OnClickListener { _, _ ->
+            posFun(tran)
+        }
+        val negListener = DialogInterface.OnClickListener { _, _ ->
+            negFun(tran)
+        }
+
+        AlertDialogCreator.alertDialog(
+            requireContext(),
+            getString(R.string.alert_dialog_future_transaction),
+            getString(R.string.alert_dialog_future_transaction_warning),
+            getString(R.string.alert_dialog_yes), posListener,
+            getString(R.string.alert_dialog_no), negListener
         )
-        savedBar.anchorView = binding.tranAnchor
-        savedBar.show()
     }
 }
