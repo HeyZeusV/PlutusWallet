@@ -7,6 +7,6 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.heyzeusv.plutuswallet.fragments.SettingsFragment"
+        android:name="com.heyzeusv.plutuswallet.ui.settings.SettingsFragment"
         android:label="SettingsFragment" />
 </navigation>

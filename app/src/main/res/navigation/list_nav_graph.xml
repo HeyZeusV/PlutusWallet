@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/transactionListFragment"
-        android:name="com.heyzeusv.plutuswallet.fragments.TransactionListFragment"
+        android:name="com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListFragment"
         android:label="TransactionListFragment"
         tools:layout="@layout/fragment_transaction_list" />
 </navigation>

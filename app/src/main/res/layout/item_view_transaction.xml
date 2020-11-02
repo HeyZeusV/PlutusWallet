@@ -8,10 +8,10 @@
         <import type="java.text.DateFormat" />
         <variable
             name="ivt"
-            type="com.heyzeusv.plutuswallet.database.entities.ItemViewTransaction" />
+            type="com.heyzeusv.plutuswallet.data.model.ItemViewTransaction" />
         <variable
             name="listVM"
-            type="com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel" />
+            type="com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

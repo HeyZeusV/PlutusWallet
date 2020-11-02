@@ -9,7 +9,7 @@
         <import type="java.text.DateFormat" />
         <variable
             name="filterVM"
-            type="com.heyzeusv.plutuswallet.viewmodels.FilterViewModel" />
+            type="com.heyzeusv.plutuswallet.ui.cfl.filter.FilterViewModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

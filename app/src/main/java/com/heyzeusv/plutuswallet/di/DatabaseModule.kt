@@ -2,11 +2,11 @@ package com.heyzeusv.plutuswallet.di
 
 import android.content.Context
 import androidx.room.Room
-import com.heyzeusv.plutuswallet.database.Migrations
-import com.heyzeusv.plutuswallet.database.TransactionDatabase
-import com.heyzeusv.plutuswallet.database.daos.AccountDao
-import com.heyzeusv.plutuswallet.database.daos.CategoryDao
-import com.heyzeusv.plutuswallet.database.daos.TransactionDao
+import com.heyzeusv.plutuswallet.data.Migrations
+import com.heyzeusv.plutuswallet.data.TransactionDatabase
+import com.heyzeusv.plutuswallet.data.daos.AccountDao
+import com.heyzeusv.plutuswallet.data.daos.CategoryDao
+import com.heyzeusv.plutuswallet.data.daos.TransactionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

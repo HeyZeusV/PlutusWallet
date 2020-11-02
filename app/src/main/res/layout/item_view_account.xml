@@ -7,10 +7,10 @@
     <data>
         <variable
             name="account"
-            type="com.heyzeusv.plutuswallet.database.entities.Account" />
+            type="com.heyzeusv.plutuswallet.data.model.Account" />
             <variable
             name="accountVM"
-            type="com.heyzeusv.plutuswallet.viewmodels.AccountViewModel" />
+            type="com.heyzeusv.plutuswallet.ui.account.AccountViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

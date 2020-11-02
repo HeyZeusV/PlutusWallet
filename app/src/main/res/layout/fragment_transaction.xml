@@ -8,10 +8,10 @@
         <import type="android.view.View" />
         <import type="android.view.Gravity" />
         <import type="com.heyzeusv.plutuswallet.R" />
-        <import type="com.heyzeusv.plutuswallet.utilities.DateUtils" />
+        <import type="com.heyzeusv.plutuswallet.util.DateUtils" />
         <variable
             name="tranVM"
-            type="com.heyzeusv.plutuswallet.viewmodels.TransactionViewModel" />
+            type="com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel" />
     </data>
 
     <LinearLayout
@@ -165,7 +165,7 @@
                             app:layout_constraintStart_toEndOf="@+id/totalTextView"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
-                        <com.heyzeusv.plutuswallet.utilities.CurrencyEditText
+                        <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
                             android:id="@+id/tran_total"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"

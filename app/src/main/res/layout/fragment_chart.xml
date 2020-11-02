@@ -6,7 +6,7 @@
     <data>
         <variable
             name="chartVM"
-            type="com.heyzeusv.plutuswallet.viewmodels.ChartViewModel" />
+            type="com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

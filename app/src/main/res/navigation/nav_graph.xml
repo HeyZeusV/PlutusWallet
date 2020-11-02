@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/cflFragment"
-        android:name="com.heyzeusv.plutuswallet.fragments.CFLFragment"
+        android:name="com.heyzeusv.plutuswallet.ui.cfl.CFLFragment"
         android:label="CFLFragment"
         tools:layout="@layout/fragment_cfl">
         <action
@@ -29,7 +29,7 @@
     </fragment>
     <fragment
         android:id="@+id/transactionFragment"
-        android:name="com.heyzeusv.plutuswallet.fragments.TransactionFragment"
+        android:name="com.heyzeusv.plutuswallet.ui.transaction.TransactionFragment"
         android:label="TransactionFragment"
         tools:layout="@layout/fragment_transaction">
         <argument
@@ -43,21 +43,21 @@
     </fragment>
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="com.heyzeusv.plutuswallet.fragments.AboutFragment"
+        android:name="com.heyzeusv.plutuswallet.ui.about.AboutFragment"
         android:label="AboutFragment"
         tools:layout="@layout/fragment_about"/>
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="com.heyzeusv.plutuswallet.fragments.CategoryFragment"
+        android:name="com.heyzeusv.plutuswallet.ui.category.CategoryFragment"
         android:label="CategoryFragment"
         tools:layout="@layout/fragment_category"/>
     <fragment
         android:id="@+id/accountFragment"
-        android:name="com.heyzeusv.plutuswallet.fragments.AccountFragment"
+        android:name="com.heyzeusv.plutuswallet.ui.account.AccountFragment"
         android:label="AccountFragment"
         tools:layout="@layout/fragment_account"/>
     <activity
         android:id="@+id/settingsActivity"
-        android:name="com.heyzeusv.plutuswallet.activities.SettingsActivity"
+        android:name="com.heyzeusv.plutuswallet.ui.settings.SettingsActivity"
         android:label="SettingsActivity" />
 </navigation>

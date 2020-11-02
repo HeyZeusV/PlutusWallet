@@ -8,7 +8,7 @@
         <import type="android.view.View" />
         <variable
             name="ivc"
-            type="com.heyzeusv.plutuswallet.database.entities.ItemViewChart" />
+            type="com.heyzeusv.plutuswallet.data.model.ItemViewChart" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

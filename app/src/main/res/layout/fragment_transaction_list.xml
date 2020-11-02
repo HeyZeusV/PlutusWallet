@@ -7,7 +7,7 @@
         <import type="android.view.View" />
         <variable
             name="listVM"
-            type="com.heyzeusv.plutuswallet.viewmodels.TransactionListViewModel" />
+            type="com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
