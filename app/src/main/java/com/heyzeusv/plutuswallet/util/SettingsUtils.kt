@@ -29,19 +29,6 @@ object SettingsUtils {
     }
 
     /**
-     *  Returns DateFormat: 0 = FULL, 1 = LONG, 2 = MEDIUM, 3 = SHORT using [dateFormat] key.
-     */
-    private fun getDateFormat(dateFormat: String): Int {
-
-        return when (dateFormat) {
-            "0" -> 0
-            "1" -> 1
-            "2" -> 2
-            else -> 3
-        }
-    }
-
-    /**
      *  Returns separator symbol by using [symbolKey] from settings.
      */
     fun getSeparatorSymbol(symbolKey: String): Char {
@@ -69,7 +56,7 @@ object SettingsUtils {
 
         // converting keys to values
         val currencySymbol: String = getCurrencySymbol(currencySymbolKey)
-        val dateFormat: Int = getDateFormat(dateFormatKey)
+        val dateFormat: Int = dateFormatKey.toInt()
         val decimalSymbol: Char = getSeparatorSymbol(decimalSymbolKey)
         val thousandsSymbol: Char = getSeparatorSymbol(thousandsSymbolKey)
 

@@ -49,6 +49,10 @@ android {
     packagingOptions {
         exclude "META-INF/LICENSE*"
     }
+    testOptions.unitTests {
+        includeAndroidResources = true
+        returnDefaultValues = true
+    }
 }
 
 androidExtensions {
@@ -125,4 +129,12 @@ dependencies {
 
     // Navigation testing
     androidTestImplementation "androidx.navigation:navigation-testing:$navigation_version"
+
+    // AndroidX Test - JVM testing
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+
+    // Architecture Component Testing Library
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
 }

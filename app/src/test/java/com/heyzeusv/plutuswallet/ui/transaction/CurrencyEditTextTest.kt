@@ -1,6 +1,6 @@
-package com.heyzeusv.plutuswallet
+package com.heyzeusv.plutuswallet.ui.transaction
 
-import org.junit.Assert.assertEquals
+import org.junit.Assert
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -9,10 +9,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-/**
- *  Unit tests for functions used by CurrencyEditText
- */
-class CurrencyEditTextTest {
+internal class CurrencyEditTextTest {
 
     @Test
     @DisplayName("Format string using correct DecimalFormatter")
@@ -73,7 +70,7 @@ class CurrencyEditTextTest {
         }
         val expected : List<String> = listOf("", "1 234 567-89", "122-5", "12-", "987 654",
             "", "1 234 568", "123", "12", "987 654")
-        assertEquals(expected, nStringList)
+        Assert.assertEquals(expected, nStringList)
     }
 
     @Test
@@ -115,7 +112,7 @@ class CurrencyEditTextTest {
         // won't need double entry in real function since it will return a single string
         // so string will be return directly from when rather than using break
         val expected : List<String> = listOf("12322214.23", ".30", "4542", "4542")
-        assertEquals(expected, nStringList)
+        Assert.assertEquals(expected, nStringList)
     }
 
     @Test
@@ -153,7 +150,7 @@ class CurrencyEditTextTest {
         }
 
         val expected : List<Int> = listOf(7, 10, 8, 1, 3, 1, 10, 13, 11)
-        assertEquals(expected, posList)
+        Assert.assertEquals(expected, posList)
     }
 
     @Test
@@ -188,6 +185,6 @@ class CurrencyEditTextTest {
         }
 
         val expected : List<Int> = listOf(9, 10, 5)
-        assertEquals(expected, sizeList)
+        Assert.assertEquals(expected, sizeList)
     }
 }

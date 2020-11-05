@@ -1,6 +1,6 @@
-package com.heyzeusv.plutuswallet
+package com.heyzeusv.plutuswallet.util
 
-import org.junit.Assert.assertEquals
+import org.junit.Assert
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -9,25 +9,9 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.Calendar
-import java.util.Date
-import java.util.GregorianCalendar
 import java.util.Locale
 
-/**
- *  Unit tests for functions in SettingsUtils.kt
- */
-class SettingsUtilsTest {
-
-    @Test
-    @DisplayName("Check if JVM Locale is changed to English")
-    fun changeLanguageEnglish() {
-
-        val newLocale = Locale("en")
-        Locale.setDefault(newLocale)
-
-        assertEquals(Locale.ENGLISH, Locale.getDefault())
-    }
+internal class SettingsUtilsTest {
 
     @Nested
     @DisplayName("Given BigDecimal")
@@ -61,9 +45,9 @@ class SettingsUtilsTest {
                 val num2 = BigDecimal("4381812")
                 val num3 = BigDecimal("9828.33")
 
-                assertEquals("12-347", formatter1.format(num1))
-                assertEquals("4-381-812", formatter1.format(num2))
-                assertEquals("9-828", formatter1.format(num3))
+                Assert.assertEquals("12-347", formatter1.format(num1))
+                Assert.assertEquals("4-381-812", formatter1.format(num2))
+                Assert.assertEquals("9-828", formatter1.format(num3))
             }
         }
 
@@ -79,25 +63,10 @@ class SettingsUtilsTest {
                 val num2 = BigDecimal("328910.2")
                 val num3 = BigDecimal("9876")
 
-                assertEquals("12 345,67", formatter2.format(num1))
-                assertEquals("328 910,20", formatter2.format(num2))
-                assertEquals("9 876,00", formatter2.format(num3))
+                Assert.assertEquals("12 345,67", formatter2.format(num1))
+                Assert.assertEquals("328 910,20", formatter2.format(num2))
+                Assert.assertEquals("9 876,00", formatter2.format(num3))
             }
         }
-    }
-
-    @Test
-    @DisplayName("Change Date to start of its set day")
-    fun dateStartOfDay() {
-
-        val calendar = GregorianCalendar()
-        calendar.timeInMillis = Date().time
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE     , 0)
-        calendar.set(Calendar.SECOND     , 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-
-        // 0 in Date() is not the start of a day, 25,200,000 is the start of day for GMT -8
-        assertEquals(25200000, (calendar.timeInMillis % 86400000))
     }
 }
