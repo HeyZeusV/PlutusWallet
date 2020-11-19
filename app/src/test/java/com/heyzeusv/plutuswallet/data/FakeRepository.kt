@@ -1,18 +1,23 @@
 package com.heyzeusv.plutuswallet.data
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.util.replace
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import java.util.Date
 
 class FakeRepository : Repository {
 
-    override suspend fun getAccountNamesAsync(): Deferred<MutableList<String>> {
+    private val accList: MutableList<Account> = mutableListOf()
+    private val tranList: MutableList<Transaction> = mutableListOf()
+
+    override suspend fun getAccountNamesAsync(): MutableList<String> {
         TODO("Not yet implemented")
     }
 
@@ -20,20 +25,24 @@ class FakeRepository : Repository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteAccount(account: Account): Job {
-        TODO("Not yet implemented")
+    override suspend fun deleteAccount(account: Account) {
+
+        accList.remove(account)
     }
 
-    override suspend fun insertAccount(account: Account): Job {
-        TODO("Not yet implemented")
+    override suspend fun insertAccount(account: Account) {
+
+        accList.add(account)
     }
 
-    override suspend fun updateAccount(account: Account): Job {
-        TODO("Not yet implemented")
+    override suspend fun updateAccount(account: Account) {
+
+        accList.replace(accList.find { it.id == account.id }!!, account)
     }
 
     override fun getLDAccounts(): LiveData<List<Account>> {
-        TODO("Not yet implemented")
+
+        return MutableLiveData(accList)
     }
 
     override suspend fun getCategoryNamesByTypeAsync(type: String): Deferred<MutableList<String>> {
@@ -64,8 +73,14 @@ class FakeRepository : Repository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getDistinctAccountsAsync(): Deferred<MutableList<String>> {
-        TODO("Not yet implemented")
+    override suspend fun getDistinctAccountsAsync(): MutableList<String> {
+
+        val accList: MutableList<String> = mutableListOf()
+        for (tran: Transaction in tranList) {
+            accList.add(tran.account)
+        }
+
+        return accList.distinct() as MutableList<String>
     }
 
     override suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>> {

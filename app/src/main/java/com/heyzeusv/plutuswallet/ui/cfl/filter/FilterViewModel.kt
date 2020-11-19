@@ -69,7 +69,7 @@ class FilterViewModel @ViewModelInject constructor(
 
         viewModelScope.launch {
             // Account data
-            accList.value = tranRepo.getAccountNamesAsync().await()
+            accList.value = tranRepo.getAccountNamesAsync()
 
             // Category by type data
             val mExCatList: MutableList<String> = getCategoriesByTypeAsync("Expense").await()

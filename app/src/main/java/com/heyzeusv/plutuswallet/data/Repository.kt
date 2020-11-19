@@ -14,15 +14,16 @@ interface Repository {
     /**
      *  Account Queries
      */
-    suspend fun getAccountNamesAsync(): Deferred<MutableList<String>>
+    suspend fun getAccountNamesAsync(): MutableList<String>
 
     suspend fun getAccountSizeAsync(): Deferred<Int>
 
-    suspend fun deleteAccount(account: Account): Job
+    suspend fun deleteAccount(account: Account)
 
-    suspend fun insertAccount(account: Account): Job
+    suspend fun insertAccount(account: Account)
 
-    suspend fun updateAccount(account: Account): Job
+    suspend fun updateAccount(account: Account)
+
     fun getLDAccounts(): LiveData<List<Account>>
 
     /**
@@ -44,7 +45,7 @@ interface Repository {
     /**
      *  Transaction Queries
      */
-    suspend fun getDistinctAccountsAsync(): Deferred<MutableList<String>>
+    suspend fun getDistinctAccountsAsync(): MutableList<String>
 
     suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>>
 

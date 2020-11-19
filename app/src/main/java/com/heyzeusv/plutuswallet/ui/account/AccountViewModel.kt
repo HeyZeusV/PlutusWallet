@@ -5,12 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.data.TransactionRepository
+import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.util.Event
 import com.heyzeusv.plutuswallet.util.replace
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
@@ -20,7 +18,7 @@ import kotlinx.coroutines.launch
  *  Data can survive configuration changes.
  */
 class AccountViewModel @ViewModelInject constructor(
-    private val tranRepo: TransactionRepository
+    private val tranRepo: Repository
 ) : ViewModel() {
 
     // used to notify adapter of specific item change
@@ -30,6 +28,9 @@ class AccountViewModel @ViewModelInject constructor(
     var accountNames: MutableList<String> = mutableListOf()
     // list of Accounts unable to be deleted due to being used
     var accountsUsed: MutableList<String> = mutableListOf()
+
+    // list of Accounts from Database
+    val accountLD: LiveData<List<Account>> = tranRepo.getLDAccounts()
 
     private val _editAccountEvent = MutableLiveData<Event<Account>>()
     val editAccountEvent: LiveData<Event<Account>> = _editAccountEvent
@@ -60,8 +61,8 @@ class AccountViewModel @ViewModelInject constructor(
      *  Initializes lists containing all Account names and Accounts being used.
      */
     suspend fun initNamesUsedLists() {
-        accountNames = getAccountNamesAsync().await()
-        accountsUsed = getDistinctAccountsAsync().await()
+        accountNames = tranRepo.getAccountNamesAsync()
+        accountsUsed = tranRepo.getDistinctAccountsAsync()
     }
 
     /**
@@ -72,7 +73,9 @@ class AccountViewModel @ViewModelInject constructor(
 
         accountNames.remove(account.account)
         accountsUsed.remove(account.account)
-        deleteAccount(account)
+        viewModelScope.launch {
+            tranRepo.deleteAccount(account)
+        }
     }
 
     /**
@@ -90,7 +93,9 @@ class AccountViewModel @ViewModelInject constructor(
                 accountsUsed.replace(account.account, newName)
             }
             account.account = newName
-            updateAccount(account)
+            viewModelScope.launch {
+                tranRepo.updateAccount(account)
+            }
             // DiffUtil would not update the name change,
             // so notifying specific item change rather than entire list
             accountAdapter.notifyItemChanged(accountLD.value!!.indexOf(account))
@@ -109,40 +114,9 @@ class AccountViewModel @ViewModelInject constructor(
             // adds new name to list to prevent new Account with same name
             accountNames.add(name)
             account.account = name
-            insertAccount(account)
+            viewModelScope.launch {
+                tranRepo.insertAccount(account)
+            }
         }
-    }
-
-    /**
-     *  Account Queries
-     */
-    val accountLD: LiveData<List<Account>> = tranRepo.getLDAccounts()
-
-    private suspend fun getAccountNamesAsync(): Deferred<MutableList<String>> {
-
-        return tranRepo.getAccountNamesAsync()
-    }
-
-    private fun deleteAccount(account: Account): Job = viewModelScope.launch {
-
-        tranRepo.deleteAccount(account)
-    }
-
-    private fun insertAccount(account: Account): Job = viewModelScope.launch {
-
-        tranRepo.insertAccount(account)
-    }
-
-    private fun updateAccount(account: Account): Job = viewModelScope.launch {
-
-        tranRepo.updateAccount(account)
-    }
-
-    /**
-     *  Transaction Queries
-     */
-    private suspend fun getDistinctAccountsAsync(): Deferred<MutableList<String>> {
-
-        return tranRepo.getDistinctAccountsAsync()
     }
 }

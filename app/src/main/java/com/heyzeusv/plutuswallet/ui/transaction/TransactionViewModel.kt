@@ -357,7 +357,7 @@ class TransactionViewModel @ViewModelInject constructor(
     fun prepareLists(accCreate: String, catCreate: String) {
 
         viewModelScope.launch {
-            accountList.value = getAccountsAsync().await()
+            accountList.value = getAccountsAsync()
             accountList.value!!.add(accCreate)
             expenseCatList.value = getCategoriesByTypeAsync("Expense").await()
             expenseCatList.value!!.add(catCreate)
@@ -409,7 +409,7 @@ class TransactionViewModel @ViewModelInject constructor(
         tranIdLD.value = transactionId
     }
 
-    private suspend fun getAccountsAsync(): Deferred<MutableList<String>> {
+    private suspend fun getAccountsAsync(): MutableList<String> {
 
         return tranRepo.getAccountNamesAsync()
     }

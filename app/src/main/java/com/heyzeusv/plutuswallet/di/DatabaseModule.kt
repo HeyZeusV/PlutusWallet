@@ -3,7 +3,9 @@ package com.heyzeusv.plutuswallet.di
 import android.content.Context
 import androidx.room.Room
 import com.heyzeusv.plutuswallet.data.Migrations
+import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.TransactionDatabase
+import com.heyzeusv.plutuswallet.data.TransactionRepository
 import com.heyzeusv.plutuswallet.data.daos.AccountDao
 import com.heyzeusv.plutuswallet.data.daos.CategoryDao
 import com.heyzeusv.plutuswallet.data.daos.TransactionDao
@@ -12,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
@@ -42,4 +45,14 @@ object DatabaseModule {
 
     @Provides
     fun provideAccDao(database: TransactionDatabase): AccountDao = database.accountDao()
+
+    @Provides
+    fun provideRepository(
+        accDao: AccountDao,
+        catDao: CategoryDao,
+        tranDao: TransactionDao
+    ): Repository {
+
+        return TransactionRepository(accDao, catDao, tranDao)
+    }
 }

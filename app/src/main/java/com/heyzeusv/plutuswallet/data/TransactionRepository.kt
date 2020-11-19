@@ -29,20 +29,20 @@ class TransactionRepository @Inject constructor(
     /**
      *  Account Queries
      */
-    override suspend fun getAccountNamesAsync(): Deferred<MutableList<String>> =
-        withContext(Dispatchers.IO) { async { accountDao.getAccountNames() } }
+    override suspend fun getAccountNamesAsync(): MutableList<String> =
+        withContext(Dispatchers.IO) { accountDao.getAccountNames() }
 
     override suspend fun getAccountSizeAsync(): Deferred<Int> =
         withContext(Dispatchers.IO) { async { accountDao.getAccountSize() } }
 
-    override suspend fun deleteAccount(account: Account): Job =
-        withContext(Dispatchers.IO) { launch { accountDao.delete(account) } }
+    override suspend fun deleteAccount(account: Account): Unit =
+        withContext(Dispatchers.IO) { accountDao.delete(account) }
 
-    override suspend fun insertAccount(account: Account): Job =
-        withContext(Dispatchers.IO) { launch { accountDao.insert(account) } }
+    override suspend fun insertAccount(account: Account): Unit =
+        withContext(Dispatchers.IO) { accountDao.insert(account) }
 
-    override suspend fun updateAccount(account: Account): Job =
-        withContext(Dispatchers.IO) { launch { accountDao.update(account) } }
+    override suspend fun updateAccount(account: Account): Unit =
+        withContext(Dispatchers.IO) { accountDao.update(account) }
 
     override fun getLDAccounts(): LiveData<List<Account>> = accountDao.getLDAccounts()
 
@@ -73,8 +73,8 @@ class TransactionRepository @Inject constructor(
     /**
      *  Transaction Queries
      */
-    override suspend fun getDistinctAccountsAsync(): Deferred<MutableList<String>> =
-        withContext(Dispatchers.IO) { async { transactionDao.getDistinctAccounts() } }
+    override suspend fun getDistinctAccountsAsync(): MutableList<String> =
+        withContext(Dispatchers.IO) { transactionDao.getDistinctAccounts() }
 
     override suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>> =
         withContext(Dispatchers.IO) { async { transactionDao.getDistinctCatsByType(type) } }
