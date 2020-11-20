@@ -12,13 +12,18 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import java.util.Date
 
-class FakeRepository : Repository {
-
-    private val accList: MutableList<Account> = mutableListOf()
-    private val tranList: MutableList<Transaction> = mutableListOf()
+class FakeRepository(
+    val accList: MutableList<Account>,
+    val tranList: MutableList<Transaction>
+) : Repository {
 
     override suspend fun getAccountNamesAsync(): MutableList<String> {
-        TODO("Not yet implemented")
+
+        val accNames: MutableList<String> = mutableListOf()
+        for (acc: Account in accList) {
+            accNames.add(acc.account)
+        }
+        return accNames.sorted() as MutableList<String>
     }
 
     override suspend fun getAccountSizeAsync(): Deferred<Int> {
@@ -80,7 +85,7 @@ class FakeRepository : Repository {
             accList.add(tran.account)
         }
 
-        return accList.distinct() as MutableList<String>
+        return accList.distinct().sorted() as MutableList<String>
     }
 
     override suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>> {
@@ -103,12 +108,20 @@ class FakeRepository : Repository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun upsertTransaction(transaction: Transaction): Job {
-        TODO("Not yet implemented")
+    override suspend fun upsertTransaction(transaction: Transaction) {
+
+        tranList.find { it.id == transaction.id }.let {
+            if (it == null) tranList.add(transaction) else tranList.replace(it, transaction)
+        }
     }
 
-    override suspend fun upsertTransactions(transactions: List<Transaction>): Job {
-        TODO("Not yet implemented")
+    override suspend fun upsertTransactions(transactions: List<Transaction>) {
+
+        for (tran: Transaction in transactions) {
+            tranList.find { it.id == tran.id }.let {
+                if (it == null) tranList.add(tran) else tranList.replace(it, tran)
+            }
+        }
     }
 
     override fun getLDTransaction(id: Int): LiveData<Transaction?> {
@@ -210,6 +223,4 @@ class FakeRepository : Repository {
     override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> {
         TODO("Not yet implemented")
     }
-
-
 }

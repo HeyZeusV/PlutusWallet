@@ -91,11 +91,11 @@ class TransactionRepository @Inject constructor(
     override suspend fun deleteTransaction(transaction: Transaction): Job =
         withContext(Dispatchers.IO) { launch { transactionDao.delete(transaction) } }
 
-    override suspend fun upsertTransaction(transaction: Transaction): Job =
-        withContext(Dispatchers.IO) { launch { transactionDao.upsert(transaction) } }
+    override suspend fun upsertTransaction(transaction: Transaction): Unit =
+        withContext(Dispatchers.IO) { transactionDao.upsert(transaction) }
 
-    override suspend fun upsertTransactions(transactions: List<Transaction>): Job =
-        withContext(Dispatchers.IO) { launch { transactionDao.upsert(transactions) } }
+    override suspend fun upsertTransactions(transactions: List<Transaction>): Unit =
+        withContext(Dispatchers.IO) { transactionDao.upsert(transactions) }
 
     /**
      *  Ld = LiveData

@@ -57,9 +57,9 @@ interface Repository {
 
     suspend fun deleteTransaction(transaction: Transaction): Job
 
-    suspend fun upsertTransaction(transaction: Transaction): Job
+    suspend fun upsertTransaction(transaction: Transaction)
 
-    suspend fun upsertTransactions(transactions: List<Transaction>): Job
+    suspend fun upsertTransactions(transactions: List<Transaction>)
 
     /**
      *  Ld = LiveData

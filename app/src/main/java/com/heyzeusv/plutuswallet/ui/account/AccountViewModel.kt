@@ -22,7 +22,7 @@ class AccountViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     // used to notify adapter of specific item change
-    lateinit var accountAdapter: AccountAdapter
+    var accountAdapter: AccountAdapter? = null
 
     // list of all Account names used to prevent 2 Accounts from having same name
     var accountNames: MutableList<String> = mutableListOf()
@@ -98,7 +98,7 @@ class AccountViewModel @ViewModelInject constructor(
             }
             // DiffUtil would not update the name change,
             // so notifying specific item change rather than entire list
-            accountAdapter.notifyItemChanged(accountLD.value!!.indexOf(account))
+            accountAdapter?.notifyItemChanged(accountLD.value!!.indexOf(account))
         }
     }
 
