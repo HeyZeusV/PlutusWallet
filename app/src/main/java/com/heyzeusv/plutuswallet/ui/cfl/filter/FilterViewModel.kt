@@ -9,7 +9,6 @@ import com.heyzeusv.plutuswallet.data.TransactionRepository
 import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -72,8 +71,8 @@ class FilterViewModel @ViewModelInject constructor(
             accList.value = tranRepo.getAccountNamesAsync()
 
             // Category by type data
-            val mExCatList: MutableList<String> = getCategoriesByTypeAsync("Expense").await()
-            val mInCatList: MutableList<String> = getCategoriesByTypeAsync("Income").await()
+            val mExCatList: MutableList<String> = getCategoriesByTypeAsync("Expense")
+            val mInCatList: MutableList<String> = getCategoriesByTypeAsync("Income")
             mExCatList.add(0, all)
             mInCatList.add(0, all)
             exCatList.value = mExCatList
@@ -176,7 +175,7 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Category Queries
      */
-    private suspend fun getCategoriesByTypeAsync(type: String): Deferred<MutableList<String>> {
+    private suspend fun getCategoriesByTypeAsync(type: String): MutableList<String> {
 
         return tranRepo.getCategoryNamesByTypeAsync(type)
     }

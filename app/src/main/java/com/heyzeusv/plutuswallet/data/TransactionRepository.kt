@@ -49,20 +49,20 @@ class TransactionRepository @Inject constructor(
     /**
      *  Category Queries
      */
-    override suspend fun getCategoryNamesByTypeAsync(type: String): Deferred<MutableList<String>> =
-        withContext(Dispatchers.IO) { async { categoryDao.getCategoryNamesByType(type) } }
+    override suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String> =
+        withContext(Dispatchers.IO) { categoryDao.getCategoryNamesByType(type) }
 
     override suspend fun getCategorySizeAsync(): Deferred<Int> =
         withContext(Dispatchers.IO) { async { categoryDao.getCategorySize() } }
 
-    override suspend fun deleteCategory(category: Category): Job =
-        withContext(Dispatchers.IO) { launch { categoryDao.delete(category) } }
+    override suspend fun deleteCategory(category: Category): Unit =
+        withContext(Dispatchers.IO) { categoryDao.delete(category) }
 
-    override suspend fun insertCategory(category: Category): Job =
-        withContext(Dispatchers.IO) { launch { categoryDao.insert(category) } }
+    override suspend fun insertCategory(category: Category): Unit =
+        withContext(Dispatchers.IO) { categoryDao.insert(category) }
 
-    override suspend fun updateCategory(category: Category): Job =
-        withContext(Dispatchers.IO) { launch { categoryDao.update(category) } }
+    override suspend fun updateCategory(category: Category): Unit =
+        withContext(Dispatchers.IO) { categoryDao.update(category) }
 
     override suspend fun insertCategories(categories: List<Category>): Job =
         withContext(Dispatchers.IO) { launch { categoryDao.insert(categories) } }
@@ -76,8 +76,8 @@ class TransactionRepository @Inject constructor(
     override suspend fun getDistinctAccountsAsync(): MutableList<String> =
         withContext(Dispatchers.IO) { transactionDao.getDistinctAccounts() }
 
-    override suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>> =
-        withContext(Dispatchers.IO) { async { transactionDao.getDistinctCatsByType(type) } }
+    override suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String> =
+        withContext(Dispatchers.IO) { transactionDao.getDistinctCatsByType(type) }
 
     override suspend fun getFutureTransactionsAsync(currentDate: Date): Deferred<List<Transaction>> =
         withContext(Dispatchers.IO) { async { transactionDao.getFutureTransactions(currentDate) } }

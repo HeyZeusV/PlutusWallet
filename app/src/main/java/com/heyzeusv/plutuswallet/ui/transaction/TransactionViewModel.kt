@@ -359,9 +359,9 @@ class TransactionViewModel @ViewModelInject constructor(
         viewModelScope.launch {
             accountList.value = getAccountsAsync()
             accountList.value!!.add(accCreate)
-            expenseCatList.value = getCategoriesByTypeAsync("Expense").await()
+            expenseCatList.value = getCategoriesByTypeAsync("Expense")
             expenseCatList.value!!.add(catCreate)
-            incomeCatList.value = getCategoriesByTypeAsync("Income").await()
+            incomeCatList.value = getCategoriesByTypeAsync("Income")
             incomeCatList.value!!.add(catCreate)
             maxId = getMaxIdAsync().await() ?: 0
             refresh()
@@ -386,7 +386,7 @@ class TransactionViewModel @ViewModelInject constructor(
     /**
      *  Category queries
      */
-    private suspend fun getCategoriesByTypeAsync(type: String): Deferred<MutableList<String>> {
+    private suspend fun getCategoriesByTypeAsync(type: String): MutableList<String> {
 
         return tranRepo.getCategoryNamesByTypeAsync(type)
     }

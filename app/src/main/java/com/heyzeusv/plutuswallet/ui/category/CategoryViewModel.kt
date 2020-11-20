@@ -9,8 +9,6 @@ import com.heyzeusv.plutuswallet.data.TransactionRepository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.util.Event
 import com.heyzeusv.plutuswallet.util.replace
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
@@ -24,8 +22,8 @@ class CategoryViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     // used to notify adapter of specific item change
-    lateinit var expenseAdapter: CategoryAdapter
-    lateinit var incomeAdapter: CategoryAdapter
+    var expenseAdapter: CategoryAdapter? = null
+    var incomeAdapter: CategoryAdapter? = null
 
     // list of Categories by type used to prevent 2 Categories from having same name
     // 0 = "Expense"; 1 = "Income"
@@ -33,6 +31,10 @@ class CategoryViewModel @ViewModelInject constructor(
     // list of Categories by type unable to be deleted due to being used
     // 0 = "Expense"; 1 = "Income"
     val catsUsed: MutableList<MutableList<String>> = mutableListOf(mutableListOf(), mutableListOf())
+
+    // list of Categories from Database
+    val expenseCatsLD: LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Expense")
+    val incomeCatsLD: LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Income")
 
     private val _editCategoryEvent = MutableLiveData<Event<Category>>()
     val editCategoryEvent: LiveData<Event<Category>> = _editCategoryEvent
@@ -65,8 +67,8 @@ class CategoryViewModel @ViewModelInject constructor(
      */
     suspend fun initNamesUsedLists(type: String, pos: Int) {
 
-        catNames[pos] = getCatsByTypeAsync(type).await()
-        catsUsed[pos] = getDistinctCatsByTypeAsync(type).await()
+        catNames[pos] = tranRepo.getCategoryNamesByTypeAsync(type)
+        catsUsed[pos] = tranRepo.getDistinctCatsByTypeAsync(type)
     }
 
     /**
@@ -77,7 +79,9 @@ class CategoryViewModel @ViewModelInject constructor(
 
         catNames[type].remove(category.category)
         catsUsed[type].remove(category.category)
-        deleteCategory(category)
+        viewModelScope.launch {
+            tranRepo.deleteCategory(category)
+        }
     }
 
     /**
@@ -95,13 +99,15 @@ class CategoryViewModel @ViewModelInject constructor(
                 catsUsed[type].replace(category.category, newName)
             }
             category.category = newName
-            updateCategory(category)
+            viewModelScope.launch {
+                tranRepo.updateCategory(category)
+            }
             // DiffUtil would not update the name change,
             // so notifying specific item change rather than entire list
             if (type == 0) {
-                expenseAdapter.notifyItemChanged(expenseCatsLD.value!!.indexOf(category))
+                expenseAdapter?.notifyItemChanged(expenseCatsLD.value!!.indexOf(category))
             } else {
-                incomeAdapter.notifyItemChanged(incomeCatsLD.value!!.indexOf(category))
+                incomeAdapter?.notifyItemChanged(incomeCatsLD.value!!.indexOf(category))
             }
         }
     }
@@ -119,41 +125,9 @@ class CategoryViewModel @ViewModelInject constructor(
             catNames[type].add(name)
             category.category = name
             category.type = if (type == 0) "Expense" else "Income"
-            insertCategory(category)
+            viewModelScope.launch {
+                tranRepo.insertCategory(category)
+            }
         }
-    }
-
-    /**
-     *  Category Queries
-     */
-    val expenseCatsLD: LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Expense")
-    val incomeCatsLD: LiveData<List<Category>> = tranRepo.getLDCategoriesByType("Income")
-
-    private suspend fun getCatsByTypeAsync(type: String): Deferred<MutableList<String>> {
-
-        return tranRepo.getCategoryNamesByTypeAsync(type)
-    }
-
-    private fun deleteCategory(category: Category): Job = viewModelScope.launch {
-
-        tranRepo.deleteCategory(category)
-    }
-
-    private fun insertCategory(category: Category): Job = viewModelScope.launch {
-
-        tranRepo.insertCategory(category)
-    }
-
-    private fun updateCategory(category: Category): Job = viewModelScope.launch {
-
-        tranRepo.updateCategory(category)
-    }
-
-    /**
-     *  Transaction Queries
-     */
-    private suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>> {
-
-        return tranRepo.getDistinctCatsByTypeAsync(type)
     }
 }

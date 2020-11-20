@@ -29,15 +29,15 @@ interface Repository {
     /**
      *  Category Queries
      */
-    suspend fun getCategoryNamesByTypeAsync(type: String): Deferred<MutableList<String>>
+    suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String>
 
     suspend fun getCategorySizeAsync(): Deferred<Int>
 
-    suspend fun deleteCategory(category: Category): Job
+    suspend fun deleteCategory(category: Category)
 
-    suspend fun insertCategory(category: Category): Job
+    suspend fun insertCategory(category: Category)
 
-    suspend fun updateCategory(category: Category): Job
+    suspend fun updateCategory(category: Category)
 
     suspend fun insertCategories(categories: List<Category>): Job
     fun getLDCategoriesByType(type: String): LiveData<List<Category>>
@@ -47,7 +47,7 @@ interface Repository {
      */
     suspend fun getDistinctAccountsAsync(): MutableList<String>
 
-    suspend fun getDistinctCatsByTypeAsync(type: String): Deferred<MutableList<String>>
+    suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String>
 
     suspend fun getFutureTransactionsAsync(currentDate: Date): Deferred<List<Transaction>>
 
