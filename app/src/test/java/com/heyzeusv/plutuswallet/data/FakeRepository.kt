@@ -84,7 +84,12 @@ class FakeRepository(
     }
 
     override fun getLDCategoriesByType(type: String): LiveData<List<Category>> {
-        TODO("Not yet implemented")
+
+        val list: MutableList<Category> = mutableListOf()
+        for (cat: Category in catList.filter { it.type == type }) {
+            list.add(cat)
+        }
+        return MutableLiveData(list)
     }
 
     override suspend fun getDistinctAccountsAsync(): MutableList<String> {

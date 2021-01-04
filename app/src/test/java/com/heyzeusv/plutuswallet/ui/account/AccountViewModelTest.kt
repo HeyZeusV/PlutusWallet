@@ -3,11 +3,12 @@ package com.heyzeusv.plutuswallet.ui.account
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
+import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -27,6 +28,7 @@ internal class AccountViewModelTest {
 
     // dummy data
     private var accList: MutableList<Account> = mutableListOf()
+    private var catList: MutableList<Category> = mutableListOf()
     private var tranList: MutableList<Transaction> = mutableListOf()
 
     private val acc1 = Account(1, "Credit Card")
@@ -47,7 +49,7 @@ internal class AccountViewModelTest {
         tranList = mutableListOf(tran1, tran2, tran3, tran4)
 
         // initialize fake repo with dummy data and pass it to ViewModel
-        repo = FakeRepository(accList, tranList)
+        repo = FakeRepository(accList, catList, tranList)
         accVM = AccountViewModel(repo)
     }
 
@@ -65,7 +67,6 @@ internal class AccountViewModelTest {
 
     @Test
     @DisplayName("Should create delete Event containing Account when delete button is pressed")
-
     fun deleteAccountOC() {
 
         val acc = Account(0, "Test")
@@ -148,7 +149,7 @@ internal class AccountViewModelTest {
     }
 
     @Test
-    @DisplayName("Should insert an Account with an existing name which creates an exist Event")
+    @DisplayName("Should insert Account with an existing name which creates an exist Event")
     fun insertNewAccountExists() {
 
         val newAccount = Account(100, "Cash")

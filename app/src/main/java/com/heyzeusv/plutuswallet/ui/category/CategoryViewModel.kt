@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.data.TransactionRepository
+import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.util.Event
 import com.heyzeusv.plutuswallet.util.replace
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
  *  Data can survive configuration changes.
  */
 class CategoryViewModel @ViewModelInject constructor(
-    private val tranRepo: TransactionRepository
+    private val tranRepo: Repository
 ) : ViewModel() {
 
     // used to notify adapter of specific item change
