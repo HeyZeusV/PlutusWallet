@@ -7,13 +7,12 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.TransactionRepository
+import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.Event
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -31,7 +30,7 @@ import java.util.Locale
  *  Data can survive configuration changes.
  */
 class TransactionViewModel @ViewModelInject constructor(
-    private val tranRepo: TransactionRepository
+    private val tranRepo: Repository
 ) : ViewModel() {
 
     // stores ID of Transaction displayed.
@@ -43,7 +42,7 @@ class TransactionViewModel @ViewModelInject constructor(
      */
     var tranLD: MutableLiveData<Transaction?> =
         Transformations.switchMap(tranIdLD) { transactionId: Int ->
-            tranRepo.getLDTransaction(transactionId)
+            tranRepo.getLdTransaction(transactionId)
         } as MutableLiveData<Transaction?>
 
     // used for various Transaction Fields since property changes don't cause LiveDate updates
@@ -175,7 +174,7 @@ class TransactionViewModel @ViewModelInject constructor(
                     _futureTranEvent.value = Event(tran)
                 } else {
                     // upsert Transaction
-                    upsertTransaction(tran)
+                    tranRepo.upsertTransaction(tran)
                     loadTransaction(tran.id)
                     _saveTranEvent.value = Event(true)
                 }
@@ -190,7 +189,9 @@ class TransactionViewModel @ViewModelInject constructor(
     fun futureTranPosFun(tran: Transaction) {
 
         tran.futureTCreated = false
-        viewModelScope.launch { upsertTransaction(tran) }
+        viewModelScope.launch {
+            tranRepo.upsertTransaction(tran)
+        }
         _saveTranEvent.value = Event(true)
     }
 
@@ -202,7 +203,9 @@ class TransactionViewModel @ViewModelInject constructor(
     fun futureTranNegFun(tran: Transaction) {
 
         dateChanged = false
-        viewModelScope.launch { upsertTransaction(tran) }
+        viewModelScope.launch {
+            tranRepo.upsertTransaction(tran)
+        }
         _saveTranEvent.value = Event(true)
     }
 
@@ -271,7 +274,7 @@ class TransactionViewModel @ViewModelInject constructor(
                 viewModelScope.launch {
                     // creates and inserts new Account with name
                     val account = Account(0, name)
-                    insertAccount(account)
+                    tranRepo.insertAccount(account)
                 }
                 accountList.value = addNewToList(it, name, accCreate)
             }
@@ -293,7 +296,7 @@ class TransactionViewModel @ViewModelInject constructor(
                     viewModelScope.launch {
                         // creates and inserts new Category with name
                         val category = Category(0, name, "Expense")
-                        insertCategory(category)
+                        tranRepo.insertCategory(category)
                     }
                     expenseCatList.value = addNewToList(it, name, catCreate)
                 }
@@ -306,7 +309,7 @@ class TransactionViewModel @ViewModelInject constructor(
                     viewModelScope.launch {
                         // creates and inserts new Category with name
                         val category = Category(0, name, "Income")
-                        insertCategory(category)
+                        tranRepo.insertCategory(category)
                     }
                     incomeCatList.value = addNewToList(it, name, catCreate)
                 }
@@ -357,13 +360,13 @@ class TransactionViewModel @ViewModelInject constructor(
     fun prepareLists(accCreate: String, catCreate: String) {
 
         viewModelScope.launch {
-            accountList.value = getAccountsAsync()
+            accountList.value = tranRepo.getAccountNamesAsync()
             accountList.value!!.add(accCreate)
-            expenseCatList.value = getCategoriesByTypeAsync("Expense")
+            expenseCatList.value = tranRepo.getCategoryNamesByTypeAsync("Expense")
             expenseCatList.value!!.add(catCreate)
-            incomeCatList.value = getCategoriesByTypeAsync("Income")
+            incomeCatList.value = tranRepo.getCategoryNamesByTypeAsync("Income")
             incomeCatList.value!!.add(catCreate)
-            maxId = getMaxIdAsync().await() ?: 0
+            maxId = tranRepo.getMaxIdAsync() ?: 0
             refresh()
         }
     }
@@ -374,31 +377,6 @@ class TransactionViewModel @ViewModelInject constructor(
         tranIdLD.postValue(tranIdLD.value)
     }
 
-
-    /**
-     *  Account queries
-     */
-    private suspend fun insertAccount(account: Account) {
-
-        tranRepo.insertAccount(account)
-    }
-
-    /**
-     *  Category queries
-     */
-    private suspend fun getCategoriesByTypeAsync(type: String): MutableList<String> {
-
-        return tranRepo.getCategoryNamesByTypeAsync(type)
-    }
-
-    private suspend fun insertCategory(category: Category) {
-
-        tranRepo.insertCategory(category)
-    }
-
-    /**
-     *  Transaction queries.
-     */
     /**
      *  Doesn't load Transaction directly from Database, but rather by updating the
      *  LiveData object holding ID with [transactionId] which in turn triggers
@@ -407,20 +385,5 @@ class TransactionViewModel @ViewModelInject constructor(
     fun loadTransaction(transactionId: Int) {
 
         tranIdLD.value = transactionId
-    }
-
-    private suspend fun getAccountsAsync(): MutableList<String> {
-
-        return tranRepo.getAccountNamesAsync()
-    }
-
-    private suspend fun getMaxIdAsync(): Deferred<Int?> {
-
-        return tranRepo.getMaxIdAsync()
-    }
-
-    private suspend fun upsertTransaction(transaction: Transaction) {
-
-        tranRepo.upsertTransaction(transaction)
     }
 }

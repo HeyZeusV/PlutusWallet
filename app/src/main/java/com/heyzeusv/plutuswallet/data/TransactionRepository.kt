@@ -5,11 +5,7 @@ import com.heyzeusv.plutuswallet.data.daos.AccountDao
 import com.heyzeusv.plutuswallet.data.daos.CategoryDao
 import com.heyzeusv.plutuswallet.data.daos.TransactionDao
 import com.heyzeusv.plutuswallet.data.model.*
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
@@ -32,8 +28,8 @@ class TransactionRepository @Inject constructor(
     override suspend fun getAccountNamesAsync(): MutableList<String> =
         withContext(Dispatchers.IO) { accountDao.getAccountNames() }
 
-    override suspend fun getAccountSizeAsync(): Deferred<Int> =
-        withContext(Dispatchers.IO) { async { accountDao.getAccountSize() } }
+    override suspend fun getAccountSizeAsync(): Int =
+        withContext(Dispatchers.IO) { accountDao.getAccountSize() }
 
     override suspend fun deleteAccount(account: Account): Unit =
         withContext(Dispatchers.IO) { accountDao.delete(account) }
@@ -52,8 +48,8 @@ class TransactionRepository @Inject constructor(
     override suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String> =
         withContext(Dispatchers.IO) { categoryDao.getCategoryNamesByType(type) }
 
-    override suspend fun getCategorySizeAsync(): Deferred<Int> =
-        withContext(Dispatchers.IO) { async { categoryDao.getCategorySize() } }
+    override suspend fun getCategorySizeAsync(): Int =
+        withContext(Dispatchers.IO) { categoryDao.getCategorySize() }
 
     override suspend fun deleteCategory(category: Category): Unit =
         withContext(Dispatchers.IO) { categoryDao.delete(category) }
@@ -64,8 +60,8 @@ class TransactionRepository @Inject constructor(
     override suspend fun updateCategory(category: Category): Unit =
         withContext(Dispatchers.IO) { categoryDao.update(category) }
 
-    override suspend fun insertCategories(categories: List<Category>): Job =
-        withContext(Dispatchers.IO) { launch { categoryDao.insert(categories) } }
+    override suspend fun insertCategories(categories: List<Category>): Unit =
+        withContext(Dispatchers.IO) { categoryDao.insert(categories) }
 
     override fun getLDCategoriesByType(type: String): LiveData<List<Category>> =
         categoryDao.getLDCategoriesByType(type)
@@ -79,17 +75,17 @@ class TransactionRepository @Inject constructor(
     override suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String> =
         withContext(Dispatchers.IO) { transactionDao.getDistinctCatsByType(type) }
 
-    override suspend fun getFutureTransactionsAsync(currentDate: Date): Deferred<List<Transaction>> =
-        withContext(Dispatchers.IO) { async { transactionDao.getFutureTransactions(currentDate) } }
+    override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> =
+        withContext(Dispatchers.IO) { transactionDao.getFutureTransactions(currentDate) }
 
-    override suspend fun getMaxIdAsync(): Deferred<Int?> =
-        withContext(Dispatchers.IO) { async { transactionDao.getMaxId() } }
+    override suspend fun getMaxIdAsync(): Int? =
+        withContext(Dispatchers.IO) { transactionDao.getMaxId() }
 
-    override suspend fun getTransactionAsync(id: Int): Deferred<Transaction> =
-        withContext(Dispatchers.IO) { async { transactionDao.getTransaction(id) } }
+    override suspend fun getTransactionAsync(id: Int): Transaction =
+        withContext(Dispatchers.IO) { transactionDao.getTransaction(id) }
 
-    override suspend fun deleteTransaction(transaction: Transaction): Job =
-        withContext(Dispatchers.IO) { launch { transactionDao.delete(transaction) } }
+    override suspend fun deleteTransaction(transaction: Transaction): Unit =
+        withContext(Dispatchers.IO) { transactionDao.delete(transaction) }
 
     override suspend fun upsertTransaction(transaction: Transaction): Unit =
         withContext(Dispatchers.IO) { transactionDao.upsert(transaction) }
@@ -98,65 +94,15 @@ class TransactionRepository @Inject constructor(
         withContext(Dispatchers.IO) { transactionDao.upsert(transactions) }
 
     /**
-     *  Ld = LiveData
-     *  Ct = CategoryTotals
-     *  A  = Account
-     *  C  = Category
-     *  D  = Date
-     *  T  = Type
+     *  Ld  = LiveData
+     *  Ct  = CategoryTotals
+     *  Ivt = ItemViewTransaction
+     *  A   = Account
+     *  C   = Category
+     *  D   = Date
+     *  T   = Type
      */
-    override fun getLDTransaction(id: Int): LiveData<Transaction?> = transactionDao.getLDTransaction(id)
-
-    override fun getLd(): LiveData<List<ItemViewTransaction>> = transactionDao.getLd()
-
-    override fun getLdA(account: String): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdA(account)
-
-    override fun getLdAD(account: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdAD(account, start, end)
-
-    override fun getLdAT(account: String, type: String): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdAT(account, type)
-
-    override fun getLdATC(
-        account: String,
-        type: String,
-        category: String
-    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdATC(account, type, category)
-
-    override fun getLdATD(
-        account: String,
-        type: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdATD(account, type, start, end)
-
-    override fun getLdATCD(
-        account: String,
-        type: String,
-        category: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdATCD(account, type, category, start, end)
-
-    override fun getLdD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdD(start, end)
-
-    override fun getLdT(type: String): LiveData<List<ItemViewTransaction>> = transactionDao.getLdT(type)
-
-    override fun getLdTC(type: String, category: String): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdTC(type, category)
-
-    override fun getLdTCD(
-        type: String,
-        category: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdTCD(type, category, start, end)
-
-    override fun getLdTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdTD(type, start, end)
+    override fun getLdTransaction(id: Int): LiveData<Transaction?> = transactionDao.getLDTransaction(id)
 
     override fun getLdCt(): LiveData<List<CategoryTotals>> = transactionDao.getLdCt()
 
@@ -167,4 +113,55 @@ class TransactionRepository @Inject constructor(
 
     override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> =
         transactionDao.getLdCtD(start, end)
+
+    override fun getLdIvt(): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvt()
+
+    override fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtA(account)
+
+    override fun getLdIvtAD(account: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtAD(account, start, end)
+
+    override fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtAT(account, type)
+
+    override fun getLdIvtATC(
+        account: String,
+        type: String,
+        category: String
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtATC(account, type, category)
+
+    override fun getLdIvtATD(
+        account: String,
+        type: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtATD(account, type, start, end)
+
+    override fun getLdIvtATCD(
+        account: String,
+        type: String,
+        category: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtATCD(account, type, category, start, end)
+
+    override fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtD(start, end)
+
+    override fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtT(type)
+
+    override fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtTC(type, category)
+
+    override fun getLdIvtTCD(
+        type: String,
+        category: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtTCD(type, category, start, end)
+
+    override fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtTD(type, start, end)
 }

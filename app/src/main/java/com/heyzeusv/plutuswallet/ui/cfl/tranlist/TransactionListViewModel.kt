@@ -75,7 +75,7 @@ class TransactionListViewModel @ViewModelInject constructor(
      */
     suspend fun deleteTranPosFun(ivt: ItemViewTransaction) {
 
-        deleteTransaction(getTransactionAsync(ivt.id).await())
+        deleteTransaction(getTransactionAsync(ivt.id))
     }
 
     /**
@@ -85,7 +85,7 @@ class TransactionListViewModel @ViewModelInject constructor(
     fun initializeTables() {
 
         viewModelScope.launch {
-            val catSize: Int = getCategorySizeAsync().await()
+            val catSize: Int = getCategorySizeAsync()
 
             if (catSize == 0) {
                 val education = Category(0, "Education", EXPENSE)
@@ -109,7 +109,7 @@ class TransactionListViewModel @ViewModelInject constructor(
                 insertCategories(initialCategories)
             }
 
-            val accSize: Int = getAccountSizeAsync().await()
+            val accSize: Int = getAccountSizeAsync()
 
             if (accSize == 0) {
                 val none = Account(0, "None")
@@ -149,7 +149,7 @@ class TransactionListViewModel @ViewModelInject constructor(
             moreToCreate = false
             // returns list of all Transactions whose futureDate is before current date
             val futureTranList: MutableList<Transaction> =
-                getFutureTransactionsAsync(Date()).await().toMutableList()
+                getFutureTransactionsAsync(Date()).toMutableList()
 
             // return if empty
             if (futureTranList.isNotEmpty()) {
@@ -232,7 +232,7 @@ class TransactionListViewModel @ViewModelInject constructor(
     /**
      *  Account queries
      */
-    private suspend fun getAccountSizeAsync(): Deferred<Int> {
+    private suspend fun getAccountSizeAsync(): Int {
 
         return tranRepo.getAccountSizeAsync()
     }
@@ -245,7 +245,7 @@ class TransactionListViewModel @ViewModelInject constructor(
     /**
      *  Category queries
      */
-    private suspend fun getCategorySizeAsync(): Deferred<Int> {
+    private suspend fun getCategorySizeAsync(): Int {
 
         return tranRepo.getCategorySizeAsync()
     }
@@ -275,28 +275,28 @@ class TransactionListViewModel @ViewModelInject constructor(
 
         return when {
             account && category && date && categoryName == "All" ->
-                tranRepo.getLdATD(accountName, type, start, end)
+                tranRepo.getLdIvtATD(accountName, type, start, end)
             account && category && date ->
-                tranRepo.getLdATCD(accountName, type, categoryName, start, end)
-            account && category && categoryName == "All" -> tranRepo.getLdAT(accountName, type)
-            account && category -> tranRepo.getLdATC(accountName, type, categoryName)
-            account && date -> tranRepo.getLdAD(accountName, start, end)
-            account -> tranRepo.getLdA(accountName)
-            category && date && categoryName == "All" -> tranRepo.getLdTD(type, start, end)
-            category && date -> tranRepo.getLdTCD(type, categoryName, start, end)
-            category && categoryName == "All" -> tranRepo.getLdT(type)
-            category -> tranRepo.getLdTC(type, categoryName)
-            date -> tranRepo.getLdD(start, end)
-            else -> tranRepo.getLd()
+                tranRepo.getLdIvtATCD(accountName, type, categoryName, start, end)
+            account && category && categoryName == "All" -> tranRepo.getLdIvtAT(accountName, type)
+            account && category -> tranRepo.getLdIvtATC(accountName, type, categoryName)
+            account && date -> tranRepo.getLdIvtAD(accountName, start, end)
+            account -> tranRepo.getLdIvtA(accountName)
+            category && date && categoryName == "All" -> tranRepo.getLdIvtTD(type, start, end)
+            category && date -> tranRepo.getLdIvtTCD(type, categoryName, start, end)
+            category && categoryName == "All" -> tranRepo.getLdIvtT(type)
+            category -> tranRepo.getLdIvtTC(type, categoryName)
+            date -> tranRepo.getLdIvtD(start, end)
+            else -> tranRepo.getLdIvt()
         }
     }
 
-    private suspend fun getFutureTransactionsAsync(currentDate: Date): Deferred<List<Transaction>> {
+    private suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {
 
         return tranRepo.getFutureTransactionsAsync(currentDate)
     }
 
-    private suspend fun getTransactionAsync(id: Int): Deferred<Transaction> {
+    private suspend fun getTransactionAsync(id: Int): Transaction {
 
         return tranRepo.getTransactionAsync(id)
     }

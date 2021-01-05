@@ -68,12 +68,13 @@ abstract class TransactionDao : BaseDao<Transaction>() {
 
     /**
      *  Following Query function names will use the following abbreviations and Object types.
-     *  Ld = LiveData
-     *  Ct = CategoryTotals
-     *  A  = Account
-     *  C  = Category
-     *  D  = Date
-     *  T  = Type
+     *  Ld  = LiveData
+     *  Ct  = CategoryTotals
+     *  Ivt = ItemViewTransaction
+     *  A   = Account
+     *  C   = Category
+     *  D   = Date
+     *  T   = Type
      *
      *  CategoryTotals(CT): Used for ChartFragment contains Category and Total sum of
      *                      chosen Category.
@@ -93,7 +94,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
-              GROUP BY category
+              GROUP BY category, type
               HAVING SUM(total) > 0""")
     abstract fun getLdCt(): LiveData<List<CategoryTotals>>
 
@@ -103,7 +104,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
               WHERE account=(:account)
-              GROUP BY category
+              GROUP BY category, type
               HAVING SUM(total) > 0""")
     abstract fun getLdCtA(account: String): LiveData<List<CategoryTotals>>
 
@@ -113,7 +114,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
               WHERE date BETWEEN :start AND :end
-              GROUP BY category
+              GROUP BY category, type
               HAVING SUM(total) > 0""")
     abstract fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
 
@@ -123,7 +124,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
               WHERE account=(:account) AND date BETWEEN :start AND :end
-              GROUP BY category
+              GROUP BY category, type
               HAVING SUM(total) > 0""")
     abstract fun getLdCtAD(account: String, start: Date, end: Date): LiveData<List<CategoryTotals>>
 
@@ -133,7 +134,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT id, title, date, total, account, type, category 
               FROM `transaction`
               ORDER BY date ASC""")
-    abstract fun getLd(): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvt(): LiveData<List<ItemViewTransaction>>
 
     /**
      *  Returns LD of list of IVT of given [account].
@@ -142,7 +143,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account=(:account)
               ORDER BY date ASC""")
-    abstract fun getLdA(account: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>>
 
     /**
      *  Returns LD of list of IVT of given [account] and between given [start]/[end] dates.
@@ -151,7 +152,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account=(:account) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdAD(
+    abstract fun getLdIvtAD(
         account: String,
         start: Date,
         end: Date
@@ -164,7 +165,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account=(:account) AND type=(:type)
               ORDER BY date ASC""")
-    abstract fun getLdAT(account: String, type: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>>
 
     /**
      *  Returns LD of list of IVT of given [account], [type], and [category].
@@ -173,7 +174,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account=(:account) AND type=(:type) AND category=(:category)
               ORDER BY date ASC""")
-    abstract fun getLdATC(
+    abstract fun getLdIvtATC(
         account: String,
         type: String,
         category: String
@@ -186,7 +187,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account=(:account) AND type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdATD(
+    abstract fun getLdIvtATD(
         account: String,
         type: String,
         start: Date,
@@ -202,7 +203,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               WHERE account=(:account) AND type=(:type) 
                 AND category=(:category) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdATCD(
+    abstract fun getLdIvtATCD(
         account: String,
         type: String,
         category: String,
@@ -217,7 +218,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
 
     /**
      *  Returns LD of list of IVT of given [type].
@@ -226,7 +227,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type)
               ORDER BY date ASC""")
-    abstract fun getLdT(type: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
 
     /**
      *  Returns LD of list of IVT of given [type] and [category].
@@ -235,7 +236,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND category=(:category)
               ORDER BY date ASC""")
-    abstract fun getLdTC(type: String, category: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>>
 
     /**
      *  Returns LD of list of IVT of given [type], [category],
@@ -245,7 +246,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdTCD(
+    abstract fun getLdIvtTCD(
         type: String,
         category: String,
         start: Date,
@@ -259,5 +260,5 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
 }

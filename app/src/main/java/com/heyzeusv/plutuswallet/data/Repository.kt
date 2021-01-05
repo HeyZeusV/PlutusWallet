@@ -6,8 +6,6 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
 import java.util.Date
 
 interface Repository {
@@ -16,7 +14,7 @@ interface Repository {
      */
     suspend fun getAccountNamesAsync(): MutableList<String>
 
-    suspend fun getAccountSizeAsync(): Deferred<Int>
+    suspend fun getAccountSizeAsync(): Int
 
     suspend fun deleteAccount(account: Account)
 
@@ -31,7 +29,7 @@ interface Repository {
      */
     suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String>
 
-    suspend fun getCategorySizeAsync(): Deferred<Int>
+    suspend fun getCategorySizeAsync(): Int
 
     suspend fun deleteCategory(category: Category)
 
@@ -39,7 +37,8 @@ interface Repository {
 
     suspend fun updateCategory(category: Category)
 
-    suspend fun insertCategories(categories: List<Category>): Job
+    suspend fun insertCategories(categories: List<Category>)
+
     fun getLDCategoriesByType(type: String): LiveData<List<Category>>
 
     /**
@@ -49,45 +48,59 @@ interface Repository {
 
     suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String>
 
-    suspend fun getFutureTransactionsAsync(currentDate: Date): Deferred<List<Transaction>>
+    suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction>
 
-    suspend fun getMaxIdAsync(): Deferred<Int?>
+    suspend fun getMaxIdAsync(): Int?
 
-    suspend fun getTransactionAsync(id: Int): Deferred<Transaction>
+    suspend fun getTransactionAsync(id: Int): Transaction
 
-    suspend fun deleteTransaction(transaction: Transaction): Job
+    suspend fun deleteTransaction(transaction: Transaction)
 
     suspend fun upsertTransaction(transaction: Transaction)
 
     suspend fun upsertTransactions(transactions: List<Transaction>)
 
     /**
-     *  Ld = LiveData
-     *  Ct = CategoryTotals
-     *  A  = Account
-     *  C  = Category
-     *  D  = Date
-     *  T  = Type
+     *  Ld  = LiveData
+     *  Ct  = CategoryTotals
+     *  Ivt = ItemViewTransaction
+     *  A   = Account
+     *  C   = Category
+     *  D   = Date
+     *  T   = Type
      */
-    fun getLDTransaction(id: Int): LiveData<Transaction?>
-    fun getLd(): LiveData<List<ItemViewTransaction>>
-    fun getLdA(account: String): LiveData<List<ItemViewTransaction>>
-    fun getLdAD(account: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
-    fun getLdAT(account: String, type: String): LiveData<List<ItemViewTransaction>>
-    fun getLdATC(
+    fun getLdTransaction(id: Int): LiveData<Transaction?>
+
+    fun getLdCt(): LiveData<List<CategoryTotals>>
+
+    fun getLdCtA(account: String): LiveData<List<CategoryTotals>>
+
+    fun getLdCtAD(account: String, start: Date, end: Date): LiveData<List<CategoryTotals>>
+
+    fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
+
+    fun getLdIvt(): LiveData<List<ItemViewTransaction>>
+
+    fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>>
+
+    fun getLdIvtAD(account: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+
+    fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>>
+
+    fun getLdIvtATC(
         account: String,
         type: String,
         category: String
     ): LiveData<List<ItemViewTransaction>>
 
-    fun getLdATD(
+    fun getLdIvtATD(
         account: String,
         type: String,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>
 
-    fun getLdATCD(
+    fun getLdIvtATCD(
         account: String,
         type: String,
         category: String,
@@ -95,19 +108,18 @@ interface Repository {
         end: Date
     ): LiveData<List<ItemViewTransaction>>
 
-    fun getLdD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
-    fun getLdT(type: String): LiveData<List<ItemViewTransaction>>
-    fun getLdTC(type: String, category: String): LiveData<List<ItemViewTransaction>>
-    fun getLdTCD(
+    fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+
+    fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
+
+    fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>>
+
+    fun getLdIvtTCD(
         type: String,
         category: String,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>
 
-    fun getLdTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
-    fun getLdCt(): LiveData<List<CategoryTotals>>
-    fun getLdCtA(account: String): LiveData<List<CategoryTotals>>
-    fun getLdCtAD(account: String, start: Date, end: Date): LiveData<List<CategoryTotals>>
-    fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
+    fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
 }

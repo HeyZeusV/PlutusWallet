@@ -8,8 +8,7 @@ import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.replace
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Job
+import java.math.BigDecimal
 import java.util.Date
 
 class FakeRepository(
@@ -27,8 +26,9 @@ class FakeRepository(
         return accNames.sorted() as MutableList<String>
     }
 
-    override suspend fun getAccountSizeAsync(): Deferred<Int> {
-        TODO("Not yet implemented")
+    override suspend fun getAccountSizeAsync(): Int {
+
+        return accList.size
     }
 
     override suspend fun deleteAccount(account: Account) {
@@ -60,8 +60,9 @@ class FakeRepository(
         return typeNameList.sorted() as MutableList<String>
     }
 
-    override suspend fun getCategorySizeAsync(): Deferred<Int> {
-        TODO("Not yet implemented")
+    override suspend fun getCategorySizeAsync(): Int {
+
+        return catList.size
     }
 
     override suspend fun deleteCategory(category: Category) {
@@ -79,8 +80,9 @@ class FakeRepository(
         catList.replace(catList.find { it.id == category.id }!!, category)
     }
 
-    override suspend fun insertCategories(categories: List<Category>): Job {
-        TODO("Not yet implemented")
+    override suspend fun insertCategories(categories: List<Category>) {
+
+        catList.addAll(categories)
     }
 
     override fun getLDCategoriesByType(type: String): LiveData<List<Category>> {
@@ -112,20 +114,29 @@ class FakeRepository(
         return catList.distinct().sorted() as MutableList<String>
     }
 
-    override suspend fun getFutureTransactionsAsync(currentDate: Date): Deferred<List<Transaction>> {
-        TODO("Not yet implemented")
+    override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {
+
+        val futureList: MutableList<Transaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.date < currentDate && !it.futureTCreated }) {
+            futureList.add(tran)
+        }
+
+        return futureList
     }
 
-    override suspend fun getMaxIdAsync(): Deferred<Int?> {
-        TODO("Not yet implemented")
+    override suspend fun getMaxIdAsync(): Int? {
+
+        return if (tranList.isEmpty()) null else tranList[tranList.size - 1].id
     }
 
-    override suspend fun getTransactionAsync(id: Int): Deferred<Transaction> {
-        TODO("Not yet implemented")
+    override suspend fun getTransactionAsync(id: Int): Transaction {
+
+        return tranList.single { it.id == id }
     }
 
-    override suspend fun deleteTransaction(transaction: Transaction): Job {
-        TODO("Not yet implemented")
+    override suspend fun deleteTransaction(transaction: Transaction) {
+
+        tranList.remove(transaction)
     }
 
     override suspend fun upsertTransaction(transaction: Transaction) {
@@ -144,92 +155,86 @@ class FakeRepository(
         }
     }
 
-    override fun getLDTransaction(id: Int): LiveData<Transaction?> {
-        TODO("Not yet implemented")
+    override fun getLdTransaction(id: Int): LiveData<Transaction?> {
+
+        return MutableLiveData(tranList.single { it.id == id })
     }
 
-    override fun getLd(): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
+    private fun getCatLists(): List<List<String>> {
+
+        val exCatList: MutableList<String> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.type == "Expense" }) {
+            exCatList.add(tran.category)
+        }
+        val inCatList: MutableList<String> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.type == "Income" }) {
+            inCatList.add(tran.category)
+        }
+
+        return listOf(exCatList, inCatList)
     }
 
-    override fun getLdA(account: String): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
+    private fun createCatTotals(listOfTranLists: MutableList<MutableList<Transaction>>)
+            : List<CategoryTotals> {
 
-    override fun getLdAD(
-        account: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdAT(account: String, type: String): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdATC(
-        account: String,
-        type: String,
-        category: String
-    ): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdATD(
-        account: String,
-        type: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdATCD(
-        account: String,
-        type: String,
-        category: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdT(type: String): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdTC(type: String, category: String): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdTCD(
-        type: String,
-        category: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getLdTD(
-        type: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> {
-        TODO("Not yet implemented")
+        val catTotals: MutableList<CategoryTotals> = mutableListOf()
+        for (list: MutableList<Transaction> in listOfTranLists) {
+            var total = BigDecimal(0)
+            for (tran: Transaction in list) {
+                total += tran.total
+            }
+            val ct = CategoryTotals(list[0].category, total, list[0].type)
+            catTotals.add(ct)
+        }
+        return catTotals
     }
 
     override fun getLdCt(): LiveData<List<CategoryTotals>> {
-        TODO("Not yet implemented")
+
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter { it.category == cat && it.type == "Expense" }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter { it.category == cat && it.type == "Income" }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return MutableLiveData(createCatTotals(listOfTranLists))
     }
 
     override fun getLdCtA(account: String): LiveData<List<CategoryTotals>> {
-        TODO("Not yet implemented")
+
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && it.account == account
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && it.account == account
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return MutableLiveData(createCatTotals(listOfTranLists))
     }
 
     override fun getLdCtAD(
@@ -237,10 +242,252 @@ class FakeRepository(
         start: Date,
         end: Date
     ): LiveData<List<CategoryTotals>> {
-        TODO("Not yet implemented")
+
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && it.account == account &&
+                        it.date > start && it.date < end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && it.account == account &&
+                        it.date > start && it.date < end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return MutableLiveData(createCatTotals(listOfTranLists))
     }
 
     override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> {
-        TODO("Not yet implemented")
+
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && it.date > start && it.date < end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && it.date > start && it.date < end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return MutableLiveData(createCatTotals(listOfTranLists))
+    }
+
+    override fun getLdIvt(): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.account == account }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtAD(
+        account: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            it.account == account && it.date > start && it.date < end
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.account == account && it.type == type }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtATC(
+        account: String,
+        type: String,
+        category: String
+    ): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            it.account == account && it.type == type && it.category == category
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtATD(
+        account: String,
+        type: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            it.account == account && it.type == type && it.date > start && it.date < end
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtATCD(
+        account: String,
+        type: String,
+        category: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            it.account == account && it.type == type && it.category == category &&
+                    it.date > start && it.date < end
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.date > start && it.date < end }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.type == type }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.type == type && it.category == category }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtTCD(
+        type: String,
+        category: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            it.type == type && it.category == category && it.date > start && it.date < end
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
+    }
+
+    override fun getLdIvtTD(
+        type: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            it.type == type  && it.date > start && it.date < end }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return MutableLiveData(ivtList)
     }
 }
