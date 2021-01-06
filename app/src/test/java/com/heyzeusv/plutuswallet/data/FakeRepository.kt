@@ -23,7 +23,8 @@ class FakeRepository(
         for (acc: Account in accList) {
             accNames.add(acc.account)
         }
-        return accNames.sorted() as MutableList<String>
+        accNames.sort()
+        return accNames
     }
 
     override suspend fun getAccountSizeAsync(): Int {
@@ -57,7 +58,8 @@ class FakeRepository(
         for (cat: Category in catList.filter { it.type == type}) {
             typeNameList.add(cat.category)
         }
-        return typeNameList.sorted() as MutableList<String>
+        typeNameList.sort()
+        return typeNameList
     }
 
     override suspend fun getCategorySizeAsync(): Int {
