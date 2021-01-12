@@ -3,7 +3,7 @@ package com.heyzeusv.plutuswallet.ui.cfl.chart
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.heyzeusv.plutuswallet.data.TransactionRepository
+import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewChart
 import java.math.BigDecimal
@@ -16,27 +16,30 @@ import java.util.Date
  *  Data can survive configuration changes.
  */
 class ChartViewModel @ViewModelInject constructor(
-    private val tranRepo: TransactionRepository
+    private val tranRepo: Repository
 ) : ViewModel() {
 
-    // used to make list of 2 ItemViewChart objects to initialize ChartAdapter
-    private val emptyIvc = ItemViewChart(
-        emptyList(), "", "", emptyList(), null, null, null
-    )
-    private var ivcList: MutableList<ItemViewChart> = mutableListOf(emptyIvc, emptyIvc)
-    var adapter: ChartAdapter = ChartAdapter().apply { submitList(ivcList) }
+    var ivcList: MutableList<ItemViewChart> = mutableListOf(ItemViewChart(), ItemViewChart())
+        private set
+    var adapter: ChartAdapter? = null
 
     // list of CategoryTotals after filter is applied
-    private var exCatTotals: List<CategoryTotals> = emptyList()
-    private var inCatTotals: List<CategoryTotals> = emptyList()
+    var exCatTotals: List<CategoryTotals> = emptyList()
+        private set
+    var inCatTotals: List<CategoryTotals> = emptyList()
+        private set
 
     // list of names from list of CategoryTotals
-    private var exNames: List<String> = emptyList()
-    private var inNames: List<String> = emptyList()
+    var exNames: List<String> = emptyList()
+        private set
+    var inNames: List<String> = emptyList()
+        private set
 
     // total from each list of CategoryTotals
     var exTotal: BigDecimal = BigDecimal("0.0")
+        private set
     var inTotal: BigDecimal = BigDecimal("0.0")
+        private set
 
     // formatted text that displays total
     var exTotText: String = ""
@@ -127,12 +130,9 @@ class ChartViewModel @ViewModelInject constructor(
         val inIvc = ItemViewChart(inCatTotals, income, inTotText, inColors, fCat, fCatName, fType)
 
         ivcList = mutableListOf(exIvc, inIvc)
-        adapter.submitList(ivcList)
+        adapter?.submitList(ivcList)
     }
 
-    /**
-     *  Transaction queries
-     */
     /**
      *  Tells Repository which CategoryTotals list to return depending on
      *  [fAccount] and [fDate] filters, account name [fAccountName],

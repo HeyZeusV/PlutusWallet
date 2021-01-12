@@ -39,6 +39,7 @@ class ChartFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        chartVM.adapter = ChartAdapter().apply { submitList(chartVM.ivcList) }
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chart, container, false)
         binding.lifecycleOwner = activity
@@ -90,16 +91,18 @@ class ChartFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        // checks if there has been a change in settings, updates changes, and updates list
-        if (sharedPref[Key.KEY_CHART_CHANGE, false]
-            && chartVM.adapter.currentList.size == 2
-        ) {
-            setVals = SettingsUtils.prepareSettingValues(sharedPref)
-            prepareTotalTexts()
-            chartVM.adapter.currentList[0].totalText = chartVM.exTotText
-            chartVM.adapter.currentList[1].totalText = chartVM.inTotText
-            chartVM.adapter.notifyDataSetChanged()
-            sharedPref[Key.KEY_CHART_CHANGE] = false
+        chartVM.adapter?.let {
+            // checks if there has been a change in settings, updates changes, and updates list
+            if (sharedPref[Key.KEY_CHART_CHANGE, false]
+                && it.currentList.size == 2
+            ) {
+                setVals = SettingsUtils.prepareSettingValues(sharedPref)
+                prepareTotalTexts()
+                it.currentList[0].totalText = chartVM.exTotText
+                it.currentList[1].totalText = chartVM.inTotText
+                it.notifyDataSetChanged()
+                sharedPref[Key.KEY_CHART_CHANGE] = false
+            }
         }
     }
 

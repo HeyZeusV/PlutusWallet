@@ -173,7 +173,7 @@ class FakeRepository(
             inCatList.add(tran.category)
         }
 
-        return listOf(exCatList, inCatList)
+        return listOf(exCatList.distinct(), inCatList.distinct())
     }
 
     private fun createCatTotals(listOfTranLists: MutableList<MutableList<Transaction>>)
@@ -185,8 +185,10 @@ class FakeRepository(
             for (tran: Transaction in list) {
                 total += tran.total
             }
-            val ct = CategoryTotals(list[0].category, total, list[0].type)
-            catTotals.add(ct)
+            if (list.isNotEmpty()) {
+                val ct = CategoryTotals(list[0].category, total, list[0].type)
+                catTotals.add(ct)
+            }
         }
         return catTotals
     }
@@ -251,7 +253,7 @@ class FakeRepository(
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Expense" && it.account == account &&
-                        it.date > start && it.date < end
+                        it.date >= start && it.date <= end
             }) {
                 listOfTran.add(tran)
             }
@@ -261,7 +263,7 @@ class FakeRepository(
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Income" && it.account == account &&
-                        it.date > start && it.date < end
+                        it.date >= start && it.date <= end
             }) {
                 listOfTran.add(tran)
             }
@@ -278,7 +280,7 @@ class FakeRepository(
         for (cat: String in catLists[0]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && it.date > start && it.date < end
+                it.category == cat && it.type == "Expense" && it.date >= start && it.date <= end
             }) {
                 listOfTran.add(tran)
             }
@@ -287,7 +289,7 @@ class FakeRepository(
         for (cat: String in catLists[1]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && it.date > start && it.date < end
+                it.category == cat && it.type == "Income" && it.date >= start && it.date <= end
             }) {
                 listOfTran.add(tran)
             }
@@ -331,7 +333,7 @@ class FakeRepository(
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.account == account && it.date > start && it.date < end
+            it.account == account && it.date >= start && it.date <= end
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -383,7 +385,7 @@ class FakeRepository(
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.account == account && it.type == type && it.date > start && it.date < end
+            it.account == account && it.type == type && it.date >= start && it.date <= end
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -405,7 +407,7 @@ class FakeRepository(
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             it.account == account && it.type == type && it.category == category &&
-                    it.date > start && it.date < end
+                    it.date >= start && it.date <= end
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -419,7 +421,7 @@ class FakeRepository(
     override fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.date > start && it.date < end }) {
+        for (tran: Transaction in tranList.filter { it.date in start..end }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
@@ -464,7 +466,7 @@ class FakeRepository(
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.type == type && it.category == category && it.date > start && it.date < end
+            it.type == type && it.category == category && it.date >= start && it.date <= end
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -483,7 +485,7 @@ class FakeRepository(
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.type == type  && it.date > start && it.date < end }) {
+            it.type == type  && it.date >= start && it.date <= end }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
