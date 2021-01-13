@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.data.TransactionRepository
+import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
@@ -21,11 +21,11 @@ private const val MIDNIGHT_MILLI = 86399999
  *  Data can survive configuration changes.
  */
 class FilterViewModel @ViewModelInject constructor(
-    private val tranRepo: TransactionRepository
+    private val tranRepo: Repository
 ) : ViewModel() {
 
     // translated "All"
-    var all = ""
+    var all = "All"
 
     // current Account selected and Account list
     val account: MutableLiveData<String> = MutableLiveData("None")
@@ -71,8 +71,8 @@ class FilterViewModel @ViewModelInject constructor(
             accList.value = tranRepo.getAccountNamesAsync()
 
             // Category by type data
-            val mExCatList: MutableList<String> = getCategoriesByTypeAsync("Expense")
-            val mInCatList: MutableList<String> = getCategoriesByTypeAsync("Income")
+            val mExCatList: MutableList<String> = tranRepo.getCategoryNamesByTypeAsync("Expense")
+            val mInCatList: MutableList<String> = tranRepo.getCategoryNamesByTypeAsync("Income")
             mExCatList.add(0, all)
             mInCatList.add(0, all)
             exCatList.value = mExCatList
@@ -165,18 +165,10 @@ class FilterViewModel @ViewModelInject constructor(
 
         // sets the startDate to very start of current day and endDate to right before the next day
         startDate.value = DateUtils.startOfDay(Date())
-        endDate.value = startDate.value
+        endDate.value = Date(startDate.value!!.time + MIDNIGHT_MILLI)
 
         // resets type Button and Spinner selections
         exCategory.value = all
         inCategory.value = all
-    }
-
-    /**
-     *  Category Queries
-     */
-    private suspend fun getCategoriesByTypeAsync(type: String): MutableList<String> {
-
-        return tranRepo.getCategoryNamesByTypeAsync(type)
     }
 }
