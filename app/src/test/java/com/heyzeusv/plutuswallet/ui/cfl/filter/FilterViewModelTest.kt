@@ -24,12 +24,17 @@ internal class FilterViewModelTest {
     // what is being tested
     private lateinit var filterVM: FilterViewModel
 
+    // dummy data
+    private lateinit var dd: DummyDataUtil
+
     @BeforeEach
     fun setUpViewModel() {
 
         // some function add/remove data, so want same data at start of every test.
+        dd = DummyDataUtil()
+
         // initialize fake repo with dummy data and pass it to ViewModel
-        repo = FakeRepository(DummyDataUtil.accList, DummyDataUtil.catList, DummyDataUtil.tranList)
+        repo = FakeRepository(dd.accList, dd.catList, dd.tranList)
         filterVM = FilterViewModel(repo)
     }
 
