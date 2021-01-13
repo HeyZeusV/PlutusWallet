@@ -1,11 +1,10 @@
-package com.heyzeusv.plutuswallet
+package com.heyzeusv.plutuswallet.data
 
 import androidx.room.migration.Migration
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
-import com.heyzeusv.plutuswallet.data.TransactionDatabase
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
