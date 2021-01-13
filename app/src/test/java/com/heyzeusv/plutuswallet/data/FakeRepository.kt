@@ -119,7 +119,7 @@ class FakeRepository(
     override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {
 
         val futureList: MutableList<Transaction> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.date < currentDate && !it.futureTCreated }) {
+        for (tran: Transaction in tranList.filter { it.date < currentDate && it.repeating && !it.futureTCreated }) {
             futureList.add(tran)
         }
 

@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.data.TransactionRepository
+import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
@@ -29,7 +29,7 @@ private const val INCOME = "Income"
  *  Data can survive configuration changes.
  */
 class TransactionListViewModel @ViewModelInject constructor(
-    private val tranRepo: TransactionRepository
+    private val tranRepo: Repository
 ) : ViewModel() {
 
     // true if there are more Transactions that repeat with futureDate before Date()
@@ -75,7 +75,7 @@ class TransactionListViewModel @ViewModelInject constructor(
      */
     suspend fun deleteTranPosFun(ivt: ItemViewTransaction) {
 
-        deleteTransaction(getTransactionAsync(ivt.id))
+        tranRepo.deleteTransaction(tranRepo.getTransactionAsync(ivt.id))
     }
 
     /**
@@ -85,7 +85,7 @@ class TransactionListViewModel @ViewModelInject constructor(
     fun initializeTables() {
 
         viewModelScope.launch {
-            val catSize: Int = getCategorySizeAsync()
+            val catSize: Int = tranRepo.getCategorySizeAsync()
 
             if (catSize == 0) {
                 val education = Category(0, "Education", EXPENSE)
@@ -106,14 +106,14 @@ class TransactionListViewModel @ViewModelInject constructor(
                     education, entertainment, food, home, transportation, utilities,
                     cryptocurrency, investments, salary, savings, stocks, wages
                 )
-                insertCategories(initialCategories)
+                tranRepo.insertCategories(initialCategories)
             }
 
-            val accSize: Int = getAccountSizeAsync()
+            val accSize: Int = tranRepo.getAccountSizeAsync()
 
             if (accSize == 0) {
                 val none = Account(0, "None")
-                insertAccount(none)
+                tranRepo.insertAccount(none)
             }
         }
     }
@@ -149,13 +149,13 @@ class TransactionListViewModel @ViewModelInject constructor(
             moreToCreate = false
             // returns list of all Transactions whose futureDate is before current date
             val futureTranList: MutableList<Transaction> =
-                getFutureTransactionsAsync(Date()).toMutableList()
+                tranRepo.getFutureTransactionsAsync(Date()).toMutableList()
 
             // return if empty
             if (futureTranList.isNotEmpty()) {
 
                 val ready: MutableList<Transaction> = tranUpsertAsync(futureTranList).await()
-                upsertTransactions(ready)
+                tranRepo.upsertTransactions(ready)
                 // recursive call in order to create Transactions until all futureDates are past Date()
                 if (moreToCreate) futureTransactions()
             }
@@ -230,35 +230,6 @@ class TransactionListViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  Account queries
-     */
-    private suspend fun getAccountSizeAsync(): Int {
-
-        return tranRepo.getAccountSizeAsync()
-    }
-
-    private suspend fun insertAccount(account: Account) {
-
-        tranRepo.insertAccount(account)
-    }
-
-    /**
-     *  Category queries
-     */
-    private suspend fun getCategorySizeAsync(): Int {
-
-        return tranRepo.getCategorySizeAsync()
-    }
-
-    private suspend fun insertCategories(categories: List<Category>) {
-
-        tranRepo.insertCategories(categories)
-    }
-
-    /**
-     *  Transaction queries
-     */
-    /**
      *  Returns LiveData of list of Transactions depending on [account]/[category]/[date] filters,
      *  [type] selected, [accountName]/[categoryName] selected, and [start]/[end] dates selected.
      */
@@ -289,25 +260,5 @@ class TransactionListViewModel @ViewModelInject constructor(
             date -> tranRepo.getLdIvtD(start, end)
             else -> tranRepo.getLdIvt()
         }
-    }
-
-    private suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {
-
-        return tranRepo.getFutureTransactionsAsync(currentDate)
-    }
-
-    private suspend fun getTransactionAsync(id: Int): Transaction {
-
-        return tranRepo.getTransactionAsync(id)
-    }
-
-    private suspend fun deleteTransaction(transaction: Transaction) {
-
-        tranRepo.deleteTransaction(transaction)
-    }
-
-    private suspend fun upsertTransactions(transactions: List<Transaction>) {
-
-        tranRepo.upsertTransactions(transactions)
     }
 }
