@@ -26,9 +26,9 @@ class SettingsActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        return if (item!!.itemId == android.R.id.home) {
+        return if (item.itemId == android.R.id.home) {
             // returns user to previous activity if they select back arrow
             onBackPressed()
             true

@@ -42,7 +42,7 @@ internal class FilterViewModelTest {
     @DisplayName("Should retrieve data to be displayed in Spinners from Database")
     fun prepareSpinners() {
 
-        val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card")
+        val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
         val expectedExCatList: MutableList<String> = mutableListOf("All", "Entertainment", "Food")
         val expectedInCatList: MutableList<String> = mutableListOf("All", "Salary")
 
