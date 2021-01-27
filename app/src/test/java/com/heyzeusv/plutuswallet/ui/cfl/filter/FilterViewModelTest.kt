@@ -1,6 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.cfl.filter
 
-import com.heyzeusv.plutuswallet.DummyDataUtil
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.TransactionInfo

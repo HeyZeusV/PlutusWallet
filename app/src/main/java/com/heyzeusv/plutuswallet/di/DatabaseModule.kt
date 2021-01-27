@@ -12,16 +12,30 @@ import com.heyzeusv.plutuswallet.data.daos.TransactionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
 import javax.inject.Singleton
+import kotlin.annotation.AnnotationRetention.RUNTIME
 
 /**
  *  Tells Hilt how to provide Database and DAOs.
  */
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 @Module
 object DatabaseModule {
+
+    @Qualifier
+    @Retention(RUNTIME)
+    annotation class TranDao
+
+    @Qualifier
+    @Retention(RUNTIME)
+    annotation class CatDao
+
+    @Qualifier
+    @Retention(RUNTIME)
+    annotation class AccDao
 
     @Provides
     @Singleton
@@ -36,20 +50,32 @@ object DatabaseModule {
             .build()
     }
 
+    @TranDao
     @Provides
     fun provideTranDao(database: TransactionDatabase): TransactionDao = database.transactionDao()
 
+    @CatDao
     @Provides
     fun provideCatDao(database: TransactionDatabase): CategoryDao = database.categoryDao()
 
+    @AccDao
     @Provides
     fun provideAccDao(database: TransactionDatabase): AccountDao = database.accountDao()
+}
 
+/**
+ * The binding for Repository is on its own module so that we can replace it easily in tests.
+ */
+@Module
+@InstallIn(SingletonComponent::class)
+object RepositoryModule {
+
+    @Singleton
     @Provides
     fun provideRepository(
-        accDao: AccountDao,
-        catDao: CategoryDao,
-        tranDao: TransactionDao
+        @DatabaseModule.AccDao accDao: AccountDao,
+        @DatabaseModule.CatDao catDao: CategoryDao,
+        @DatabaseModule.TranDao tranDao: TransactionDao
     ): Repository {
 
         return TransactionRepository(accDao, catDao, tranDao)

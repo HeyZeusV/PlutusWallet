@@ -21,6 +21,7 @@ import com.heyzeusv.plutuswallet.ui.base.BaseFragment
 import com.heyzeusv.plutuswallet.util.AlertDialogCreator
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.EventObserver
+import com.heyzeusv.plutuswallet.util.bindingadapters.setSelectedValue
 import java.util.Date
 
 /**
@@ -37,6 +38,11 @@ class TransactionFragment : BaseFragment() {
 
     // arguments from Navigation
     private val args: TransactionFragmentArgs by navArgs()
+
+    // used to record previously selected item
+    private var prevAcc = ""
+    private var prevExCat = ""
+    private var prevInCat = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +68,7 @@ class TransactionFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // setting up DataBinding
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction, container, false)
@@ -93,18 +99,24 @@ class TransactionFragment : BaseFragment() {
         tranVM.account.observe(viewLifecycleOwner, { account: String ->
             if (account == getString(R.string.account_create)) {
                 createNewDialog(binding.tranAccount, account, 0)
+            } else {
+                prevAcc = account
             }
         })
 
         tranVM.expenseCat.observe(viewLifecycleOwner, { category: String ->
             if (category == getString(R.string.category_create)) {
                 createNewDialog(binding.tranExpenseCat, category, 1)
+            } else {
+                prevExCat = category
             }
         })
 
         tranVM.incomeCat.observe(viewLifecycleOwner, { category: String ->
             if (category == getString(R.string.category_create)) {
                 createNewDialog(binding.tranIncomeCat, category, 1)
+            } else {
+                prevInCat = category
             }
         })
 
@@ -152,6 +164,13 @@ class TransactionFragment : BaseFragment() {
      */
     private fun createNewDialog(spinner: Spinner, title: String, type: Int) {
 
+        // determines which previous item string to use
+        val previous = when (spinner) {
+            binding.tranAccount -> prevAcc
+            binding.tranExpenseCat -> prevExCat
+            else -> prevInCat
+        }
+
         // inflates view that holds EditText
         val viewInflated: View = LayoutInflater.from(context)
             .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
@@ -159,9 +178,9 @@ class TransactionFragment : BaseFragment() {
         val input: EditText = viewInflated.findViewById(R.id.dialog_input)
 
         // Listeners
-        val cancelListener = DialogInterface.OnCancelListener { spinner.setSelection(0) }
+        val cancelListener = DialogInterface.OnCancelListener { spinner.setSelectedValue(previous) }
         val negListener = DialogInterface.OnClickListener { _, _ ->
-            spinner.setSelection(0)
+            spinner.setSelectedValue(previous)
         }
         val posListener = DialogInterface.OnClickListener { _, _ ->
             if (type == 0) {

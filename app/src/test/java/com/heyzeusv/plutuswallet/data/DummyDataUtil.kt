@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet
+package com.heyzeusv.plutuswallet.data
 
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category

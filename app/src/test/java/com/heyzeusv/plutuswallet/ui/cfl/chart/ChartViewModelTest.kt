@@ -1,13 +1,10 @@
 package com.heyzeusv.plutuswallet.ui.cfl.chart
 
 import androidx.lifecycle.LiveData
-import com.heyzeusv.plutuswallet.DummyDataUtil
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.data.FakeRepository
-import com.heyzeusv.plutuswallet.data.model.Account
-import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.Transaction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.BeforeEach

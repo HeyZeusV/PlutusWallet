@@ -30,7 +30,7 @@ class CFLFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_cfl, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -47,7 +47,7 @@ class CFLFragment : Fragment() {
             if (item.itemId == R.id.cfl_new_tran) {
                 // creates action with parameters
                 val action: NavDirections =
-                    CFLFragmentDirections.actionTransaction(-1, true)
+                    CFLFragmentDirections.actionTransaction()
                 findNavController().navigate(action)
                 // scroll back to top of list
                 cflVM.filterChanged = true

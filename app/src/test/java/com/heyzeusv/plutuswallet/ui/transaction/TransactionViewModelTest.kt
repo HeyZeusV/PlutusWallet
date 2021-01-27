@@ -1,7 +1,7 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
 import androidx.lifecycle.MutableLiveData
-import com.heyzeusv.plutuswallet.DummyDataUtil
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.FakeRepository
