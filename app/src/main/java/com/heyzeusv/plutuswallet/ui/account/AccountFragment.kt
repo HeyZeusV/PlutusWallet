@@ -39,7 +39,7 @@ class AccountFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         accountAdapter = AccountAdapter(accountVM)
         accountVM.accountAdapter = accountAdapter

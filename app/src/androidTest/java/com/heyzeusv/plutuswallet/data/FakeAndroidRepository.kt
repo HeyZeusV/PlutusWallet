@@ -19,6 +19,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     val catList: MutableList<Category> = dd.catList
     val tranList: MutableList<Transaction> = dd.tranList
 
+    private val accListLD = MutableLiveData<List<Account>>(accList)
+
     override suspend fun getAccountNamesAsync(): MutableList<String> {
 
         val accNames: MutableList<String> = mutableListOf()
@@ -37,21 +39,25 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     override suspend fun deleteAccount(account: Account) {
 
         accList.remove(account)
+        accListLD.value = accList.sortedBy { it.account }
     }
 
     override suspend fun insertAccount(account: Account) {
 
         accList.add(account)
+        accListLD.value = accList.sortedBy { it.account }
     }
 
     override suspend fun updateAccount(account: Account) {
 
         accList.replace(accList.find { it.id == account.id }!!, account)
+        accListLD.value = accList.sortedBy { it.account }
     }
 
     override fun getLDAccounts(): LiveData<List<Account>> {
 
-        return MutableLiveData(accList)
+        accListLD.value = accList.sortedBy { it.account }
+        return accListLD
     }
 
     override suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String> {
