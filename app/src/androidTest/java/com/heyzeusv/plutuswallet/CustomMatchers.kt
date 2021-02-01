@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.chip.ChipGroup
 import com.heyzeusv.plutuswallet.util.bindingadapters.getSelectedChipId
 import org.hamcrest.Description

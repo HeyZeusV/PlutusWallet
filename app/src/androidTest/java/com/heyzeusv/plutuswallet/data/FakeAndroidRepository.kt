@@ -19,7 +19,11 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     val catList: MutableList<Category> = dd.catList
     val tranList: MutableList<Transaction> = dd.tranList
 
-    private val accListLD = MutableLiveData<List<Account>>(accList)
+    private val accListLD = MutableLiveData(accList.sortedBy { it.account })
+    private val catExListLD =
+        MutableLiveData(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+    private val catInListLD =
+        MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.category })
 
     override suspend fun getAccountNamesAsync(): MutableList<String> {
 
@@ -78,30 +82,37 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     override suspend fun deleteCategory(category: Category) {
 
         catList.remove(category)
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
     }
 
     override suspend fun insertCategory(category: Category) {
 
         catList.add(category)
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
     }
 
     override suspend fun updateCategory(category: Category) {
 
         catList.replace(catList.find { it.id == category.id }!!, category)
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
     }
 
     override suspend fun insertCategories(categories: List<Category>) {
 
         catList.addAll(categories)
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
     }
 
     override fun getLDCategoriesByType(type: String): LiveData<List<Category>> {
 
-        val list: MutableList<Category> = mutableListOf()
-        for (cat: Category in catList.filter { it.type == type }) {
-            list.add(cat)
+        return when (type) {
+            "Expense" -> catExListLD
+            else -> catInListLD
         }
-        return MutableLiveData(list)
     }
 
     override suspend fun getDistinctAccountsAsync(): MutableList<String> {

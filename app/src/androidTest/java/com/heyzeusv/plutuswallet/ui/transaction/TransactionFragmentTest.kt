@@ -1,9 +1,8 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
-import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import android.widget.DatePicker
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -20,6 +19,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withSpinnerText
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import androidx.test.platform.app.InstrumentationRegistry
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chipSelected
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
@@ -57,13 +57,13 @@ class TransactionFragmentTest {
 
     val dd = DummyAndroidDataUtil()
 
-    // used to get string resources
-    private lateinit var context: Context
+    // used to get string resource
+    private val resource: Resources =
+        InstrumentationRegistry.getInstrumentation().targetContext.resources
 
     @Before
     fun init() {
 
-        context = ApplicationProvider.getApplicationContext()
         // populate @Inject fields in test class
         hiltRule.inject()
     }
@@ -163,8 +163,8 @@ class TransactionFragmentTest {
         val testInCat = "Test Income Category"
 
         // "Create New ..."
-        val createAcc: String = context.resources.getString(R.string.account_create)
-        val createCat: String = context.resources.getString(R.string.category_create)
+        val createAcc: String = resource.getString(R.string.account_create)
+        val createCat: String = resource.getString(R.string.category_create)
 
         // display blank Transaction
         launchFragmentInHiltContainer<TransactionFragment>(Bundle(), R.style.AppTheme)
@@ -204,8 +204,8 @@ class TransactionFragmentTest {
         }
 
         // "Create New ..."
-        val createAcc: String = context.resources.getString(R.string.account_create)
-        val createCat: String = context.resources.getString(R.string.category_create)
+        val createAcc: String = resource.getString(R.string.account_create)
+        val createCat: String = resource.getString(R.string.category_create)
 
         // display blank Transaction
         launchFragmentInHiltContainer<TransactionFragment>(Bundle(), R.style.AppTheme)
@@ -300,7 +300,7 @@ class TransactionFragmentTest {
         val totalTrans: Int = (repo as FakeAndroidRepository).tranList.size + 1
 
         // "Transaction"
-        val tran = context.resources.getString(R.string.transaction_empty_title)
+        val tran = resource.getString(R.string.transaction_empty_title)
 
         // display blank Transaction
         launchFragmentInHiltContainer<TransactionFragment>(Bundle(), R.style.AppTheme)

@@ -1,9 +1,8 @@
 package com.heyzeusv.plutuswallet.ui.account
 
-import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
@@ -45,22 +44,22 @@ class AccountFragmentTest {
 
     val dd = DummyAndroidDataUtil()
 
-    // used to get string resources
-    private lateinit var context: Context
+    // used to get string resource
+    private val resource: Resources =
+        InstrumentationRegistry.getInstrumentation().targetContext.resources
 
     @Before
     fun init() {
 
-        context = ApplicationProvider.getApplicationContext()
         // populate @Inject fields in test class
         hiltRule.inject()
+
+        // display Account list
+        launchFragmentInHiltContainer<AccountFragment>(Bundle(), R.style.AppTheme)
     }
 
     @Test
     fun displayAccounts() {
-
-        // display Account list
-        launchFragmentInHiltContainer<AccountFragment>(Bundle(), R.style.AppTheme)
 
         // check that all Accounts were loaded in
         onView(withId(R.id.account_rv)).check(matches(rvSize(4)))
@@ -78,28 +77,35 @@ class AccountFragmentTest {
     @Test
     fun createNewAccount() {
 
-        // name for newly created item
+        // name for newly created Account
         val testAcc = "New Test Account"
-
-        // display Account list
-        launchFragmentInHiltContainer<AccountFragment>(Bundle(), R.style.AppTheme)
 
         // create new Account and save it
         onView(withId(R.id.account_new)).perform(click())
         onView(withId(R.id.dialog_input)).perform(typeText(testAcc))
         onView(withId(android.R.id.button1)).perform(click())
 
-        // check that new Account exists and list remains sorted
+        // check that new Account exists and in correct location
         onView(withId(R.id.account_rv)).check(matches(rvSize(5)))
         onView(withId(R.id.account_rv))
             .check(matches(rvViewHolder(3, withText(testAcc), R.id.iva_name)))
     }
 
     @Test
-    fun deleteAccount() {
+    fun createNewAccountExists() {
 
-        // display Account list
-        launchFragmentInHiltContainer<AccountFragment>(Bundle(), R.style.AppTheme)
+        // create new Account and save it
+        onView(withId(R.id.account_new)).perform(click())
+        onView(withId(R.id.dialog_input)).perform(typeText(dd.acc1.account))
+        onView(withId(android.R.id.button1)).perform(click())
+
+        // check Snackbar appears warning user that Account exists
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.acc1.account))))
+    }
+
+    @Test
+    fun deleteAccount() {
 
         // click on delete Button in ViewHolder at position 3 in RecyclerView and confirm
         onView(withId(R.id.account_rv)).perform(RecyclerViewActions
@@ -114,42 +120,31 @@ class AccountFragmentTest {
     @Test
     fun editAccount() {
 
-        // new Account name
-        val newName = "Test Account"
-
-        // display Account list
-        launchFragmentInHiltContainer<AccountFragment>(Bundle(), R.style.AppTheme)
+        //  edited Account name
+        val editedName = "Test Account"
 
         // click on edit Button in ViewHolder at position 1 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.account_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.iva_edit)))
-        onView(withId(R.id.dialog_input)).perform(typeText(newName))
+        onView(withId(R.id.dialog_input)).perform(typeText(editedName))
         onView(withId(android.R.id.button1)).perform(click())
 
-        // check Account name has been edited and list has been correctly sorted
+        // check Account name has been edited and in correct location
         onView(withId(R.id.account_rv))
-            .check(matches(rvViewHolder(2, withText(newName), R.id.iva_name)))
+            .check(matches(rvViewHolder(2, withText(editedName), R.id.iva_name)))
     }
 
     @Test
     fun editAccountExists() {
 
-        // used to get string resource
-        val resource = InstrumentationRegistry.getInstrumentation().targetContext.resources
-        // Account name that exists
-        val existsName = "Cash"
-
-        // display Account list
-        launchFragmentInHiltContainer<AccountFragment>(Bundle(), R.style.AppTheme)
-
         // click on edit Button in ViewHolder at position 1 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.account_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.iva_edit)))
-        onView(withId(R.id.dialog_input)).perform(typeText(existsName))
+        onView(withId(R.id.dialog_input)).perform(typeText(dd.acc3.account))
         onView(withId(android.R.id.button1)).perform(click())
 
-        // check Snackbar appears warning user that Account exists and Account isn't changed
+        // check Snackbar appears warning user that Account exists
         onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(resource.getString(R.string.snackbar_exists, existsName))))
+            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.acc3.account))))
     }
 }
