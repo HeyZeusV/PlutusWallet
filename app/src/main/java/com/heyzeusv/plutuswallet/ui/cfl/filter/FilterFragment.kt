@@ -36,7 +36,7 @@ class FilterFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         filterVM.all = getString(R.string.category_all)
 

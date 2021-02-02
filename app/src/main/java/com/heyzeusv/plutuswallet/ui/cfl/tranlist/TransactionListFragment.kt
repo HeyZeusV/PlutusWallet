@@ -50,7 +50,7 @@ class TransactionListFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         listVM.setVals = setVals
         tranListAdapter = TranListAdapter(listVM)

@@ -24,6 +24,7 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         MutableLiveData(catList.filter { it.type == "Expense" }.sortedBy { it.category })
     private val catInListLD =
         MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.category })
+    private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
 
     override suspend fun getAccountNamesAsync(): MutableList<String> {
 
@@ -157,7 +158,11 @@ class FakeAndroidRepository @Inject constructor() : Repository {
 
     override suspend fun deleteTransaction(transaction: Transaction) {
 
+        val test = ivtListLD.value as MutableList
         tranList.remove(transaction)
+        test.removeIf { it.id == transaction.id }
+        ivtListLD.postValue(test)
+
     }
 
     override suspend fun upsertTransaction(transaction: Transaction) {
@@ -328,7 +333,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>> {
@@ -341,7 +347,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtAD(
@@ -360,7 +367,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>> {
@@ -373,7 +381,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtATC(
@@ -392,7 +401,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtATD(
@@ -412,7 +422,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtATCD(
@@ -434,7 +445,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> {
@@ -447,7 +459,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>> {
@@ -460,7 +473,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>> {
@@ -473,7 +487,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtTCD(
@@ -493,7 +508,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtTD(
@@ -511,6 +527,7 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 }

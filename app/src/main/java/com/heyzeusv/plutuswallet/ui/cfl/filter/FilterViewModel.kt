@@ -113,7 +113,7 @@ class FilterViewModel @ViewModelInject constructor(
      */
     fun endDateSelected(newDate: Date) {
 
-        endDate.value = newDate
+        endDate.value = Date(newDate.time + MIDNIGHT_MILLI)
     }
 
     /**

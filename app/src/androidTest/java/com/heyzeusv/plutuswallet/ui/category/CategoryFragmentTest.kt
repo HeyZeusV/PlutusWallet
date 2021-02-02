@@ -70,6 +70,9 @@ class CategoryFragmentTest {
         }
     }
 
+    /**
+     *  Unregister Idling Resource so it can be garbage collected and does not leak any memory.
+     */
     @After
     fun unregisterIdlingResource() {
 
@@ -79,14 +82,18 @@ class CategoryFragmentTest {
     @Test
     fun displayCategories() {
 
-        // check that both list of Categories loaded in
+        // check that expense list of Categories loaded in
         onView(withId(R.id.ivcl_rv)).check(matches(rvSize(2)))
-        // check that Expense Categories are sorted
+        // check that expense Categories are sorted
         onView(withId(R.id.ivcl_rv))
             .check(matches(rvViewHolder(0, withText(dd.cat2.category), R.id.ivcat_name)))
         onView(withId(R.id.ivcl_rv))
             .check(matches(rvViewHolder(1, withText(dd.cat1.category), R.id.ivcat_name)))
+
+        // swipe to income Categories
         onView(withId(R.id.category_vp)).perform(swipeLeft())
+
+        // check that income list of Categories loaded in
         onView(withId(R.id.ivcl_rv)).check(matches(rvSize(2)))
     }
 
@@ -240,6 +247,9 @@ class CategoryFragmentTest {
             .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat4.category))))
     }
 
+    /**
+     *  Registers IdlingResource for Viewpager2 by using [frag] View to obtain ViewPager2.
+     */
     private fun registerVP2IdlingResource(frag: Fragment) {
 
         val vp2: ViewPager2 = frag.view?.findViewById(R.id.category_vp)!!

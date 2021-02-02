@@ -46,16 +46,23 @@ class ChartViewModel @ViewModelInject constructor(
     var inTotText: String = ""
 
     /**
-     *  Splits [ctList] into 2 lists according to type and retrieves Category names.
+     *  Splits [ctList] into 2 lists depending on [category] and [type] filters
+     *  according to type and retrieves Category names.
      */
-    fun prepareLists(ctList: List<CategoryTotals>) {
+    fun prepareLists(ctList: List<CategoryTotals>, category: Boolean, type: String) {
 
         // CategoryTotals list by type
         val eCTs: MutableList<CategoryTotals> = mutableListOf()
         val iCTs: MutableList<CategoryTotals> = mutableListOf()
 
         // splits ctList into 2 lists according to type
-        ctList.forEach { if (it.type == "Expense") eCTs.add(it) else iCTs.add(it) }
+        when {
+            category && type == "Expense" ->
+                ctList.forEach { if (it.type == "Expense") eCTs.add(it) }
+            category && type == "Income" ->
+                ctList.forEach { if (it.type == "Income") iCTs.add(it) }
+            !category -> ctList.forEach { if (it.type == "Expense") eCTs.add(it) else iCTs.add(it) }
+        }
         exCatTotals = eCTs
         inCatTotals = iCTs
 

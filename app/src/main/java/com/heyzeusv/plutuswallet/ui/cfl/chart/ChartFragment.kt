@@ -37,7 +37,7 @@ class ChartFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         chartVM.adapter = ChartAdapter().apply { submitList(chartVM.ivcList) }
         // setting up DataBinding
@@ -73,7 +73,7 @@ class ChartFragment : BaseFragment() {
 
             ctLiveData.observe(viewLifecycleOwner, { ctList: List<CategoryTotals> ->
                 // prepares list of ItemViewCharts that will be used to create PieCharts
-                chartVM.prepareLists(ctList)
+                chartVM.prepareLists(ctList, tInfo.category, tInfo.type)
                 chartVM.prepareTotals(tInfo.category, tInfo.categoryName, tInfo.type)
                 prepareTotalTexts()
                 chartVM.prepareIvgAdapter(

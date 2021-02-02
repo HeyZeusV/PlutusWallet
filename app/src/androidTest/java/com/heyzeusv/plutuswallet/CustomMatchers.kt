@@ -1,13 +1,16 @@
 package com.heyzeusv.plutuswallet
 
 import android.view.View
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.viewpager2.widget.ViewPager2
+import com.github.mikephil.charting.charts.PieChart
 import com.google.android.material.chip.ChipGroup
 import com.heyzeusv.plutuswallet.util.bindingadapters.getSelectedChipId
 import org.hamcrest.Description
 import org.hamcrest.Matcher
+import org.hamcrest.TypeSafeMatcher
 
 /**
  *  CustomMatchers to be used with Espresso for testing
@@ -73,6 +76,90 @@ class CustomMatchers {
                     val viewHolder = rv.findViewHolderForAdapterPosition(pos)
                     val targetView = viewHolder?.itemView?.findViewById<View>(targetViewId)
                     return matcher.matches(targetView)
+                }
+            }
+        }
+
+        /**
+         *  Checks that [category] with sum of [total] exists in dataSet of PieChart.
+         */
+        fun chartEntry(category: String, total: Float): Matcher<View> {
+
+            return object : BoundedMatcher<View, PieChart>(PieChart::class.java) {
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("has entry with label $category and total of $total")
+                }
+
+                override fun matchesSafely(chart: PieChart): Boolean {
+
+                    for (i in 0 until chart.data.dataSet.entryCount) {
+
+                        val entry = chart.data.dataSet.getEntryForIndex(i)
+                        if (entry.label == category && entry.value == total) return true
+                    }
+                    return false
+                }
+            }
+        }
+
+        /**
+         *  Checks that PieChart has given [centerText].
+         */
+        fun chartText(centerText: String): Matcher<View> {
+
+            return object : BoundedMatcher<View, PieChart>(PieChart::class.java) {
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("with center text: $centerText")
+                }
+
+                override fun matchesSafely(chart: PieChart): Boolean {
+
+                    return chart.centerText == centerText
+                }
+            }
+        }
+
+        /**
+         *  Used when multiple Views have the same id. [matcher] will check View at [index].
+         */
+        fun withIndex(matcher: Matcher<View>, index: Int): Matcher<View> {
+
+            return object : TypeSafeMatcher<View>() {
+
+                var currentIndex = 0
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("with index: $index")
+                }
+
+                override fun matchesSafely(view: View): Boolean {
+
+                    return matcher.matches(view) && currentIndex++ == index
+                }
+            }
+        }
+
+        /**
+         *  Checks that TextView text is color of [colorId].
+         */
+        fun withTextColor(colorId: Int): Matcher<View> {
+
+            return object : BoundedMatcher<View, TextView>(TextView::class.java) {
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("with text color: $colorId")
+                }
+
+                override fun matchesSafely(tv: TextView): Boolean {
+
+                    val id = ContextCompat.getColor(tv.context, colorId)
+                    return tv.currentTextColor == id
                 }
             }
         }
