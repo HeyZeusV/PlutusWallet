@@ -85,4 +85,6 @@
     <string name="category_new">新たなカテゴリー</string>
     <string name="transaction_new">新規取引</string>
     <string name="transaction_save">トランザクションを保存</string>
+    <string name="transaction">トランザクション</string>
+    <string name="cfl_overview">概要概要</string>
 </resources>

@@ -85,4 +85,6 @@
     <string name="category_new">หมวดหมู่ใหม่</string>
     <string name="transaction_new">ธุรกรรมใหม่</string>
     <string name="transaction_save">บันทึกธุรกรรม</string>
+    <string name="transaction">การทำธุรกรรม</string>
+    <string name="cfl_overview">ภาพรวม</string>
 </resources>

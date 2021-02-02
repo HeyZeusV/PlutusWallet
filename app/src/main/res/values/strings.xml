@@ -96,4 +96,6 @@
     <string name="category_new">New Category</string>
     <string name="transaction_new">New Transaction</string>
     <string name="transaction_save">Save Transaction</string>
+    <string name="transaction">Transaction</string>
+    <string name="cfl_overview">Overview</string>
 </resources>

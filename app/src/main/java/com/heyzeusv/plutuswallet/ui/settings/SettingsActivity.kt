@@ -24,6 +24,7 @@ class SettingsActivity : BaseActivity() {
 
         // displays back button on ActionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = baseContext.getString(R.string.settings)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

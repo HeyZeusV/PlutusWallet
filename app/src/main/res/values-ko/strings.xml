@@ -85,4 +85,6 @@
     <string name="category_new">새 분류</string>
     <string name="transaction_new">새로운 거래</string>
     <string name="transaction_save">거래 저장</string>
+    <string name="transaction">트랜잭션</string>
+    <string name="cfl_overview">개요</string>
 </resources>

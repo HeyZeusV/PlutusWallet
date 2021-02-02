@@ -85,4 +85,6 @@
     <string name="category_new">Neue Kategorie</string>
     <string name="transaction_new">Neue Transaktion</string>
     <string name="transaction_save">Transaktion speichern</string>
+    <string name="transaction">Transaktion</string>
+    <string name="cfl_overview">Überblick</string>
 </resources>

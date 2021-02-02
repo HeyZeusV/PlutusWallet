@@ -85,4 +85,6 @@
     <string name="category_new">नई श्रेणी</string>
     <string name="transaction_new">नया लेन-देन</string>
     <string name="transaction_save">लेन-देन सहेजें</string>
+    <string name="transaction">लेन-देन</string>
+    <string name="cfl_overview">अवलोकन</string>
 </resources>
