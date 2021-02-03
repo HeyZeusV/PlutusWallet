@@ -14,7 +14,7 @@
             android:theme="@style/AppBarRipple">
 
             <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/account_topBar"
+                android:id="@+id/category_topBar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:title="@string/categories"

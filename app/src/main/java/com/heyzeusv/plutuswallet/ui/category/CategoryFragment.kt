@@ -42,7 +42,7 @@ class CategoryFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // initialize adapters here due to requiring ViewModel
         catListAdapter = CategoryListAdapter(catVM)
@@ -107,10 +107,10 @@ class CategoryFragment : BaseFragment() {
         })
 
         // navigates user back to CFLFragment
-        binding.accountTopBar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+        binding.categoryTopBar.setNavigationOnClickListener { requireActivity().onBackPressed() }
 
         // handles menu selection
-        binding.accountTopBar.setOnMenuItemClickListener { item: MenuItem ->
+        binding.categoryTopBar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.category_new) {
                 val category = Category(0, "", "Expense")
                 createDialog(

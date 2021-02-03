@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
+import javax.inject.Singleton
 
 
 /**
@@ -22,6 +23,7 @@ object TestAppModule {
 
     // will provide a SharedPreference that has been cleared of previous entries
     @Provides
+    @Singleton
     fun provideTestSharedPreference(@ApplicationContext appContext: Context): SharedPreferences {
 
         val sp = PreferenceManager.getDefaultSharedPreferences(appContext)
