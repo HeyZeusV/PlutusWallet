@@ -5,7 +5,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -13,7 +12,6 @@ import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.contrib.DrawerMatchers.isClosed
 import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
-import androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -31,9 +29,7 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
@@ -62,14 +58,42 @@ class SettingsActivityTest {
 
     val dd = DummyAndroidDataUtil()
 
+    // used to format strings
     private var totalFormatter = DecimalFormat()
-    private var dateFormatter = DateFormat.getDateInstance()
+    private var dateFormatter = DateFormat.getDateInstance(0)
 
+    // text color
     private var redId = android.R.color.holo_red_dark
     private var greenId = android.R.color.holo_green_dark
 
     private var currencySymbol = '$'
     private var currencySideLeft = true
+
+    // LanguageTitles in each language available in app other than English
+    private val german = LanguageTitles(
+        "Deutsche", "die Einstellungen", "Überblick",
+        "Transaktion", "Konten", "Kategorien", "Über"
+    )
+    private val spanish = LanguageTitles(
+        "Español (latinoamericano)", "Configuraciones", "Visión general",
+        "Transacción", "Cuentas", "Categorias", "Acerca de"
+    )
+    private val hindi = LanguageTitles(
+        "हिंदी", "समायोजन", "अवलोकन",
+        "लेन-देन", "हिसाब किताब", "श्रेणियाँ", "के बारे में"
+    )
+    private val japanese = LanguageTitles(
+        "日本語", "設定", "概要概要",
+        "トランザクション", "アカウント", "カテゴリー", "約"
+    )
+    private val korean = LanguageTitles(
+        "한국어", "설정", "개요",
+        "트랜잭션", "계정", "카테고리", "약"
+    )
+    private val thai = LanguageTitles(
+        "ไทย", "การตั้งค่า", "ภาพรวม", "การทำธุรกรรม",
+        "บัญชี", "หมวดหมู่", "เกี่ยวกับ"
+    )
 
     @Before
     fun init() {
@@ -99,7 +123,7 @@ class SettingsActivityTest {
     fun checkInitialSettings() {
 
         // default SettingsValues
-        updateFormatters(true,'.', ',', 0)
+        updateDecimalFormatter(true, '.', ',')
 
         // format date according to default Date format
         val formattedTranDate = dateFormatter.format(dd.tran3.date)
@@ -109,8 +133,6 @@ class SettingsActivityTest {
          *  '$' on left side, ',' used as thousands symbols, '.' used as decimal symbol,
          *  decimals allowed, full date is displayed, and English is language.
          */
-        // checks that the various default Settings are correctly display throughout app
-        // "$" on left side; "," as thousands symbol;
         onView(allOf(instanceOf(TextView::class.java),
             withParent(withId(R.id.cfl_topBar))))
             .check(matches(withText("Overview")))
@@ -137,50 +159,187 @@ class SettingsActivityTest {
     @Test
     fun changeSettingsRegardingTotal() {
 
+        // symbols that can be changed
+        var (currency, decimal, thousands) = arrayOf("€", "\"-\"", "\".\"")
+
+        // used so parameter name wouldn't be needed for using Boolean literals
+        val symbolLeft = true
+        val decimalPlace = true
+
+        // navigate to Settings, change symbols, then check ViewHolders and Transaction
         navigateToSettingsAndCheckTitle("Settings")
-        clickOnPreference(R.string.preferences_currency_symbol)
-        onView(withText("€")).perform(click())
         clickOnPreference(R.string.preferences_symbol_side)
-        clickOnPreference(R.string.preferences_decimal_symbol)
-        onView(withText("\"-\"")).perform(click())
-        clickOnPreference(R.string.preferences_thousands_symbol)
-        onView(withText("\".\"")).perform(click())
+        changeSymbols(currency, decimal, thousands, !symbolLeft, decimalPlace)
+        checkViewHoldersAndTranSymbol(!symbolLeft, currency, "2.000-32")
 
-        updateCurrency('€', false)
-        updateFormatters(true, '-', '.', 0)
+        // change values, navigate to Settings, change symbols, then check ViewHolders and Transaction
+        currency = "£"; decimal = "\"\u0020\""; thousands = "\"-\""
+        navigateToSettingsAndCheckTitle("Settings")
+        clickOnPreference(R.string.preferences_symbol_side)
+        changeSymbols(currency, decimal, thousands, symbolLeft, decimalPlace)
+        checkViewHoldersAndTranSymbol(symbolLeft, currency, "2-000 32")
 
-        Espresso.pressBack()
+        // change values, navigate to Settings, change symbols, then check ViewHolders and Transaction
+        currency = "¥"; decimal = "\",\""; thousands = "\"\u0020\""
+        navigateToSettingsAndCheckTitle("Settings")
+        changeSymbols(currency, decimal, thousands, symbolLeft, decimalPlace)
+        checkViewHoldersAndTranSymbol(symbolLeft, currency, "2 000,32")
 
-        Thread.sleep(3000)
+        // change values, navigate to Settings, change symbols, then check ViewHolders and Transaction
+        currency = "₹"; decimal = "\".\""; thousands = "\",\""
+        navigateToSettingsAndCheckTitle("Settings")
+        changeSymbols(currency, decimal, thousands, symbolLeft, decimalPlace)
+        checkViewHoldersAndTranSymbol(symbolLeft, currency, "2,000.32")
 
-        onView(withIndex(withId(R.id.ivt_layout), 2)).perform(click())
-        Thread.sleep(3000)
-        onView(withId(R.id.symbolLeftTextView)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.tran_total)).check(matches(withText("2.000-32")))
-        onView(withId(R.id.symbolRightTextView)).check(matches(isDisplayed()))
-        onView(withId(R.id.symbolRightTextView)).check(matches(withText("€")))
+        // change values, navigate to Settings, change symbols, then check ViewHolders and Transaction
+        currency = "₩"
+        navigateToSettingsAndCheckTitle("Settings")
+        clickOnPreference(R.string.preferences_number_decimal)
+        onView(withId(android.R.id.button1)).perform(click())
+        changeSymbols(currency, decimal, thousands, symbolLeft, !decimalPlace)
+        checkViewHoldersAndTranSymbol(symbolLeft, currency, "2,000")
 
-        Thread.sleep(4000)
+        // change values, navigate to Settings, change symbols, then check ViewHolders and Transaction
+        currency = "฿"
+        navigateToSettingsAndCheckTitle("Settings")
+        changeSymbols(currency, decimal, thousands, symbolLeft, !decimalPlace)
+        checkViewHoldersAndTranSymbol(symbolLeft, currency, "2,000")
+
+        // return to original settings
+        currency = "$"
+        navigateToSettingsAndCheckTitle("Settings")
+        clickOnPreference(R.string.preferences_number_decimal)
+        onView(withId(android.R.id.button1)).perform(click())
+        changeSymbols(currency, decimal, thousands, symbolLeft, decimalPlace)
     }
 
-    private fun clickOnPreference(prefName: Int) {
+    @Test
+    fun changeDateFormat() {
+
+        // set Decimal formatter to use default values
+        updateDecimalFormatter(true, '.', ',')
+
+        // change Date Format and check ViewHolders and Transaction button text
+        changeDateFormatAndCheckViewHoldersAndTran("April 19, 1993", 1)
+        changeDateFormatAndCheckViewHoldersAndTran("Apr 19, 1993", 2)
+        changeDateFormatAndCheckViewHoldersAndTran("4/19/93", 3)
+
+        // return to original settings
+        navigateToSettingsAndCheckTitle("Settings")
+        clickOnPreference(R.string.preferences_date_format)
+        onView(withText("Monday, April 19, 1993")).perform(click())
+        dateFormatter = DateFormat.getDateInstance(0)
+    }
+
+    @Test
+    fun changeLanguage() {
+
+        // navigate to SettingsFragment and check that app is in English
+        navigateToSettingsAndCheckTitle("Settings")
+        // change language and check titles of all Fragments in app
+        changeLanguageAndCheckTitles(german)
+        changeLanguageAndCheckTitles(spanish)
+        changeLanguageAndCheckTitles(hindi)
+        changeLanguageAndCheckTitles(japanese)
+        changeLanguageAndCheckTitles(korean)
+        changeLanguageAndCheckTitles(thai)
+
+        // return to original settings
+        clickOnPreference(R.string.preferences_language)
+        onView(withText("English")).perform(click())
+    }
+
+    @Test
+    fun swapThousandsDecimalSymbols() {
+
+        // navigate to Settings and select the same decimal symbol used for thousands
+        // accept the pop-up which causes the 2 settings to swap symbols
+        navigateToSettingsAndCheckTitle("Settings")
+        clickOnPreference(R.string.preferences_thousands_symbol)
+        onView(withText("\".\"")).perform(click())
+        onView(withId(android.R.id.button1)).perform(click())
+        updateDecimalFormatter(true, ',', '.')
+
+        // check ViewHolders and Transaction
+        checkViewHoldersAndTranSymbol(true, "$", "2.000,32")
+
+        // reset settings
+        navigateToSettingsAndCheckTitle("Settings")
+        clickOnPreference(R.string.preferences_decimal_symbol)
+        onView(withText("\".\"")).perform(click())
+        onView(withId(android.R.id.button1)).perform(click())
+        updateDecimalFormatter(true, '.', ',')
+    }
+
+    /**
+     *  Helper function for changeSettingsRegardingTotal() test. Changes symbol settings according
+     *  to [currency], [decimal], and [thousands]. Updates currency variables and formatters
+     *  using above values in addition to [symbolLeft] and [decimalPlace].
+     */
+    private fun changeSymbols(
+        currency: String,
+        decimal: String,
+        thousands: String,
+        symbolLeft: Boolean,
+        decimalPlace: Boolean
+    ) {
+
+        // converts string to char
+        val decimalChar = when (decimal) {
+            "\",\"" -> ','
+            "\".\"" -> '.'
+            "\"-\"" -> '-'
+            else -> ' '
+        }
+        val thousandsChar = when (thousands) {
+            "\",\"" -> ','
+            "\".\"" -> '.'
+            "\"-\"" -> '-'
+            else -> ' '
+        }
+
+        // change settings
+        clickOnPreference(R.string.preferences_currency_symbol)
+        onView(withText(currency)).perform(click())
+        if (decimalPlace) {
+            clickOnPreference(R.string.preferences_decimal_symbol)
+            onView(withText(decimal)).perform(click())
+        }
+        clickOnPreference(R.string.preferences_thousands_symbol)
+        onView(withText(thousands)).perform(click())
+
+        // update variables and formatters
+        updateCurrency(currency.single(), symbolLeft)
+        updateDecimalFormatter(decimalPlace, decimalChar, thousandsChar)
+    }
+
+    /**
+     *  Clicks on Preference with given [prefId]
+     */
+    private fun clickOnPreference(prefId: Int) {
 
         onView(withId(androidx.preference.R.id.recycler_view))
             .perform(actionOnItem<RecyclerView.ViewHolder>(
-                hasDescendant(withText(prefName)), click()))
+                hasDescendant(withText(prefId)), click()))
     }
 
+    /**
+     *  Updates currency Global variables with [symbol] and [symbolLeft].
+     */
     private fun updateCurrency(symbol: Char, symbolLeft: Boolean) {
 
         currencySymbol = symbol
         currencySideLeft = symbolLeft
     }
 
-    private fun updateFormatters(
+    /**
+     *  Updates Decimal formatter using [decimal], [decimalSymbol], and [thousandsSymbol].
+     */
+    private fun updateDecimalFormatter(
         decimal: Boolean,
         decimalSymbol: Char,
-        thousandsSymbol: Char,
-        dateStyle: Int) {
+        thousandsSymbol: Char
+    ) {
 
         val customSymbols = DecimalFormatSymbols(Locale.US)
         customSymbols.decimalSeparator = decimalSymbol
@@ -190,18 +349,13 @@ class SettingsActivityTest {
             else -> DecimalFormat("#,##0", customSymbols)
         }
         totalFormatter.roundingMode = RoundingMode.HALF_UP
-
-        dateFormatter = DateFormat.getDateInstance(dateStyle)
     }
+
     /**
      *  Checks that ViewHolder at [pos] in RecyclerView is displaying the correct [tran] details,
      *  as well as the [color] of Total text.
      */
-    private fun checkTranViewHolder(
-        pos: Int,
-        tran: Transaction,
-        color: Int,
-    ) {
+    private fun checkTranViewHolder(pos: Int, tran: Transaction, color: Int) {
 
         // Date to be shown in ItemView
         val formattedDate: String = dateFormatter.format(tran.date)
@@ -224,6 +378,20 @@ class SettingsActivityTest {
             .check(matches(rvViewHolder(pos, withText(tran.category), R.id.ivt_category)))
     }
 
+    /**
+     *  Checks that all ViewHolders are displaying correct information.
+     */
+    private fun checkAllTranViewHolders() {
+
+        checkTranViewHolder(0, dd.tran1, redId)
+        checkTranViewHolder(1, dd.tran2, redId)
+        checkTranViewHolder(2, dd.tran3, greenId)
+        checkTranViewHolder(3, dd.tran4, redId)
+    }
+
+    /**
+     *  Navigates to SettingFragment from CFLFragment and checks that title in TopBar is [title].
+     */
     private fun navigateToSettingsAndCheckTitle(title: String) {
 
         // opens drawer and navigates to SettingsFragment
@@ -237,8 +405,13 @@ class SettingsActivityTest {
             .check(matches(withText(title)))
     }
 
+    /**
+     *  Navigates to fragment in Drawer using [actionId] from CFLFragment.
+     *  Uses [topBarId] to check that TopBar has title of [title].
+     */
     private fun navigateToFragAndCheckTitle(actionId: Int, topBarId: Int, title: String) {
 
+        // open drawer and select item with actionId and check title]
         onView(withId(R.id.activity_drawer))
             .check(matches(isClosed(Gravity.LEFT))).perform(DrawerActions.open())
         onView(withId(R.id.activity_nav_view))
@@ -246,6 +419,131 @@ class SettingsActivityTest {
         onView(allOf(instanceOf(TextView::class.java),
             withParent(withId(topBarId))))
             .check(matches(withText(title)))
+        // hate to do this, but AboutFragment needs a slight delay before pressing back works
+        // correctly, especially in changeLanguage() test
+        if (topBarId == R.id.about_topBar) Thread.sleep(500)
         Espresso.pressBack()
     }
+
+    /**
+     *  Navigates to all Fragments within app other than SettingsFragment and checks their title
+     *  to ensure it matches correctly with provided titles.
+     */
+    private fun navigateToFragsAndCheckTitles(
+        cflTitle: String,
+        tranTitle: String,
+        accTitle: String,
+        catTitle: String,
+        aboutTitle: String,
+    ) {
+
+        // checks CFLFragment titles
+        onView(allOf(instanceOf(TextView::class.java),
+            withParent(withId(R.id.cfl_topBar))))
+            .check(matches(withText(cflTitle)))
+
+        // navigates to TransactionFragment and checks title
+        onView(withId(R.id.cfl_new_tran)).perform(click())
+        onView(allOf(instanceOf(TextView::class.java),
+            withParent(withId(R.id.tran_topBar))))
+            .check(matches(withText(tranTitle)))
+        Espresso.pressBack()
+
+        // navigates to other fragments using above function and checks title
+        navigateToFragAndCheckTitle(R.id.accountFragment, R.id.account_topBar, accTitle)
+        navigateToFragAndCheckTitle(R.id.categoryFragment, R.id.category_topBar, catTitle)
+        navigateToFragAndCheckTitle(R.id.aboutFragment, R.id.about_topBar, aboutTitle)
+    }
+
+    /**
+     *  Helper function for changeSettingsRegardingTotal() test. Leaves SettingsFragment, then
+     *  checks ViewHolders, then navigates to TransactionFragment to check if [symbolLeft] side
+     *  with [currency] symbol, and if [total] has correct symbols. Returns to CFLFragment.
+     */
+    private fun checkViewHoldersAndTranSymbol(symbolLeft: Boolean, currency: String, total: String) {
+
+        Espresso.pressBack()
+        checkAllTranViewHolders()
+        checkTransactionSymbols(symbolLeft, currency, total)
+        Espresso.pressBack()
+    }
+
+    /**
+     *  Clicks on third entry in TransactionList. Checks that [total] has correct symbols.
+     *  Checks that correct views are visible depending on [symbolLeft]
+     *  and with correct [currency] symbol.
+     */
+    private fun checkTransactionSymbols(symbolLeft: Boolean, currency: String, total: String) {
+
+        onView(withIndex(withId(R.id.ivt_layout), 2)).perform(click())
+        onView(withId(R.id.tran_total)).check(matches(withText(total)))
+        if (symbolLeft) {
+            onView(withId(R.id.symbolLeftTextView)).check(matches(isDisplayed()))
+            onView(withId(R.id.symbolLeftTextView)).check(matches(withText(currency)))
+            onView(withId(R.id.symbolRightTextView)).check(matches(not(isDisplayed())))
+        } else {
+            onView(withId(R.id.symbolLeftTextView)).check(matches(not(isDisplayed())))
+            onView(withId(R.id.symbolRightTextView)).check(matches(isDisplayed()))
+            onView(withId(R.id.symbolRightTextView)).check(matches(withText(currency)))
+        }
+    }
+
+    /**
+     *  Helper function for changeDateFormat() test. Navigates to SettingsFragment and change
+     *  DateFormat setting to [dateFormat] style with [dateStyle] representing its code in
+     *  [DateFormat] class.
+     */
+    private fun changeDateFormatAndCheckViewHoldersAndTran(dateFormat: String, dateStyle: Int) {
+
+        // navigate to SettingsFragment and check Date Format setting
+        navigateToSettingsAndCheckTitle("Settings")
+        clickOnPreference(R.string.preferences_date_format)
+        onView(withText(dateFormat)).perform(click())
+        // update DateFormatter
+        dateFormatter = DateFormat.getDateInstance(dateStyle)
+
+        // navigate back to CFLFragment
+        Espresso.pressBack()
+        // check all ViewHolder display correct info
+        checkAllTranViewHolders()
+
+        // navigate to TransactionFragment and check Date button text
+        onView(withIndex(withId(R.id.ivt_layout), 2)).perform(click())
+        onView(withId(R.id.tran_date)).check(matches(withText(dateFormatter.format(dd.tran3.date))))
+        // navigate back to CFLFragment
+        Espresso.pressBack()
+    }
+
+    /**
+     *  Helper function for changeLanguage() test. Changes selected language then goes through
+     *  all Fragments within app and checks their titles using [language].
+     */
+    private fun changeLanguageAndCheckTitles(language: LanguageTitles) {
+
+        // change language setting
+        clickOnPreference(R.string.preferences_language)
+        onView(withText(language.language)).perform(click())
+        Espresso.pressBack()
+
+        // check each fragment and their titles
+        navigateToFragsAndCheckTitles(
+            language.cflTitle, language.tranTitle, language.accTitle,
+            language.catTitle, language.aboutTitle
+        )
+        // navigate back to settings and check title
+        navigateToSettingsAndCheckTitle(language.settingsTitle)
+    }
 }
+
+/**
+ *  Data class holding translated Fragment title strings and the [language] itself.
+ */
+data class LanguageTitles(
+    val language: String,
+    val settingsTitle: String,
+    val cflTitle: String,
+    val tranTitle: String,
+    val accTitle: String,
+    val catTitle: String,
+    val aboutTitle: String
+)

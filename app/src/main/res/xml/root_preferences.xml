@@ -60,7 +60,7 @@
         app:entryValues="@array/date_format_key_array"
         app:iconSpaceReserved="false"
         app:key="key_date_format"
-        app:title="Date Format"
+        app:title="@string/preferences_date_format"
         app:useSimpleSummaryProvider="true" />
 
     <ListPreference

@@ -46,6 +46,7 @@
     <string name="period_weeks">Weeks</string>
     <string name="period_years">Years</string>
     <string name="preferences_currency_symbol">Currency Symbol</string>
+    <string name="preferences_date_format">Date Format</string>
     <string name="preferences_date_full">Monday, April 19, 1993</string>
     <string name="preferences_date_long">April 19, 1993</string>
     <string name="preferences_date_medium">Apr 19, 1993</string>
