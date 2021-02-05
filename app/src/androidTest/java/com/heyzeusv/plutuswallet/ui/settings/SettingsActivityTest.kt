@@ -4,13 +4,13 @@ import android.view.Gravity
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.DrawerActions
+import androidx.test.espresso.contrib.DrawerActions.open
 import androidx.test.espresso.contrib.DrawerMatchers.isClosed
-import androidx.test.espresso.contrib.NavigationViewActions
+import androidx.test.espresso.contrib.NavigationViewActions.navigateTo
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -44,6 +44,8 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 /**
+ *  All tests start on [MainActivity] since starting on [SettingsActivity] and pressing back
+ *  will close the app rather than going to [MainActivity].
  *  Test device should have default language of English!
  */
 @RunWith(AndroidJUnit4::class)
@@ -149,7 +151,7 @@ class SettingsActivityTest {
         onView(withId(R.id.symbolLeftTextView)).check(matches(withText("$")))
         onView(withId(R.id.tran_total)).check(matches(withText("2,000.32")))
         onView(withId(R.id.symbolRightTextView)).check(matches(not(isDisplayed())))
-        Espresso.pressBack()
+        pressBack()
         navigateToFragAndCheckTitle(R.id.accountFragment, R.id.account_topBar, "Accounts")
         navigateToFragAndCheckTitle(R.id.categoryFragment, R.id.category_topBar, "Categories")
         navigateToFragAndCheckTitle(R.id.aboutFragment, R.id.about_topBar, "About")
@@ -396,9 +398,9 @@ class SettingsActivityTest {
 
         // opens drawer and navigates to SettingsFragment
         onView(withId(R.id.activity_drawer))
-            .check(matches(isClosed(Gravity.LEFT))).perform(DrawerActions.open())
+            .check(matches(isClosed(Gravity.LEFT))).perform(open())
         onView(withId(R.id.activity_nav_view))
-            .perform(NavigationViewActions.navigateTo(R.id.actionSettings))
+            .perform(navigateTo(R.id.actionSettings))
         // check to make sure it did navigate to SettingsFragment
         onView(allOf(instanceOf(TextView::class.java),
             withParent(withResourceName("action_bar"))))
@@ -411,18 +413,18 @@ class SettingsActivityTest {
      */
     private fun navigateToFragAndCheckTitle(actionId: Int, topBarId: Int, title: String) {
 
-        // open drawer and select item with actionId and check title]
+        // open drawer and select item with actionId and check title
         onView(withId(R.id.activity_drawer))
-            .check(matches(isClosed(Gravity.LEFT))).perform(DrawerActions.open())
+            .check(matches(isClosed(Gravity.LEFT))).perform(open())
         onView(withId(R.id.activity_nav_view))
-            .perform(NavigationViewActions.navigateTo(actionId))
+            .perform(navigateTo(actionId))
         onView(allOf(instanceOf(TextView::class.java),
             withParent(withId(topBarId))))
             .check(matches(withText(title)))
         // hate to do this, but AboutFragment needs a slight delay before pressing back works
         // correctly, especially in changeLanguage() test
         if (topBarId == R.id.about_topBar) Thread.sleep(500)
-        Espresso.pressBack()
+        pressBack()
     }
 
     /**
@@ -447,7 +449,7 @@ class SettingsActivityTest {
         onView(allOf(instanceOf(TextView::class.java),
             withParent(withId(R.id.tran_topBar))))
             .check(matches(withText(tranTitle)))
-        Espresso.pressBack()
+        pressBack()
 
         // navigates to other fragments using above function and checks title
         navigateToFragAndCheckTitle(R.id.accountFragment, R.id.account_topBar, accTitle)
@@ -462,10 +464,10 @@ class SettingsActivityTest {
      */
     private fun checkViewHoldersAndTranSymbol(symbolLeft: Boolean, currency: String, total: String) {
 
-        Espresso.pressBack()
+        pressBack()
         checkAllTranViewHolders()
         checkTransactionSymbols(symbolLeft, currency, total)
-        Espresso.pressBack()
+        pressBack()
     }
 
     /**
@@ -503,7 +505,7 @@ class SettingsActivityTest {
         dateFormatter = DateFormat.getDateInstance(dateStyle)
 
         // navigate back to CFLFragment
-        Espresso.pressBack()
+        pressBack()
         // check all ViewHolder display correct info
         checkAllTranViewHolders()
 
@@ -511,7 +513,7 @@ class SettingsActivityTest {
         onView(withIndex(withId(R.id.ivt_layout), 2)).perform(click())
         onView(withId(R.id.tran_date)).check(matches(withText(dateFormatter.format(dd.tran3.date))))
         // navigate back to CFLFragment
-        Espresso.pressBack()
+        pressBack()
     }
 
     /**
@@ -523,7 +525,7 @@ class SettingsActivityTest {
         // change language setting
         clickOnPreference(R.string.preferences_language)
         onView(withText(language.language)).perform(click())
-        Espresso.pressBack()
+        pressBack()
 
         // check each fragment and their titles
         navigateToFragsAndCheckTitles(

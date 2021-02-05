@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
+        android:id="@+id/cfl_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -20,6 +21,7 @@
                 app:title="@string/cfl_overview"
                 app:menu="@menu/cfl_menu"
                 app:navigationIcon="@drawable/ic_baseline_menu_24"
+                app:navigationContentDescription="@string/cfl_drawer_description"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
         </com.google.android.material.appbar.AppBarLayout>
 
