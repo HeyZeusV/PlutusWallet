@@ -2,6 +2,7 @@ package com.heyzeusv.plutuswallet.ui.cfl.tranlist
 
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
+import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
@@ -18,7 +19,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class)
+@ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
 internal class TransactionListViewModelTest {
 
     // test Fake

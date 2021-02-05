@@ -32,6 +32,7 @@
                 app:title="@string/transaction"
                 app:menu="@menu/transaction_menu"
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:navigationContentDescription="@string/navigate_back"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
         </com.google.android.material.appbar.AppBarLayout>
 

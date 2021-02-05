@@ -89,4 +89,5 @@
     <string name="cfl_overview">개요</string>
     <string name="preferences_date_format">날짜 형식</string>
     <string name="cfl_drawer_description">탐색 창 열기</string>
+    <string name="navigate_back">뒤로 탐색</string>
 </resources>

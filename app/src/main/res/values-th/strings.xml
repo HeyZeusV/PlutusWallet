@@ -89,4 +89,5 @@
     <string name="cfl_overview">ภาพรวม</string>
     <string name="preferences_date_format">รูปแบบวันที่</string>
     <string name="cfl_drawer_description">เปิด Navigation Drawer</string>
+    <string name="navigate_back">นำทางย้อนกลับ</string>
 </resources>

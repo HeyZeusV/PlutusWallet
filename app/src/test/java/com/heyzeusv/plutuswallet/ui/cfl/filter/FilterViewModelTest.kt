@@ -2,6 +2,7 @@ package com.heyzeusv.plutuswallet.ui.cfl.filter
 
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
+import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.util.Date
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class)
+@ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
 internal class FilterViewModelTest {
 
     // test Fake
@@ -88,7 +89,7 @@ internal class FilterViewModelTest {
 
         filterVM.endDateSelected(Date(1000))
 
-        assertEquals(Date(1000), filterVM.endDate.value)
+        assertEquals(Date(1000 + 86399999), filterVM.endDate.value)
     }
 
     @Test

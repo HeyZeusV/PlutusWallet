@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet.ui.cfl.chart
 import androidx.lifecycle.LiveData
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
+import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,7 +16,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class)
+@ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
 internal class ChartViewModelTest {
 
     // test Fake
@@ -42,6 +43,9 @@ internal class ChartViewModelTest {
     @DisplayName("Should split CategoryTotal list into 2 by type and retrieve Category Names")
     fun prepareLists() {
 
+        val emptyCtList: List<CategoryTotals> = emptyList()
+        val emptyNameList: List<String> = emptyList()
+
         val expectedExCt: List<CategoryTotals> = listOf(
             CategoryTotals("Food", BigDecimal("1100.10"), "Expense"),
             CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense")
@@ -52,15 +56,32 @@ internal class ChartViewModelTest {
         val expectedExNames: List<String> = listOf("Food", "Entertainment")
         val expectedInNames: List<String> = listOf("Salary")
 
-        // no filter
+        // retrieve all
         val ctList: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
             fAccount = false, fDate = false, "", Date(0), Date(0)
         )
-        chartVM.prepareLists(ctList.value!!)
+        // no filter
+        chartVM.prepareLists(ctList.value!!, false, "")
 
         assertEquals(expectedExCt, chartVM.exCatTotals)
         assertEquals(expectedInCt, chartVM.inCatTotals)
         assertEquals(expectedExNames, chartVM.exNames)
+        assertEquals(expectedInNames, chartVM.inNames)
+
+        // expense filter
+        chartVM.prepareLists(ctList.value!!, true, "Expense")
+
+        assertEquals(expectedExCt, chartVM.exCatTotals)
+        assertEquals(emptyCtList, chartVM.inCatTotals)
+        assertEquals(expectedExNames, chartVM.exNames)
+        assertEquals(emptyNameList, chartVM.inNames)
+
+        // income filter
+        chartVM.prepareLists(ctList.value!!, true, "Income")
+
+        assertEquals(emptyCtList, chartVM.exCatTotals)
+        assertEquals(expectedInCt, chartVM.inCatTotals)
+        assertEquals(emptyNameList, chartVM.exNames)
         assertEquals(expectedInNames, chartVM.inNames)
     }
 
@@ -78,7 +99,7 @@ internal class ChartViewModelTest {
         val ctList: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
             fAccount = false, fDate = false, "", Date(0), Date(0)
         )
-        chartVM.prepareLists(ctList.value!!)
+        chartVM.prepareLists(ctList.value!!, false, "")
 
         // All expense categories
         chartVM.prepareTotals(true, "All", "Expense")

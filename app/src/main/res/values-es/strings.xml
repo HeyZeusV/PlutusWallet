@@ -89,4 +89,5 @@
     <string name="cfl_overview">Visión general</string>
     <string name="preferences_date_format">Formato de fecha</string>
     <string name="cfl_drawer_description">Abrir cajón de navegación</string>
+    <string name="navigate_back">Navegar hacia atrás</string>
 </resources>

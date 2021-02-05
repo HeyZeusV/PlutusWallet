@@ -47,7 +47,7 @@ class ChartViewModel @ViewModelInject constructor(
 
     /**
      *  Splits [ctList] into 2 lists depending on [category] and [type] filters
-     *  according to type and retrieves Category names.
+     *  and retrieves Category names.
      */
     fun prepareLists(ctList: List<CategoryTotals>, category: Boolean, type: String) {
 
