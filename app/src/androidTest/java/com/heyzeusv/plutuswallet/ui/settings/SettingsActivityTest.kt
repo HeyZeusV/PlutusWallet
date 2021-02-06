@@ -24,7 +24,7 @@ import com.heyzeusv.plutuswallet.CustomMatchers.Companion.rvViewHolder
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withIndex
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withTextColor
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -58,7 +58,7 @@ class SettingsActivityTest {
 
     private lateinit var activityScenario: ActivityScenario<MainActivity>
 
-    val dd = DummyAndroidDataUtil()
+    val dd = DummyDataUtil()
 
     // used to format strings
     private var totalFormatter = DecimalFormat()

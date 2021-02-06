@@ -18,7 +18,7 @@ import com.heyzeusv.plutuswallet.CustomActions.Companion.rvViewClick
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.rvSize
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.rvViewHolder
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -42,7 +42,7 @@ class AccountFragmentTest {
     @Inject
     lateinit var repo: Repository
 
-    val dd = DummyAndroidDataUtil()
+    val dd = DummyDataUtil()
 
     // used to get string resource
     private val resource: Resources =

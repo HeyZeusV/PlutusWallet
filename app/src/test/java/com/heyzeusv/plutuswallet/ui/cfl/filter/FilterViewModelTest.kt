@@ -1,8 +1,8 @@
 package com.heyzeusv.plutuswallet.ui.cfl.filter
 
-import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
@@ -20,22 +20,16 @@ import java.util.Date
 internal class FilterViewModelTest {
 
     // test Fake
-    private lateinit var repo: FakeRepository
+    private val repo = FakeRepository()
 
     // what is being tested
     private lateinit var filterVM: FilterViewModel
 
-    // dummy data
-    private lateinit var dd: DummyDataUtil
-
     @BeforeEach
     fun setUpViewModel() {
 
-        // some function add/remove data, so want same data at start of every test.
-        dd = DummyDataUtil()
-
-        // initialize fake repo with dummy data and pass it to ViewModel
-        repo = FakeRepository(dd.accList, dd.catList, dd.tranList)
+        // reset fake repo with dummy data and pass it to ViewModel
+        repo.resetLists()
         filterVM = FilterViewModel(repo)
     }
 
@@ -45,7 +39,7 @@ internal class FilterViewModelTest {
 
         val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
         val expectedExCatList: MutableList<String> = mutableListOf("All", "Entertainment", "Food")
-        val expectedInCatList: MutableList<String> = mutableListOf("All", "Salary")
+        val expectedInCatList: MutableList<String> = mutableListOf("All", "Salary", "Zelle")
 
         filterVM.prepareSpinners()
 

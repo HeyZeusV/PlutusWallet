@@ -32,7 +32,7 @@ import com.heyzeusv.plutuswallet.CustomMatchers.Companion.rvViewHolder
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withIndex
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withTextColor
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.launchFragmentInHiltContainer
@@ -68,7 +68,7 @@ class CFLFragmentTest {
     @Inject
     lateinit var repo: Repository
 
-    val dd = DummyAndroidDataUtil()
+    val dd = DummyDataUtil()
 
     private var totalFormatter: DecimalFormat = initTotalFormatter()
 

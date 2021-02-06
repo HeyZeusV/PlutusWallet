@@ -1,8 +1,8 @@
 package com.heyzeusv.plutuswallet.ui.account
 
-import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.util.Event
@@ -19,22 +19,19 @@ import org.junit.jupiter.api.extension.ExtendWith
 internal class AccountViewModelTest {
 
     // test Fake
-    private lateinit var repo: FakeRepository
+    private val repo = FakeRepository()
 
     // What is being tested
     private lateinit var accVM: AccountViewModel
 
     // dummy data
-    private lateinit var dd: DummyDataUtil
+    private val dd = DummyDataUtil()
 
     @BeforeEach
     fun setUpViewModel() {
 
-        // some function add/remove data, so want same data at start of every test.
-        dd = DummyDataUtil()
-
-        // initialize fake repo with dummy data and pass it to ViewModel
-        repo = FakeRepository(dd.accList, dd.catList, dd.tranList)
+        // reset fake repo with dummy data and pass it to ViewModel
+        repo.resetLists()
         accVM = AccountViewModel(repo)
     }
 

@@ -1,8 +1,8 @@
 package com.heyzeusv.plutuswallet.ui.category
 
-import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.util.Event
@@ -19,22 +19,19 @@ import org.junit.jupiter.api.extension.ExtendWith
 internal class CategoryViewModelTest {
 
     // test Fake
-    private lateinit var repo: FakeRepository
+    private val repo = FakeRepository()
 
     // what is being tested
     private lateinit var catVM: CategoryViewModel
 
     // dummy data
-    private lateinit var dd: DummyDataUtil
+    private val dd = DummyDataUtil()
 
     @BeforeEach
     fun setUpViewModel() {
 
-        // some function add/remove data, so want same data at start of every test.
-        dd = DummyDataUtil()
-
-        // initialize fake repo with dummy data and pass it to ViewModel
-        repo = FakeRepository(dd.accList, dd.catList, dd.tranList)
+        // reset fake repo with dummy data and pass it to ViewModel
+        repo.resetLists()
         catVM = CategoryViewModel(repo)
     }
 
@@ -68,7 +65,7 @@ internal class CategoryViewModelTest {
 
         val expectedExNames: MutableList<String> = mutableListOf("Entertainment", "Food")
         val expectedExUsed: MutableList<String> = mutableListOf("Entertainment", "Food")
-        val expectedInNames: MutableList<String> = mutableListOf("Salary")
+        val expectedInNames: MutableList<String> = mutableListOf("Salary", "Zelle")
         val expectedInUsed: MutableList<String> = mutableListOf("Salary")
 
         runBlocking {
@@ -88,11 +85,11 @@ internal class CategoryViewModelTest {
 
         val expectedExNames: MutableList<String> = mutableListOf("Entertainment")
         val expectedExUsed: MutableList<String> = mutableListOf("Entertainment")
-        val expectedInNames: MutableList<String> = mutableListOf()
+        val expectedInNames: MutableList<String> = mutableListOf("Zelle")
         val expectedInUsed: MutableList<String> = mutableListOf()
         catVM.catNames[0] = mutableListOf("Food", "Entertainment")
         catVM.catsUsed[0] = mutableListOf("Food", "Entertainment")
-        catVM.catNames[1] = mutableListOf("Salary")
+        catVM.catNames[1] = mutableListOf("Salary", "Zelle")
         catVM.catsUsed[1] = mutableListOf("Salary")
 
         catVM.deleteCategoryPosFun(dd.cat1, 0)
@@ -102,7 +99,7 @@ internal class CategoryViewModelTest {
         assertEquals(expectedExUsed, catVM.catsUsed[0])
         assertEquals(expectedInNames, catVM.catNames[1])
         assertEquals(expectedInUsed, catVM.catsUsed[1])
-        assertEquals(mutableListOf(dd.cat2), repo.catList)
+        assertEquals(mutableListOf(dd.cat2, dd.cat4), repo.catList)
     }
 
     @Test

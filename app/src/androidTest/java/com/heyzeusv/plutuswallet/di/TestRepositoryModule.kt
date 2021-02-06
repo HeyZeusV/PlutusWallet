@@ -1,6 +1,6 @@
 package com.heyzeusv.plutuswallet.di
 
-import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
+import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.Repository
 import dagger.Binds
 import dagger.Module
@@ -19,5 +19,5 @@ import javax.inject.Singleton
 interface TestRepositoryModule {
 
     // provides FakeRepository for testing
-    @Binds @Singleton fun provideFakeRepository(repo: FakeAndroidRepository): Repository
+    @Binds @Singleton fun provideFakeRepository(repo: FakeRepository): Repository
 }

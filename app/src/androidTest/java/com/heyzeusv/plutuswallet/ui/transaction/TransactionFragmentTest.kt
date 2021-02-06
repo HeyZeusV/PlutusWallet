@@ -22,8 +22,8 @@ import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chipSelected
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
-import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
+import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.launchFragmentInHiltContainer
@@ -55,7 +55,7 @@ class TransactionFragmentTest {
     @Inject
     lateinit var repo: Repository
 
-    val dd = DummyAndroidDataUtil()
+    val dd = DummyDataUtil()
 
     // used to get string resource
     private val resource: Resources =
@@ -297,7 +297,7 @@ class TransactionFragmentTest {
     fun saveTransactionNoTitle() {
 
         // calculate new id
-        val totalTrans: Int = (repo as FakeAndroidRepository).tranList.size + 1
+        val totalTrans: Int = (repo as FakeRepository).tranList.size + 1
 
         // "Transaction"
         val tran = resource.getString(R.string.transaction_empty_title)

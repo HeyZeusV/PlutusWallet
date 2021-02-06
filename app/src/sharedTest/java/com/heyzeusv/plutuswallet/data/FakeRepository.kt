@@ -10,12 +10,21 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.replace
 import java.math.BigDecimal
 import java.util.Date
+import javax.inject.Inject
 
-class FakeRepository(
-    val accList: MutableList<Account>,
-    val catList: MutableList<Category>,
-    val tranList: MutableList<Transaction>
-) : Repository {
+class FakeRepository @Inject constructor() : Repository {
+
+    val dd = DummyDataUtil()
+    var accList: MutableList<Account> = dd.accList
+    var catList: MutableList<Category> = dd.catList
+    var tranList: MutableList<Transaction> = dd.tranList
+
+    private val accListLD = MutableLiveData(accList.sortedBy { it.account })
+    private val catExListLD =
+        MutableLiveData(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+    private val catInListLD =
+        MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.category })
+    private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
 
     override suspend fun getAccountNamesAsync(): MutableList<String> {
 
@@ -35,21 +44,25 @@ class FakeRepository(
     override suspend fun deleteAccount(account: Account) {
 
         accList.remove(account)
+        accListLD.value = accList.sortedBy { it.account }
     }
 
     override suspend fun insertAccount(account: Account) {
 
         accList.add(account)
+        accListLD.value = accList.sortedBy { it.account }
     }
 
     override suspend fun updateAccount(account: Account) {
 
         accList.replace(accList.find { it.id == account.id }!!, account)
+        accListLD.value = accList.sortedBy { it.account }
     }
 
     override fun getLDAccounts(): LiveData<List<Account>> {
 
-        return MutableLiveData(accList)
+        accListLD.value = accList.sortedBy { it.account }
+        return accListLD
     }
 
     override suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String> {
@@ -70,30 +83,37 @@ class FakeRepository(
     override suspend fun deleteCategory(category: Category) {
 
         catList.remove(category)
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
     }
 
     override suspend fun insertCategory(category: Category) {
 
         catList.add(category)
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
     }
 
     override suspend fun updateCategory(category: Category) {
 
         catList.replace(catList.find { it.id == category.id }!!, category)
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
     }
 
     override suspend fun insertCategories(categories: List<Category>) {
 
         catList.addAll(categories)
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
     }
 
     override fun getLDCategoriesByType(type: String): LiveData<List<Category>> {
 
-        val list: MutableList<Category> = mutableListOf()
-        for (cat: Category in catList.filter { it.type == type }) {
-            list.add(cat)
+        return when (type) {
+            "Expense" -> catExListLD
+            else -> catInListLD
         }
-        return MutableLiveData(list)
     }
 
     override suspend fun getDistinctAccountsAsync(): MutableList<String> {
@@ -139,6 +159,10 @@ class FakeRepository(
     override suspend fun deleteTransaction(transaction: Transaction) {
 
         tranList.remove(transaction)
+        if (ivtListLD.value!!.isNotEmpty()) {
+            (ivtListLD.value as MutableList).removeIf { it.id == transaction.id }
+            ivtListLD.postValue(ivtListLD.value!!)
+        }
     }
 
     override suspend fun upsertTransaction(transaction: Transaction) {
@@ -159,7 +183,7 @@ class FakeRepository(
 
     override fun getLdTransaction(id: Int): LiveData<Transaction?> {
 
-        return MutableLiveData(tranList.single { it.id == id })
+        return MutableLiveData(tranList.find { it.id == id })
     }
 
     private fun getCatLists(): List<List<String>> {
@@ -309,7 +333,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>> {
@@ -322,7 +347,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtAD(
@@ -341,7 +367,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>> {
@@ -354,7 +381,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtATC(
@@ -373,7 +401,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtATD(
@@ -393,7 +422,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtATCD(
@@ -415,7 +445,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> {
@@ -428,7 +459,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>> {
@@ -441,7 +473,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>> {
@@ -454,7 +487,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtTCD(
@@ -474,7 +508,8 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
     }
 
     override fun getLdIvtTD(
@@ -492,6 +527,14 @@ class FakeRepository(
             ivtList.add(ivt)
         }
 
-        return MutableLiveData(ivtList)
+        ivtListLD.value = ivtList
+        return ivtListLD
+    }
+
+    fun resetLists() {
+
+        accList = dd.accList
+        catList = dd.catList
+        tranList = dd.tranList
     }
 }

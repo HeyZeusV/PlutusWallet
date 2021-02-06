@@ -1,10 +1,10 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
 import androidx.lifecycle.MutableLiveData
-import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
@@ -24,22 +24,19 @@ import java.util.Date
 internal class TransactionViewModelTest {
 
     // test Fake
-    private lateinit var repo: FakeRepository
+    private val repo = FakeRepository()
 
     // what is being tested
     private lateinit var tranVM: TransactionViewModel
 
     // dummy data
-    private lateinit var dd: DummyDataUtil
+    private val dd = DummyDataUtil()
 
     @BeforeEach
     fun setUpViewModel() {
 
-        // some function add/remove data, so want same data at start of every test.
-        dd = DummyDataUtil()
-
-        // initialize fake repo with dummy data and pass it to ViewModel
-        repo = FakeRepository(dd.accList, dd.catList, dd.tranList)
+        // reset fake repo with dummy data and pass it to ViewModel
+        repo.resetLists()
         tranVM = TransactionViewModel(repo)
     }
 
@@ -75,7 +72,7 @@ internal class TransactionViewModelTest {
             "Test Account",
             "Income",
             "Test Income Category",
-            "",
+            "Catering for party",
             false,
             1,
             0,
@@ -111,7 +108,7 @@ internal class TransactionViewModelTest {
             "Test Account",
             "Income",
             "Test Income Category",
-            "",
+            "Catering for party",
             true,
             1,
             0,
@@ -256,7 +253,7 @@ internal class TransactionViewModelTest {
 
         val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create New...")
         val expectedExCatList: MutableList<String> = mutableListOf("Entertainment", "Food", "Create New...")
-        val expectedInCatList: MutableList<String> = mutableListOf("Salary", "Create New...")
+        val expectedInCatList: MutableList<String> = mutableListOf("Salary", "Zelle", "Create New...")
 
         tranVM.prepareLists("Create New...", "Create New...")
 

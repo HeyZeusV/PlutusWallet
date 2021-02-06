@@ -104,7 +104,7 @@ class AppNavigationTest {
     }
 
     @Test
-    @RepeatTest(100)
+    @RepeatTest(1)
     fun navigateToAccountsAndBack() {
 
         // check Drawer starts closed then open it
@@ -136,7 +136,7 @@ class AppNavigationTest {
     }
 
     @Test
-    @RepeatTest(100)
+    @RepeatTest(1)
     fun navigateToCategoriesAndBack() {
 
         // check Drawer starts closed then open it
@@ -168,7 +168,7 @@ class AppNavigationTest {
     }
 
     @Test
-    @RepeatTest(100)
+    @RepeatTest(1)
     fun navigateToAboutAndBack() {
 
         // check Drawer starts closed then open it
