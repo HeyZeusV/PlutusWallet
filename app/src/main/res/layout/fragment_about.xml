@@ -132,9 +132,20 @@
                             android:textColor="@android:color/black"
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.498"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/spacer4" />
+
+                        <TextView
+                            android:id="@+id/about_app_github_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"
+                            app:link="@{@string/app_github}"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/about_developer_tv" />
 
                         <TextView
                             android:id="@+id/about_thanks_tv"
@@ -149,7 +160,7 @@
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/about_developer_tv" />
+                            app:layout_constraintTop_toBottomOf="@+id/about_app_github_tv" />
 
                         <TextView
                             android:id="@+id/about_contact_tv"

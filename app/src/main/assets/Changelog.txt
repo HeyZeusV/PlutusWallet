@@ -1,3 +1,10 @@
+v3.0.0
+-Now open sourced! Check in-app for a link to GitHub.
+-Huge internal refactoring of code.
+-Fixed: Added translations to the titles of each screen.
+-Fixed: Added translation for "Date Format" setting.
+-Fixed: Transaction list will now update correctly the first time after switching any setting other than the language.
+
 v2.2.1
 -Fixed: A transaction that was set to repeat would display "x2 x2" rather than just "x2."
 -Fixed: List of transactions would not display correct date format selected in settings.

@@ -42,6 +42,7 @@ class AboutFragmentTest {
         onView(withId(R.id.about_changelog_mb)).check(matches(isEnabled()))
         onView(withId(R.id.about_changelog_sv)).check(matches(not(isDisplayed())))
         onView(withId(R.id.about_changelog_tv)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.about_app_github_tv)).check(matches(isClickable()))
         onView(withId(R.id.about_email_tv)).check(matches(isClickable()))
         onView(withId(R.id.about_scrollView)).perform(swipeUp())
         onView(withId(R.id.about_ci_git_tv)).check(matches(isClickable()))
