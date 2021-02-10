@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#4a148c</color>
-    <color name="colorPrimaryDark">#12005e</color>
-    <color name="colorPrimaryLight">#7c43bd</color>
-    <color name="colorSecondary">#33691e</color>
-    <color name="colorSecondaryDark">#003d00</color>
-    <color name="colorSecondaryLight">#629749</color>
+    <color name="colorText">#000000</color>
+
+    <color name="white">#FFFFFF</color>
+
+    <color name="purple_base">#4a148c</color>
+    <color name="purple_dark">#12005e</color>
+    <color name="purple_light">#7c43bd</color>
+    <color name="green_base">#33691e</color>
+    <color name="green_dark">#003d00</color>
+    <color name="green_light">#5ecc02</color>
+
 
     <!-- Expense Chart Colors -->
-    <color name="colorExpense1">#d50000</color>
-    <color name="colorExpense2">#ffca28</color>
-    <color name="colorExpense3">#d500f9</color>
-    <color name="colorExpense4">#ff6f00</color>
+    <color name="expense_red">#d50000</color>
+    <color name="expense_yellow">#ffca28</color>
+    <color name="expense_pink">#d500f9</color>
+    <color name="expense_orange">#ff6f00</color>
 
     <!-- Income Chart Colors -->
-    <color name="colorIncome1">#76ff03</color>
-    <color name="colorIncome2">#00897b</color>
-    <color name="colorIncome3">#2196f3</color>
-    <color name="colorIncome4">#5e35b1</color>
+    <color name="income_green">#76ff03</color>
+    <color name="income_teal">#00897b</color>
+    <color name="income_blue">#2196f3</color>
+    <color name="income_purple">#5e35b1</color>
 
     <color name="colorDisabled">#FF929292</color>
     <color name="colorLightGray">#FFCECECE</color>

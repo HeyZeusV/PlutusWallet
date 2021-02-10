@@ -16,20 +16,18 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/cfl_topBar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
                 app:title="@string/cfl_overview"
                 app:menu="@menu/cfl_menu"
                 app:navigationIcon="@drawable/ic_baseline_menu_24"
                 app:navigationContentDescription="@string/cfl_drawer_description"
-                style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+                style="@style/ToolBar.Custom"/>
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight">
+            android:background="@color/purple_light">
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_chart_container"

@@ -28,14 +28,14 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight">
+            android:background="@color/purple_light">
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.MaterialComponents.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="4dp"
-                android:background="@color/colorPrimary"
+                android:background="@color/purple_base"
                 app:cardCornerRadius="@dimen/card_corner_radius"
                 app:cardUseCompatPadding="true">
 

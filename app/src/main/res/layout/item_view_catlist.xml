@@ -19,7 +19,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="@android:color/black"
             android:textSize="24sp"
             android:text="@{type == 0 ? @string/type_expense : @string/type_income}"
             app:layout_constraintEnd_toEndOf="parent"

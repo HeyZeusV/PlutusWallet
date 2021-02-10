@@ -41,7 +41,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="@string/empty_list"
-                    android:textColor="@android:color/black"
                     android:textSize="24sp"
                     android:visibility="@{!listVM.ivtEmpty ? View.INVISIBLE : View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"

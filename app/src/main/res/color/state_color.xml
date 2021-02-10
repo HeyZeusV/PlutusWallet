@@ -5,5 +5,5 @@
         android:color="@color/colorDisabled"
         android:state_enabled="false"/>
     <item
-        android:color="@android:color/black"/>
+        android:color="@color/colorText"/>
 </selector>

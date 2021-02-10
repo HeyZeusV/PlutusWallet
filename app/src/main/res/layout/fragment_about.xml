@@ -28,7 +28,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight">
+            android:background="@color/purple_light">
 
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.MaterialComponents.CardView"
@@ -55,7 +55,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
                             android:text="@string/app_name"
-                            android:textColor="@color/colorPrimary"
+                            android:textColor="@color/purple_base"
                             android:textSize="50sp"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"

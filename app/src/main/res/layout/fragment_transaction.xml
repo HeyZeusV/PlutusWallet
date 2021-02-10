@@ -27,19 +27,17 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/tran_topBar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
                 app:title="@string/transaction"
                 app:menu="@menu/transaction_menu"
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
                 app:navigationContentDescription="@string/navigate_back"
-                style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+                style="@style/ToolBar.Custom"/>
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight">
+            android:background="@color/purple_light">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView"
@@ -68,7 +66,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/transaction_title"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +93,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="@string/transaction_date"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -106,9 +104,10 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
-                            android:backgroundTint="@color/colorSecondary"
+                            android:backgroundTint="@color/green_base"
                             android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
                             android:text="@{tranVM.date}"
+                            android:textColor="@color/white"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/dateTextView"
@@ -123,7 +122,7 @@
                             android:paddingStart="8dip"
                             android:paddingEnd="8dip"
                             android:text="@string/transaction_account"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_date" />
@@ -150,7 +149,7 @@
                             android:paddingStart="8dip"
                             android:paddingEnd="8dip"
                             android:text="@string/transaction_total"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
@@ -162,6 +161,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:text="@{tranVM.setVals.currencySymbol}"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             android:visibility="@{tranVM.setVals.symbolSide ? View.VISIBLE : View.GONE}"
                             app:layout_constraintStart_toEndOf="@+id/totalTextView"
@@ -193,6 +193,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:text="@{tranVM.setVals.currencySymbol}"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             android:visibility="@{tranVM.setVals.symbolSide ? View.GONE : View.VISIBLE}"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -208,7 +209,7 @@
                             android:paddingStart="8dip"
                             android:paddingEnd="8dip"
                             android:text="@string/transaction_type"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/totalTextView" />
@@ -254,7 +255,7 @@
                             android:paddingStart="8dip"
                             android:paddingEnd="8dip"
                             android:text="@string/transaction_category"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
@@ -294,7 +295,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:text="@string/transaction_memo"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -327,7 +328,7 @@
                             android:paddingStart="8dip"
                             android:paddingEnd="8dip"
                             android:text="@string/transaction_repeating"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_memo" />
@@ -354,7 +355,7 @@
                             android:paddingStart="8dip"
                             android:paddingEnd="8dip"
                             android:text="@string/transaction_frequency"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/colorText"
                             android:textSize="18sp"
                             android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
                             app:layout_constraintStart_toStartOf="parent"
