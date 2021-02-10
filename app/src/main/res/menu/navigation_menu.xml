@@ -4,12 +4,12 @@
 
     <item
         android:id="@+id/accountFragment"
-        android:icon="@drawable/ic_baseline_account_balance_24"
+        android:icon="@drawable/ic_baseline_accounts_24"
         android:title="@string/accounts"/>
 
     <item
         android:id="@+id/categoryFragment"
-        android:icon="@drawable/ic_baseline_category_24"
+        android:icon="@drawable/ic_baseline_categories_24"
         android:title="@string/categories"/>
 
     <item

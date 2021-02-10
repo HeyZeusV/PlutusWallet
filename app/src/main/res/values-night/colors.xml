@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorText">#bcbcbc</color>
+    <color name="colorChipGreen">#5ecc02</color>
 
     <color name="white">#bcbcbc</color>
+
+    <color name="purple_base">#7c43bd</color>
+    <color name="purple_dark">#4a148c</color>
+    <color name="purple_light">#af71f0</color>
+    <color name="green_base">#629749</color>
+    <color name="green_dark">#33691e</color>
+    <color name="green_light">#92c876</color>
 </resources>

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorText">#000000</color>
+    <color name="colorChipGreen">#023d00</color>
 
     <color name="white">#FFFFFF</color>
 
+    <!-- AppTheme Colors -->
     <color name="purple_base">#4a148c</color>
     <color name="purple_dark">#12005e</color>
     <color name="purple_light">#7c43bd</color>
     <color name="green_base">#33691e</color>
-    <color name="green_dark">#003d00</color>
-    <color name="green_light">#5ecc02</color>
-
+    <color name="green_dark">#023d00</color>
+    <color name="green_light">#629749</color>
 
     <!-- Expense Chart Colors -->
     <color name="expense_red">#d50000</color>
