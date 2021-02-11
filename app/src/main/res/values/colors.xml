@@ -3,27 +3,40 @@
     <color name="colorText">#000000</color>
     <color name="colorChipGreen">#023d00</color>
 
+    <color name="colorChartText">#000000</color>
+    <color name="colorChartHole">#FFFFFF</color>
+
     <color name="white">#FFFFFF</color>
 
     <!-- AppTheme Colors -->
+    <!-- Purple 900 -->
     <color name="purple_base">#4a148c</color>
     <color name="purple_dark">#12005e</color>
     <color name="purple_light">#7c43bd</color>
+    <!-- Light Green 900 -->
     <color name="green_base">#33691e</color>
     <color name="green_dark">#023d00</color>
     <color name="green_light">#629749</color>
 
     <!-- Expense Chart Colors -->
-    <color name="expense_red">#d50000</color>
-    <color name="expense_yellow">#ffca28</color>
-    <color name="expense_pink">#d500f9</color>
-    <color name="expense_orange">#ff6f00</color>
+    <!-- Red 600 -->
+    <color name="expense_red">#e53935</color>
+    <!-- Yellow 500 -->
+    <color name="expense_yellow">#ffeb3b</color>
+    <!-- Pink 400 -->
+    <color name="expense_pink">#ec407a</color>
+    <!-- Orange 500 -->
+    <color name="expense_orange">#ff9800</color>
 
     <!-- Income Chart Colors -->
-    <color name="income_green">#76ff03</color>
+    <!-- Green 600 -->
+    <color name="income_green">#43a047</color>
+    <!-- Teal 600 -->
     <color name="income_teal">#00897b</color>
+    <!-- Blue 500 -->
     <color name="income_blue">#2196f3</color>
-    <color name="income_purple">#5e35b1</color>
+    <!-- Deep Purple 300 -->
+    <color name="income_purple">#9575cd</color>
 
     <color name="colorDisabled">#FF929292</color>
     <color name="colorLightGray">#FFCECECE</color>

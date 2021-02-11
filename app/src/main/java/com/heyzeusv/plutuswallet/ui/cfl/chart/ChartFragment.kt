@@ -52,16 +52,16 @@ class ChartFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val exColors: List<Int> = listOf(
-            ContextCompat.getColor(requireContext(), R.color.income_green),
-            ContextCompat.getColor(requireContext(), R.color.income_teal),
-            ContextCompat.getColor(requireContext(), R.color.income_blue),
-            ContextCompat.getColor(requireContext(), R.color.income_purple)
-        )
-        val inColors: List<Int> = listOf(
             ContextCompat.getColor(requireContext(), R.color.expense_red),
             ContextCompat.getColor(requireContext(), R.color.expense_yellow),
             ContextCompat.getColor(requireContext(), R.color.expense_pink),
             ContextCompat.getColor(requireContext(), R.color.expense_orange)
+        )
+        val inColors: List<Int> = listOf(
+            ContextCompat.getColor(requireContext(), R.color.income_green),
+            ContextCompat.getColor(requireContext(), R.color.income_blue),
+            ContextCompat.getColor(requireContext(), R.color.income_teal),
+            ContextCompat.getColor(requireContext(), R.color.income_purple)
         )
 
         cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: TransactionInfo ->
