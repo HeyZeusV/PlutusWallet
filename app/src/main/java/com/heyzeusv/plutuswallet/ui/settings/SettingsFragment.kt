@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -26,6 +27,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     @Inject lateinit var sharedPref: SharedPreferences
 
     // Preferences
+    private lateinit var thPref: ListPreference
     private lateinit var csPref: ListPreference
     private lateinit var ssPref: SwitchPreference
     private lateinit var tsPref: ListPreference
@@ -39,6 +41,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
         // initialize Preferences
+        thPref = findPreference(Key.KEY_THEME.key)!!
         csPref = findPreference(Key.KEY_CURRENCY_SYMBOL.key)!!
         ssPref = findPreference(Key.KEY_SYMBOL_SIDE.key)!!
         tsPref = findPreference(Key.KEY_THOUSANDS_SYMBOL.key)!!
@@ -51,6 +54,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onStart() {
         super.onStart()
 
+        // Theme
+        thPref.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _, newValue: Any ->
+                if (newValue == thPref.value) {
+                    return@OnPreferenceChangeListener false
+                } else {
+                    sharedPref[Key.KEY_THEME_CHANGED] = true
+                    AppCompatDelegate.setDefaultNightMode(newValue.toString().toInt())
+                    requireActivity().recreate()
+                    return@OnPreferenceChangeListener true
+                }
+            }
+
         // Currency Symbol
         csPref.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, newValue: Any ->
@@ -58,8 +74,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     return@OnPreferenceChangeListener false
                 } else {
                     // used to tell if data in Chart/TranList Fragments should be updated
-                    sharedPref[Key.KEY_CHART_CHANGE] = true
-                    sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
+                    sharedPref[Key.KEY_CHART_CHANGED] = true
+                    sharedPref[Key.KEY_TRAN_LIST_CHANGED] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -68,8 +84,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         ssPref.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { _, _ ->
                 // used to tell if data in Chart/TranList Fragments should be updated
-                sharedPref[Key.KEY_CHART_CHANGE] = true
-                sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
+                sharedPref[Key.KEY_CHART_CHANGED] = true
+                sharedPref[Key.KEY_TRAN_LIST_CHANGED] = true
                 return@OnPreferenceChangeListener true
             }
 
@@ -82,8 +98,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     return@OnPreferenceChangeListener false
                 } else {
                     // used to tell if data in Chart/TranList Fragments should be updated
-                    sharedPref[Key.KEY_CHART_CHANGE] = true
-                    sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
+                    sharedPref[Key.KEY_CHART_CHANGED] = true
+                    sharedPref[Key.KEY_TRAN_LIST_CHANGED] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -106,8 +122,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     return@OnPreferenceChangeListener false
                 } else {
                     // used to tell if data in Chart/TranList Fragments should be updated
-                    sharedPref[Key.KEY_CHART_CHANGE] = true
-                    sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
+                    sharedPref[Key.KEY_CHART_CHANGED] = true
+                    sharedPref[Key.KEY_TRAN_LIST_CHANGED] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -119,8 +135,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     return@OnPreferenceChangeListener false
                 } else {
                     // used to tell if data in Chart/TranList Fragments should be updated
-                    sharedPref[Key.KEY_CHART_CHANGE] = true
-                    sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
+                    sharedPref[Key.KEY_CHART_CHANGED] = true
+                    sharedPref[Key.KEY_TRAN_LIST_CHANGED] = true
                     return@OnPreferenceChangeListener true
                 }
             }
@@ -159,8 +175,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val posFun = DialogInterface.OnClickListener { _, _ ->
             dpPref.isChecked = !dpPref.isChecked
             // used to tell if data in Chart/TranList Fragments should be updated
-            sharedPref[Key.KEY_CHART_CHANGE] = true
-            sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
+            sharedPref[Key.KEY_CHART_CHANGED] = true
+            sharedPref[Key.KEY_TRAN_LIST_CHANGED] = true
         }
         AlertDialogCreator.alertDialog(
             requireContext(),
@@ -180,8 +196,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newThousands: String = dsPref.value
             tsPref.value = newThousands
             dsPref.value = newDecimal
-            sharedPref[Key.KEY_CHART_CHANGE] = true
-            sharedPref[Key.KEY_TRAN_LIST_CHANGE] = true
+            sharedPref[Key.KEY_CHART_CHANGED] = true
+            sharedPref[Key.KEY_TRAN_LIST_CHANGED] = true
         }
 
         AlertDialogCreator.alertDialog(

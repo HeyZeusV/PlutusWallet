@@ -93,7 +93,7 @@ class ChartFragment : BaseFragment() {
 
         chartVM.adapter?.let {
             // checks if there has been a change in settings, updates changes, and updates list
-            if (sharedPref[Key.KEY_CHART_CHANGE, false]
+            if (sharedPref[Key.KEY_CHART_CHANGED, false]
                 && it.currentList.size == 2
             ) {
                 setVals = SettingsUtils.prepareSettingValues(sharedPref)
@@ -101,7 +101,7 @@ class ChartFragment : BaseFragment() {
                 it.currentList[0].totalText = chartVM.exTotText
                 it.currentList[1].totalText = chartVM.inTotText
                 it.notifyDataSetChanged()
-                sharedPref[Key.KEY_CHART_CHANGE] = false
+                sharedPref[Key.KEY_CHART_CHANGED] = false
             }
         }
     }

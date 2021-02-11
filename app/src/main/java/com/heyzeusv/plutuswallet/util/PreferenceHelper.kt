@@ -51,8 +51,7 @@ object PreferenceHelper {
 
 // SharedPreferences Keys
 enum class Key(val key: String) {
-
-    KEY_CHART_CHANGE("key_chart_change"),
+    KEY_CHART_CHANGED("key_chart_changed"),
     KEY_CURRENCY_SYMBOL("key_currency_symbol"),
     KEY_DATE_FORMAT("key_date_format"),
     KEY_DECIMAL_PLACES("key_decimal_places"),
@@ -61,6 +60,8 @@ enum class Key(val key: String) {
     KEY_LANGUAGE_CHANGED("key_language_changed"),
     KEY_MANUAL_LANGUAGE("key_manual_language"),
     KEY_SYMBOL_SIDE("key_symbol_side"),
+    KEY_THEME("key_theme"),
+    KEY_THEME_CHANGED("key_theme_changed"),
     KEY_THOUSANDS_SYMBOL("key_thousands_symbol"),
-    KEY_TRAN_LIST_CHANGE("key_tran_list_change")
+    KEY_TRAN_LIST_CHANGED("key_tran_list_changed")
 }

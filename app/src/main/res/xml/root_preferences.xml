@@ -5,6 +5,16 @@
     android:id="@+id/settings_screen">
 
     <ListPreference
+        android:id="@+id/set_theme"
+        app:defaultValue="-1"
+        app:entries="@array/theme_array"
+        app:entryValues="@array/theme_key_array"
+        app:iconSpaceReserved="false"
+        app:key="key_theme"
+        app:title="Theme"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
         android:id="@+id/set_curr_symbol"
         app:defaultValue="dollar"
         app:entries="@array/currency_symbol_array"
