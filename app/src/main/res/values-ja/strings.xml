@@ -90,4 +90,8 @@
     <string name="preferences_date_format">日付形式</string>
     <string name="cfl_drawer_description">ナビゲーションドロワーを開く</string>
     <string name="navigate_back">戻る</string>
+    <string name="theme">テーマ</string>
+    <string name="theme_light">光</string>
+    <string name="theme_dark">闇</string>
+    <string name="theme_system">システム</string>
 </resources>

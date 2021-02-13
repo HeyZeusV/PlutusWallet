@@ -90,4 +90,8 @@
     <string name="preferences_date_format">Formato de fecha</string>
     <string name="cfl_drawer_description">Abrir cajón de navegación</string>
     <string name="navigate_back">Navegar hacia atrás</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_dark">Oscura</string>
+    <string name="theme_light">Ligera</string>
+    <string name="theme">Tema</string>
 </resources>

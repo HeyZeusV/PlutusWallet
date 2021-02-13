@@ -90,4 +90,8 @@
     <string name="preferences_date_format">날짜 형식</string>
     <string name="cfl_drawer_description">탐색 창 열기</string>
     <string name="navigate_back">뒤로 탐색</string>
+    <string name="theme">테마</string>
+    <string name="theme_light">빛</string>
+    <string name="theme_dark">어두운</string>
+    <string name="theme_system">체계</string>
 </resources>

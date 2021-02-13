@@ -90,4 +90,8 @@
     <string name="preferences_date_format">डेटा प्रारूप</string>
     <string name="cfl_drawer_description">नेविगेशन दराज खोलें</string>
     <string name="navigate_back">वापस नेविगेट करें</string>
+    <string name="theme">थीम</string>
+    <string name="theme_light">रोशनी</string>
+    <string name="theme_dark">अंधेरा</string>
+    <string name="theme_system">체계</string>
 </resources>
