@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorText">#bcbcbc</color>
+    <color name="colorText">#FFFFFF</color>
     <color name="colorChipGreen">#5ecc02</color>
 
     <color name="colorChartText">#FFFFFF</color>
     <color name="colorChartHole">#1c1c1c</color>
 
-    <color name="white">#bcbcbc</color>
+    <color name="white">#FFFFFF</color>
 
     <!-- AppTheme Colors -->
+    <color name="colorSurface">@color/purple_base</color>
+    <color name="colorBackground">#1b1120</color>
+
     <!-- Purple 200 -->
-    <color name="purple_base">#ce93d8</color>
-    <color name="purple_dark">#9c64a6</color>
+    <color name="purple_base">#24102f</color>
+    <color name="purple_dark">#1b1120</color>
     <color name="purple_light">#ffc4ff</color>
     <!-- Green 200  -->
     <color name="green_base">#a5d6a7</color>
     <color name="green_dark">#75a478</color>
     <color name="green_light">#d7ffd9</color>
+<!--    &lt;!&ndash; Purple 200 &ndash;&gt;-->
+<!--    <color name="purple_base">#ce93d8</color>-->
+<!--    <color name="purple_dark">#9c64a6</color>-->
+<!--    <color name="purple_light">#ffc4ff</color>-->
+<!--    &lt;!&ndash; Green 200  &ndash;&gt;-->
+<!--    <color name="green_base">#a5d6a7</color>-->
+<!--    <color name="green_dark">#75a478</color>-->
+<!--    <color name="green_light">#d7ffd9</color>-->
 
     <!-- Expense Chart Colors -->
     <!-- Red 900 -->

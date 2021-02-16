@@ -9,6 +9,9 @@
     <color name="white">#FFFFFF</color>
 
     <!-- AppTheme Colors -->
+    <color name="colorSurface">@color/white</color>
+    <color name="colorBackground">#7c43bd</color>
+
     <!-- Purple 900 -->
     <color name="purple_base">#4a148c</color>
     <color name="purple_dark">#12005e</color>
