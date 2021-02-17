@@ -11,6 +11,10 @@
 
     <color name="white">#FFFFFF</color>
 
+    <color name="textColorPrimary">@android:color/primary_text_dark</color>
+    <color name="textColorSecondary">@android:color/secondary_text_dark</color>
+    <color name="textColorHint">#B3B3B3</color>
+
     <!-- AppTheme Colors -->
     <color name="colorSurface">@color/purple_base</color>
     <color name="colorBackground">#1b1120</color>

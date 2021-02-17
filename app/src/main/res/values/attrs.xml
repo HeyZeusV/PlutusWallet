@@ -4,4 +4,6 @@
     <attr name="colorButtonText" format="color" />
 
     <attr name="colorBackground" format="color" />
+
+    <attr name="textSizeBase" format="dimension" />
 </resources>

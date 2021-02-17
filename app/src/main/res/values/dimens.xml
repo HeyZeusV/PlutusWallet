@@ -1,3 +1,12 @@
 <resources>
-    <dimen name="card_corner_radius">4dp</dimen>
+    <dimen name="cardCornerRadius">4dp</dimen>
+    <dimen name="cardFullMargin">4dp</dimen>
+
+    <dimen name="textSizeBase">18dp</dimen>
+
+    <dimen name="minHeight">48dp</dimen>
+
+    <dimen name="layoutPaddingFullScreen">12dp</dimen>
+
+    <dimen name="textViewPaddingWrapContent">8dp</dimen>
 </resources>
