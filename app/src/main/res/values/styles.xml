@@ -8,6 +8,10 @@
         <item name="colorOnSurface">@color/colorText</item>
         <!-- views like checkboxes and text fields -->
         <item name="colorAccent">@color/green_base</item>
+
+        <item name="colorButtonBackground">@color/colorButtonBackground</item>
+        <item name="colorButtonText">@color/colorButtonText</item>
+        <item name="colorBackground">@color/colorBackground</item>
     </style>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">

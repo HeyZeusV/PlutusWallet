@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 18% opacity -->
     <item
-        android:alpha="0.18"
-        android:color="@color/colorChipGreen"
+        android:color="?attr/colorButtonBackground"
         android:state_enabled="true"
         android:state_selected="true"/>
     <!-- 10% opacity -->

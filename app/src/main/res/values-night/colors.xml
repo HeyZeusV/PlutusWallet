@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorButtonBackground">#a5d6a7</color>
+    <color name="colorButtonText">#000000</color>
+
     <color name="colorText">#FFFFFF</color>
     <color name="colorChipGreen">#5ecc02</color>
 
