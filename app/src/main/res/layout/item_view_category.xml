@@ -18,61 +18,30 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints">
 
         <TextView
             android:id="@+id/ivcat_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:singleLine="true"
-            android:textSize="18sp"
+            style="@style/TextView.Custom.ViewHolder"
             android:text="@{category.category}"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivcat_edit"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:text="Category Name" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ivcat_edit"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
+            style="@style/Button.IconOnly.Custom.ViewHolder"
             android:onClick="@{() -> catVM.editCategoryOC(category)}"
             app:icon="@drawable/ic_baseline_edit_24"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ivcat_delete"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/ivcat_delete" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ivcat_delete"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            style="@style/Button.IconOnly.Custom.ViewHolder"
             android:enabled="false"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
             android:onClick="@{() -> catVM.deleteCategoryOC(category)}"
-            app:isEnabled="@{(!catVM.catsUsed[type].contains(category.category) &amp;&amp; catVM.catNames[type].size > 1) ? true : false}"
             app:icon="@drawable/ic_baseline_delete_24"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:isEnabled="@{(!catVM.catsUsed[type].contains(category.category) &amp;&amp; catVM.catNames[type].size > 1) ? true : false}"
+            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

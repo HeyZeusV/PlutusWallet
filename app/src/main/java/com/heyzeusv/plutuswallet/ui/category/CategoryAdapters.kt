@@ -87,6 +87,7 @@ class CategoryAdapter(private val catVM: CategoryViewModel) :
             binding.category = category
             binding.type = if (category.type == "Expense") 0 else 1
             binding.catVM = catVM
+            binding.ivcatName.isSelected = true
             binding.executePendingBindings()
         }
     }

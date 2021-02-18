@@ -67,6 +67,22 @@
         <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
 
+    <style name="CircleIndicator.Custom" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="ci_animator">@animator/indicator_animator</item>
+        <item name="ci_animator_reverse">@animator/indicator_reverse_animator</item>
+        <item name="ci_drawable">@drawable/indicator_shape</item>
+        <item name="ci_drawable_unselected">@drawable/indicator_shape</item>
+        <item name="ci_gravity">bottom|center</item>
+        <item name="ci_height">8dp</item>
+        <item name="ci_margin">5dp</item>
+        <item name="ci_width">25dp</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
     <style name="AppBarRipple">
         <item name="colorControlHighlight">@color/ripple_material_dark</item>
     </style>
