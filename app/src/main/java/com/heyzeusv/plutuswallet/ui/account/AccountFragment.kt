@@ -83,6 +83,7 @@ class AccountFragment : BaseFragment() {
             val existBar: Snackbar = Snackbar.make(
                 binding.root, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
             )
+            existBar.anchorView = binding.accountAnchor
             existBar.show()
         })
 

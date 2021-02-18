@@ -93,7 +93,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
-                            android:backgroundTint="?attr/colorSecondary"
+                            android:backgroundTint="?attr/colorButtonBackground"
                             android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
                             android:text="@{tranVM.date}"
                             android:textColor="?attr/colorButtonText"
@@ -307,8 +307,8 @@
 
                         <CheckBox
                             android:id="@+id/tran_repeating"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="@dimen/minSize"
+                            android:layout_height="@dimen/minSize"
                             android:layout_marginTop="4dp"
                             android:background="?android:attr/listChoiceIndicatorMultiple"
                             android:button="@null"
@@ -368,11 +368,8 @@
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:id="@+id/tran_anchor"
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
-                app:layout_constraintStart_toStartOf="parent" />
+                style="@style/SnackBar.Anchor"
+                tools:ignore="MissingConstraints" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>

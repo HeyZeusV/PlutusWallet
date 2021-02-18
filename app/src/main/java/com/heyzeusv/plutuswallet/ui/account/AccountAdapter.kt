@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.account
 
+import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -36,6 +37,7 @@ class AccountAdapter(private val accountVM: AccountViewModel) :
 
             binding.account = account
             binding.accountVM = accountVM
+            binding.ivaName.isSelected = true
             binding.executePendingBindings()
         }
     }

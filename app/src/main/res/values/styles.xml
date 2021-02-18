@@ -33,16 +33,38 @@
     </style>
 
     <!-- Icon only Material Button -->
-    <style name="Widget.MaterialComponents.Button.Icon.Custom" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:minWidth">0dp</item>
-        <item name="android:insetLeft">0dp</item>
+    <style name="Button.IconOnly.Custom.ViewHolder" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">@dimen/minSize</item>
+        <item name="android:layout_height">@dimen/minSize</item>
+        <item name="android:layout_marginTop">@dimen/viewHolderMargin</item>
+        <item name="android:layout_marginEnd">@dimen/viewHolderMargin</item>
+        <item name="android:layout_marginBottom">@dimen/viewHolderMargin</item>
+        <item name="android:backgroundTint">?attr/colorButtonBackground</item>
         <item name="android:insetTop">0dp</item>
-        <item name="android:insetRight">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">0dp</item>
-        <item name="rippleColor">?colorOnBackground</item>
-        <item name="cornerRadius">100dp</item>
+        <item name="iconTint">?attr/colorButtonText</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <style name="TextView.Custom.ViewHolder" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/viewHolderMargin</item>
+        <item name="android:layout_marginEnd">@dimen/viewHolderMargin</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+        <item name="android:maxLength">32</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
 
     <style name="AppBarRipple">
@@ -62,7 +84,7 @@
 <!--    <style name="CheckBox.ThemeOverlay" parent="">-->
 <!--        <item name="colorSecondary">@color/green_base</item>-->
 <!--    </style>-->
-    
+
     <style name="CardView.Custom.Base" parent="Widget.MaterialComponents.CardView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -78,7 +100,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">?attr/textSizeBase</item>
-        <item name="android:minHeight">@dimen/minHeight</item>
+        <item name="android:minHeight">@dimen/minSize</item>
     </style>
 
     <style name="EditText.Custom.SingleLine" parent="EditText.Custom.Base">
@@ -90,5 +112,13 @@
         <item name="android:minLines">1</item>
         <item name="android:maxLines">5</item>
         <item name="android:maxLength">512</item>
+    </style>
+
+    <style name="SnackBar.Anchor" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">10dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="layout_constraintBottom_toBottomOf">@id/materialCardView</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
     </style>
 </resources>
