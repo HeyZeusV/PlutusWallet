@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -73,9 +72,14 @@ class AccountFragment : BaseFragment() {
         })
 
         accountVM.editAccountEvent.observe(viewLifecycleOwner, EventObserver { account: Account ->
-            createDialog(
+            val alertDialogView = createAlertDialogView()
+            AlertDialogCreator.alertDialogInput(
+                requireContext(), alertDialogView,
                 getString(R.string.alert_dialog_edit_account),
-                account, accountVM::editAccountName
+                getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+                null, null, null,
+                account, accountVM::editAccountName,
+                null, null, null
             )
         })
 
@@ -106,39 +110,20 @@ class AccountFragment : BaseFragment() {
         // handles menu selection
         binding.accountTopBar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.account_new) {
+                val alertDialogView = createAlertDialogView()
                 val newAccount = Account(0, "")
-                createDialog(
+                AlertDialogCreator.alertDialogInput(
+                    requireContext(), alertDialogView,
                     getString(R.string.alert_dialog_create_account),
-                    newAccount, accountVM::insertNewAccount
+                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+                    null, null, null,
+                    newAccount, accountVM::insertNewAccount,
+                    null, null, null
                 )
                 true
             } else {
                 false
             }
         }
-    }
-
-    /**
-     *  Creates AlertDialog that allows user input for given [action]
-     *  that performs [posFun] on positive button click on [account].
-     */
-    private fun createDialog(action: String, account: Account, posFun: (Account, String) -> Unit) {
-
-        // inflates view that holds EditText
-        val viewInflated: View = LayoutInflater.from(context)
-            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
-        // the EditText to be used
-        val input: EditText = viewInflated.findViewById(R.id.dialog_input)
-
-        val posListener = DialogInterface.OnClickListener { _, _ ->
-            posFun(account, input.text.toString())
-        }
-
-        AlertDialogCreator.alertDialogInput(
-            requireContext(),
-            action, viewInflated,
-            getString(R.string.alert_dialog_save), posListener,
-            getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing
-        )
     }
 }

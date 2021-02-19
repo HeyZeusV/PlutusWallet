@@ -18,6 +18,8 @@
         <item name="colorBackground">@color/colorBackground</item>
 
         <item name="textSizeBase">@dimen/textSizeBase</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Dialog.Alert.Custom</item>
     </style>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
@@ -30,6 +32,8 @@
 
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Dialog.Alert.Custom</item>
     </style>
 
     <!-- Icon only Material Button -->
@@ -93,14 +97,6 @@
         <item name="titleTextColor">@android:color/white</item>
     </style>
 
-<!--    <style name="CheckBox.Style" parent="Widget.MaterialComponents.CompoundButton.CheckBox">-->
-<!--        <item name="materialThemeOverlay">@style/CheckBox.ThemeOverlay</item>-->
-<!--    </style>-->
-
-<!--    <style name="CheckBox.ThemeOverlay" parent="">-->
-<!--        <item name="colorSecondary">@color/green_base</item>-->
-<!--    </style>-->
-
     <style name="CardView.Custom.Base" parent="Widget.MaterialComponents.CardView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -136,5 +132,29 @@
         <item name="android:layout_marginBottom">4dp</item>
         <item name="layout_constraintBottom_toBottomOf">@id/materialCardView</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <style name="ThemeOverlay.TextInputLayout.OutlinedBox.Custom" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="colorControlActivated">?attr/colorAccent</item>
+    </style>
+
+    <style name="TextInputLayout.Custom" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">?attr/colorAccent</item>
+        <item name="hintTextColor">?attr/colorAccent</item>
+        <item name="boxStrokeColor">?attr/colorAccent</item>
+        <item name="android:theme">@style/ThemeOverlay.TextInputLayout.OutlinedBox.Custom</item>
+        <item name="errorEnabled">true</item>
+        <item name="boxStrokeErrorColor">@color/error</item>
+        <item name="errorTextColor">@color/error</item>
+        <item name="errorIconTint">@color/error</item>
+    </style>
+
+    <style name="Dialog.Alert.Button.Custom" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorAlertDialogButtonText</item>
+    </style>
+
+    <style name="ThemeOverlay.Dialog.Alert.Custom" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/Dialog.Alert.Button.Custom</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Dialog.Alert.Button.Custom</item>
     </style>
 </resources>

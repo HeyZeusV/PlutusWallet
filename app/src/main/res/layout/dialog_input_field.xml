@@ -5,6 +5,8 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dialog_layout"
+        style="@style/TextInputLayout.Custom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -16,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
+            android:maxLength="32"
             android:hint="@string/alert_dialog_input_hint" />
     </com.google.android.material.textfield.TextInputLayout>
 </FrameLayout>

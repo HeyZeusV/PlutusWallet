@@ -9,6 +9,12 @@
     <color name="colorChartText">#FFFFFF</color>
     <color name="colorChartHole">#1c1c1c</color>
 
+    <color name="colorAlertDialogButtonText">#FFB3FF</color>
+
+    <color name="colorDataPickerBackground">#24102f</color>
+
+    <color name="error">#FFBABA</color>
+
     <color name="white">#FFFFFF</color>
 
     <color name="textColorPrimary">@android:color/primary_text_dark</color>

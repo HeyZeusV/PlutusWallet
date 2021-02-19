@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
@@ -77,9 +76,13 @@ class CategoryFragment : BaseFragment() {
 
         catVM.editCategoryEvent.observe(viewLifecycleOwner, EventObserver { category: Category ->
             val type: Int = if (category.type == "Expense") 0 else 1
-            createDialog(
-                getString(R.string.alert_dialog_edit_category), category,
-                type, catVM::editCategoryName
+            val alertDialogView = createAlertDialogView()
+            AlertDialogCreator.alertDialogInput(
+                requireContext(), alertDialogView,
+                getString(R.string.alert_dialog_edit_category),
+                getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+                null, null, null, null, null,
+                category, type, catVM::editCategoryName
             )
         })
 
@@ -112,40 +115,20 @@ class CategoryFragment : BaseFragment() {
         // handles menu selection
         binding.categoryTopBar.setOnMenuItemClickListener { item: MenuItem ->
             if (item.itemId == R.id.category_new) {
-                val category = Category(0, "", "Expense")
-                createDialog(
-                    getString(R.string.alert_dialog_create_category), category,
-                    binding.categoryVp.currentItem, catVM::insertNewCategory
+                val newCategory = Category(0, "", "Expense")
+                val alertDialogView = createAlertDialogView()
+                AlertDialogCreator.alertDialogInput(
+                    requireContext(), alertDialogView,
+                    getString(R.string.alert_dialog_create_category),
+                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+                    null, null, null, null, null,
+                    newCategory, binding.categoryVp.currentItem, catVM::insertNewCategory
                 )
                 true
             } else {
                 false
             }
         }
-    }
-
-    /**
-     *  Creates AlertDialog that allows user input for given [action]
-     *  that performs [posFun] on [type] list on positive button click on [category].
-     */
-    private fun createDialog(action: String, category: Category, type: Int, posFun: (Category, String, Int) -> Unit) {
-
-        // inflates view that holds EditText
-        val viewInflated: View = LayoutInflater.from(context)
-            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
-        // the EditText to be used
-        val input: EditText = viewInflated.findViewById(R.id.dialog_input)
-
-        val posListener = DialogInterface.OnClickListener { _, _ ->
-            posFun(category, input.text.toString(), type)
-        }
-
-        AlertDialogCreator.alertDialogInput(
-            requireContext(),
-            action, viewInflated,
-            getString(R.string.alert_dialog_save), posListener,
-            getString(R.string.alert_dialog_cancel), AlertDialogCreator.doNothing
-        )
     }
 
     /**

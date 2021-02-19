@@ -94,4 +94,5 @@
     <string name="theme_light">光</string>
     <string name="theme_dark">闇</string>
     <string name="theme_system">システム</string>
+    <string name="alert_dialog_input_error">空白にすることはできません！</string>
 </resources>
