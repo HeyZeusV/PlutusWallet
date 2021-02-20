@@ -12,6 +12,7 @@
     <color name="colorAlertDialogButtonText">@color/purple_base</color>
 
     <color name="colorDataPickerBackground">#24102f</color>
+    <color name="colorDatePickerHeader">#2f1c39</color>
 
     <color name="error">@color/design_default_color_error</color>
 

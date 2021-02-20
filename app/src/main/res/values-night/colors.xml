@@ -12,6 +12,7 @@
     <color name="colorAlertDialogButtonText">#FFB3FF</color>
 
     <color name="colorDataPickerBackground">#24102f</color>
+    <color name="colorDatePickerHeader">#2f1c39</color>
 
     <color name="error">#FFBABA</color>
 

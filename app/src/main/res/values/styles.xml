@@ -19,6 +19,7 @@
 
         <item name="textSizeBase">@dimen/textSizeBase</item>
 
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme.Custom</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Dialog.Alert.Custom</item>
     </style>
 
@@ -156,5 +157,18 @@
     <style name="ThemeOverlay.Dialog.Alert.Custom" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="buttonBarPositiveButtonStyle">@style/Dialog.Alert.Button.Custom</item>
         <item name="buttonBarNegativeButtonStyle">@style/Dialog.Alert.Button.Custom</item>
+    </style>
+    
+    <style name="DatePickerTheme.Custom" parent="android:Theme.Material.Dialog">
+        <item name="android:colorAccent">?attr/colorAccent</item>
+        <item name="android:datePickerStyle">@style/DatePickerStyle.Custom</item>
+        <item name="android:windowBackground">@color/colorDataPickerBackground</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/Dialog.Alert.Button.Custom</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/Dialog.Alert.Button.Custom</item>
+    </style>
+
+    <style name="DatePickerStyle.Custom" parent="@android:style/Widget.Material.DatePicker">
+        <item name="android:headerBackground">@color/colorDatePickerHeader</item>
+        <item name="android:background">@color/colorDataPickerBackground</item>
     </style>
 </resources>
