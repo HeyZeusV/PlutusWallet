@@ -16,4 +16,14 @@
 
     <!-- Common margin size used in ViewHolders -->
     <dimen name="viewHolderMargin">8dp</dimen>
+
+    <dimen name="scrollbarSmall">2dp</dimen>
+
+    <dimen name="nestedScrollViewHeight">200dp</dimen>
+    <dimen name="nestedScrollViewChildPadding">10dp</dimen>
+
+    <!-- Used as height for blank TextViews in AboutFragment -->
+    <dimen name="spacerHeight">8dp</dimen>
+    <!-- Top margin of TextView containing info in AboutFragment -->
+    <dimen name="aboutTextViewTopMargin">8dp</dimen>
 </resources>

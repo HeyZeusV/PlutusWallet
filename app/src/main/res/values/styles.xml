@@ -21,6 +21,7 @@
 
         <item name="android:datePickerDialogTheme">@style/DatePickerTheme.Custom</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Dialog.Alert.Custom</item>
+        <item name="android:scrollbarThumbVertical">?attr/colorAccent</item>
     </style>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
@@ -170,5 +171,48 @@
     <style name="DatePickerStyle.Custom" parent="@android:style/Widget.Material.DatePicker">
         <item name="android:headerBackground">@color/colorDatePickerHeader</item>
         <item name="android:background">@color/colorDataPickerBackground</item>
+    </style>
+
+    <style name="NestedScrollView.Custom" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/nestedScrollViewHeight</item>
+        <item name="android:background">@drawable/round_sv_bg</item>
+        <item name="android:scrollbarSize">@dimen/scrollbarSmall</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:visibility">gone</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <style name="NestedScrollView.ChildTextView.Custom" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/nestedScrollViewChildPadding</item>
+    </style>
+
+    <style name="About.Custom.Base" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <style name="About.Custom.Spacer.TextView" parent="About.Custom.Base">
+        <item name="android:layout_height">@dimen/spacerHeight</item>
+    </style>
+
+    <style name="About.Custom.Info.Base" parent="About.Custom.Base">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/aboutTextViewTopMargin</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+    </style>
+
+    <style name="About.Custom.Info.TextView" parent="About.Custom.Info.Base">
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="About.Custom.Info.Button" parent="About.Custom.Info.Base">
+        <item name="android:backgroundTint">?attr/colorButtonBackground</item>
+        <item name="android:textColor">?attr/colorButtonText</item>
     </style>
 </resources>

@@ -40,28 +40,30 @@ class AboutFragment : Fragment() {
         binding.aboutChangelogMb.setOnClickListener {
             if (binding.aboutChangelogSv.visibility == View.GONE) {
                 binding.aboutChangelogSv.visibility = View.VISIBLE
-                setNewConstraints(R.id.about_developer_tv, R.id.spacer5)
+                setNewConstraints(R.id.about_app_github_tv, R.id.spacer2)
             } else {
                 binding.aboutChangelogSv.visibility = View.GONE
-                setNewConstraints(R.id.about_developer_tv, R.id.spacer4)
+                setNewConstraints(R.id.about_app_github_tv, R.id.spacer1)
             }
         }
 
         binding.aboutCiMb.setOnClickListener {
             if (binding.aboutCiSv.visibility == View.GONE) {
                 binding.aboutCiSv.visibility = View.VISIBLE
-                setNewConstraints(R.id.about_mpc_tv, R.id.spacer2)
+                setNewConstraints(R.id.about_mpc_tv, R.id.spacer4)
             } else {
                 binding.aboutCiSv.visibility = View.GONE
-                setNewConstraints(R.id.about_mpc_tv, R.id.spacer1)
+                setNewConstraints(R.id.about_mpc_tv, R.id.spacer3)
             }
         }
 
         binding.aboutMpcMb.setOnClickListener {
-            binding.aboutMpcSv.visibility = if (binding.aboutMpcSv.visibility == View.GONE) {
-                View.VISIBLE
+            if (binding.aboutMpcSv.visibility == View.GONE) {
+                binding.aboutMpcSv.visibility = View.VISIBLE
+                binding.spacer5.visibility = View.VISIBLE
             } else {
-                View.GONE
+                binding.aboutMpcSv.visibility = View.GONE
+                binding.spacer5.visibility = View.GONE
             }
         }
     }
