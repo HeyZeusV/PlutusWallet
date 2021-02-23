@@ -42,15 +42,13 @@
                         android:id="@+id/category_vp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="40dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_marginBottom="40dp" />
 
                     <me.relex.circleindicator.CircleIndicator3
                         android:id="@+id/category_ci"
                         style="@style/CircleIndicator.Custom"
-                        android:layout_marginBottom="4dp" />
+                        android:layout_marginBottom="4dp"
+                        app:ci_height="@dimen/circleIndicatorBig" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 

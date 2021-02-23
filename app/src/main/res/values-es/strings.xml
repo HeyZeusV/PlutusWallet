@@ -32,7 +32,7 @@
     <string name="filter_reset">Reiniciar</string>
     <string name="filter_start">Comienzo</string>
     <string name="filter_type">Tipo</string>
-    <string name="chart_total">Total: %1$s%2$s</string>
+    <string name="chart_total">Total:&#160;</string>
     <string name="period_days">Días</string>
     <string name="period_months">Meses</string>
     <string name="period_weeks">Semanas</string>

@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.cfl.chart
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -88,6 +89,7 @@ class ChartFragment : BaseFragment() {
         })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
 
@@ -116,41 +118,41 @@ class ChartFragment : BaseFragment() {
 
             setVals.decimalPlaces && setVals.symbolSide -> {
                 chartVM.exTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.currencySymbol, setVals.decimalFormatter.format(chartVM.exTotal)
                 )
                 chartVM.inTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.currencySymbol, setVals.decimalFormatter.format(chartVM.inTotal)
                 )
             }
             setVals.decimalPlaces -> {
                 chartVM.exTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.decimalFormatter.format(chartVM.exTotal), setVals.currencySymbol
                 )
                 chartVM.inTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.decimalFormatter.format(chartVM.inTotal), setVals.currencySymbol
                 )
             }
             setVals.symbolSide -> {
                 chartVM.exTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.currencySymbol, setVals.integerFormatter.format(chartVM.exTotal)
                 )
                 chartVM.inTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.currencySymbol, setVals.integerFormatter.format(chartVM.inTotal)
                 )
             }
             else -> {
                 chartVM.exTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.integerFormatter.format(chartVM.exTotal), setVals.currencySymbol
                 )
                 chartVM.inTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.integerFormatter.format(chartVM.inTotal), setVals.currencySymbol
                 )
             }

@@ -32,6 +32,7 @@ class ChartAdapter : ListAdapter<ItemViewChart, ChartAdapter.ChartHolder>(ChartD
         fun bind(ivc: ItemViewChart) {
 
             binding.ivc = ivc
+            binding.ivchartAmount.isSelected = true
             binding.executePendingBindings()
         }
     }

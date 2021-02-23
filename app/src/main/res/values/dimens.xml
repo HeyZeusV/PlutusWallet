@@ -2,11 +2,21 @@
     <!-- CardView dimensions -->
     <dimen name="cardCornerRadius">4dp</dimen>
     <dimen name="cardFullMargin">4dp</dimen>
+    <dimen name="cardSharedMargin">1dp</dimen>
 
-    <dimen name="textSizeBase">18dp</dimen>
+    <dimen name="circleIndicatorBig">8dp</dimen>
+    <dimen name="circleIndicatorSmall">6dp</dimen>
+
+    <dimen name="emptyTextViewMarginStartEnd">8dp</dimen>
+
+    <dimen name="chartMarginTopBottom">4dp</dimen>
+
+    <dimen name="textSizeBase">18sp</dimen>
+    <dimen name="textSizeFilterButton">16sp</dimen>
+    <dimen name="textSizeSpinner">20sp</dimen>
 
     <!-- Minimum height for EditTexts and minimum size for CheckBoxes/Buttons -->
-    <dimen name="minSize">48dp</dimen>
+    <dimen name="minSize">49dp</dimen>
 
     <!-- Padding for layouts that cover entire screen -->
     <dimen name="layoutPaddingFullScreen">12dp</dimen>
@@ -15,7 +25,8 @@
     <dimen name="textViewPaddingWrapContent">8dp</dimen>
 
     <!-- Common margin size used in ViewHolders -->
-    <dimen name="viewHolderMargin">8dp</dimen>
+    <dimen name="viewHolderMarginTopBottom">8dp</dimen>
+    <dimen name="viewHolderMarginStartEnd">12dp</dimen>
 
     <dimen name="scrollbarSmall">2dp</dimen>
 
@@ -26,4 +37,8 @@
     <dimen name="spacerHeight">8dp</dimen>
     <!-- Top margin of TextView containing info in AboutFragment -->
     <dimen name="aboutTextViewTopMargin">8dp</dimen>
+
+    <!-- FilterFragment margins -->
+    <dimen name="filterDefaultMarginStartEnd">6dp</dimen>
+    <dimen name="filterTextViewMarginEnd">44dp</dimen>
 </resources>

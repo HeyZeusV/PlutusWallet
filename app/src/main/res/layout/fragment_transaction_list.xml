@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <import type="android.view.View" />
@@ -10,53 +11,32 @@
             type="com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/listRootView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
+        style="@style/CardView.Custom.Base"
+        android:layout_marginStart="@dimen/cardFullMargin"
+        android:layout_marginTop="@dimen/cardSharedMargin"
+        android:layout_marginEnd="@dimen/cardFullMargin"
+        android:layout_marginBottom="@dimen/cardFullMargin"
+        tools:ignore="MissingConstraints">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardView"
-            style="@style/Widget.MaterialComponents.CardView"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
-            app:cardCornerRadius="@dimen/cardCornerRadius"
-            app:cardUseCompatPadding="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tranlist_rv"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/emptyListTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="@string/empty_list"
-                    android:textSize="24sp"
-                    android:visibility="@{!listVM.ivtEmpty ? View.INVISIBLE : View.VISIBLE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/tranlist_rv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clipToPadding="false"
-                    android:paddingBottom="88dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/emptyListTextView"
+                style="@style/TextView.Custom.Empty"
+                android:text="@string/empty_list"
+                android:visibility="@{!listVM.ivtEmpty ? View.INVISIBLE : View.VISIBLE}" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 </layout>

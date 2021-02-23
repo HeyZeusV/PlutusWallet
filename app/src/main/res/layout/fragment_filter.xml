@@ -13,24 +13,22 @@
     </data>
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/Widget.MaterialComponents.CardView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="1dp"
-        app:cardCornerRadius="@dimen/cardCornerRadius"
-        app:cardUseCompatPadding="true">
+        style="@style/CardView.Custom.Base"
+        android:layout_marginStart="@dimen/cardSharedMargin"
+        android:layout_marginTop="@dimen/cardFullMargin"
+        android:layout_marginEnd="@dimen/cardFullMargin"
+        android:layout_marginBottom="@dimen/cardSharedMargin">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:ignore="MissingConstraints">
 
             <ScrollView
                 android:id="@+id/filter_scroll"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:scrollbarSize="@dimen/scrollbarSmall"
                 app:layout_constraintBottom_toTopOf="@+id/filter_action"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -42,231 +40,125 @@
 
                     <TextView
                         android:id="@+id/accountTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                        style="@style/Filter.TextView"
                         android:layout_marginTop="10dp"
-                        android:layout_marginEnd="35dp"
                         android:text="@string/filter_account"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <CheckBox
+                    <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/filter_account_check"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:layout_marginTop="1dp"
-                        android:layout_marginEnd="3dp"
-                        android:background="?android:attr/listChoiceIndicatorMultiple"
-                        android:button="@null"
+                        style="@style/CheckBox.Custom"
+                        android:checked="@={filterVM.accCheck}"
                         android:translationX="5dp"
                         android:translationY="-1dp"
-                        android:checked="@={filterVM.accCheck}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <Spinner
                         android:id="@+id/filter_account"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="6dp"
-                        android:background="@null"
+                        style="@style/Filter.Spinner"
+                        android:layout_marginTop="7dp"
                         app:entries="@{filterVM.accList}"
                         app:isEnabled="@{filterVM.accCheck}"
+                        app:layout_constraintTop_toBottomOf="@+id/accountTextView"
                         app:selectedValue="@={filterVM.account}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                        tools:listitem="@layout/spinner_item" />
 
                     <TextView
                         android:id="@+id/categoryTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginTop="32dp"
-                        android:layout_marginEnd="35dp"
-                        android:singleLine="false"
+                        style="@style/Filter.TextView"
+                        android:layout_marginTop="38dp"
                         android:text="@string/filter_category"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
-                    <CheckBox
+                    <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/filter_cat_check"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:layout_marginTop="23dp"
-                        android:layout_marginEnd="3dp"
-                        android:background="?android:attr/listChoiceIndicatorMultiple"
-                        android:button="@null"
-                        android:translationX="5dp"
-                        android:translationY="-1dp"
+                        style="@style/CheckBox.Custom"
+                        android:layout_marginTop="28dp"
                         android:checked="@={filterVM.catCheck}"
+                        android:translationX="5dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/filter_type"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                        style="@style/Filter.Button.Outlined"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="6dp"
-                        android:enabled="false"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp "
-                        android:minHeight="30dip"
-                        android:paddingStart="0dp"
-                        android:paddingTop="3dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="3dp"
-                        android:singleLine="true"
-                        android:textSize="14sp"
                         android:onClick="@{() -> filterVM.typeVisibleOC()}"
                         android:text="@{filterVM.catCheck ? (filterVM.typeVisible ? @string/type_expense : @string/type_income) : @string/filter_type}"
                         app:isEnabled="@{filterVM.catCheck}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
+                        app:layout_constraintTop_toBottomOf="@+id/categoryTextView"
+                        tools:text="Type"/>
 
                     <Spinner
                         android:id="@+id/filter_expense_cat"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="6dp"
-                        android:background="@null"
+                        style="@style/Filter.Spinner"
+                        android:layout_marginTop="5dp"
                         android:visibility="@{filterVM.typeVisible ? View.VISIBLE : View.INVISIBLE}"
                         app:entries="@{filterVM.exCatList}"
                         app:isEnabled="@{filterVM.catCheck}"
+                        app:layout_constraintTop_toBottomOf="@+id/filter_type"
                         app:selectedValue="@={filterVM.exCategory}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_type" />
+                        tools:listitem="@layout/spinner_item" />
 
                     <Spinner
                         android:id="@+id/filter_income_cat"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="6dp"
-                        android:background="@null"
+                        style="@style/Filter.Spinner"
+                        android:layout_marginTop="5dp"
                         android:visibility="@{filterVM.typeVisible ? View.INVISIBLE : View.VISIBLE}"
                         app:entries="@{filterVM.inCatList}"
                         app:isEnabled="@{filterVM.catCheck}"
+                        app:layout_constraintTop_toBottomOf="@+id/filter_type"
                         app:selectedValue="@={filterVM.inCategory}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_type" />
+                        tools:listitem="@layout/spinner_item" />
 
                     <TextView
                         android:id="@+id/dateTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                        style="@style/Filter.TextView"
                         android:layout_marginTop="36dp"
-                        android:layout_marginEnd="35dp"
                         android:text="@string/transaction_date"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
-                    <CheckBox
+                    <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/filter_date_check"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:layout_marginTop="26dp"
-                        android:layout_marginEnd="3dp"
-                        android:background="?android:attr/listChoiceIndicatorMultiple"
-                        android:button="@null"
-                        android:translationX="5dp"
+                        style="@style/CheckBox.Custom"
+                        android:layout_marginTop="25dp"
                         android:checked="@={filterVM.dateCheck}"
+                        android:translationX="5dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/filter_type" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/filter_start_date"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="6dp"
-                        android:enabled="false"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:minHeight="30dip"
-                        android:paddingStart="0dp"
-                        android:paddingTop="3dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="3dp"
-                        android:singleLine="true"
-                        android:textSize="14sp"
+                        style="@style/Filter.Button.Outlined"
                         android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
                         android:text="@{filterVM.dateCheck ? DateFormat.getDateInstance(DateFormat.SHORT).format(filterVM.startDate) : @string/filter_start}"
+                        android:translationY="8dp"
                         app:isEnabled="@{filterVM.dateCheck}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/dateTextView"
                         tools:text="Start Date" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/filter_end_date"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="6dp"
-                        android:enabled="false"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp "
-                        android:minHeight="30dip"
-                        android:paddingStart="0dp"
-                        android:paddingTop="3dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="3dp"
-                        android:singleLine="true"
-                        android:textSize="14sp"
+                        style="@style/Filter.Button.Outlined"
                         android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
                         android:text="@{filterVM.dateCheck ? DateFormat.getDateInstance(DateFormat.SHORT).format(filterVM.endDate) : @string/filter_end}"
                         app:isEnabled="@{filterVM.dateCheck}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/filter_start_date"
                         tools:text="End Date" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </ScrollView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/filter_action"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="6dp"
-                android:backgroundTint="@color/green_base"
-                android:minHeight="50dip"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:textSize="14sp"
+                style="@style/Button.TextOnly"
+                android:layout_marginStart="@dimen/filterDefaultMarginStartEnd"
+                android:layout_marginEnd="@dimen/filterDefaultMarginStartEnd"
                 android:onClick="@{() -> filterVM.applyFilterOC()}"
                 android:text="@{(!filterVM.accCheck &amp;&amp; !filterVM.catCheck &amp;&amp; !filterVM.dateCheck) ? @string/filter_reset : @string/filter_apply}"
+                android:textSize="@dimen/textSizeFilterButton"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                tools:text="Reset" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

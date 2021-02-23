@@ -13,7 +13,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="MissingConstraints">
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/ivchart_pie"
@@ -23,39 +24,38 @@
             android:layout_marginBottom="45dp"
             android:translationY="-6dp"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
-            app:setUpChart="@{ivc}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/emptyTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:gravity="center"
-            android:text="@string/empty_graph"
-            android:visibility="@{ivc.ctList.empty ? View.VISIBLE : View.INVISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:setUpChart="@{ivc}" />
 
         <TextView
             android:id="@+id/ivchart_total"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="23dp"
-            android:text="@{ivc.totalText}"
-            android:textSize="16sp"
+            android:layout_marginStart="@dimen/viewHolderMarginStartEnd"
+            android:layout_marginBottom="26dp"
+            android:text="@string/chart_total"
+            android:textSize="?attr/textSizeBase"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/ivchart_amount"
+            style="@style/TextView.Custom.Scrollable"
+            android:layout_marginBottom="26dp"
+            android:text="@{ivc.totalText}"
+            android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Total: $123,456,789,012" />
+            app:layout_constraintStart_toEndOf="@+id/ivchart_total"
+            tools:text=" $123,456,789,012" />
+
+        <TextView
+            android:id="@+id/emptyTextView"
+            style="@style/TextView.Custom.Empty"
+            android:text="@string/empty_graph"
+            android:visibility="@{ivc.ctList.empty ? View.VISIBLE : View.INVISIBLE}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

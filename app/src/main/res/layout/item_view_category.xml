@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/ivcat_name"
-            style="@style/TextView.Custom.ViewHolder"
+            style="@style/TextView.Custom.Scrollable.ViewHolder"
             android:text="@{category.category}"
             app:layout_constraintEnd_toStartOf="@+id/ivcat_edit"
             tools:text="Category Name" />

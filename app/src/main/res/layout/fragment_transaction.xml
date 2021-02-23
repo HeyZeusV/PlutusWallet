@@ -91,16 +91,11 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/tran_date"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Button.TextOnly"
                             android:layout_marginTop="10dp"
-                            android:backgroundTint="?attr/colorButtonBackground"
                             android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
                             android:text="@{tranVM.date}"
-                            android:textColor="?attr/colorButtonText"
                             android:textSize="?attr/textSizeBase"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/dateTextView"
                             tools:text="Wed Nov 14" />
 
@@ -119,16 +114,14 @@
 
                         <Spinner
                             android:id="@+id/tran_account"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Spinner.Custom.Base"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="12dp"
-                            android:background="@null"
                             app:entries="@{tranVM.accountList}"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/accountTextView"
                             app:layout_constraintTop_toBottomOf="@+id/tran_date"
-                            app:selectedValue="@={tranVM.account}" />
+                            app:selectedValue="@={tranVM.account}"
+                            tools:listitem="@layout/spinner_item" />
 
                         <TextView
                             android:id="@+id/totalTextView"
@@ -244,31 +237,27 @@
 
                         <Spinner
                             android:id="@+id/tran_expense_cat"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Spinner.Custom.Base"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="18dp"
-                            android:background="@null"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.expenseCatList}"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/categoryTextView"
                             app:layout_constraintTop_toBottomOf="@+id/typeTextView"
-                            app:selectedValue="@={tranVM.expenseCat}" />
+                            app:selectedValue="@={tranVM.expenseCat}"
+                            tools:listitem="@layout/spinner_item" />
 
                         <Spinner
                             android:id="@+id/tran_income_cat"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Spinner.Custom.Base"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="18dp"
-                            android:background="@null"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.incomeCatList}"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/categoryTextView"
                             app:layout_constraintTop_toBottomOf="@+id/typeTextView"
-                            app:selectedValue="@={tranVM.incomeCat}" />
+                            app:selectedValue="@={tranVM.incomeCat}"
+                            tools:listitem="@layout/spinner_item" />
 
                         <TextView
                             android:id="@+id/memoTextView"
@@ -308,11 +297,8 @@
 
                         <CheckBox
                             android:id="@+id/tran_repeating"
-                            android:layout_width="@dimen/minSize"
-                            android:layout_height="@dimen/minSize"
+                            style="@style/CheckBox.Custom"
                             android:layout_marginTop="4dp"
-                            android:background="?android:attr/listChoiceIndicatorMultiple"
-                            android:button="@null"
                             android:checked="@={tranVM.repeatCheck}"
                             app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
                             app:layout_constraintTop_toBottomOf="@+id/tran_memo" />
@@ -337,7 +323,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="7dp"
                             android:background="@null"
                             android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.periodArray}"
@@ -345,7 +331,8 @@
                             app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
                             app:layout_constraintTop_toBottomOf="@+id/tran_repeating"
                             app:selectedPosition="@={tranVM.tranLD.period}"
-                            tools:visibility="visible" />
+                            tools:visibility="visible"
+                            tools:listitem="@layout/spinner_item" />
 
                         <EditText
                             android:id="@+id/tran_frequency"

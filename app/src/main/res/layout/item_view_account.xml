@@ -20,7 +20,7 @@
 
         <TextView
             android:id="@+id/iva_name"
-            style="@style/TextView.Custom.ViewHolder"
+            style="@style/TextView.Custom.Scrollable.ViewHolder"
             android:text="@{account.account}"
             app:layout_constraintEnd_toStartOf="@+id/iva_edit"
             tools:text="Account Name" />

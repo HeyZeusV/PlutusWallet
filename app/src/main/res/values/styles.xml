@@ -29,22 +29,42 @@
         <item name="colorPrimaryDark">@color/purple_dark</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorSecondary">@color/green_base</item>
+        <item name="colorOnSurface">@color/colorText</item>
         <!-- views like checkboxes and text fields -->
         <item name="colorAccent">@color/green_base</item>
 
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="android:textColorHint">@color/textColorHint</item>
 
+        <item name="colorButtonBackground">@color/colorButtonBackground</item>
+        <item name="colorButtonText">@color/colorButtonText</item>
+        <item name="colorBackground">@color/colorBackground</item>
+
+        <item name="textSizeBase">@dimen/textSizeBase</item>
+
+        <item name="android:datePickerDialogTheme">@style/DatePickerTheme.Custom</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Dialog.Alert.Custom</item>
+        <item name="android:scrollbarThumbVertical">?attr/colorAccent</item>
+    </style>
+
+    <style name="Button.TextOnly" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:backgroundTint">?attr/colorButtonBackground</item>
+        <item name="android:minHeight">@dimen/minSize</item>
+        <item name="android:textColor">?attr/colorButtonText</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
     </style>
 
     <!-- Icon only Material Button -->
     <style name="Button.IconOnly.Custom.ViewHolder" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">@dimen/minSize</item>
         <item name="android:layout_height">@dimen/minSize</item>
-        <item name="android:layout_marginTop">@dimen/viewHolderMargin</item>
-        <item name="android:layout_marginEnd">@dimen/viewHolderMargin</item>
-        <item name="android:layout_marginBottom">@dimen/viewHolderMargin</item>
+        <item name="android:layout_marginTop">@dimen/viewHolderMarginTopBottom</item>
+        <item name="android:layout_marginEnd">@dimen/viewHolderMarginStartEnd</item>
+        <item name="android:layout_marginBottom">@dimen/viewHolderMarginTopBottom</item>
         <item name="android:backgroundTint">?attr/colorButtonBackground</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
@@ -55,11 +75,17 @@
         <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
 
-    <style name="TextView.Custom.ViewHolder" parent="">
+    <style name="Spinner.Custom.Base" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/viewHolderMargin</item>
-        <item name="android:layout_marginEnd">@dimen/viewHolderMargin</item>
+        <item name="android:background">@null</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+    </style>
+
+    <style name="TextView.Custom.Scrollable" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/viewHolderMarginStartEnd</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">true</item>
@@ -69,8 +95,32 @@
         <item name="android:singleLine">true</item>
         <item name="android:textSize">?attr/textSizeBase</item>
         <item name="layout_constraintBottom_toBottomOf">parent</item>
+    </style>
+
+    <style name="TextView.Custom.Scrollable.ViewHolder" parent="TextView.Custom.Scrollable">
+        <item name="android:layout_marginStart">@dimen/viewHolderMarginStartEnd</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <style name="TextView.Custom.Empty" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/emptyTextViewMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/emptyTextViewMarginStartEnd</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <style name="CheckBox.Custom" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawableRight">@drawable/checkbox_anim</item>
+        <item name="android:button">@null</item>
     </style>
 
     <style name="CircleIndicator.Custom" parent="">
@@ -81,7 +131,6 @@
         <item name="ci_drawable">@drawable/indicator_shape</item>
         <item name="ci_drawable_unselected">@drawable/indicator_shape</item>
         <item name="ci_gravity">bottom|center</item>
-        <item name="ci_height">8dp</item>
         <item name="ci_margin">5dp</item>
         <item name="ci_width">25dp</item>
         <item name="layout_constraintBottom_toBottomOf">parent</item>
@@ -214,5 +263,35 @@
     <style name="About.Custom.Info.Button" parent="About.Custom.Info.Base">
         <item name="android:backgroundTint">?attr/colorButtonBackground</item>
         <item name="android:textColor">?attr/colorButtonText</item>
+    </style>
+
+    <style name="Filter.TextView" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/filterTextViewMarginEnd</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+        <item name="android:textStyle">bold</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <style name="Filter.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/filterDefaultMarginStartEnd</item>
+        <item name="android:minHeight">@dimen/minSize</item>
+        <item name="android:textColor">@color/button_outlined_color_selector</item>
+        <item name="android:textSize">@dimen/textSizeFilterButton</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="strokeColor">@color/button_outlined_color_selector</item>
+    </style>
+
+    <style name="Filter.Spinner" parent="Spinner.Custom.Base">
+        <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/filterDefaultMarginStartEnd</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
     </style>
 </resources>
