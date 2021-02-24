@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorButtonBackground">#a5d6a7</color>
-    <color name="colorButtonText">#000000</color>
+    <color name="colorButtonText">#2f1c39</color>
 
     <color name="colorText">#FFFFFF</color>
     <color name="colorChipGreen">#5ecc02</color>
@@ -13,6 +13,8 @@
 
     <color name="colorDataPickerBackground">#24102f</color>
     <color name="colorDatePickerHeader">#2f1c39</color>
+
+    <color name="colorSettingsBackground">#1b1120</color>
 
     <color name="error">#FFBABA</color>
 

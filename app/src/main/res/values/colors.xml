@@ -14,6 +14,8 @@
     <color name="colorDataPickerBackground">#24102f</color>
     <color name="colorDatePickerHeader">#2f1c39</color>
 
+    <color name="colorSettingsBackground">#ffffff</color>
+
     <color name="error">@color/design_default_color_error</color>
 
     <color name="white">#FFFFFF</color>
