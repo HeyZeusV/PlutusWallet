@@ -20,31 +20,32 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:onClick="@{() -> listVM.openTranOC(ivt.id)}"
-        android:onLongClick="@{() -> listVM.deleteTranOC(ivt)}">
+        android:onLongClick="@{() -> listVM.deleteTranOC(ivt)}"
+        tools:ignore="RtlHardcoded">
 
         <TextView
             android:id="@+id/ivt_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:singleLine="true"
-            android:textSize="18sp"
+            style="@style/TextView.Custom.Scrollable"
+            android:layout_marginStart="@dimen/tranListMarginOuterStartEndTop"
+            android:layout_marginTop="@dimen/tranListMarginOuterStartEndTop"
+            android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
             android:text="@{ivt.title}"
-            app:layout_constraintEnd_toStartOf="@+id/ivt_total"
+            android:textColor="@color/textColorPrimary"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:selected="@{true}"
             tools:text="Transaction Title" />
 
         <TextView
             android:id="@+id/ivt_account"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="2dp"
-            android:singleLine="true"
+            style="@style/TextView.Custom.Scrollable"
+            android:layout_marginStart="@dimen/tranListMarginOuterStartEndTop"
+            android:layout_marginTop="@dimen/tranListMarginOuterBottomInnerTopBottom"
+            android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
+            android:textSize="@dimen/textSizeTranListViewHolder"
             android:text="@{ivt.account}"
+            app:selected="@{true}"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivt_title"
@@ -52,45 +53,19 @@
 
         <TextView
             android:id="@+id/ivt_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="2dp"
-            android:singleLine="true"
+            style="@style/TextView.Custom.Scrollable"
+            android:layout_marginStart="@dimen/tranListMarginOuterStartEndTop"
+            android:layout_marginTop="@dimen/tranListMarginOuterBottomInnerTopBottom"
+            android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
+            android:layout_marginBottom="@dimen/tranListMarginOuterBottomInnerTopBottom"
             android:text="@{DateFormat.getDateInstance(listVM.setVals.dateFormat).format(ivt.date)}"
+            android:textSize="@dimen/textSizeTranListViewHolder"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivt_account"
+            app:selected="@{true}"
             tools:text="Transaction Date" />
-
-        <TextView
-            android:id="@+id/ivt_total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:singleLine="true"
-            android:textColor='@{ivt.type.equals("Expense") ? @android:color/holo_red_dark : @android:color/holo_green_dark}'
-            android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ivt_title"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Transaction Total" />
-
-        <TextView
-            android:id="@+id/ivt_category"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:gravity="right"
-            android:singleLine="true"
-            android:text="@{ivt.category}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/ivt_total"
-            tools:ignore="RtlHardcoded"
-            tools:text="Category" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
@@ -99,5 +74,33 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
 
+        <TextView
+            android:id="@+id/ivt_total"
+            style="@style/TextView.Custom.Scrollable"
+            android:layout_marginStart="@dimen/tranListMarginInnerStartEnd"
+            android:layout_marginTop="@dimen/tranListMarginOuterStartEndTop"
+            android:layout_marginEnd="@dimen/tranListMarginOuterStartEndTop"
+            android:gravity="right"
+            android:textColor='@{ivt.type.equals("Expense") ? @color/expense_total : @color/income_total}'
+            app:selected="@{true}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Transaction Total" />
+
+        <TextView
+            android:id="@+id/ivt_category"
+            style="@style/TextView.Custom.Scrollable"
+            android:layout_marginStart="@dimen/tranListMarginInnerStartEnd"
+            android:layout_marginEnd="@dimen/tranListMarginOuterStartEndTop"
+            android:gravity="right"
+            android:textSize="@dimen/textSizeTranListViewHolder"
+            android:text="@{ivt.category}"
+            app:selected="@{true}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/ivt_total"
+            tools:text="Category" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

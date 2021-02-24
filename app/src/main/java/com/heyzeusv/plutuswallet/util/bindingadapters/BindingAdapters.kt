@@ -223,3 +223,12 @@ fun TextView.loadFile(file: String) {
         text = fileText
     }
 }
+
+/**
+ *  Sets TextView as [selected] in order to cause text to scroll if it is too long.
+ */
+@BindingAdapter("selected")
+fun TextView.selected(selected: Boolean) {
+
+    this.isSelected = selected
+}

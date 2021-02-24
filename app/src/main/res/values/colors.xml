@@ -26,6 +26,9 @@
     <color name="colorSurface">@color/white</color>
     <color name="colorBackground">#7c43bd</color>
 
+    <color name="expense_total">#ad0000</color>
+    <color name="income_total">#006300</color>
+
     <!-- Purple 900 -->
     <color name="purple_base">#4a148c</color>
     <color name="purple_dark">#12005e</color>

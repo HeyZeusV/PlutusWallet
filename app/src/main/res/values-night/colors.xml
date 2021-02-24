@@ -18,8 +18,8 @@
 
     <color name="white">#FFFFFF</color>
 
-    <color name="textColorPrimary">@android:color/primary_text_dark</color>
-    <color name="textColorSecondary">@android:color/secondary_text_dark</color>
+    <color name="textColorPrimary">@color/primary_text_dark</color>
+    <color name="textColorSecondary">@color/secondary_text_dark</color>
     <color name="textColorHint">#B3B3B3</color>
 
     <!-- AppTheme Colors -->
@@ -42,6 +42,9 @@
 <!--    <color name="green_base">#a5d6a7</color>-->
 <!--    <color name="green_dark">#75a478</color>-->
 <!--    <color name="green_light">#d7ffd9</color>-->
+
+    <color name="expense_total">#FF9494</color>
+    <color name="income_total">#85c700</color>
 
     <!-- Expense Chart Colors -->
     <!-- Red 900 -->

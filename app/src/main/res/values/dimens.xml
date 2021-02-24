@@ -9,11 +9,10 @@
 
     <dimen name="emptyTextViewMarginStartEnd">8dp</dimen>
 
-    <dimen name="chartMarginTopBottom">4dp</dimen>
-
     <dimen name="textSizeBase">18sp</dimen>
     <dimen name="textSizeFilterButton">16sp</dimen>
     <dimen name="textSizeSpinner">20sp</dimen>
+    <dimen name="textSizeTranListViewHolder">14sp</dimen>
 
     <!-- Minimum height for EditTexts and minimum size for CheckBoxes/Buttons -->
     <dimen name="minSize">49dp</dimen>
@@ -24,9 +23,13 @@
     <!-- TextViews that wrap_content -->
     <dimen name="textViewPaddingWrapContent">8dp</dimen>
 
-    <!-- Common margin size used in ViewHolders -->
-    <dimen name="viewHolderMarginTopBottom">8dp</dimen>
-    <dimen name="viewHolderMarginStartEnd">12dp</dimen>
+    <!-- Account/Category Fragment margins -->
+    <dimen name="accCatMarginTopBottom">8dp</dimen>
+    <dimen name="accCatMarginStartEnd">12dp</dimen>
+
+    <!-- ChartFragment margin -->
+    <dimen name="chartMarginTopBottom">4dp</dimen>
+    <dimen name="chartMarginStartEnd">6dp</dimen>
 
     <dimen name="scrollbarSmall">2dp</dimen>
 
@@ -41,4 +44,9 @@
     <!-- FilterFragment margins -->
     <dimen name="filterDefaultMarginStartEnd">6dp</dimen>
     <dimen name="filterTextViewMarginEnd">44dp</dimen>
+
+    <!-- TransactionListFragment -->
+    <dimen name="tranListMarginOuterStartEndTop">8dp</dimen>
+    <dimen name="tranListMarginInnerStartEnd">4dp</dimen>
+    <dimen name="tranListMarginOuterBottomInnerTopBottom">2dp</dimen>
 </resources>

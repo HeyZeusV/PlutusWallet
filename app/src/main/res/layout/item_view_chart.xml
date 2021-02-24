@@ -34,8 +34,9 @@
             android:id="@+id/ivchart_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/viewHolderMarginStartEnd"
+            android:layout_marginStart="@dimen/chartMarginStartEnd"
             android:layout_marginBottom="26dp"
+            android:textColor="@color/textColorPrimary"
             android:text="@string/chart_total"
             android:textSize="?attr/textSizeBase"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
@@ -45,10 +46,13 @@
         <TextView
             android:id="@+id/ivchart_amount"
             style="@style/TextView.Custom.Scrollable"
+            android:layout_marginEnd="@dimen/chartMarginStartEnd"
             android:layout_marginBottom="26dp"
+            android:textColor="@color/textColorPrimary"
             android:text="@{ivc.totalText}"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivchart_total"
             tools:text=" $123,456,789,012" />
 

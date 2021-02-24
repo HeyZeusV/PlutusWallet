@@ -62,9 +62,9 @@
     <style name="Button.IconOnly.Custom.ViewHolder" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">@dimen/minSize</item>
         <item name="android:layout_height">@dimen/minSize</item>
-        <item name="android:layout_marginTop">@dimen/viewHolderMarginTopBottom</item>
-        <item name="android:layout_marginEnd">@dimen/viewHolderMarginStartEnd</item>
-        <item name="android:layout_marginBottom">@dimen/viewHolderMarginTopBottom</item>
+        <item name="android:layout_marginTop">@dimen/accCatMarginTopBottom</item>
+        <item name="android:layout_marginEnd">@dimen/accCatMarginStartEnd</item>
+        <item name="android:layout_marginBottom">@dimen/accCatMarginTopBottom</item>
         <item name="android:backgroundTint">?attr/colorButtonBackground</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
@@ -85,7 +85,6 @@
     <style name="TextView.Custom.Scrollable" parent="">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginEnd">@dimen/viewHolderMarginStartEnd</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">true</item>
@@ -94,11 +93,12 @@
         <item name="android:scrollHorizontally">true</item>
         <item name="android:singleLine">true</item>
         <item name="android:textSize">?attr/textSizeBase</item>
-        <item name="layout_constraintBottom_toBottomOf">parent</item>
     </style>
 
     <style name="TextView.Custom.Scrollable.ViewHolder" parent="TextView.Custom.Scrollable">
-        <item name="android:layout_marginStart">@dimen/viewHolderMarginStartEnd</item>
+        <item name="android:layout_marginStart">@dimen/accCatMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/accCatMarginStartEnd</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
