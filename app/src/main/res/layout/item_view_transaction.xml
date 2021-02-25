@@ -43,12 +43,12 @@
             android:layout_marginStart="@dimen/tranListMarginOuterStartEndTop"
             android:layout_marginTop="@dimen/tranListMarginOuterBottomInnerTopBottom"
             android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
-            android:textSize="@dimen/textSizeTranListViewHolder"
             android:text="@{ivt.account}"
-            app:selected="@{true}"
+            android:textSize="@dimen/textSizeTranListViewHolder"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivt_title"
+            app:selected="@{true}"
             tools:text="None" />
 
         <TextView
@@ -82,10 +82,10 @@
             android:layout_marginEnd="@dimen/tranListMarginOuterStartEndTop"
             android:gravity="right"
             android:textColor='@{ivt.type.equals("Expense") ? @color/colorExpenseTotal : @color/colorIncomeTotal}'
-            app:selected="@{true}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="parent"
+            app:selected="@{true}"
             tools:text="Transaction Total" />
 
         <TextView
@@ -94,13 +94,13 @@
             android:layout_marginStart="@dimen/tranListMarginInnerStartEnd"
             android:layout_marginEnd="@dimen/tranListMarginOuterStartEndTop"
             android:gravity="right"
-            android:textSize="@dimen/textSizeTranListViewHolder"
             android:text="@{ivt.category}"
-            app:selected="@{true}"
+            android:textSize="@dimen/textSizeTranListViewHolder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline"
             app:layout_constraintTop_toBottomOf="@+id/ivt_total"
+            app:selected="@{true}"
             tools:text="Category" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

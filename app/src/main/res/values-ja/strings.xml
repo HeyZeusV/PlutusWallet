@@ -21,8 +21,7 @@
     <string name="app_icon">アプリアイコン</string>
     <string name="category_all">すべて</string>
     <string name="category_create">新しいカテゴリを作成</string>
-    <string name="empty_graph">適用されるフィルターを満たすトランザクションはありません！</string>
-    <string name="empty_list">適用されるフィルターを満たすトランザクションはありません！\n下のボタンを押して、新しいトランザクションを追加してください！</string>
+    <string name="cfl_no_transactions">適用されるフィルターを満たすトランザクションはありません！</string>
     <string name="filter_account">口座:</string>
     <string name="filter_apply">適用する</string>
     <string name="filter_category">カテゴリ:</string>

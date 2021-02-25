@@ -5,14 +5,14 @@
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/activity_drawer"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_container"
@@ -27,9 +27,9 @@
             android:id="@+id/activity_nav_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:visibility="invisible"
             android:layout_gravity="start"
-            app:menu="@menu/navigation_menu"
-            app:headerLayout="@layout/navigation_header"/>
+            android:visibility="invisible"
+            app:headerLayout="@layout/navigation_header"
+            app:menu="@menu/navigation_menu" />
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

@@ -21,8 +21,7 @@
     <string name="app_icon">ไอคอนแอป</string>
     <string name="category_all">ทั้งหมด</string>
     <string name="category_create">สร้างหมวดหมู่ใหม่</string>
-    <string name="empty_graph">ไม่มีการทำธุรกรรมใด ๆ เพื่อดำเนินการตัวกรองที่ใช้!</string>
-    <string name="empty_list">ไม่มีการทำธุรกรรมใดที่ตรงตามตัวกรองที่ใช้!\nกดปุ่มด้านล่างเพื่อเพิ่มธุรกรรมใหม่!</string>
+    <string name="cfl_no_transactions">ไม่มีการทำธุรกรรมใด ๆ เพื่อดำเนินการตัวกรองที่ใช้!</string>
     <string name="filter_account">บัญชี:</string>
     <string name="filter_apply">ใช้</string>
     <string name="filter_category">ประเภท:</string>

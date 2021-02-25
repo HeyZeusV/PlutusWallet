@@ -25,8 +25,7 @@
     <string name="app_name" translatable="false">Plutus\' Wallet</string>
     <string name="category_all">All</string>
     <string name="category_create">Create New Category</string>
-    <string name="empty_graph">No transactions fulfill the filters being applied!</string>
-    <string name="empty_list">No transactions fulfill the filters being applied! \nPress the button below to add a new transaction!</string>
+    <string name="cfl_no_transactions">No transactions fulfill the filters being applied!</string>
     <string name="filter_account">Account:</string>
     <string name="filter_apply">Apply</string>
     <string name="filter_category">Category:</string>

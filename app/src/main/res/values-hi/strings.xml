@@ -21,8 +21,7 @@
     <string name="app_icon">ऐप आइकन</string>
     <string name="category_all">सब</string>
     <string name="category_create">नई श्रेणी बनाएँ</string>
-    <string name="empty_graph">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!</string>
-    <string name="empty_list">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!\nनया लेनदेन जोड़ने के लिए नीचे दिया गया बटन दबाएं!</string>
+    <string name="cfl_no_transactions">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!</string>
     <string name="filter_account">लेखा:</string>
     <string name="filter_apply">लागू</string>
     <string name="filter_category">वर्ग:</string>

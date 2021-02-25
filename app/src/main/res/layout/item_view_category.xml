@@ -25,8 +25,8 @@
             android:id="@+id/ivcat_name"
             style="@style/AccCat.TextView.Scrollable"
             android:text="@{category.category}"
-            app:selected="@{true}"
             app:layout_constraintEnd_toStartOf="@+id/ivcat_edit"
+            app:selected="@{true}"
             tools:text="Category Name" />
 
         <com.google.android.material.button.MaterialButton

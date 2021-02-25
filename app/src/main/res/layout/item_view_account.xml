@@ -22,8 +22,8 @@
             android:id="@+id/iva_name"
             style="@style/AccCat.TextView.Scrollable"
             android:text="@{account.account}"
-            app:selected="@{true}"
             app:layout_constraintEnd_toStartOf="@+id/iva_edit"
+            app:selected="@{true}"
             tools:text="Account Name" />
 
         <com.google.android.material.button.MaterialButton

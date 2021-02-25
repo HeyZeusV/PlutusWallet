@@ -71,8 +71,8 @@
                             android:layout_marginTop="8dp"
                             android:hint="@string/transaction_title_hint"
                             android:importantForAutofill="no"
-                            android:text="@={tranVM.tranLD.title}"
                             android:maxLength="32"
+                            android:text="@={tranVM.tranLD.title}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
@@ -331,8 +331,8 @@
                             app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
                             app:layout_constraintTop_toBottomOf="@+id/tran_repeating"
                             app:selectedPosition="@={tranVM.tranLD.period}"
-                            tools:visibility="visible"
-                            tools:listitem="@layout/spinner_item" />
+                            tools:listitem="@layout/spinner_item"
+                            tools:visibility="visible" />
 
                         <EditText
                             android:id="@+id/tran_frequency"

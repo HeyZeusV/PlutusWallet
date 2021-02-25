@@ -36,8 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/chartMarginStartEnd"
             android:layout_marginBottom="26dp"
-            android:textColor="@color/textColorPrimary"
             android:text="@string/chart_total"
+            android:textColor="@color/textColorPrimary"
             android:textSize="?attr/textSizeBase"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -48,18 +48,18 @@
             style="@style/TextView.Scrollable"
             android:layout_marginEnd="@dimen/chartMarginStartEnd"
             android:layout_marginBottom="26dp"
-            android:textColor="@color/textColorPrimary"
             android:text="@{ivc.totalText}"
+            android:textColor="@color/textColorPrimary"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivchart_total"
             tools:text=" $123,456,789,012" />
 
         <TextView
             android:id="@+id/emptyTextView"
             style="@style/TextView.Empty"
-            android:text="@string/empty_graph"
+            android:text="@string/cfl_no_transactions"
             android:visibility="@{ivc.ctList.empty ? View.VISIBLE : View.INVISIBLE}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

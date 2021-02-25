@@ -35,7 +35,7 @@
             <TextView
                 android:id="@+id/emptyListTextView"
                 style="@style/TextView.Empty"
-                android:text="@string/empty_list"
+                android:text="@string/cfl_no_transactions"
                 android:visibility="@{!listVM.ivtEmpty ? View.INVISIBLE : View.VISIBLE}" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

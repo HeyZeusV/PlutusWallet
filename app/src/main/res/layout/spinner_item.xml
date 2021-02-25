@@ -5,10 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layoutDirection="ltr"
-    android:textSize="@dimen/textSizeBase"
     android:gravity="left"
+    android:layoutDirection="ltr"
     android:singleLine="true"
     android:textColor="@color/textColorPrimary"
+    android:textSize="@dimen/textSizeBase"
     app:drawableRightCompat="@drawable/ic_arrow_drop_down_24px"
     tools:ignore="RtlHardcoded" />

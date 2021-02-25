@@ -21,8 +21,7 @@
     <string name="app_icon">앱 아이콘</string>
     <string name="category_all">모두</string>
     <string name="category_create">새 카테고리 만들기</string>
-    <string name="empty_graph">적용된 필터를 수행하는 트랜잭션이 없습니다!</string>
-    <string name="empty_list">적용된 필터를 수행하는 트랜잭션이 없습니다!\n새 거래를 추가하려면 아래 버튼을 누르십시오!</string>
+    <string name="cfl_no_transactions">적용된 필터를 수행하는 트랜잭션이 없습니다!</string>
     <string name="filter_account">계정:</string>
     <string name="filter_apply">대다</string>
     <string name="filter_category">범주:</string>

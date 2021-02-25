@@ -7,5 +7,5 @@
         android:id="@+id/transaction_save"
         android:icon="@drawable/ic_round_save_24"
         android:title="@string/transaction_save"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>

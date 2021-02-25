@@ -49,210 +49,6 @@
         <item name="android:scrollbarThumbVertical">?attr/colorAccent</item>
     </style>
 
-    <!-- Text only Material Button -->
-    <style name="Button.TextOnly" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:backgroundTint">?attr/colorButtonBackground</item>
-        <item name="android:minHeight">@dimen/minSize</item>
-        <item name="android:textColor">?attr/colorButtonText</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-    </style>
-
-    <!-- Icon only Material Button -->
-    <style name="AccCat.Button.IconOnly" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_width">@dimen/minSize</item>
-        <item name="android:layout_height">@dimen/minSize</item>
-        <item name="android:layout_marginTop">@dimen/accCatMarginTopBottom</item>
-        <item name="android:layout_marginEnd">@dimen/accCatMarginStartEnd</item>
-        <item name="android:layout_marginBottom">@dimen/accCatMarginTopBottom</item>
-        <item name="android:backgroundTint">@color/button_filled_bg_color_selector</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
-        <item name="iconGravity">textStart</item>
-        <item name="iconPadding">0dp</item>
-        <item name="iconTint">@color/button_filled_icon_color_selector</item>
-        <item name="layout_constraintBottom_toBottomOf">parent</item>
-        <item name="layout_constraintTop_toTopOf">parent</item>
-    </style>
-
-    <!-- All Spinners use this style or child style -->
-    <style name="Spinner.Base" parent="">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@null</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
-    </style>
-
-    <!-- TextView that can scroll; still requires selected = true through DataBinding -->
-    <style name="TextView.Scrollable" parent="">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:ellipsize">marquee</item>
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">true</item>
-        <item name="android:marqueeRepeatLimit">marquee_forever</item>
-        <item name="android:maxLength">32</item>
-        <item name="android:scrollHorizontally">true</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:textSize">?attr/textSizeBase</item>
-    </style>
-
-    <!-- Adds common constraints/margins used by TextViews in Account/Category Fragment -->
-    <style name="AccCat.TextView.Scrollable" parent="TextView.Scrollable">
-        <item name="android:layout_marginStart">@dimen/accCatMarginStartEnd</item>
-        <item name="android:layout_marginEnd">@dimen/accCatMarginStartEnd</item>
-        <item name="layout_constraintBottom_toBottomOf">parent</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-        <item name="layout_constraintTop_toTopOf">parent</item>
-    </style>
-
-    <!-- Used by TextView that warns user that no Transaction fulfill filter -->
-    <style name="TextView.Empty" parent="">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/emptyTextViewMarginStartEnd</item>
-        <item name="android:layout_marginEnd">@dimen/emptyTextViewMarginStartEnd</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textSize">?attr/textSizeBase</item>
-        <item name="layout_constraintBottom_toBottomOf">parent</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-        <item name="layout_constraintTop_toTopOf">parent</item>
-    </style>
-
-    <!-- All CheckBoxes use this style -->
-    <style name="CheckBox" parent="">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:drawableRight">@drawable/checkbox_anim</item>
-        <item name="android:button">@null</item>
-    </style>
-
-    <!-- All CircleIndicator use this style -->
-    <style name="CircleIndicator" parent="">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">40dp</item>
-        <item name="ci_animator">@animator/indicator_animator</item>
-        <item name="ci_animator_reverse">@animator/indicator_reverse_animator</item>
-        <item name="ci_drawable">@drawable/indicator_shape</item>
-        <item name="ci_drawable_unselected">@drawable/indicator_shape</item>
-        <item name="ci_gravity">bottom|center</item>
-        <item name="ci_margin">5dp</item>
-        <item name="ci_width">25dp</item>
-        <item name="layout_constraintBottom_toBottomOf">parent</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-    </style>
-
-    <!-- All AppBar use this style to change icon highlight color -->
-    <style name="AppBar">
-        <item name="colorControlHighlight">@color/colorRipple</item>
-    </style>
-
-    <!-- All ToolBar use this style -->
-    <style name="ToolBar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="titleTextColor">@color/white</item>
-    </style>
-
-    <!-- All CardViews use this style or child style just missing margins -->
-    <style name="CardView.Base" parent="Widget.MaterialComponents.CardView">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="cardCornerRadius">@dimen/cardCornerRadius</item>
-        <item name="cardUseCompatPadding">true</item>
-    </style>
-
-    <!-- Used by CardViews that take full screen, ie. TransactionFragment -->
-    <style name="CardView.FullScreen" parent="CardView.Base">
-        <item name="android:layout_margin">@dimen/cardFullMargin</item>
-    </style>
-
-    <!-- All EditTexts in TransactionFragment use this style or child style -->
-    <style name="Transaction.EditText.Base" parent="">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">?attr/textSizeBase</item>
-        <item name="android:minHeight">@dimen/minSize</item>
-    </style>
-
-    <!-- EditText that is single line -->
-    <style name="Transaction.EditText.SingleLine" parent="Transaction.EditText.Base">
-        <item name="android:inputType">text</item>
-        <item name="android:maxLines">1</item>
-    </style>
-
-    <!-- EditText that is multiline with max lines and length -->
-    <style name="Transaction.EditText.MultiLine" parent="Transaction.EditText.Base">
-        <item name="android:inputType">textMultiLine</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">5</item>
-        <item name="android:maxLength">512</item>
-    </style>
-
-    <!-- Used by Snackbar to determine where they appear -->
-    <style name="SnackBar.Anchor" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">10dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
-        <item name="layout_constraintBottom_toBottomOf">@id/materialCardView</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-    </style>
-
-    <!-- Sets cursor color in AlertDialog with text input -->
-    <style name="ThemeOverlay.TextInputLayout.OutlinedBox" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
-        <item name="colorControlActivated">?attr/colorAccent</item>
-    </style>
-
-    <!-- Used by AlertDialog with text input -->
-    <style name="TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:textColorHint">?attr/colorAccent</item>
-        <item name="hintTextColor">?attr/colorAccent</item>
-        <item name="boxStrokeColor">?attr/colorAccent</item>
-        <item name="android:theme">@style/ThemeOverlay.TextInputLayout.OutlinedBox</item>
-        <item name="errorEnabled">true</item>
-        <item name="boxStrokeErrorColor">?attr/colorError</item>
-        <item name="errorTextColor">?attr/colorError</item>
-        <item name="errorIconTint">?attr/colorError</item>
-    </style>
-
-    <!-- AlertDialog button style that changes text color -->
-    <style name="Dialog.Alert.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/colorAlertDialogButtonText</item>
-    </style>
-
-    <!-- Sets above button style to positive and negative buttons of AlertDialog -->
-    <style name="ThemeOverlay.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="buttonBarPositiveButtonStyle">@style/Dialog.Alert.Button</item>
-        <item name="buttonBarNegativeButtonStyle">@style/Dialog.Alert.Button</item>
-    </style>
-
-    <!-- Theme for DatePickerDialog -->
-    <style name="DatePickerTheme" parent="Theme.MaterialComponents.Dialog">
-        <item name="android:textColorPrimaryInverse">@color/colorDatePickerSelectedDate</item>
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
-        <item name="android:textColorSecondary">@color/textColorSecondary</item>
-        <item name="colorControlActivated">@color/green_base</item>
-        <item name="android:datePickerStyle">@style/DatePickerStyle</item>
-        <item name="android:windowBackground">@color/colorDatePickerBackground</item>
-        <item name="android:buttonBarPositiveButtonStyle">@style/Dialog.Alert.Button</item>
-        <item name="android:buttonBarNegativeButtonStyle">@style/Dialog.Alert.Button</item>
-    </style>
-
-    <!-- Additional style used by above DatePicker theme to change header colors -->
-    <style name="DatePickerStyle" parent="@android:style/Widget.Material.DatePicker">
-        <item name="android:headerBackground">@color/colorDatePickerHeader</item>
-        <item name="android:headerMonthTextAppearance">@style/DatePickerStyle.HeaderText</item>
-    </style>
-
-    <!-- Changes text color for DatePickerDialog used by above style -->
-    <style name="DatePickerStyle.HeaderText" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textColor">@color/date_picker_header_text_color_selector</item>
-    </style>
-
     <!-- Used by almost all views in AboutFragment -->
     <style name="About.Base" parent="">
         <item name="android:layout_width">wrap_content</item>
@@ -287,7 +83,7 @@
     <style name="About.NestedScrollView" parent="About.Base">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/aboutNestedScrollViewHeight</item>
-        <item name="android:background">@drawable/round_sv_bg</item>
+        <item name="android:background">@drawable/scrollview_bg</item>
         <item name="android:scrollbarSize">@dimen/scrollbarSmall</item>
         <item name="android:scrollbars">vertical</item>
         <item name="android:visibility">gone</item>
@@ -303,17 +99,30 @@
         <item name="android:padding">@dimen/AboutNestedScrollViewChildPadding</item>
     </style>
 
-    <!-- All TextViews in FilterFragment use this style -->
-    <style name="Filter.TextView" parent="">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
-        <item name="android:layout_marginEnd">@dimen/filterTextViewMarginEnd</item>
-        <item name="android:textColor">@color/textColorSecondary</item>
-        <item name="android:textSize">?attr/textSizeBase</item>
-        <item name="android:textStyle">bold</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
+    <!-- Icon only Material Button -->
+    <style name="AccCat.Button.IconOnly" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">@dimen/minSize</item>
+        <item name="android:layout_height">@dimen/minSize</item>
+        <item name="android:layout_marginTop">@dimen/accCatMarginTopBottom</item>
+        <item name="android:layout_marginEnd">@dimen/accCatMarginStartEnd</item>
+        <item name="android:layout_marginBottom">@dimen/accCatMarginTopBottom</item>
+        <item name="android:backgroundTint">@color/button_filled_bg_color_selector</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconTint">@color/button_filled_icon_color_selector</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <!-- Adds common constraints/margins used by TextViews in Account/Category Fragment -->
+    <style name="AccCat.TextView.Scrollable" parent="TextView.Scrollable">
+        <item name="android:layout_marginStart">@dimen/accCatMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/accCatMarginStartEnd</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
 
     <!-- Outlined Button style used by several Buttons in FilterFragment -->
@@ -335,5 +144,197 @@
         <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
         <item name="android:layout_marginEnd">@dimen/filterDefaultMarginStartEnd</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <!-- All TextViews in FilterFragment use this style -->
+    <style name="Filter.TextView" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/filterTextViewMarginEnd</item>
+        <item name="android:textColor">@color/textColorSecondary</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+        <item name="android:textStyle">bold</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <!-- All EditTexts in TransactionFragment use this style or child style -->
+    <style name="Transaction.EditText.Base" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+        <item name="android:minHeight">@dimen/minSize</item>
+    </style>
+
+    <!-- EditText that is multiline with max lines and length -->
+    <style name="Transaction.EditText.MultiLine" parent="Transaction.EditText.Base">
+        <item name="android:inputType">textMultiLine</item>
+        <item name="android:minLines">1</item>
+        <item name="android:maxLines">5</item>
+        <item name="android:maxLength">512</item>
+    </style>
+
+    <!-- EditText that is single line -->
+    <style name="Transaction.EditText.SingleLine" parent="Transaction.EditText.Base">
+        <item name="android:inputType">text</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <!-- All AppBar use this style to change icon highlight color -->
+    <style name="AppBar">
+        <item name="colorControlHighlight">@color/colorRipple</item>
+    </style>
+
+    <!-- Text only Material Button -->
+    <style name="Button.TextOnly" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:backgroundTint">?attr/colorButtonBackground</item>
+        <item name="android:minHeight">@dimen/minSize</item>
+        <item name="android:textColor">?attr/colorButtonText</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <!-- All CardViews use this style or child style just missing margins -->
+    <style name="CardView.Base" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="cardCornerRadius">@dimen/cardCornerRadius</item>
+        <item name="cardUseCompatPadding">true</item>
+    </style>
+
+    <!-- Used by CardViews that take full screen, ie. TransactionFragment -->
+    <style name="CardView.FullScreen" parent="CardView.Base">
+        <item name="android:layout_margin">@dimen/cardFullMargin</item>
+    </style>
+
+
+    <!-- All CheckBoxes use this style -->
+    <style name="CheckBox" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawableRight">@drawable/checkbox_anim</item>
+        <item name="android:button">@null</item>
+    </style>
+
+    <!-- All CircleIndicator use this style -->
+    <style name="CircleIndicator" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="ci_animator">@animator/indicator_animator</item>
+        <item name="ci_animator_reverse">@animator/indicator_reverse_animator</item>
+        <item name="ci_drawable">@drawable/circle_indicator_shape</item>
+        <item name="ci_drawable_unselected">@drawable/circle_indicator_shape</item>
+        <item name="ci_gravity">bottom|center</item>
+        <item name="ci_margin">5dp</item>
+        <item name="ci_width">25dp</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <!-- Theme for DatePickerDialog -->
+    <style name="DatePickerTheme" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:textColorPrimaryInverse">@color/colorDatePickerSelectedDate</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="colorControlActivated">@color/green_base</item>
+        <item name="android:datePickerStyle">@style/DatePickerStyle</item>
+        <item name="android:windowBackground">@color/colorDatePickerBackground</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/Dialog.Alert.Button</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/Dialog.Alert.Button</item>
+    </style>
+
+    <!-- Additional style used by above DatePicker theme to change header colors -->
+    <style name="DatePickerStyle" parent="@android:style/Widget.Material.DatePicker">
+        <item name="android:headerBackground">@color/colorDatePickerHeader</item>
+        <item name="android:headerMonthTextAppearance">@style/DatePickerStyle.HeaderText</item>
+    </style>
+
+    <!-- Changes text color for DatePickerDialog used by above style -->
+    <style name="DatePickerStyle.HeaderText" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">@color/date_picker_header_text_color_selector</item>
+    </style>
+
+    <!-- AlertDialog button style that changes text color -->
+    <style name="Dialog.Alert.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorAlertDialogButtonText</item>
+    </style>
+
+    <!-- Sets above button style to positive and negative buttons of AlertDialog -->
+    <style name="ThemeOverlay.Dialog.Alert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/Dialog.Alert.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Dialog.Alert.Button</item>
+    </style>
+
+    <!-- Used by Snackbar to determine where they appear -->
+    <style name="SnackBar.Anchor" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">10dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="layout_constraintBottom_toBottomOf">@id/materialCardView</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <!-- All Spinners use this style or child style -->
+    <style name="Spinner.Base" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@null</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+    </style>
+
+    <!-- Sets cursor color in AlertDialog with text input -->
+    <style name="ThemeOverlay.TextInputLayout.OutlinedBox" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="colorControlActivated">?attr/colorAccent</item>
+    </style>
+
+    <!-- Used by AlertDialog with text input -->
+    <style name="TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">?attr/colorAccent</item>
+        <item name="hintTextColor">?attr/colorAccent</item>
+        <item name="boxStrokeColor">?attr/colorAccent</item>
+        <item name="android:theme">@style/ThemeOverlay.TextInputLayout.OutlinedBox</item>
+        <item name="errorEnabled">true</item>
+        <item name="boxStrokeErrorColor">?attr/colorError</item>
+        <item name="errorTextColor">?attr/colorError</item>
+        <item name="errorIconTint">?attr/colorError</item>
+    </style>
+
+    <!-- Used by TextView that warns user that no Transaction fulfill filter -->
+    <style name="TextView.Empty" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/emptyTextViewMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/emptyTextViewMarginStartEnd</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <!-- TextView that can scroll; still requires selected = true through DataBinding -->
+    <style name="TextView.Scrollable" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+        <item name="android:maxLength">32</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+    </style>
+
+    <!-- All ToolBar use this style -->
+    <style name="ToolBar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="titleTextColor">@color/white</item>
     </style>
 </resources>

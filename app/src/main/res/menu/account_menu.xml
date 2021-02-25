@@ -7,5 +7,5 @@
         android:id="@+id/account_new"
         android:icon="@drawable/ic_baseline_add_24"
         android:title="@string/account_new"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>
