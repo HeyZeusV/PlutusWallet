@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
@@ -91,6 +92,7 @@ class CategoryFragment : BaseFragment() {
                 binding.root, getString(R.string.snackbar_exists, name), Snackbar.LENGTH_SHORT
             )
             existBar.anchorView = binding.categoryAnchor
+            existBar.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSnackbarText))
             existBar.show()
 
         })

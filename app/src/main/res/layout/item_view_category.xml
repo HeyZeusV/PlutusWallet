@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/ivcat_name"
-            style="@style/TextView.Custom.Scrollable.ViewHolder"
+            style="@style/AccCat.TextView.Scrollable"
             android:text="@{category.category}"
             app:selected="@{true}"
             app:layout_constraintEnd_toStartOf="@+id/ivcat_edit"
@@ -31,14 +31,14 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ivcat_edit"
-            style="@style/Button.IconOnly.Custom.ViewHolder"
+            style="@style/AccCat.Button.IconOnly"
             android:onClick="@{() -> catVM.editCategoryOC(category)}"
             app:icon="@drawable/ic_baseline_edit_24"
             app:layout_constraintEnd_toStartOf="@+id/ivcat_delete" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ivcat_delete"
-            style="@style/Button.IconOnly.Custom.ViewHolder"
+            style="@style/AccCat.Button.IconOnly"
             android:enabled="false"
             android:onClick="@{() -> catVM.deleteCategoryOC(category)}"
             app:icon="@drawable/ic_baseline_delete_24"

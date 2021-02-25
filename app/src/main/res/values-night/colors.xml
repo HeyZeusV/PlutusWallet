@@ -1,70 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorButtonBackground">#a5d6a7</color>
-    <color name="colorButtonText">#2f1c39</color>
-
-    <color name="colorText">#FFFFFF</color>
-    <color name="colorChipGreen">#5ecc02</color>
-
-    <color name="colorChartText">#FFFFFF</color>
-    <color name="colorChartHole">#2f1c39</color>
-
-    <color name="colorAlertDialogButtonText">#FFB3FF</color>
-
-    <color name="colorDataPickerBackground">#24102f</color>
-    <color name="colorDatePickerHeader">#2f1c39</color>
-
-    <color name="colorSettingsBackground">#1b1120</color>
-
-    <color name="error">#FFBABA</color>
-
-    <color name="white">#FFFFFF</color>
-
-    <color name="textColorPrimary">@color/primary_text_dark</color>
-    <color name="textColorSecondary">@color/secondary_text_dark</color>
-    <color name="textColorHint">#B3B3B3</color>
+    <!-- Primary, Primary Dark, Secondary -->
+    <color name="purple_base">#24102f</color>
+    <color name="purple_dark">#1b1120</color>
+    <color name="green_base">#a5d6a7</color>
 
     <!-- AppTheme Colors -->
     <color name="colorSurface">@color/purple_base</color>
     <color name="colorBackground">#1b1120</color>
+    <color name="colorError">#ffbaba</color>
+    <color name="colorButtonBackground">#a5d6a7</color>
+    <color name="colorButtonText">#2f1c39</color>
 
-    <!-- Purple 200 -->
-    <color name="purple_base">#24102f</color>
-    <color name="purple_dark">#1b1120</color>
-    <color name="purple_light">#ffc4ff</color>
-    <!-- Green 200  -->
-    <color name="green_base">#a5d6a7</color>
-    <color name="green_dark">#75a478</color>
-    <color name="green_light">#d7ffd9</color>
-<!--    &lt;!&ndash; Purple 200 &ndash;&gt;-->
-<!--    <color name="purple_base">#ce93d8</color>-->
-<!--    <color name="purple_dark">#9c64a6</color>-->
-<!--    <color name="purple_light">#ffc4ff</color>-->
-<!--    &lt;!&ndash; Green 200  &ndash;&gt;-->
-<!--    <color name="green_base">#a5d6a7</color>-->
-<!--    <color name="green_dark">#75a478</color>-->
-<!--    <color name="green_light">#d7ffd9</color>-->
+    <!-- Chip color in ChipGroup -->
+    <color name="colorChipGreen">#5ecc02</color>
 
-    <color name="expense_total">#FF9494</color>
-    <color name="income_total">#85c700</color>
+    <!-- Chart text colors -->
+    <color name="colorChartText">@color/white</color>
+    <color name="colorChartHole">#2f1c39</color>
+
+    <color name="colorAlertDialogButtonText">#ffb3ff</color>
+
+    <color name="colorSnackbarText">@color/black</color>
+
+    <!-- DatePickerDialog colors -->
+    <color name="colorDatePickerBackground">#24102f</color>
+    <color name="colorDatePickerHeader">#2f1c39</color>
+    <color name="colorDatePickerSelectedDate">@color/black</color>
+
+    <color name="colorSettingsBackground">#1b1120</color>
+
+    <!-- Text color throughout App -->
+    <color name="textColorPrimary">@color/primary_text_dark</color>
+    <color name="textColorSecondary">@color/secondary_text_dark</color>
+    <color name="textColorHint">#b3b3b3</color>
+
+    <!-- TransactionList ViewHolder total color -->
+    <color name="colorExpenseTotal">#ff9494</color>
+    <color name="colorIncomeTotal">#85c700</color>
 
     <!-- Expense Chart Colors -->
     <!-- Red 900 -->
-    <color name="expense_red">#b71c1c</color>
+    <color name="colorExpenseOne">#b71c1c</color>
     <!-- Lime 900 -->
-    <color name="expense_yellow">#827717</color>
+    <color name="colorExpenseTwo">#827717</color>
     <!-- Pink 800 -->
-    <color name="expense_pink">#ad1457</color>
+    <color name="colorExpenseThree">#ad1457</color>
     <!-- Brown 400 -->
-    <color name="expense_orange">#8d6e63</color>
+    <color name="colorExpenseFour">#8d6e63</color>
 
     <!-- Income Chart Colors -->
     <!-- Green 800 -->
-    <color name="income_green">#2e7d32</color>
+    <color name="colorIncomeOne">#2e7d32</color>
     <!-- Teal 800 -->
-    <color name="income_teal">#00695c</color>
+    <color name="colorIncomeTwo">#00695c</color>
     <!-- Blue 800 -->
-    <color name="income_blue">#1565c0</color>
+    <color name="colorIncomeThree">#1565c0</color>
     <!-- Deep Purple 600 -->
-    <color name="income_purple">#5e35b1</color>
+    <color name="colorIncomeFour">#5e35b1</color>
 </resources>

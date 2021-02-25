@@ -94,7 +94,7 @@ fun PieChart.setUpChart(ivc: ItemViewChart) {
     // size of center text
     setCenterTextSize(15f)
     // color of center text
-    setCenterTextColor(ContextCompat.getColor(this.context, R.color.colorText))
+    setCenterTextColor(ContextCompat.getColor(this.context, R.color.textColorPrimary))
     // true = display center text
     setDrawCenterText(true)
     // true = use percent values

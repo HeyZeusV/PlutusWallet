@@ -23,11 +23,11 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppBarRipple">
+            android:theme="@style/AppBar">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/tran_topBar"
-                style="@style/ToolBar.Custom"
+                style="@style/ToolBar"
                 app:menu="@menu/transaction_menu"
                 app:navigationContentDescription="@string/navigate_back"
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
@@ -41,7 +41,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView"
-                style="@style/CardView.Custom.FullScreen"
+                style="@style/CardView.FullScreen"
                 tools:ignore="MissingConstraints">
 
                 <ScrollView
@@ -67,7 +67,7 @@
 
                         <EditText
                             android:id="@+id/tran_title"
-                            style="@style/EditText.Custom.SingleLine"
+                            style="@style/Transaction.EditText.SingleLine"
                             android:layout_marginTop="8dp"
                             android:hint="@string/transaction_title_hint"
                             android:importantForAutofill="no"
@@ -114,7 +114,7 @@
 
                         <Spinner
                             android:id="@+id/tran_account"
-                            style="@style/Spinner.Custom.Base"
+                            style="@style/Spinner.Base"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="12dp"
                             app:entries="@{tranVM.accountList}"
@@ -150,7 +150,7 @@
 
                         <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
                             android:id="@+id/tran_total"
-                            style="@style/EditText.Custom.SingleLine"
+                            style="@style/Transaction.EditText.SingleLine"
                             android:layout_marginTop="7dp"
                             android:layout_marginBottom="1dp"
                             android:gravity="@{tranVM.setVals.symbolSide ? Gravity.LEFT : Gravity.RIGHT}"
@@ -237,7 +237,7 @@
 
                         <Spinner
                             android:id="@+id/tran_expense_cat"
-                            style="@style/Spinner.Custom.Base"
+                            style="@style/Spinner.Base"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="18dp"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
@@ -249,7 +249,7 @@
 
                         <Spinner
                             android:id="@+id/tran_income_cat"
-                            style="@style/Spinner.Custom.Base"
+                            style="@style/Spinner.Base"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="18dp"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
@@ -273,7 +273,7 @@
 
                         <EditText
                             android:id="@+id/tran_memo"
-                            style="@style/EditText.Custom.MultiLine"
+                            style="@style/Transaction.EditText.MultiLine"
                             android:layout_marginTop="6dp"
                             android:hint="@string/transaction_memo_hint"
                             android:importantForAutofill="no"
@@ -297,7 +297,7 @@
 
                         <CheckBox
                             android:id="@+id/tran_repeating"
-                            style="@style/CheckBox.Custom"
+                            style="@style/CheckBox"
                             android:layout_marginTop="4dp"
                             android:checked="@={tranVM.repeatCheck}"
                             app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
@@ -336,7 +336,7 @@
 
                         <EditText
                             android:id="@+id/tran_frequency"
-                            style="@style/EditText.Custom.Base"
+                            style="@style/Transaction.EditText.Base"
                             android:layout_marginTop="6dp"
                             android:gravity="left"
                             android:hint="@string/transaction_frequency_hint"

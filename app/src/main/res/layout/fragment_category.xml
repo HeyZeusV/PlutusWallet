@@ -13,11 +13,11 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppBarRipple">
+            android:theme="@style/AppBar">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/category_topBar"
-                style="@style/ToolBar.Custom"
+                style="@style/ToolBar"
                 app:menu="@menu/category_menu"
                 app:navigationContentDescription="@string/navigate_back"
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
@@ -31,7 +31,7 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView"
-                style="@style/CardView.Custom.FullScreen"
+                style="@style/CardView.FullScreen"
                 tools:ignore="MissingConstraints">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,7 +46,7 @@
 
                     <me.relex.circleindicator.CircleIndicator3
                         android:id="@+id/category_ci"
-                        style="@style/CircleIndicator.Custom"
+                        style="@style/CircleIndicator"
                         android:layout_marginBottom="4dp"
                         app:ci_height="@dimen/circleIndicatorBig" />
                 </androidx.constraintlayout.widget.ConstraintLayout>

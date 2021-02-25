@@ -20,7 +20,7 @@
 
         <TextView
             android:id="@+id/iva_name"
-            style="@style/TextView.Custom.Scrollable.ViewHolder"
+            style="@style/AccCat.TextView.Scrollable"
             android:text="@{account.account}"
             app:selected="@{true}"
             app:layout_constraintEnd_toStartOf="@+id/iva_edit"
@@ -28,14 +28,14 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/iva_edit"
-            style="@style/Button.IconOnly.Custom.ViewHolder"
+            style="@style/AccCat.Button.IconOnly"
             android:onClick="@{() -> accountVM.editAccountOC(account)}"
             app:icon="@drawable/ic_baseline_edit_24"
             app:layout_constraintEnd_toStartOf="@+id/iva_delete" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/iva_delete"
-            style="@style/Button.IconOnly.Custom.ViewHolder"
+            style="@style/AccCat.Button.IconOnly"
             android:enabled="false"
             android:onClick="@{() -> accountVM.deleteAccountOC(account)}"
             app:icon="@drawable/ic_baseline_delete_24"

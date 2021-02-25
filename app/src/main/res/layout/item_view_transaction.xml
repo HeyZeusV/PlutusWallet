@@ -25,7 +25,7 @@
 
         <TextView
             android:id="@+id/ivt_title"
-            style="@style/TextView.Custom.Scrollable"
+            style="@style/TextView.Scrollable"
             android:layout_marginStart="@dimen/tranListMarginOuterStartEndTop"
             android:layout_marginTop="@dimen/tranListMarginOuterStartEndTop"
             android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
@@ -39,7 +39,7 @@
 
         <TextView
             android:id="@+id/ivt_account"
-            style="@style/TextView.Custom.Scrollable"
+            style="@style/TextView.Scrollable"
             android:layout_marginStart="@dimen/tranListMarginOuterStartEndTop"
             android:layout_marginTop="@dimen/tranListMarginOuterBottomInnerTopBottom"
             android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
@@ -53,7 +53,7 @@
 
         <TextView
             android:id="@+id/ivt_date"
-            style="@style/TextView.Custom.Scrollable"
+            style="@style/TextView.Scrollable"
             android:layout_marginStart="@dimen/tranListMarginOuterStartEndTop"
             android:layout_marginTop="@dimen/tranListMarginOuterBottomInnerTopBottom"
             android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
@@ -76,12 +76,12 @@
 
         <TextView
             android:id="@+id/ivt_total"
-            style="@style/TextView.Custom.Scrollable"
+            style="@style/TextView.Scrollable"
             android:layout_marginStart="@dimen/tranListMarginInnerStartEnd"
             android:layout_marginTop="@dimen/tranListMarginOuterStartEndTop"
             android:layout_marginEnd="@dimen/tranListMarginOuterStartEndTop"
             android:gravity="right"
-            android:textColor='@{ivt.type.equals("Expense") ? @color/expense_total : @color/income_total}'
+            android:textColor='@{ivt.type.equals("Expense") ? @color/colorExpenseTotal : @color/colorIncomeTotal}'
             app:selected="@{true}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline"
@@ -90,7 +90,7 @@
 
         <TextView
             android:id="@+id/ivt_category"
-            style="@style/TextView.Custom.Scrollable"
+            style="@style/TextView.Scrollable"
             android:layout_marginStart="@dimen/tranListMarginInnerStartEnd"
             android:layout_marginEnd="@dimen/tranListMarginOuterStartEndTop"
             android:gravity="right"

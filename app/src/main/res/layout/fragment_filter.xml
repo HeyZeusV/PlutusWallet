@@ -13,7 +13,7 @@
     </data>
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/CardView.Custom.Base"
+        style="@style/CardView.Base"
         android:layout_marginStart="@dimen/cardSharedMargin"
         android:layout_marginTop="@dimen/cardFullMargin"
         android:layout_marginEnd="@dimen/cardFullMargin"
@@ -47,7 +47,7 @@
 
                     <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/filter_account_check"
-                        style="@style/CheckBox.Custom"
+                        style="@style/CheckBox"
                         android:checked="@={filterVM.accCheck}"
                         android:translationX="5dp"
                         android:translationY="-1dp"
@@ -73,7 +73,7 @@
 
                     <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/filter_cat_check"
-                        style="@style/CheckBox.Custom"
+                        style="@style/CheckBox"
                         android:layout_marginTop="28dp"
                         android:checked="@={filterVM.catCheck}"
                         android:translationX="5dp"
@@ -121,7 +121,7 @@
 
                     <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/filter_date_check"
-                        style="@style/CheckBox.Custom"
+                        style="@style/CheckBox"
                         android:layout_marginTop="25dp"
                         android:checked="@={filterVM.dateCheck}"
                         android:translationX="5dp"

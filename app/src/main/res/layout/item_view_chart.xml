@@ -45,7 +45,7 @@
 
         <TextView
             android:id="@+id/ivchart_amount"
-            style="@style/TextView.Custom.Scrollable"
+            style="@style/TextView.Scrollable"
             android:layout_marginEnd="@dimen/chartMarginStartEnd"
             android:layout_marginBottom="26dp"
             android:textColor="@color/textColorPrimary"
@@ -58,7 +58,7 @@
 
         <TextView
             android:id="@+id/emptyTextView"
-            style="@style/TextView.Custom.Empty"
+            style="@style/TextView.Empty"
             android:text="@string/empty_graph"
             android:visibility="@{ivc.ctList.empty ? View.VISIBLE : View.INVISIBLE}" />
     </androidx.constraintlayout.widget.ConstraintLayout>

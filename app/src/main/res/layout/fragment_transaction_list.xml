@@ -13,7 +13,7 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
-        style="@style/CardView.Custom.Base"
+        style="@style/CardView.Base"
         android:layout_marginStart="@dimen/cardFullMargin"
         android:layout_marginTop="@dimen/cardSharedMargin"
         android:layout_marginEnd="@dimen/cardFullMargin"
@@ -34,7 +34,7 @@
 
             <TextView
                 android:id="@+id/emptyListTextView"
-                style="@style/TextView.Custom.Empty"
+                style="@style/TextView.Empty"
                 android:text="@string/empty_list"
                 android:visibility="@{!listVM.ivtEmpty ? View.INVISIBLE : View.VISIBLE}" />
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Spinner
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -150,6 +151,7 @@ class TransactionFragment : BaseFragment() {
                 binding.root, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT
             )
             savedBar.anchorView = binding.tranAnchor
+            savedBar.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSnackbarText))
             savedBar.show()
         })
 

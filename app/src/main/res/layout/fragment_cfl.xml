@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -12,7 +13,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppBarRipple">
+            android:theme="@style/AppBar">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/cfl_topBar"
@@ -20,7 +21,7 @@
                 app:menu="@menu/cfl_menu"
                 app:navigationIcon="@drawable/ic_baseline_menu_24"
                 app:navigationContentDescription="@string/cfl_drawer_description"
-                style="@style/ToolBar.Custom"/>
+                style="@style/ToolBar"/>
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -64,6 +65,13 @@
                 app:layout_constraintHeight_percent="0.60"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fragment_chart_container"/>
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/cfl_anchor"
+                style="@style/SnackBar.Anchor"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:ignore="MissingConstraints" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>

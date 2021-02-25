@@ -11,7 +11,7 @@
     </data>
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/CardView.Custom.Base"
+        style="@style/CardView.Base"
         android:layout_marginStart="@dimen/cardFullMargin"
         android:layout_marginTop="@dimen/cardFullMargin"
         android:layout_marginEnd="@dimen/cardSharedMargin"
@@ -32,7 +32,7 @@
 
             <me.relex.circleindicator.CircleIndicator3
                 android:id="@+id/chart_ci"
-                style="@style/CircleIndicator.Custom"
+                style="@style/CircleIndicator"
                 app:ci_height="@dimen/circleIndicatorSmall" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

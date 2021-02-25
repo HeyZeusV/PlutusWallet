@@ -4,8 +4,8 @@
 
     <item
         android:state_enabled="false"
-        android:color="#80ffffff"/>
+        android:color="#80ffffff" />
 
     <item
-        android:color="#ffffff"/>
+        android:color="#ffffff" />
 </selector>

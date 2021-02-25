@@ -1,67 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorButtonBackground">#33691e</color>
-    <color name="colorButtonText">#FFFFFF</color>
+    <!-- Primary, Primary Dark, Secondary -->
+    <color name="purple_base">#4a148c</color>
+    <color name="purple_dark">#12005e</color>
+    <color name="green_base">#33691e</color>
 
-    <color name="colorText">#000000</color>
-    <color name="colorChipGreen">#023d00</color>
-
-    <color name="colorChartText">#000000</color>
-    <color name="colorChartHole">#FFFFFF</color>
-
-    <color name="colorAlertDialogButtonText">@color/purple_base</color>
-
-    <color name="colorDataPickerBackground">#24102f</color>
-    <color name="colorDatePickerHeader">#2f1c39</color>
-
-    <color name="colorSettingsBackground">#ffffff</color>
-
-    <color name="error">@color/design_default_color_error</color>
-
-    <color name="white">#FFFFFF</color>
-
-    <color name="textColorPrimary">@android:color/primary_text_light</color>
-    <color name="textColorSecondary">@android:color/secondary_text_light</color>
-    <color name="textColorHint">#545454</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 
     <!-- AppTheme Colors -->
     <color name="colorSurface">@color/white</color>
     <color name="colorBackground">#7c43bd</color>
+    <color name="colorError">#b00020</color>
+    <color name="colorButtonBackground">#33691e</color>
+    <color name="colorButtonText">@color/white</color>
 
-    <color name="expense_total">#ad0000</color>
-    <color name="income_total">#006300</color>
+    <!-- Chip color in ChipGroup -->
+    <color name="colorChipGreen">#023d00</color>
 
-    <!-- Purple 900 -->
-    <color name="purple_base">#4a148c</color>
-    <color name="purple_dark">#12005e</color>
-    <color name="purple_light">#7c43bd</color>
-    <!-- Light Green 900 -->
-    <color name="green_base">#33691e</color>
-    <color name="green_dark">#023d00</color>
-    <color name="green_light">#629749</color>
+    <!-- Chart text colors -->
+    <color name="colorChartText">@color/black</color>
+    <color name="colorChartHole">@color/white</color>
+
+    <color name="colorAlertDialogButtonText">@color/purple_base</color>
+
+    <color name="colorSnackbarText">@color/white</color>
+
+
+    <!-- DatePickerDialog colors -->
+    <color name="colorDatePickerBackground">@color/white</color>
+    <color name="colorDatePickerHeader">@color/purple_base</color>
+    <color name="colorDatePickerSelectedDate">@color/white</color>
+
+    <color name="colorSettingsBackground">@color/white</color>
+
+    <!-- Text color throughout App -->
+    <color name="textColorPrimary">@android:color/primary_text_light</color>
+    <color name="textColorSecondary">@android:color/secondary_text_light</color>
+    <color name="textColorHint">#545454</color>
+
+    <!-- TransactionList ViewHolder total color -->
+    <color name="colorExpenseTotal">#ad0000</color>
+    <color name="colorIncomeTotal">#006300</color>
 
     <!-- Expense Chart Colors -->
     <!-- Red 600 -->
-    <color name="expense_red">#e53935</color>
+    <color name="colorExpenseOne">#e53935</color>
     <!-- Yellow 500 -->
-    <color name="expense_yellow">#ffeb3b</color>
+    <color name="colorExpenseTwo">#ffeb3b</color>
     <!-- Pink 400 -->
-    <color name="expense_pink">#ec407a</color>
+    <color name="colorExpenseThree">#ec407a</color>
     <!-- Orange 500 -->
-    <color name="expense_orange">#ff9800</color>
+    <color name="colorExpenseFour">#ff9800</color>
 
     <!-- Income Chart Colors -->
     <!-- Green 600 -->
-    <color name="income_green">#43a047</color>
+    <color name="colorIncomeOne">#43a047</color>
     <!-- Teal 600 -->
-    <color name="income_teal">#00897b</color>
+    <color name="colorIncomeTwo">#00897b</color>
     <!-- Blue 500 -->
-    <color name="income_blue">#2196f3</color>
+    <color name="colorIncomeThree">#2196f3</color>
     <!-- Deep Purple 300 -->
-    <color name="income_purple">#9575cd</color>
+    <color name="colorIncomeFour">#9575cd</color>
 
-    <color name="colorDisabled">#FF929292</color>
-    <color name="colorLightGray">#FFCECECE</color>
-
-    <color name="ripple_material_dark">#33FFFFFF</color>
+    <!-- AppBar item selection highlight -->
+    <color name="colorRipple">#33ffffff</color>
 </resources>
