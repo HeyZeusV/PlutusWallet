@@ -89,9 +89,9 @@
     <string name="preferences_date_format">รูปแบบวันที่</string>
     <string name="cfl_drawer_description">เปิด Navigation Drawer</string>
     <string name="navigate_back">นำทางย้อนกลับ</string>
-    <string name="theme_system">ระบบ</string>
-    <string name="theme_dark">มืด</string>
-    <string name="theme_light">เบา</string>
-    <string name="theme">ธีม</string>
+    <string name="preferences_theme_system">ระบบ</string>
+    <string name="preferences_theme_dark">มืด</string>
+    <string name="preferences_theme_light">เบา</string>
+    <string name="preferences_theme">ธีม</string>
     <string name="alert_dialog_input_error">ว่างไม่ได้!</string>
 </resources>

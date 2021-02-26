@@ -89,9 +89,9 @@
     <string name="preferences_date_format">Datumsformat</string>
     <string name="cfl_drawer_description">Öffnen Sie die Navigationsleiste</string>
     <string name="navigate_back">Navigieren Sie zurück</string>
-    <string name="theme_system">System</string>
-    <string name="theme_dark">Dunkel</string>
-    <string name="theme_light">Licht</string>
-    <string name="theme">Thema</string>
+    <string name="preferences_theme_system">System</string>
+    <string name="preferences_theme_dark">Dunkel</string>
+    <string name="preferences_theme_light">Licht</string>
+    <string name="preferences_theme">Thema</string>
     <string name="alert_dialog_input_error">Kann nicht leer sein!</string>
 </resources>

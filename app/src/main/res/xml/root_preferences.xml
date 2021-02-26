@@ -11,7 +11,7 @@
         app:entryValues="@array/theme_key_array"
         app:iconSpaceReserved="false"
         app:key="key_theme"
-        app:title="@string/theme"
+        app:title="@string/preferences_theme"
         app:useSimpleSummaryProvider="true" />
 
     <ListPreference

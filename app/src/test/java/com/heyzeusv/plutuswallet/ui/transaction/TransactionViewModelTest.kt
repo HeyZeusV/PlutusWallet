@@ -252,8 +252,8 @@ internal class TransactionViewModelTest {
     fun prepareLists() {
 
         val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create New...")
-        val expectedExCatList: MutableList<String> = mutableListOf("Entertainment", "Food", "Create New...")
-        val expectedInCatList: MutableList<String> = mutableListOf("Salary", "Zelle", "Create New...")
+        val expectedExCatList: MutableList<String> = mutableListOf("Entertainment", "Food", "Unused Expense", "Create New...")
+        val expectedInCatList: MutableList<String> = mutableListOf("Salary", "Unused Income", "Zelle", "Create New...")
 
         tranVM.prepareLists("Create New...", "Create New...")
 

@@ -38,8 +38,8 @@ internal class FilterViewModelTest {
     fun prepareSpinners() {
 
         val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
-        val expectedExCatList: MutableList<String> = mutableListOf("All", "Entertainment", "Food")
-        val expectedInCatList: MutableList<String> = mutableListOf("All", "Salary", "Zelle")
+        val expectedExCatList: MutableList<String> = mutableListOf("All", "Entertainment", "Food", "Unused Expense")
+        val expectedInCatList: MutableList<String> = mutableListOf("All", "Salary", "Unused Income", "Zelle")
 
         filterVM.prepareSpinners()
 

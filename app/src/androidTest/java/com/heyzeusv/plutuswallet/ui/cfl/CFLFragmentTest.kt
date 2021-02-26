@@ -147,10 +147,10 @@ class CFLFragmentTest {
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(4)))
         onView(withId(R.id.emptyListTextView)).check(matches(not(isDisplayed())))
         // check that all data for Transactions is loaded correctly and in correct position
-        checkTranViewHolder(0, dd.tran1, android.R.color.holo_red_dark)
-        checkTranViewHolder(1, dd.tran2, android.R.color.holo_red_dark)
-        checkTranViewHolder(2, dd.tran3, android.R.color.holo_green_dark)
-        checkTranViewHolder(3, dd.tran4, android.R.color.holo_red_dark)
+        checkTranViewHolder(0, dd.tran1, R.color.colorExpenseTotal)
+        checkTranViewHolder(1, dd.tran2, R.color.colorExpenseTotal)
+        checkTranViewHolder(2, dd.tran3, R.color.colorIncomeTotal)
+        checkTranViewHolder(3, dd.tran4, R.color.colorExpenseTotal)
     }
 
     @Test
@@ -182,8 +182,8 @@ class CFLFragmentTest {
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(2)))
         onView(withId(R.id.emptyListTextView)).check(matches(not(isDisplayed())))
         // check that all data for Transactions is loaded correctly and in correct position
-        checkTranViewHolder(0, dd.tran1, android.R.color.holo_red_dark)
-        checkTranViewHolder(1, dd.tran2, android.R.color.holo_red_dark)
+        checkTranViewHolder(0, dd.tran1, R.color.colorExpenseTotal)
+        checkTranViewHolder(1, dd.tran2, R.color.colorExpenseTotal)
     }
 
     @Test
@@ -217,7 +217,7 @@ class CFLFragmentTest {
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(1)))
         onView(withId(R.id.emptyListTextView)).check(matches(not(isDisplayed())))
         // check that all data for Transactions is loaded correctly and in correct position
-        checkTranViewHolder(0, dd.tran4, android.R.color.holo_red_dark)
+        checkTranViewHolder(0, dd.tran4, R.color.colorExpenseTotal)
     }
 
     @Test
@@ -320,7 +320,7 @@ class CFLFragmentTest {
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(2)))
         onView(withId(R.id.emptyListTextView)).check(matches(not(isDisplayed())))
         // check that all data for Transactions is loaded correctly and in correct position
-        checkTranViewHolder(0, dd.tran3, android.R.color.holo_green_dark)
+        checkTranViewHolder(0, dd.tran3, R.color.colorIncomeTotal)
     }
 
     @Test
@@ -365,7 +365,7 @@ class CFLFragmentTest {
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(1)))
         onView(withId(R.id.emptyListTextView)).check(matches(not(isDisplayed())))
         // check that all data for Transactions is loaded correctly and in correct position
-        checkTranViewHolder(0, dd.tran4, android.R.color.holo_red_dark)
+        checkTranViewHolder(0, dd.tran4, R.color.colorExpenseTotal)
     }
 
     @Test
@@ -409,7 +409,7 @@ class CFLFragmentTest {
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(1)))
         onView(withId(R.id.emptyListTextView)).check(matches(not(isDisplayed())))
         // check that all data for Transactions is loaded correctly and in correct position
-        checkTranViewHolder(0, dd.tran2, android.R.color.holo_red_dark)
+        checkTranViewHolder(0, dd.tran2, R.color.colorExpenseTotal)
     }
 
     @Test
@@ -457,7 +457,7 @@ class CFLFragmentTest {
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(1)))
         onView(withId(R.id.emptyListTextView)).check(matches(not(isDisplayed())))
         // check that all data for Transactions is loaded correctly and in correct position
-        checkTranViewHolder(0, dd.tran1, android.R.color.holo_red_dark)
+        checkTranViewHolder(0, dd.tran1, R.color.colorExpenseTotal)
     }
 
     @Test

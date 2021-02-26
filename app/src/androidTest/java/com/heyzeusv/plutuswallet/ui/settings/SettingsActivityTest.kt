@@ -2,6 +2,7 @@ package com.heyzeusv.plutuswallet.ui.settings
 
 import android.view.Gravity
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
@@ -65,8 +66,8 @@ class SettingsActivityTest {
     private var dateFormatter = DateFormat.getDateInstance(0)
 
     // text color
-    private var redId = android.R.color.holo_red_dark
-    private var greenId = android.R.color.holo_green_dark
+    private var redId = R.color.colorExpenseTotal
+    private var greenId = R.color.colorIncomeTotal
 
     private var currencySymbol = '$'
     private var currencySideLeft = true
@@ -135,6 +136,9 @@ class SettingsActivityTest {
          *  '$' on left side, ',' used as thousands symbols, '.' used as decimal symbol,
          *  decimals allowed, full date is displayed, and English is language.
          */
+        // check that app follows system setting
+        assert(AppCompatDelegate.getDefaultNightMode()
+                == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         onView(allOf(instanceOf(TextView::class.java),
             withParent(withId(R.id.cfl_topBar))))
             .check(matches(withText("Overview")))
@@ -156,6 +160,22 @@ class SettingsActivityTest {
         navigateToFragAndCheckTitle(R.id.categoryFragment, R.id.category_topBar, "Categories")
         navigateToFragAndCheckTitle(R.id.aboutFragment, R.id.about_topBar, "About")
         navigateToSettingsAndCheckTitle("Settings")
+    }
+
+    @Test
+    fun changeTheme() {
+
+        // check Light mode
+        assert(changeThemeAndGetUiMode(R.string.preferences_theme_light)
+                == AppCompatDelegate.MODE_NIGHT_NO)
+
+        // check Dark mode
+        assert(changeThemeAndGetUiMode(R.string.preferences_theme_dark)
+                == AppCompatDelegate.MODE_NIGHT_YES)
+
+        // check that app follows system setting
+        assert(changeThemeAndGetUiMode(R.string.preferences_theme_system)
+                == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
 
     @Test
@@ -271,6 +291,20 @@ class SettingsActivityTest {
         onView(withText("\".\"")).perform(click())
         onView(withId(android.R.id.button1)).perform(click())
         updateDecimalFormatter(true, '.', ',')
+    }
+
+    /**
+     *  Navigates to SettingsFragment, clicks on Theme preference and sets it to [theme] and
+     *  navigates back to CFLFragment.
+     */
+    private fun changeThemeAndGetUiMode(theme: Int): Int {
+
+        navigateToSettingsAndCheckTitle("Settings")
+        clickOnPreference(R.string.preferences_theme)
+        onView(withText(theme)).perform(click())
+        pressBack()
+
+        return AppCompatDelegate.getDefaultNightMode()
     }
 
     /**

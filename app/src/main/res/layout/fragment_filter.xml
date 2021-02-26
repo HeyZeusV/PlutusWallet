@@ -41,13 +41,14 @@
                     <TextView
                         android:id="@+id/accountTextView"
                         style="@style/Filter.TextView"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="11dp"
                         android:text="@string/filter_account"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/filter_account_check"
                         style="@style/CheckBox"
+                        android:layout_marginTop="1dp"
                         android:checked="@={filterVM.accCheck}"
                         android:translationX="5dp"
                         android:translationY="-1dp"
