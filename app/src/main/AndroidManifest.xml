@@ -18,13 +18,14 @@
             android:label="@string/settings"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-            android:configChanges="locale|orientation"
+            android:configChanges="locale|orientation|uiMode"
             tools:ignore="LockedOrientationActivity"/>
 
         <activity
             android:name=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
-            android:configChanges="locale|orientation"
+            android:configChanges="locale|orientation|uiMode"
             tools:ignore="LockedOrientationActivity">
 
             <intent-filter>

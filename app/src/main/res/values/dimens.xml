@@ -1,3 +1,55 @@
 <resources>
-    <dimen name="card_corner_radius">4dp</dimen>
+    <!-- Text sizes used throughout app -->
+    <dimen name="textSizeBase">18sp</dimen>
+    <dimen name="textSizeFilterButton">16sp</dimen>
+    <dimen name="textSizeSpinner">20sp</dimen>
+    <dimen name="textSizeTranListViewHolder">14sp</dimen>
+
+    <!-- CardView dimensions -->
+    <dimen name="cardCornerRadius">4dp</dimen>
+    <dimen name="cardFullMargin">4dp</dimen>
+    <dimen name="cardSharedMargin">1dp</dimen>
+
+    <dimen name="circleIndicatorBig">8dp</dimen>
+    <dimen name="circleIndicatorSmall">6dp</dimen>
+
+    <dimen name="emptyTextViewMarginStartEnd">8dp</dimen>
+
+    <dimen name="scrollbarSmall">2dp</dimen>
+
+    <!-- Minimum height for EditTexts and minimum size for CheckBoxes/Buttons -->
+    <dimen name="minSize">49dp</dimen>
+
+    <!-- Padding for layouts that cover entire screen -->
+    <dimen name="layoutPaddingFullScreen">12dp</dimen>
+
+    <!-- AboutFragment -->
+    <dimen name="aboutNestedScrollViewChildTextSize">15sp</dimen>
+    <dimen name="aboutNestedScrollViewHeight">200dp</dimen>
+    <dimen name="AboutNestedScrollViewChildPadding">10dp</dimen>
+    <!-- Top margin of TextView containing info in AboutFragment -->
+    <dimen name="aboutTextViewTopMargin">8dp</dimen>
+    <!-- Used as height for blank TextViews in AboutFragment -->
+    <dimen name="aboutSpacerHeight">8dp</dimen>
+
+    <!-- Account/Category Fragment margins -->
+    <dimen name="accCatMarginTopBottom">8dp</dimen>
+    <dimen name="accCatMarginStartEnd">12dp</dimen>
+
+    <!-- ChartFragment margin -->
+    <dimen name="chartMarginTopBottom">4dp</dimen>
+    <dimen name="chartMarginStartEnd">6dp</dimen>
+
+    <!-- FilterFragment margins -->
+    <dimen name="filterDefaultMarginStartEnd">6dp</dimen>
+    <dimen name="filterTextViewMarginEnd">44dp</dimen>
+
+    <!-- TransactionFragment -->
+    <!-- TextViews that wrap_content -->
+    <dimen name="textViewPaddingWrapContent">8dp</dimen>
+
+    <!-- TransactionListFragment -->
+    <dimen name="tranListMarginOuterStartEndTop">8dp</dimen>
+    <dimen name="tranListMarginInnerStartEnd">4dp</dimen>
+    <dimen name="tranListMarginOuterBottomInnerTopBottom">2dp</dimen>
 </resources>

@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Spinner
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -98,7 +98,14 @@ class TransactionFragment : BaseFragment() {
          */
         tranVM.account.observe(viewLifecycleOwner, { account: String ->
             if (account == getString(R.string.account_create)) {
-                createNewDialog(binding.tranAccount, account, 0)
+                val alertDialogView = createAlertDialogView()
+                AlertDialogCreator.alertDialogInput(
+                    requireContext(), alertDialogView, account,
+                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+                    getString(R.string.account_create),
+                    createDialogListeners(binding.tranAccount, prevAcc), tranVM::insertAccount,
+                    null, null, null, null, null
+                )
             } else {
                 prevAcc = account
             }
@@ -106,7 +113,14 @@ class TransactionFragment : BaseFragment() {
 
         tranVM.expenseCat.observe(viewLifecycleOwner, { category: String ->
             if (category == getString(R.string.category_create)) {
-                createNewDialog(binding.tranExpenseCat, category, 1)
+                val alertDialogView = createAlertDialogView()
+                AlertDialogCreator.alertDialogInput(
+                    requireContext(), alertDialogView, category,
+                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+                    getString(R.string.category_create),
+                    createDialogListeners(binding.tranExpenseCat, prevExCat), tranVM::insertCategory,
+                    null, null, null, null, null
+                )
             } else {
                 prevExCat = category
             }
@@ -114,7 +128,14 @@ class TransactionFragment : BaseFragment() {
 
         tranVM.incomeCat.observe(viewLifecycleOwner, { category: String ->
             if (category == getString(R.string.category_create)) {
-                createNewDialog(binding.tranIncomeCat, category, 1)
+                val alertDialogView = createAlertDialogView()
+                AlertDialogCreator.alertDialogInput(
+                    requireContext(), alertDialogView, category,
+                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+                    getString(R.string.category_create),
+                    createDialogListeners(binding.tranIncomeCat, prevInCat), tranVM::insertCategory,
+                    null, null, null, null, null
+                )
             } else {
                 prevInCat = category
             }
@@ -130,6 +151,7 @@ class TransactionFragment : BaseFragment() {
                 binding.root, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT
             )
             savedBar.anchorView = binding.tranAnchor
+            savedBar.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSnackbarText))
             savedBar.show()
         })
 
@@ -159,44 +181,17 @@ class TransactionFragment : BaseFragment() {
     }
 
     /**
-     *  Creates AlertDialog when user selects "Create New ..." with [title]
-     *  in [type] (Account/Category) of [spinner].
+     *  Creates negative onClick and onCancel listeners for AlertDialog. Which [spinner] AlertDialog
+     *  is being created from and [previous] entry that was selected.
      */
-    private fun createNewDialog(spinner: Spinner, title: String, type: Int) {
+    private fun createDialogListeners(spinner: Spinner, previous: String): List<Any> {
 
-        // determines which previous item string to use
-        val previous = when (spinner) {
-            binding.tranAccount -> prevAcc
-            binding.tranExpenseCat -> prevExCat
-            else -> prevInCat
-        }
-
-        // inflates view that holds EditText
-        val viewInflated: View = LayoutInflater.from(context)
-            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
-        // the EditText to be used
-        val input: EditText = viewInflated.findViewById(R.id.dialog_input)
-
-        // Listeners
-        val cancelListener = DialogInterface.OnCancelListener { spinner.setSelectedValue(previous) }
         val negListener = DialogInterface.OnClickListener { _, _ ->
             spinner.setSelectedValue(previous)
         }
-        val posListener = DialogInterface.OnClickListener { _, _ ->
-            if (type == 0) {
-                tranVM.insertAccount(input.text.toString(), getString(R.string.account_create))
-            } else {
-                tranVM.insertCategory(input.text.toString(), getString(R.string.category_create))
-            }
-        }
+        val cancelListener = DialogInterface.OnCancelListener { spinner.setSelectedValue(previous) }
 
-        AlertDialogCreator.alertDialogInputCancelable(
-            requireContext(),
-            title, viewInflated,
-            getString(R.string.alert_dialog_save), posListener,
-            getString(R.string.alert_dialog_cancel), negListener,
-            cancelListener
-        )
+        return listOf(negListener, cancelListener)
     }
 
     /**

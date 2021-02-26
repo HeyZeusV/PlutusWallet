@@ -4,21 +4,21 @@
 
     <item
         android:id="@+id/accountFragment"
-        android:icon="@drawable/ic_baseline_account_balance_24"
-        android:title="@string/accounts"/>
+        android:icon="@drawable/ic_baseline_accounts_24"
+        android:title="@string/accounts" />
 
     <item
         android:id="@+id/categoryFragment"
-        android:icon="@drawable/ic_baseline_category_24"
-        android:title="@string/categories"/>
+        android:icon="@drawable/ic_baseline_categories_24"
+        android:title="@string/categories" />
 
     <item
         android:id="@+id/actionSettings"
         android:icon="@drawable/ic_settings"
-        android:title="@string/settings"/>
+        android:title="@string/settings" />
 
     <item
         android:id="@+id/aboutFragment"
         android:icon="@drawable/ic_baseline_information_24"
-        android:title="@string/about"/>
+        android:title="@string/about" />
 </menu>

@@ -23,34 +23,26 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppBarRipple">
+            android:theme="@style/AppBar">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/tran_topBar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:title="@string/transaction"
+                style="@style/ToolBar"
                 app:menu="@menu/transaction_menu"
-                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
                 app:navigationContentDescription="@string/navigate_back"
-                style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:title="@string/transaction" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight">
+            android:background="?attr/colorBackground">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView"
-                style="@style/Widget.MaterialComponents.CardView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="4dp"
-                app:cardCornerRadius="@dimen/card_corner_radius"
-                app:cardUseCompatPadding="true"
-                tools:layout_editor_absoluteX="4dp"
-                tools:layout_editor_absoluteY="4dp">
+                style="@style/CardView.FullScreen"
+                tools:ignore="MissingConstraints">
 
                 <ScrollView
                     android:layout_width="match_parent"
@@ -60,7 +52,7 @@
                         android:id="@+id/tran_constraint"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp">
+                        android:padding="@dimen/layoutPaddingFullScreen">
 
                         <TextView
                             android:id="@+id/titleTextView"
@@ -68,22 +60,19 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="@string/transaction_title"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <EditText
                             android:id="@+id/tran_title"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Transaction.EditText.SingleLine"
                             android:layout_marginTop="8dp"
                             android:hint="@string/transaction_title_hint"
                             android:importantForAutofill="no"
-                            android:inputType="text"
+                            android:maxLength="32"
                             android:text="@={tranVM.tranLD.title}"
-                            android:textSize="16sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
@@ -95,24 +84,20 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="@string/transaction_date"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_title" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/tran_date"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Button.TextOnly"
                             android:layout_marginTop="10dp"
-                            android:backgroundTint="@color/colorSecondary"
                             android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
                             android:text="@{tranVM.date}"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintTop_toBottomOf="@+id/dateTextView"
-                            tools:text="Wed Nov 14 11:56 EST 2018" />
+                            tools:text="Wed Nov 14" />
 
                         <TextView
                             android:id="@+id/accountTextView"
@@ -120,26 +105,23 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:paddingStart="8dip"
-                            android:paddingEnd="8dip"
+                            android:paddingStart="@dimen/textViewPaddingWrapContent"
+                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
                             android:text="@string/transaction_account"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_date" />
 
                         <Spinner
                             android:id="@+id/tran_account"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Spinner.Base"
                             android:layout_marginStart="8dp"
-                            android:layout_marginTop="13dp"
-                            android:background="@null"
+                            android:layout_marginTop="12dp"
                             app:entries="@{tranVM.accountList}"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/accountTextView"
                             app:layout_constraintTop_toBottomOf="@+id/tran_date"
-                            app:selectedValue="@={tranVM.account}" />
+                            app:selectedValue="@={tranVM.account}"
+                            tools:listitem="@layout/spinner_item" />
 
                         <TextView
                             android:id="@+id/totalTextView"
@@ -147,11 +129,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
-                            android:paddingStart="8dip"
-                            android:paddingEnd="8dip"
+                            android:paddingStart="@dimen/textViewPaddingWrapContent"
+                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
                             android:text="@string/transaction_total"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
@@ -162,23 +143,21 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:text="@{tranVM.setVals.currencySymbol}"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             android:visibility="@{tranVM.setVals.symbolSide ? View.VISIBLE : View.GONE}"
                             app:layout_constraintStart_toEndOf="@+id/totalTextView"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
                         <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
                             android:id="@+id/tran_total"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="9dp"
+                            style="@style/Transaction.EditText.SingleLine"
+                            android:layout_marginTop="7dp"
                             android:layout_marginBottom="1dp"
                             android:gravity="@{tranVM.setVals.symbolSide ? Gravity.LEFT : Gravity.RIGHT}"
                             android:hint="@string/transaction_total_hint"
                             android:importantForAutofill="no"
                             android:maxLength="21"
                             android:text="@={tranVM.total}"
-                            android:textSize="18sp"
                             app:filter="@{tranVM.setVals}"
                             app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
                             app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
@@ -193,11 +172,10 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:text="@{tranVM.setVals.currencySymbol}"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             android:visibility="@{tranVM.setVals.symbolSide ? View.GONE : View.VISIBLE}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
-
 
                         <TextView
                             android:id="@+id/typeTextView"
@@ -205,11 +183,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
-                            android:paddingStart="8dip"
-                            android:paddingEnd="8dip"
+                            android:paddingStart="@dimen/textViewPaddingWrapContent"
+                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
                             android:text="@string/transaction_type"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/totalTextView" />
 
@@ -251,41 +228,36 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
-                            android:paddingStart="8dip"
-                            android:paddingEnd="8dip"
+                            android:paddingStart="@dimen/textViewPaddingWrapContent"
+                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
                             android:text="@string/transaction_category"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
 
                         <Spinner
                             android:id="@+id/tran_expense_cat"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Spinner.Base"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="18dp"
-                            android:background="@null"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.expenseCatList}"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/categoryTextView"
                             app:layout_constraintTop_toBottomOf="@+id/typeTextView"
-                            app:selectedValue="@={tranVM.expenseCat}" />
+                            app:selectedValue="@={tranVM.expenseCat}"
+                            tools:listitem="@layout/spinner_item" />
 
                         <Spinner
                             android:id="@+id/tran_income_cat"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Spinner.Base"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="18dp"
-                            android:background="@null"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.incomeCatList}"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/categoryTextView"
                             app:layout_constraintTop_toBottomOf="@+id/typeTextView"
-                            app:selectedValue="@={tranVM.incomeCat}" />
+                            app:selectedValue="@={tranVM.incomeCat}"
+                            tools:listitem="@layout/spinner_item" />
 
                         <TextView
                             android:id="@+id/memoTextView"
@@ -294,26 +266,18 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:text="@string/transaction_memo"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
 
                         <EditText
                             android:id="@+id/tran_memo"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            style="@style/Transaction.EditText.MultiLine"
                             android:layout_marginTop="6dp"
-                            android:ems="10"
                             android:hint="@string/transaction_memo_hint"
                             android:importantForAutofill="no"
-                            android:inputType="textMultiLine"
-                            android:maxLines="5"
-                            android:minLines="1"
-                            android:singleLine="false"
                             android:text="@={tranVM.tranLD.memo}"
-                            android:textSize="16sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/memoTextView" />
@@ -324,24 +288,18 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
-                            android:paddingStart="8dip"
-                            android:paddingEnd="8dip"
+                            android:paddingStart="@dimen/textViewPaddingWrapContent"
+                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
                             android:text="@string/transaction_repeating"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_memo" />
 
                         <CheckBox
                             android:id="@+id/tran_repeating"
-                            android:layout_width="45dp"
-                            android:layout_height="45dp"
+                            style="@style/CheckBox"
                             android:layout_marginTop="4dp"
-                            android:background="?android:attr/listChoiceIndicatorMultiple"
-                            android:button="@null"
                             android:checked="@={tranVM.repeatCheck}"
-                            android:paddingStart="8dip"
-                            android:paddingEnd="8dip"
                             app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
                             app:layout_constraintTop_toBottomOf="@+id/tran_memo" />
 
@@ -350,15 +308,14 @@
                             style="?android:listSeparatorTextViewStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:paddingStart="8dip"
-                            android:paddingEnd="8dip"
+                            android:layout_marginTop="14dp"
+                            android:paddingStart="@dimen/textViewPaddingWrapContent"
+                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
                             android:text="@string/transaction_frequency"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp"
+                            android:textSize="?attr/textSizeBase"
                             android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_repeating"
+                            app:layout_constraintTop_toBottomOf="@+id/repeatingTextView"
                             tools:visibility="visible" />
 
                         <Spinner
@@ -366,33 +323,32 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="7dp"
                             android:background="@null"
-                            android:gravity="start|center_vertical"
                             android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.periodArray}"
                             app:layout_constraintEnd_toStartOf="@+id/tran_frequency"
                             app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
                             app:layout_constraintTop_toBottomOf="@+id/tran_repeating"
                             app:selectedPosition="@={tranVM.tranLD.period}"
+                            tools:listitem="@layout/spinner_item"
                             tools:visibility="visible" />
 
                         <EditText
                             android:id="@+id/tran_frequency"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:gravity="start|center_horizontal"
+                            style="@style/Transaction.EditText.Base"
+                            android:layout_marginTop="6dp"
+                            android:gravity="left"
                             android:hint="@string/transaction_frequency_hint"
                             android:importantForAutofill="no"
                             android:inputType="number"
                             android:maxLength="2"
                             android:text="@={`` + tranVM.tranLD.frequency}"
-                            android:textSize="18sp"
                             android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/tran_period"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_repeating"
+                            app:layout_constraintTop_toBottomOf="@+id/repeatingTextView"
+                            tools:ignore="RtlHardcoded"
                             tools:visibility="visible" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </ScrollView>
@@ -400,11 +356,8 @@
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:id="@+id/tran_anchor"
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
-                app:layout_constraintStart_toStartOf="parent" />
+                style="@style/SnackBar.Anchor"
+                tools:ignore="MissingConstraints" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>

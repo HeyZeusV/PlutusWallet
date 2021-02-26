@@ -143,11 +143,11 @@ class TransactionListFragment : BaseFragment() {
         super.onResume()
 
         // checks if there has been a change in settings, updates changes, and updates list
-        if (sharedPref[Key.KEY_TRAN_LIST_CHANGE, false]) {
+        if (sharedPref[Key.KEY_TRAN_LIST_CHANGED, false]) {
             setVals = SettingsUtils.prepareSettingValues(sharedPref)
             listVM.setVals = setVals
             tranListAdapter.notifyDataSetChanged()
-            sharedPref[Key.KEY_TRAN_LIST_CHANGE] = false
+            sharedPref[Key.KEY_TRAN_LIST_CHANGED] = false
         }
         listVM.futureTransactions()
     }

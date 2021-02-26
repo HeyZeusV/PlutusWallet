@@ -63,9 +63,9 @@ internal class CategoryViewModelTest {
     @DisplayName("Should initialize type lists containing all Category names and Categories being used")
     fun initNamesUsedLists() {
 
-        val expectedExNames: MutableList<String> = mutableListOf("Entertainment", "Food")
+        val expectedExNames: MutableList<String> = mutableListOf("Entertainment", "Food", "Unused Expense")
         val expectedExUsed: MutableList<String> = mutableListOf("Entertainment", "Food")
-        val expectedInNames: MutableList<String> = mutableListOf("Salary", "Zelle")
+        val expectedInNames: MutableList<String> = mutableListOf("Salary", "Unused Income", "Zelle")
         val expectedInUsed: MutableList<String> = mutableListOf("Salary")
 
         runBlocking {
@@ -83,13 +83,13 @@ internal class CategoryViewModelTest {
     @DisplayName("Should delete Category of type from lists and database")
     fun deleteCategoryPosFun() {
 
-        val expectedExNames: MutableList<String> = mutableListOf("Entertainment")
+        val expectedExNames: MutableList<String> = mutableListOf("Entertainment", "Unused Expense")
         val expectedExUsed: MutableList<String> = mutableListOf("Entertainment")
-        val expectedInNames: MutableList<String> = mutableListOf("Zelle")
+        val expectedInNames: MutableList<String> = mutableListOf("Unused Income", "Zelle")
         val expectedInUsed: MutableList<String> = mutableListOf()
-        catVM.catNames[0] = mutableListOf("Food", "Entertainment")
+        catVM.catNames[0] = mutableListOf("Food", "Entertainment", "Unused Expense")
         catVM.catsUsed[0] = mutableListOf("Food", "Entertainment")
-        catVM.catNames[1] = mutableListOf("Salary", "Zelle")
+        catVM.catNames[1] = mutableListOf("Salary", "Unused Income", "Zelle")
         catVM.catsUsed[1] = mutableListOf("Salary")
 
         catVM.deleteCategoryPosFun(dd.cat1, 0)
@@ -99,7 +99,7 @@ internal class CategoryViewModelTest {
         assertEquals(expectedExUsed, catVM.catsUsed[0])
         assertEquals(expectedInNames, catVM.catNames[1])
         assertEquals(expectedInUsed, catVM.catsUsed[1])
-        assertEquals(mutableListOf(dd.cat2, dd.cat4), repo.catList)
+        assertEquals(mutableListOf(dd.cat2, dd.cat4, dd.cat5, dd.cat6), repo.catList)
     }
 
     @Test

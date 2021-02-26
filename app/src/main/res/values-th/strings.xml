@@ -21,8 +21,7 @@
     <string name="app_icon">ไอคอนแอป</string>
     <string name="category_all">ทั้งหมด</string>
     <string name="category_create">สร้างหมวดหมู่ใหม่</string>
-    <string name="empty_graph">ไม่มีการทำธุรกรรมใด ๆ เพื่อดำเนินการตัวกรองที่ใช้!</string>
-    <string name="empty_list">ไม่มีการทำธุรกรรมใดที่ตรงตามตัวกรองที่ใช้!\nกดปุ่มด้านล่างเพื่อเพิ่มธุรกรรมใหม่!</string>
+    <string name="cfl_no_transactions">ไม่มีการทำธุรกรรมใด ๆ เพื่อดำเนินการตัวกรองที่ใช้!</string>
     <string name="filter_account">บัญชี:</string>
     <string name="filter_apply">ใช้</string>
     <string name="filter_category">ประเภท:</string>
@@ -32,7 +31,7 @@
     <string name="filter_reset">ตั้งค่าใหม่</string>
     <string name="filter_start">ราคาเริ่มต้น</string>
     <string name="filter_type">ประเภท</string>
-    <string name="chart_total">รวม: %1$s%2$s</string>
+    <string name="chart_total">รวม:&#160;</string>
     <string name="period_days">วัน</string>
     <string name="period_months">เดือน</string>
     <string name="period_weeks">สัปดาห์ที่ผ่านมา</string>
@@ -90,4 +89,9 @@
     <string name="preferences_date_format">รูปแบบวันที่</string>
     <string name="cfl_drawer_description">เปิด Navigation Drawer</string>
     <string name="navigate_back">นำทางย้อนกลับ</string>
+    <string name="preferences_theme_system">ระบบ</string>
+    <string name="preferences_theme_dark">มืด</string>
+    <string name="preferences_theme_light">เบา</string>
+    <string name="preferences_theme">ธีม</string>
+    <string name="alert_dialog_input_error">ว่างไม่ได้!</string>
 </resources>

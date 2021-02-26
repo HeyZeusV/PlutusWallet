@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.ui
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -27,6 +28,8 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        AppCompatDelegate.setDefaultNightMode(sharedPref[Key.KEY_THEME, "-1"].toInt())
+
         // setting up DataBinding
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         // disables swipe to open drawer
@@ -42,6 +45,14 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        // loads if view mode changed
+        val themeChanged: Boolean = sharedPref[Key.KEY_THEME_CHANGED, false]
+        if (themeChanged) {
+            sharedPref[Key.KEY_THEME_CHANGED] = false
+            // destroys then restarts Activity in order to have updated theme
+            recreate()
+        }
 
         // loads if language changed
         val languageChanged: Boolean = sharedPref[Key.KEY_LANGUAGE_CHANGED, false]

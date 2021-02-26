@@ -21,8 +21,7 @@
     <string name="app_icon">Ícono de la aplicación</string>
     <string name="category_all">Todas</string>
     <string name="category_create">Crear nueva categoría</string>
-    <string name="empty_graph">¡Ninguna transacción para realizar el filtro aplicado!</string>
-    <string name="empty_list">¡Ninguna transacción cumple con los filtros que se aplican!\n¡Presione el botón a continuación para agregar una nueva transacción!</string>
+    <string name="cfl_no_transactions">¡Ninguna transacción para realizar el filtro aplicado!</string>
     <string name="filter_account">Cuenta:</string>
     <string name="filter_apply">Aplicar</string>
     <string name="filter_category">Categoría:</string>
@@ -32,7 +31,7 @@
     <string name="filter_reset">Reiniciar</string>
     <string name="filter_start">Comienzo</string>
     <string name="filter_type">Tipo</string>
-    <string name="chart_total">Total: %1$s%2$s</string>
+    <string name="chart_total">Total:&#160;</string>
     <string name="period_days">Días</string>
     <string name="period_months">Meses</string>
     <string name="period_weeks">Semanas</string>
@@ -90,4 +89,9 @@
     <string name="preferences_date_format">Formato de fecha</string>
     <string name="cfl_drawer_description">Abrir cajón de navegación</string>
     <string name="navigate_back">Navegar hacia atrás</string>
+    <string name="preferences_theme_system">Sistema</string>
+    <string name="preferences_theme_dark">Oscura</string>
+    <string name="preferences_theme_light">Ligera</string>
+    <string name="preferences_theme">Tema</string>
+    <string name="alert_dialog_input_error">¡No puede estar en blanco!</string>
 </resources>

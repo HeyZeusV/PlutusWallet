@@ -11,8 +11,8 @@ android {
         applicationId "com.heyzeusv.plutuswallet"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 21
-        versionName "3.0.0"
+        versionCode 22
+        versionName "3.1.0"
         testInstrumentationRunner "com.heyzeusv.plutuswallet.CustomTestRunner"
         testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
         resConfigs "en", "es", "de", "hi", "ja", "ko", "th"
@@ -57,9 +57,12 @@ android {
         exclude 'META-INF/AL2.0'
         exclude 'META-INF/LGPL2.1'
     }
-    testOptions.unitTests {
-        includeAndroidResources = true
-        returnDefaultValues = true
+    testOptions {
+        animationsDisabled true
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+        }
     }
 }
 

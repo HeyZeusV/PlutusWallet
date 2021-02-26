@@ -1,11 +1,11 @@
 package com.heyzeusv.plutuswallet.util.bindingadapters
 
-import android.graphics.Color
 import android.text.InputFilter
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
 import com.google.android.material.chip.ChipGroup
+import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ItemViewChart
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartAdapter
@@ -35,7 +36,6 @@ import java.io.InputStreamReader
  */
 @BindingAdapter("setAdapter")
 fun ViewPager2.setChartAdapter(cAdapter: ChartAdapter?) {
-
     cAdapter?.let { adapter = cAdapter }
 }
 
@@ -60,6 +60,8 @@ fun PieChart.setUpChart(ivc: ItemViewChart) {
     dataSet.sliceSpace = 2.5f
     // size of percent value
     dataSet.valueTextSize = 13f
+    // color of percent value
+    dataSet.valueTextColor = ContextCompat.getColor(this.context, R.color.colorChartText)
     // colors used for slices
     dataSet.colors = ivc.colorArray
     // size of highlighted area
@@ -84,11 +86,15 @@ fun PieChart.setUpChart(ivc: ItemViewChart) {
     // true = doughnut chart
     isDrawHoleEnabled = true
     // color of labels
-    setEntryLabelColor(Color.BLACK)
+    setEntryLabelColor(ContextCompat.getColor(this.context, R.color.colorChartText))
     // size of Category labels
     setEntryLabelTextSize(14.5f)
+    // color of center hole
+    setHoleColor(ContextCompat.getColor(this.context, R.color.colorChartHole))
     // size of center text
     setCenterTextSize(15f)
+    // color of center text
+    setCenterTextColor(ContextCompat.getColor(this.context, R.color.textColorPrimary))
     // true = display center text
     setDrawCenterText(true)
     // true = use percent values
@@ -216,4 +222,13 @@ fun TextView.loadFile(file: String) {
         // sets text to content from file
         text = fileText
     }
+}
+
+/**
+ *  Sets TextView as [selected] in order to cause text to scroll if it is too long.
+ */
+@BindingAdapter("selected")
+fun TextView.selected(selected: Boolean) {
+
+    this.isSelected = selected
 }

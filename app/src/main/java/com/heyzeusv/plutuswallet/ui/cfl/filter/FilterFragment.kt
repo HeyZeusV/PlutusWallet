@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -61,9 +63,12 @@ class FilterFragment : Fragment() {
         })
 
         filterVM.dateErrorEvent.observe(viewLifecycleOwner, EventObserver {
+            val anchor = parentFragment?.view?.rootView?.findViewById<CoordinatorLayout>(R.id.cfl_anchor)
             val dateBar: Snackbar = Snackbar.make(
                 binding.root, getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT
             )
+            dateBar.anchorView = anchor
+            dateBar.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSnackbarText))
             dateBar.show()
         })
 

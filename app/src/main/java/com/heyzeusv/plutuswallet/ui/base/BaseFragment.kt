@@ -3,7 +3,11 @@
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.util.SettingsUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,5 +49,14 @@ abstract class BaseFragment : Fragment(), CoroutineScope {
         super.onDestroy()
 
         job.cancel()
+    }
+
+    /**
+     *  Returns View to be used by AlertDialog.
+     */
+    protected fun createAlertDialogView() : View {
+
+        return LayoutInflater.from(context)
+            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
     }
 }

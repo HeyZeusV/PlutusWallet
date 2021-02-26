@@ -21,8 +21,7 @@
     <string name="app_icon">ऐप आइकन</string>
     <string name="category_all">सब</string>
     <string name="category_create">नई श्रेणी बनाएँ</string>
-    <string name="empty_graph">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!</string>
-    <string name="empty_list">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!\nनया लेनदेन जोड़ने के लिए नीचे दिया गया बटन दबाएं!</string>
+    <string name="cfl_no_transactions">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!</string>
     <string name="filter_account">लेखा:</string>
     <string name="filter_apply">लागू</string>
     <string name="filter_category">वर्ग:</string>
@@ -32,7 +31,7 @@
     <string name="filter_reset">रीसेट</string>
     <string name="filter_start">शुरू</string>
     <string name="filter_type">प्रकार</string>
-    <string name="chart_total">संपूर्ण: %1$s%2$s</string>
+    <string name="chart_total">संपूर्ण:&#160;</string>
     <string name="period_days">दिन</string>
     <string name="period_months">महीने</string>
     <string name="period_weeks">सप्ताह</string>
@@ -90,4 +89,9 @@
     <string name="preferences_date_format">डेटा प्रारूप</string>
     <string name="cfl_drawer_description">नेविगेशन दराज खोलें</string>
     <string name="navigate_back">वापस नेविगेट करें</string>
+    <string name="preferences_theme">थीम</string>
+    <string name="preferences_theme_light">रोशनी</string>
+    <string name="preferences_theme_dark">अंधेरा</string>
+    <string name="preferences_theme_system">체계</string>
+    <string name="alert_dialog_input_error">खाली नहीं हो सकता!</string>
 </resources>

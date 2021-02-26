@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.cfl.chart
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -52,16 +53,16 @@ class ChartFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val exColors: List<Int> = listOf(
-            ContextCompat.getColor(requireContext(), R.color.colorIncome1),
-            ContextCompat.getColor(requireContext(), R.color.colorIncome2),
-            ContextCompat.getColor(requireContext(), R.color.colorIncome3),
-            ContextCompat.getColor(requireContext(), R.color.colorIncome4)
+            ContextCompat.getColor(requireContext(), R.color.colorExpenseOne),
+            ContextCompat.getColor(requireContext(), R.color.colorExpenseTwo),
+            ContextCompat.getColor(requireContext(), R.color.colorExpenseThree),
+            ContextCompat.getColor(requireContext(), R.color.colorExpenseFour)
         )
         val inColors: List<Int> = listOf(
-            ContextCompat.getColor(requireContext(), R.color.colorExpense1),
-            ContextCompat.getColor(requireContext(), R.color.colorExpense2),
-            ContextCompat.getColor(requireContext(), R.color.colorExpense3),
-            ContextCompat.getColor(requireContext(), R.color.colorExpense4)
+            ContextCompat.getColor(requireContext(), R.color.colorIncomeOne),
+            ContextCompat.getColor(requireContext(), R.color.colorIncomeThree),
+            ContextCompat.getColor(requireContext(), R.color.colorIncomeTwo),
+            ContextCompat.getColor(requireContext(), R.color.colorIncomeFour)
         )
 
         cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: TransactionInfo ->
@@ -88,12 +89,13 @@ class ChartFragment : BaseFragment() {
         })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
 
         chartVM.adapter?.let {
             // checks if there has been a change in settings, updates changes, and updates list
-            if (sharedPref[Key.KEY_CHART_CHANGE, false]
+            if (sharedPref[Key.KEY_CHART_CHANGED, false]
                 && it.currentList.size == 2
             ) {
                 setVals = SettingsUtils.prepareSettingValues(sharedPref)
@@ -101,7 +103,7 @@ class ChartFragment : BaseFragment() {
                 it.currentList[0].totalText = chartVM.exTotText
                 it.currentList[1].totalText = chartVM.inTotText
                 it.notifyDataSetChanged()
-                sharedPref[Key.KEY_CHART_CHANGE] = false
+                sharedPref[Key.KEY_CHART_CHANGED] = false
             }
         }
     }
@@ -116,41 +118,41 @@ class ChartFragment : BaseFragment() {
 
             setVals.decimalPlaces && setVals.symbolSide -> {
                 chartVM.exTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.currencySymbol, setVals.decimalFormatter.format(chartVM.exTotal)
                 )
                 chartVM.inTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.currencySymbol, setVals.decimalFormatter.format(chartVM.inTotal)
                 )
             }
             setVals.decimalPlaces -> {
                 chartVM.exTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.decimalFormatter.format(chartVM.exTotal), setVals.currencySymbol
                 )
                 chartVM.inTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.decimalFormatter.format(chartVM.inTotal), setVals.currencySymbol
                 )
             }
             setVals.symbolSide -> {
                 chartVM.exTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.currencySymbol, setVals.integerFormatter.format(chartVM.exTotal)
                 )
                 chartVM.inTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.currencySymbol, setVals.integerFormatter.format(chartVM.inTotal)
                 )
             }
             else -> {
                 chartVM.exTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.integerFormatter.format(chartVM.exTotal), setVals.currencySymbol
                 )
                 chartVM.inTotText = getString(
-                    R.string.chart_total,
+                    R.string.chart_amount,
                     setVals.integerFormatter.format(chartVM.inTotal), setVals.currencySymbol
                 )
             }

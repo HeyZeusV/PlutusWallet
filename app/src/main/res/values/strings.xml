@@ -9,7 +9,7 @@
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="about_version" translatable="false">v3.0.0</string>
+    <string name="about_version" translatable="false">v3.1.0</string>
     <string name="account_create">Create New Account</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
@@ -25,8 +25,7 @@
     <string name="app_name" translatable="false">Plutus\' Wallet</string>
     <string name="category_all">All</string>
     <string name="category_create">Create New Category</string>
-    <string name="empty_graph">No transactions fulfill the filters being applied!</string>
-    <string name="empty_list">No transactions fulfill the filters being applied! \nPress the button below to add a new transaction!</string>
+    <string name="cfl_no_transactions">No transactions fulfill the filters being applied!</string>
     <string name="filter_account">Account:</string>
     <string name="filter_apply">Apply</string>
     <string name="filter_category">Category:</string>
@@ -36,7 +35,8 @@
     <string name="filter_type">Type</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_start">Start</string>
-    <string name="chart_total">Total: %1$s%2$s</string>
+    <string name="chart_total">Total:&#160;</string>
+    <string name="chart_amount" translatable="false">%1$s%2$s</string>
     <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
     <string name="library_circleindicator" translatable="false">CircleIndicator</string>
     <string name="library_mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>
@@ -102,4 +102,9 @@
     <string name="cfl_drawer_description">Open Navigation Drawer</string>
     <string name="navigate_back">Navigate Back</string>
     <string name="app_github" translatable="false"><![CDATA[<a href=\"https://github.com/HeyZeusV/PlutusWallet\">GitHub</a>]]></string>
+    <string name="preferences_theme">Theme</string>
+    <string name="preferences_theme_light">Light</string>
+    <string name="preferences_theme_dark">Dark</string>
+    <string name="preferences_theme_system">System</string>
+    <string name="alert_dialog_input_error">Can\'t be blank!</string>
 </resources>

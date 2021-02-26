@@ -1,26 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#4a148c</color>
-    <color name="colorPrimaryDark">#12005e</color>
-    <color name="colorPrimaryLight">#7c43bd</color>
-    <color name="colorSecondary">#33691e</color>
-    <color name="colorSecondaryDark">#003d00</color>
-    <color name="colorSecondaryLight">#629749</color>
+    <!-- Primary, Primary Dark, Secondary -->
+    <color name="purple_base">#4a148c</color>
+    <color name="purple_dark">#12005e</color>
+    <color name="green_base">#33691e</color>
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+
+    <!-- AppTheme Colors -->
+    <color name="colorSurface">@color/white</color>
+    <color name="colorBackground">#7c43bd</color>
+    <color name="colorError">#b00020</color>
+    <color name="colorButtonBackground">#33691e</color>
+    <color name="colorButtonText">@color/white</color>
+
+    <!-- Chip color in ChipGroup -->
+    <color name="colorChipGreen">#023d00</color>
+
+    <!-- Chart text colors -->
+    <color name="colorChartText">@color/black</color>
+    <color name="colorChartHole">@color/white</color>
+
+    <color name="colorAlertDialogButtonText">@color/purple_base</color>
+
+    <color name="colorSnackbarText">@color/white</color>
+
+
+    <!-- DatePickerDialog colors -->
+    <color name="colorDatePickerBackground">@color/white</color>
+    <color name="colorDatePickerHeader">@color/purple_base</color>
+    <color name="colorDatePickerSelectedDate">@color/white</color>
+
+    <color name="colorSettingsBackground">@color/white</color>
+
+    <!-- Text color throughout App -->
+    <color name="textColorPrimary">@android:color/primary_text_light</color>
+    <color name="textColorSecondary">@android:color/secondary_text_light</color>
+    <color name="textColorHint">#545454</color>
+
+    <!-- TransactionList ViewHolder total color -->
+    <color name="colorExpenseTotal">#ad0000</color>
+    <color name="colorIncomeTotal">#006300</color>
 
     <!-- Expense Chart Colors -->
-    <color name="colorExpense1">#d50000</color>
-    <color name="colorExpense2">#ffca28</color>
-    <color name="colorExpense3">#d500f9</color>
-    <color name="colorExpense4">#ff6f00</color>
+    <!-- Red 600 -->
+    <color name="colorExpenseOne">#e53935</color>
+    <!-- Yellow 500 -->
+    <color name="colorExpenseTwo">#ffeb3b</color>
+    <!-- Pink 400 -->
+    <color name="colorExpenseThree">#ec407a</color>
+    <!-- Orange 500 -->
+    <color name="colorExpenseFour">#ff9800</color>
 
     <!-- Income Chart Colors -->
-    <color name="colorIncome1">#76ff03</color>
-    <color name="colorIncome2">#00897b</color>
-    <color name="colorIncome3">#2196f3</color>
-    <color name="colorIncome4">#5e35b1</color>
+    <!-- Green 600 -->
+    <color name="colorIncomeOne">#43a047</color>
+    <!-- Teal 600 -->
+    <color name="colorIncomeTwo">#00897b</color>
+    <!-- Blue 500 -->
+    <color name="colorIncomeThree">#2196f3</color>
+    <!-- Deep Purple 300 -->
+    <color name="colorIncomeFour">#9575cd</color>
 
-    <color name="colorDisabled">#FF929292</color>
-    <color name="colorLightGray">#FFCECECE</color>
-
-    <color name="ripple_material_dark">#33FFFFFF</color>
+    <!-- AppBar item selection highlight -->
+    <color name="colorRipple">#33ffffff</color>
 </resources>

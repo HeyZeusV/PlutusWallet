@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
@@ -83,18 +84,26 @@ class CategoryFragmentTest {
     fun displayCategories() {
 
         // check that expense list of Categories loaded in
-        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(2)))
+        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
         // check that expense Categories are sorted
         onView(withId(R.id.ivcl_rv))
             .check(matches(rvViewHolder(0, withText(dd.cat2.category), R.id.ivcat_name)))
         onView(withId(R.id.ivcl_rv))
             .check(matches(rvViewHolder(1, withText(dd.cat1.category), R.id.ivcat_name)))
+        onView(withId(R.id.ivcl_rv))
+            .check(matches(rvViewHolder(2, withText(dd.cat5.category), R.id.ivcat_name)))
 
         // swipe to income Categories
         onView(withId(R.id.category_vp)).perform(swipeLeft())
 
         // check that income list of Categories loaded in
-        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(2)))
+        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
+        onView(withId(R.id.ivcl_rv))
+            .check(matches(rvViewHolder(0, withText(dd.cat3.category), R.id.ivcat_name)))
+        onView(withId(R.id.ivcl_rv))
+            .check(matches(rvViewHolder(1, withText(dd.cat6.category), R.id.ivcat_name)))
+        onView(withId(R.id.ivcl_rv))
+            .check(matches(rvViewHolder(2, withText(dd.cat4.category), R.id.ivcat_name)))
     }
 
     @Test
@@ -110,7 +119,7 @@ class CategoryFragmentTest {
         onView(withId((android.R.id.button1))).perform(click())
 
         // check that new Category exists and in correct location
-        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
+        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(4)))
         onView(withId(R.id.ivcl_rv))
             .check(matches(rvViewHolder(2, withText(testExCat), R.id.ivcat_name)))
 
@@ -123,7 +132,7 @@ class CategoryFragmentTest {
         onView(withId((android.R.id.button1))).perform(click())
 
         // check that new Category exists and in correct location
-        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
+        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(4)))
         onView(withId(R.id.ivcl_rv))
             .check(matches(rvViewHolder(0, withText(testInCat), R.id.ivcat_name)))
     }
@@ -133,11 +142,11 @@ class CategoryFragmentTest {
 
         // create new expense Category and save it
         onView(withId(R.id.category_new)).perform(click())
-        onView(withId(R.id.dialog_input)).perform(typeText(dd.cat1.category))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat1.category))
         onView(withId((android.R.id.button1))).perform(click())
 
         // check Snackbar appears warning user that Category exists and list remains same size
-        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(2)))
+        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
         onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat1.category))))
 
@@ -146,11 +155,11 @@ class CategoryFragmentTest {
 
         // create new income Category and save it
         onView(withId(R.id.category_new)).perform(click())
-        onView(withId(R.id.dialog_input)).perform(typeText(dd.cat3.category))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat3.category))
         onView(withId((android.R.id.button1))).perform(click())
 
         // check Snackbar appears warning user that Category exists and list remains same size
-        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(2)))
+        onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
         onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat3.category))))
     }
@@ -158,35 +167,48 @@ class CategoryFragmentTest {
     @Test
     fun deleteCategories() {
 
-        // cannot delete Categories in use so need theses dummy Categories
-        val deleteExCat = Category(0, "Delete Me", "Expense")
-        val deleteInCat = Category(0, "Delete Me", "Income")
-
-        // insert dummy Categories into Database
-        runBlocking {
-            repo.insertCategories(listOf(deleteExCat, deleteInCat))
-        }
-
         // click on delete Button in ViewHolder at position 0 in RecyclerView and confirm
         onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
-            .actionOnItemAtPosition<RecyclerView.ViewHolder>(0, rvViewClick(R.id.ivcat_delete)))
+            .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.ivcat_delete)))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check expense Category was deleted
         onView(withId(R.id.ivcl_rv)).check(matches(rvSize(2)))
-        onView(withText("Delete Me")).check(doesNotExist())
+        onView(withText("Unused Expense")).check(doesNotExist())
 
         // swipe to income Categories
         onView(withId(R.id.category_vp)).perform(swipeLeft())
 
         // click on delete Button in ViewHolder at position 0 in RecyclerView and confirm
         onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
-            .actionOnItemAtPosition<RecyclerView.ViewHolder>(0, rvViewClick(R.id.ivcat_delete)))
+            .actionOnItemAtPosition<RecyclerView.ViewHolder>(1, rvViewClick(R.id.ivcat_delete)))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check income Category was deleted
         onView(withId(R.id.ivcl_rv)).check(matches(rvSize(2)))
-        onView(withText("Delete Me")).check(doesNotExist())
+        onView(withText("Unused Income")).check(doesNotExist())
+    }
+
+    @Test
+    fun editCategoriesNameIsShown() {
+
+        // click on edit Button in ViewHolder at position 2 in RecyclerView
+        onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
+            .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.ivcat_edit)))
+
+        // check that AlertDialog input has Category name already filled out
+        onView(withId(R.id.dialog_input)).check(matches(withText(dd.cat5.category)))
+        onView(withId(android.R.id.button1)).perform(click())
+
+        // swipe to income Categories
+        onView(withId(R.id.category_vp)).perform(swipeLeft())
+
+        // click on edit Button in ViewHolder at position 2 in RecyclerView
+        onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
+            .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.ivcat_edit)))
+
+        // check that AlertDialog input has Category name already filled out
+        onView(withId(R.id.dialog_input)).check(matches(withText(dd.cat4.category)))
     }
 
     @Test
@@ -199,7 +221,7 @@ class CategoryFragmentTest {
         // click on edit Button in ViewHolder at position 1 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(1, rvViewClick(R.id.ivcat_edit)))
-        onView(withId(R.id.dialog_input)).perform(typeText(editedExName))
+        onView(withId(R.id.dialog_input)).perform(replaceText(editedExName))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Account name has been edited and in correct location
@@ -212,7 +234,7 @@ class CategoryFragmentTest {
         // click on edit Button in ViewHolder at position 1 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(1, rvViewClick(R.id.ivcat_edit)))
-        onView(withId(R.id.dialog_input)).perform(typeText(editedInName))
+        onView(withId(R.id.dialog_input)).perform(replaceText(editedInName))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Account name has been edited and in correct location
@@ -226,7 +248,7 @@ class CategoryFragmentTest {
         // click on edit Button in ViewHolder at position 1 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(1, rvViewClick(R.id.ivcat_edit)))
-        onView(withId(R.id.dialog_input)).perform(typeText(dd.cat2.category))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat2.category))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Snackbar appears warning user that Category exists
@@ -239,7 +261,7 @@ class CategoryFragmentTest {
         // click on edit Button in ViewHolder at position 0 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(0, rvViewClick(R.id.ivcat_edit)))
-        onView(withId(R.id.dialog_input)).perform(typeText(dd.cat4.category))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat4.category))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Snackbar appears warning user that Category exists

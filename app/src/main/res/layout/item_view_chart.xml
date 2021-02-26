@@ -13,7 +13,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="MissingConstraints">
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/ivchart_pie"
@@ -23,41 +24,42 @@
             android:layout_marginBottom="45dp"
             android:translationY="-6dp"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
-            app:setUpChart="@{ivc}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/emptyTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:gravity="center"
-            android:text="@string/empty_graph"
-            android:textColor="@android:color/black"
-            android:visibility="@{ivc.ctList.empty ? View.VISIBLE : View.INVISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:setUpChart="@{ivc}" />
 
         <TextView
             android:id="@+id/ivchart_total"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="23dp"
+            android:layout_marginStart="@dimen/chartMarginStartEnd"
+            android:layout_marginBottom="26dp"
+            android:text="@string/chart_total"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="?attr/textSizeBase"
+            android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/ivchart_amount"
+            style="@style/TextView.Scrollable"
+            android:layout_marginEnd="@dimen/chartMarginStartEnd"
+            android:layout_marginBottom="26dp"
             android:text="@{ivc.totalText}"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
+            android:textColor="@color/textColorPrimary"
             android:visibility="@{ivc.ctList.empty ? View.INVISIBLE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Total: $123,456,789,012" />
+            app:layout_constraintStart_toEndOf="@+id/ivchart_total"
+            tools:text=" $123,456,789,012" />
+
+        <TextView
+            android:id="@+id/emptyTextView"
+            style="@style/TextView.Empty"
+            android:text="@string/cfl_no_transactions"
+            android:visibility="@{ivc.ctList.empty ? View.VISIBLE : View.INVISIBLE}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

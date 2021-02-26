@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -118,15 +119,26 @@ class AccountFragmentTest {
     }
 
     @Test
+    fun editAccountNameIsShown() {
+
+        // click on edit Button in ViewHolder at position 2 in RecyclerView
+        onView(withId(R.id.account_rv)).perform(RecyclerViewActions
+            .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.iva_edit)))
+
+        // check that AlertDialog input has Account name already filled out
+        onView(withId(R.id.dialog_input)).check(matches(withText(dd.acc2.account)))
+    }
+
+    @Test
     fun editAccount() {
 
         //  edited Account name
         val editedName = "Test Account"
 
-        // click on edit Button in ViewHolder at position 1 in RecyclerView, enter new name, and confirm
+        // click on edit Button in ViewHolder at position 2 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.account_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.iva_edit)))
-        onView(withId(R.id.dialog_input)).perform(typeText(editedName))
+        onView(withId(R.id.dialog_input)).perform(replaceText(editedName))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Account name has been edited and in correct location
@@ -137,10 +149,10 @@ class AccountFragmentTest {
     @Test
     fun editAccountExists() {
 
-        // click on edit Button in ViewHolder at position 1 in RecyclerView, enter new name, and confirm
+        // click on edit Button in ViewHolder at position 2 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.account_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.iva_edit)))
-        onView(withId(R.id.dialog_input)).perform(typeText(dd.acc3.account))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.acc3.account))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Snackbar appears warning user that Account exists

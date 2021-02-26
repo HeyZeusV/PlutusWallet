@@ -10,5 +10,5 @@
         android:id="@+id/chartFragment"
         android:name="com.heyzeusv.plutuswallet.ui.cfl.chart.ChartFragment"
         android:label="ChartFragment"
-        tools:layout="@layout/fragment_chart"/>
+        tools:layout="@layout/fragment_chart" />
 </navigation>

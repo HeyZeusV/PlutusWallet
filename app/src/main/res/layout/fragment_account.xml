@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:id="@+id/account_layout"
@@ -12,31 +13,26 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppBarRipple">
+            android:theme="@style/AppBar">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/account_topBar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:title="@string/accounts"
+                style="@style/ToolBar"
                 app:menu="@menu/account_menu"
-                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
                 app:navigationContentDescription="@string/navigate_back"
-                style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:title="@string/accounts" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight">
+            android:background="?attr/colorBackground">
 
             <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.MaterialComponents.CardView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="4dp"
-                app:cardCornerRadius="@dimen/card_corner_radius"
-                app:cardUseCompatPadding="true">
+                android:id="@+id/materialCardView"
+                style="@style/CardView.FullScreen"
+                tools:ignore="MissingConstraints">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -46,18 +42,16 @@
                         android:id="@+id/account_rv"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:scrollbars="vertical"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/account_anchor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/account_anchor"
+                style="@style/SnackBar.Anchor"
+                tools:ignore="MissingConstraints" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>
