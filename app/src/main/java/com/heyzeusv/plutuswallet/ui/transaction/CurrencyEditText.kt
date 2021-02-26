@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.widget.EditText
 import androidx.appcompat.R
+import com.google.android.material.textfield.TextInputEditText
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.util.SettingsUtils
@@ -33,7 +34,7 @@ class CurrencyEditText @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet,
     defStyleAttr: Int = R.attr.editTextStyle
-) : androidx.appcompat.widget.AppCompatEditText(context, attributeSet, defStyleAttr) {
+) : TextInputEditText(context, attributeSet, defStyleAttr) {
 
     private val currencyTextWatcher = CurrencyTextWatcher(this)
 

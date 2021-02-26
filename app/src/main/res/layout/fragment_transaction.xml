@@ -54,40 +54,24 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/layoutPaddingFullScreen">
 
-                        <TextView
-                            android:id="@+id/titleTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="0dp"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/title_input_layout"
+                            style="@style/TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/transaction_title"
-                            android:textSize="?attr/textSizeBase"
+                            app:helperText="Location of purchase"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent">
 
-                        <EditText
-                            android:id="@+id/tran_title"
-                            style="@style/Transaction.EditText.SingleLine"
-                            android:layout_marginTop="8dp"
-                            android:hint="@string/transaction_title_hint"
-                            android:importantForAutofill="no"
-                            android:maxLength="32"
-                            android:text="@={tranVM.tranLD.title}"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
-
-                        <TextView
-                            android:id="@+id/dateTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="@string/transaction_date"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_title" />
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/title_input"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Title"
+                                android:maxLength="32"
+                                android:inputType="text" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/tran_date"
@@ -96,7 +80,9 @@
                             android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
                             android:text="@{tranVM.date}"
                             android:textSize="?attr/textSizeBase"
-                            app:layout_constraintTop_toBottomOf="@+id/dateTextView"
+                            android:insetBottom="0dp"
+                            android:insetTop="0dp"
+                            app:layout_constraintTop_toBottomOf="@+id/title_input_layout"
                             tools:text="Wed Nov 14" />
 
                         <TextView
@@ -148,6 +134,29 @@
                             app:layout_constraintStart_toEndOf="@+id/totalTextView"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
 
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/dialog_layout"
+                            style="@style/TextInputLayout.OutlinedBox"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
+                            app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
+                            app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/accountTextView">
+
+                            <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
+                                android:id="@+id/dialog_input"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/alert_dialog_input_hint"
+                                android:inputType="text"
+                                android:maxLength="32"
+                                android:minHeight="@dimen/minSize"
+                                android:paddingTop="10dp"
+                                android:textSize="16sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
                         <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
                             android:id="@+id/tran_total"
                             style="@style/Transaction.EditText.SingleLine"
@@ -163,7 +172,8 @@
                             app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
                             app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
                             app:layout_constraintTop_toBottomOf="@+id/accountTextView"
-                            tools:ignore="RtlHardcoded" />
+                            tools:ignore="RtlHardcoded"
+                            tools:visibility="invisible"/>
 
                         <TextView
                             android:id="@+id/symbolRightTextView"

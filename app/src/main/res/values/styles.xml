@@ -302,13 +302,16 @@
     <!-- Used by AlertDialog with text input -->
     <style name="TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:textColorHint">?attr/colorAccent</item>
-        <item name="hintTextColor">?attr/colorAccent</item>
-        <item name="boxStrokeColor">?attr/colorAccent</item>
         <item name="android:theme">@style/ThemeOverlay.TextInputLayout.OutlinedBox</item>
-        <item name="errorEnabled">true</item>
+        <item name="boxStrokeColor">?attr/colorAccent</item>
         <item name="boxStrokeErrorColor">?attr/colorError</item>
+        <item name="counterEnabled">true</item>
+        <item name="counterMaxLength">@integer/maxLengthName</item>
+        <item name="errorEnabled">true</item>
         <item name="errorTextColor">?attr/colorError</item>
         <item name="errorIconTint">?attr/colorError</item>
+        <item name="hintTextColor">?attr/colorAccent</item>
+        <item name="helperTextEnabled">true</item>
     </style>
 
     <!-- Used by TextView that warns user that no Transaction fulfill filter -->
