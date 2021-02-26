@@ -31,7 +31,7 @@
             android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
             android:text="@{ivt.title}"
             android:textColor="@color/textColorPrimary"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintEnd_toStartOf="@+id/ivt_total"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:selected="@{true}"
@@ -77,13 +77,13 @@
         <TextView
             android:id="@+id/ivt_total"
             style="@style/TextView.Scrollable"
-            android:layout_marginStart="@dimen/tranListMarginInnerStartEnd"
+            android:layout_width="wrap_content"
             android:layout_marginTop="@dimen/tranListMarginOuterStartEndTop"
             android:layout_marginEnd="@dimen/tranListMarginOuterStartEndTop"
             android:gravity="right"
             android:textColor='@{ivt.type.equals("Expense") ? @color/colorExpenseTotal : @color/colorIncomeTotal}'
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline"
+            app:layout_constraintStart_toEndOf="@+id/ivt_title"
             app:layout_constraintTop_toTopOf="parent"
             app:selected="@{true}"
             tools:text="Transaction Total" />
