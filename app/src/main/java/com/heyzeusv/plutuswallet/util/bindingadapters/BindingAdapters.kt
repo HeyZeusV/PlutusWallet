@@ -4,6 +4,7 @@ import android.text.InputFilter
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.view.View
+import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
@@ -22,6 +23,7 @@ import com.heyzeusv.plutuswallet.data.model.ItemViewChart
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartAdapter
 import com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
+import com.heyzeusv.plutuswallet.util.MaterialSpinnerAdapter
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -231,4 +233,18 @@ fun TextView.loadFile(file: String) {
 fun TextView.selected(selected: Boolean) {
 
     this.isSelected = selected
+}
+
+/**
+ *  Creates ArrayAdapter with [entries] and attaches it to AutoCompleteTextView.
+ */
+@BindingAdapter("entries")
+fun AutoCompleteTextView.setEntries(entries: List<String>?) {
+
+    if (entries != null) {
+        val arrayAdapter: MaterialSpinnerAdapter<String> =
+            MaterialSpinnerAdapter(context, R.layout.material_spinner_item, entries)
+        setAdapter(arrayAdapter)
+
+    }
 }

@@ -48,7 +48,6 @@ class TransactionViewModel @ViewModelInject constructor(
     // used for various Transaction Fields since property changes don't cause LiveDate updates
     private val _date: MutableLiveData<String> = MutableLiveData("")
     val date: LiveData<String> = _date
-    val account: MutableLiveData<String> = MutableLiveData("")
     val total: MutableLiveData<String> = MutableLiveData("")
     val checkedChip: MutableLiveData<Int> = MutableLiveData(R.id.tran_expense_chip)
     val expenseCat: MutableLiveData<String> = MutableLiveData("")
@@ -82,6 +81,11 @@ class TransactionViewModel @ViewModelInject constructor(
     // used to tell if date has been edited for re-repeating Transactions
     private var dateChanged = false
 
+    private val _createAccountEvent = MutableLiveData<Event<String>>()
+    val createAccountEvent: LiveData<Event<String>> = _createAccountEvent
+
+    var account = ""
+
     /**
      *  Uses [transaction] to pass values to LiveData to be displayed.
      */
@@ -89,7 +93,7 @@ class TransactionViewModel @ViewModelInject constructor(
         // Date to String
         _date.value =
             DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
-        account.value = transaction.account
+        account = transaction.account
         // BigDecimal to String
         total.value = if (setVals.decimalPlaces) {
             when (transaction.total.toString()) {
@@ -132,7 +136,7 @@ class TransactionViewModel @ViewModelInject constructor(
             if (tran.title.isBlank()) tran.title = emptyTitle + tran.id
 
             // is empty if account hasn't been changed so defaults to first account
-            tran.account = if (account.value == "") accountList.value!![0] else account.value!!
+            tran.account = if (account == "") accountList.value!![0] else account
 
             // converts the totalField from String into BigDecimal
             tran.total = when {
@@ -278,7 +282,7 @@ class TransactionViewModel @ViewModelInject constructor(
                 }
                 accountList.value = addNewToList(it, name, accCreate)
             }
-            account.value = name
+            _createAccountEvent.value = Event(name)
         }
     }
 

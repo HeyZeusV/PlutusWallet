@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AutoCompleteTextView
 import android.widget.Spinner
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -40,7 +42,6 @@ class TransactionFragment : BaseFragment() {
     private val args: TransactionFragmentArgs by navArgs()
 
     // used to record previously selected item
-    private var prevAcc = ""
     private var prevExCat = ""
     private var prevInCat = ""
 
@@ -89,26 +90,28 @@ class TransactionFragment : BaseFragment() {
                 tranVM.tranLD.value = Transaction()
             } else {
                 tranVM.setTranData(transaction)
+                binding.tranAccount.setText(transaction.account, false)
             }
         })
 
-        /**
-         *  Triggered whenever user changes selection in Account/Category Spinners.
-         *  Launches dialog whenever "Create New.." entry is selected.
-         */
-        tranVM.account.observe(viewLifecycleOwner, { account: String ->
-            if (account == getString(R.string.account_create)) {
-                val alertDialogView = createAlertDialogView()
+        binding.tranAccount.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+            val selected: String = adapterView.adapter.getItem(i).toString()
+            if (selected == getString(R.string.account_create)) {
+                val alertDialogView: View = createAlertDialogView()
                 AlertDialogCreator.alertDialogInput(
-                    requireContext(), alertDialogView, account,
+                    requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                     getString(R.string.account_create),
-                    createDialogListeners(binding.tranAccount, prevAcc), tranVM::insertAccount,
+                    createDialogListenersAutoTV(binding.tranAccount, tranVM.account), tranVM::insertAccount,
                     null, null, null, null, null
                 )
             } else {
-                prevAcc = account
+                tranVM.account = selected
             }
+        }
+
+        tranVM.createAccountEvent.observe(viewLifecycleOwner, EventObserver { account: String ->
+            binding.tranAccount.setText(account, false)
         })
 
         tranVM.expenseCat.observe(viewLifecycleOwner, { category: String ->
@@ -178,6 +181,21 @@ class TransactionFragment : BaseFragment() {
                 false
             }
         }
+    }
+
+
+    /**
+     *  Creates negative onClick and onCancel listeners for AlertDialog. Which [spinner] AlertDialog
+     *  is being created from and [previous] entry that was selected.
+     */
+    private fun createDialogListenersAutoTV(spinner: AutoCompleteTextView, previous: String): List<Any> {
+
+        val negListener = DialogInterface.OnClickListener { _, _ ->
+            spinner.setText(previous, false)
+        }
+        val cancelListener = DialogInterface.OnCancelListener { spinner.setText(previous, false) }
+
+        return listOf(negListener, cancelListener)
     }
 
     /**

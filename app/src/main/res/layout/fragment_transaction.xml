@@ -55,8 +55,8 @@
                         android:padding="@dimen/layoutPaddingFullScreen">
 
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/title_input_layout"
-                            style="@style/TextInputLayout.OutlinedBox"
+                            android:id="@+id/tran_title_layout"
+                            style="@style/TextInputLayout.OutlinedBox.Counter"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             app:helperText="Location of purchase"
@@ -65,7 +65,7 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/title_input"
+                                android:id="@+id/tran_title"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="Title"
@@ -77,37 +77,34 @@
                             android:id="@+id/tran_date"
                             style="@style/Button.TextOnly"
                             android:layout_marginTop="10dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
                             android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
                             android:text="@{tranVM.date}"
                             android:textSize="?attr/textSizeBase"
-                            android:insetBottom="0dp"
-                            android:insetTop="0dp"
-                            app:layout_constraintTop_toBottomOf="@+id/title_input_layout"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_title_layout"
+                            tools:layout_editor_absoluteX="12dp"
                             tools:text="Wed Nov 14" />
 
-                        <TextView
-                            android:id="@+id/accountTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_account_layout"
+                            style="@style/TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_account"
-                            android:textSize="?attr/textSizeBase"
+                            android:layout_marginTop="25dp"
+                            app:endIconMode="dropdown_menu"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_date" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_date">
 
-                        <Spinner
-                            android:id="@+id/tran_account"
-                            style="@style/Spinner.Base"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="12dp"
-                            app:entries="@{tranVM.accountList}"
-                            app:layout_constraintStart_toEndOf="@+id/accountTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_date"
-                            app:selectedValue="@={tranVM.account}"
-                            tools:listitem="@layout/spinner_item" />
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_account"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Account"
+                                android:inputType="none"
+                                android:padding="16dp"
+                                app:entries="@{tranVM.accountList}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <TextView
                             android:id="@+id/totalTextView"
@@ -120,7 +117,7 @@
                             android:text="@string/transaction_total"
                             android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout" />
 
                         <TextView
                             android:id="@+id/symbolLeftTextView"
@@ -132,7 +129,7 @@
                             android:textSize="?attr/textSizeBase"
                             android:visibility="@{tranVM.setVals.symbolSide ? View.VISIBLE : View.GONE}"
                             app:layout_constraintStart_toEndOf="@+id/totalTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout" />
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/dialog_layout"
@@ -143,7 +140,7 @@
                             app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
                             app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
                             app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView">
+                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout">
 
                             <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
                                 android:id="@+id/dialog_input"
@@ -171,7 +168,7 @@
                             app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
                             app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
                             app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout"
                             tools:ignore="RtlHardcoded"
                             tools:visibility="invisible"/>
 
@@ -185,7 +182,7 @@
                             android:textSize="?attr/textSizeBase"
                             android:visibility="@{tranVM.setVals.symbolSide ? View.GONE : View.VISIBLE}"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout" />
 
                         <TextView
                             android:id="@+id/typeTextView"
