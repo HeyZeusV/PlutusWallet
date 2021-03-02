@@ -57,10 +57,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_title_layout"
                             style="@style/TextInputLayout.OutlinedBox.Counter"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
                             app:helperText="Location of purchase"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
@@ -73,36 +70,33 @@
                                 android:inputType="text" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/tran_date"
-                            style="@style/Button.TextOnly"
-                            android:layout_marginTop="10dp"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
-                            android:text="@{tranVM.date}"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_title_layout"
-                            tools:layout_editor_absoluteX="12dp"
-                            tools:text="Wed Nov 14" />
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_date_layout"
+                            style="@style/TextInputLayout.OutlinedBox"
+                            android:layout_marginTop="20dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tran_title_layout">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_date"
+                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
+                                android:text="@{tranVM.date}"
+                                android:hint="Date" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_account_layout"
                             style="@style/TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="25dp"
+                            android:layout_marginTop="20dp"
                             app:endIconMode="dropdown_menu"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_date">
+                            app:layout_constraintTop_toBottomOf="@+id/tran_date_layout">
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_account"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                style="@style/TextInputLayout.AutoCompleteTextView"
                                 android:hint="Account"
-                                android:inputType="none"
-                                android:padding="16dp"
                                 app:entries="@{tranVM.accountList}" />
                         </com.google.android.material.textfield.TextInputLayout>
 

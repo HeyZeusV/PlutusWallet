@@ -94,6 +94,12 @@ class TransactionFragment : BaseFragment() {
             }
         })
 
+        binding.tranDate.setOnFocusChangeListener { _, focused: Boolean ->
+            if (focused) {
+                tranVM.selectDateOC(tranVM.tranLD.value!!.date)
+            }
+        }
+
         binding.tranAccount.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
             val selected: String = adapterView.adapter.getItem(i).toString()
             if (selected == getString(R.string.account_create)) {
