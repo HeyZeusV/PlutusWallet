@@ -126,35 +126,24 @@
                                 android:textSize="?attr/textSizeBase" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            android:id="@+id/typeTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_type"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout" />
-
                         <com.google.android.material.chip.ChipGroup
                             android:id="@+id/tran_type_chips"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="11dp"
+                            android:layout_marginEnd="16dp"
                             app:chipSpacingHorizontal="16dp"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/typeTextView"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_total_layout"
                             app:selectedChipId="@={tranVM.checkedChip}"
+                            app:singleLine="true"
                             app:singleSelection="true">
 
                             <com.google.android.material.chip.Chip
                                 android:id="@+id/tran_expense_chip"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
+                                style="@style/Transaction.Chip.Outlined"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/type_expense"
@@ -163,7 +152,7 @@
 
                             <com.google.android.material.chip.Chip
                                 android:id="@+id/tran_income_chip"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
+                                style="@style/Transaction.Chip.Outlined"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/type_income"
@@ -182,7 +171,7 @@
                             android:text="@string/transaction_category"
                             android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips" />
 
                         <Spinner
                             android:id="@+id/tran_expense_cat"
@@ -192,7 +181,7 @@
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.expenseCatList}"
                             app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/typeTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips"
                             app:selectedValue="@={tranVM.expenseCat}"
                             tools:listitem="@layout/spinner_item" />
 
@@ -204,7 +193,7 @@
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:entries="@{tranVM.incomeCatList}"
                             app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/typeTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips"
                             app:selectedValue="@={tranVM.incomeCat}"
                             tools:listitem="@layout/spinner_item" />
 

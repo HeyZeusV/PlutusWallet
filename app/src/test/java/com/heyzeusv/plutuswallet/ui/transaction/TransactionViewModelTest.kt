@@ -47,7 +47,7 @@ internal class TransactionViewModelTest {
         tranVM.setTranData(dd.tran1)
 
         assertEquals("Thursday, January 1, 1970", tranVM.date.value)
-        assertEquals("Cash", tranVM.account.value)
+        assertEquals("Cash", tranVM.account)
         assertEquals("1 000 10", tranVM.total.value)
         assertEquals(R.id.tran_expense_chip, tranVM.checkedChip.value)
         assertEquals("Food", tranVM.expenseCat.value)
@@ -59,7 +59,7 @@ internal class TransactionViewModelTest {
     fun saveTransaction() {
 
         tranVM.tranLD = MutableLiveData(dd.tran1)
-        tranVM.account.value = "Test Account"
+        tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
         tranVM.checkedChip.value = R.id.tran_income_chip
         tranVM.incomeCat.value = "Test Income Category"
@@ -95,7 +95,7 @@ internal class TransactionViewModelTest {
         tranVM.tranLD = MutableLiveData(dd.tran1)
         // in order to get dateChanged == true
         tranVM.onDateSelected(Date(86400000 * 3))
-        tranVM.account.value = "Test Account"
+        tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
         tranVM.checkedChip.value = R.id.tran_income_chip
         tranVM.incomeCat.value = "Test Income Category"
@@ -159,7 +159,7 @@ internal class TransactionViewModelTest {
 
         assertEquals(expectedList, tranVM.accountList.value)
         assertEquals(expectedAcc, repo.accList[repo.accList.size - 1])
-        assertEquals("Test2", tranVM.account.value)
+        assertEquals("Test2", tranVM.account)
 
     }
 
@@ -174,7 +174,7 @@ internal class TransactionViewModelTest {
         tranVM.insertAccount("Test3", "")
 
         assertEquals(expectedList, tranVM.accountList.value)
-        assertEquals("Test3", tranVM.account.value)
+        assertEquals("Test3", tranVM.account)
         assertEquals(expectedAccRepoSize, repo.accList.size)
     }
 
