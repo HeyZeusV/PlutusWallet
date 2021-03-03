@@ -95,21 +95,15 @@ class TransactionViewModel @ViewModelInject constructor(
             DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
         account = transaction.account
         // BigDecimal to String
-        total.value = if (setVals.decimalPlaces) {
-            when (transaction.total.toString()) {
-                "0" -> ""
-                "0.00" -> ""
-                else -> formatDecimal(
-                    transaction.total,
-                    setVals.thousandsSymbol, setVals.decimalSymbol
-                )
-            }
-        } else {
-            if (transaction.total.toString() == "0") {
-                ""
-            } else {
-                formatInteger(transaction.total, setVals.thousandsSymbol)
-            }
+        total.value = when {
+            setVals.decimalPlaces && transaction.total > BigDecimal.ZERO -> formatDecimal(
+                transaction.total, setVals.thousandsSymbol, setVals.decimalSymbol
+            )
+            setVals.decimalPlaces -> "0${setVals.decimalSymbol}00"
+            transaction.total > BigDecimal.ZERO -> formatInteger(
+                transaction.total, setVals.thousandsSymbol
+            )
+            else -> "0"
         }
         if (transaction.type == "Expense") {
             checkedChip.value = R.id.tran_expense_chip

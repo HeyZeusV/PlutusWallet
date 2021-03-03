@@ -2,4 +2,6 @@
 <resources>
     <integer name="maxLengthName">32</integer>
     <integer name="maxLengthMemo">512</integer>
+    <integer name="maxLengthTotalNoDecimal">18</integer>
+    <integer name="maxLengthTotal">21</integer>
 </resources>

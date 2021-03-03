@@ -65,15 +65,18 @@
                                 android:id="@+id/tran_title"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Title"
+                                android:inputType="text"
                                 android:maxLength="32"
-                                android:inputType="text" />
+                                android:text="@={tranVM.tranLD.title}"
+                                android:textSize="18sp"
+                                android:hint="Title" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_date_layout"
                             style="@style/TextInputLayout.OutlinedBox"
                             android:layout_marginTop="20dp"
+                            app:expandedHintEnabled="false"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tran_title_layout">
 
@@ -100,83 +103,28 @@
                                 app:entries="@{tranVM.accountList}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            android:id="@+id/totalTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_total"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout" />
-
-                        <TextView
-                            android:id="@+id/symbolLeftTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:text="@{tranVM.setVals.currencySymbol}"
-                            android:textSize="?attr/textSizeBase"
-                            android:visibility="@{tranVM.setVals.symbolSide ? View.VISIBLE : View.GONE}"
-                            app:layout_constraintStart_toEndOf="@+id/totalTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout" />
-
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/dialog_layout"
+                            android:id="@+id/tran_total_layout"
                             style="@style/TextInputLayout.OutlinedBox"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
-                            app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
-                            app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
+                            app:expandedHintEnabled="false"
+                            app:counterEnabled="true"
+                            app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
+                            app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
+                            app:suffixText="@{tranVM.setVals.symbolSide ? `` : tranVM.setVals.currencySymbol}"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_account_layout">
 
                             <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
-                                android:id="@+id/dialog_input"
+                                android:id="@+id/tran_total"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="@string/alert_dialog_input_hint"
-                                android:inputType="text"
-                                android:maxLength="32"
-                                android:minHeight="@dimen/minSize"
-                                android:paddingTop="10dp"
-                                android:textSize="16sp" />
+                                android:hint="Total"
+                                android:inputType="number"
+                                android:maxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
+                                android:text="@={tranVM.total}"
+                                android:textSize="?attr/textSizeBase" />
                         </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
-                            android:id="@+id/tran_total"
-                            style="@style/Transaction.EditText.SingleLine"
-                            android:layout_marginTop="7dp"
-                            android:layout_marginBottom="1dp"
-                            android:gravity="@{tranVM.setVals.symbolSide ? Gravity.LEFT : Gravity.RIGHT}"
-                            android:hint="@string/transaction_total_hint"
-                            android:importantForAutofill="no"
-                            android:maxLength="21"
-                            android:text="@={tranVM.total}"
-                            app:filter="@{tranVM.setVals}"
-                            app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
-                            app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
-                            app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout"
-                            tools:ignore="RtlHardcoded"
-                            tools:visibility="invisible"/>
-
-                        <TextView
-                            android:id="@+id/symbolRightTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:text="@{tranVM.setVals.currencySymbol}"
-                            android:textSize="?attr/textSizeBase"
-                            android:visibility="@{tranVM.setVals.symbolSide ? View.GONE : View.VISIBLE}"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout" />
 
                         <TextView
                             android:id="@+id/typeTextView"
@@ -189,7 +137,7 @@
                             android:text="@string/transaction_type"
                             android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/totalTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout" />
 
                         <com.google.android.material.chip.ChipGroup
                             android:id="@+id/tran_type_chips"
@@ -200,7 +148,7 @@
                             app:chipSpacingHorizontal="16dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/typeTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/totalTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout"
                             app:selectedChipId="@={tranVM.checkedChip}"
                             app:singleSelection="true">
 

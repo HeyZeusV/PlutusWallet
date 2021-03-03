@@ -47,9 +47,7 @@ class CurrencyEditText @JvmOverloads constructor(
     private val decimalPlaces: Boolean = sharedPref[Key.KEY_DECIMAL_PLACES, true]
 
     // formatters
-    private var decimal0Formatter: DecimalFormat = DecimalFormat()
-    private var decimal1Formatter: DecimalFormat = DecimalFormat()
-    private var decimal2Formatter: DecimalFormat = DecimalFormat()
+    private var decimalFormatter: DecimalFormat = DecimalFormat()
     private var integerFormatter: DecimalFormat = DecimalFormat()
 
     // symbols used
@@ -68,14 +66,9 @@ class CurrencyEditText @JvmOverloads constructor(
         customSymbols.groupingSeparator = thousandsSymbol
 
         // formatters using custom symbols
-        decimal0Formatter = DecimalFormat("#,##0.", customSymbols)
-        decimal1Formatter = DecimalFormat("#,##0.#", customSymbols)
-        decimal2Formatter = DecimalFormat("#,##0.##", customSymbols)
-        integerFormatter = DecimalFormat("#,###", customSymbols)
-
-        decimal0Formatter.roundingMode = RoundingMode.HALF_UP
-        decimal1Formatter.roundingMode = RoundingMode.HALF_UP
-        decimal2Formatter.roundingMode = RoundingMode.HALF_UP
+        decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
+        integerFormatter = DecimalFormat("#,##0", customSymbols)
+        decimalFormatter.roundingMode = RoundingMode.HALF_UP
         integerFormatter.roundingMode = RoundingMode.HALF_UP
 
         // forces numpad
@@ -134,39 +127,40 @@ class CurrencyEditText @JvmOverloads constructor(
          */
         private fun formatAmount(amount: String): String {
 
-            val result: String = editSymbols(amount)
+            val result: String = removeSymbols(amount)
             val amt: BigDecimal
             if (result.isEmpty()) return "" else amt = BigDecimal(result)
 
             // uses decimal formatter depending on number of decimal places entered
             return when {
-                decimalPlaces && result.contains(Regex("(\\.)\\d{2}")) ->
-                    decimal2Formatter.format(amt)
-                decimalPlaces && result.contains(Regex("(\\.)\\d")) ->
-                    decimal1Formatter.format(amt)
-                decimalPlaces && result.contains(".") ->
-                    decimal0Formatter.format(amt)
+                decimalPlaces -> decimalFormatter.format(amt)
                 else -> integerFormatter.format(amt)
             }
         }
 
         /**
-         *  Removes thousands symbols from [numString] if any, changes decimal symbol to be "."
-         *  if different, and returns formatted string.
+         *  Removes all symbols from [numString]. Returns a formatted string depending on Settings
+         *  and content of symbol-stripped string.
          */
-        private fun editSymbols(numString: String): String {
+        private fun removeSymbols(numString: String): String {
 
-            var numbers = ""
+            var chars = ""
+            // retrieves only numbers in numString
             for (i: Char in numString) {
-                // ensures only 1 decimal symbol exists and returns if decimal setting is off and
-                // decimal symbol is detected
-                when {
-                    i.isDigit() -> numbers += i
-                    decimalPlaces && i == decimalSymbol && !numbers.contains(".") -> numbers += "."
-                    !decimalPlaces && i == decimalSymbol -> return numbers
-                }
+                if (i.isDigit()) chars += i
             }
-            return numbers
+
+            return when {
+                // doesn't allow string to be empty
+                decimalPlaces && chars == "" -> "0.00"
+                // divides numbers by 100 in order to easily get decimal places
+                decimalPlaces -> BigDecimal(chars)
+                    .divide(BigDecimal(100), 2, RoundingMode.HALF_UP).toString()
+                // doesn't allow string to be empty
+                chars == "" -> "0"
+                // returns just a string of numbers
+                else -> chars
+            }
         }
 
         /**
