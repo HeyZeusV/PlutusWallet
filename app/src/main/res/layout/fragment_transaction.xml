@@ -76,7 +76,6 @@
                             android:id="@+id/tran_date_layout"
                             style="@style/TextInputLayout.OutlinedBox"
                             android:layout_marginTop="20dp"
-                            app:expandedHintEnabled="false"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tran_title_layout">
 
@@ -107,7 +106,6 @@
                             android:id="@+id/tran_total_layout"
                             style="@style/TextInputLayout.OutlinedBox"
                             android:layout_marginTop="8dp"
-                            app:expandedHintEnabled="false"
                             app:counterEnabled="true"
                             app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
                             app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
@@ -160,42 +158,37 @@
                                 app:chipBackgroundColor="@color/chip_bg_state_list" />
                         </com.google.android.material.chip.ChipGroup>
 
-                        <TextView
-                            android:id="@+id/categoryTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_category"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips" />
-
-                        <Spinner
-                            android:id="@+id/tran_expense_cat"
-                            style="@style/Spinner.Base"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="18dp"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_expense_cat_layout"
+                            style="@style/TextInputLayout.OutlinedBox"
+                            android:layout_marginTop="20dp"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
-                            app:entries="@{tranVM.expenseCatList}"
-                            app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips"
-                            app:selectedValue="@={tranVM.expenseCat}"
-                            tools:listitem="@layout/spinner_item" />
+                            app:endIconMode="dropdown_menu"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
 
-                        <Spinner
-                            android:id="@+id/tran_income_cat"
-                            style="@style/Spinner.Base"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="18dp"
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_expense_cat"
+                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                android:hint="Category"
+                                app:entries="@{tranVM.expenseCatList}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_income_cat_layout"
+                            style="@style/TextInputLayout.OutlinedBox"
+                            android:layout_marginTop="20dp"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
-                            app:entries="@{tranVM.incomeCatList}"
-                            app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips"
-                            app:selectedValue="@={tranVM.incomeCat}"
-                            tools:listitem="@layout/spinner_item" />
+                            app:endIconMode="dropdown_menu"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_income_cat"
+                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                android:hint="Category"
+                                app:entries="@{tranVM.incomeCatList}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <TextView
                             android:id="@+id/memoTextView"
@@ -207,7 +200,7 @@
                             android:textSize="?attr/textSizeBase"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_expense_cat_layout" />
 
                         <EditText
                             android:id="@+id/tran_memo"

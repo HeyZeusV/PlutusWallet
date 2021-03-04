@@ -50,8 +50,6 @@ class TransactionViewModel @ViewModelInject constructor(
     val date: LiveData<String> = _date
     val total: MutableLiveData<String> = MutableLiveData("")
     val checkedChip: MutableLiveData<Int> = MutableLiveData(R.id.tran_expense_chip)
-    val expenseCat: MutableLiveData<String> = MutableLiveData("")
-    val incomeCat: MutableLiveData<String> = MutableLiveData("")
     val repeatCheck: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // Lists used by Spinners
@@ -81,10 +79,15 @@ class TransactionViewModel @ViewModelInject constructor(
     // used to tell if date has been edited for re-repeating Transactions
     private var dateChanged = false
 
-    private val _createAccountEvent = MutableLiveData<Event<String>>()
-    val createAccountEvent: LiveData<Event<String>> = _createAccountEvent
+    // Int is type: 0 = Account, 1 = Expense, 2 = Income
+    // String is name of newly created entity
+    private val _createEvent = MutableLiveData<Event<Pair<Int, String>>>()
+    val createEvent: LiveData<Event<Pair<Int, String>>> = _createEvent
 
+    // currently selected Spinner item
     var account = ""
+    var expenseCat = ""
+    var incomeCat = ""
 
     /**
      *  Uses [transaction] to pass values to LiveData to be displayed.
@@ -107,10 +110,10 @@ class TransactionViewModel @ViewModelInject constructor(
         }
         if (transaction.type == "Expense") {
             checkedChip.value = R.id.tran_expense_chip
-            expenseCat.value = transaction.category
+            expenseCat = transaction.category
         } else {
             checkedChip.value = R.id.tran_income_chip
-            incomeCat.value = transaction.category
+            incomeCat = transaction.category
         }
         repeatCheck.value = transaction.repeating
     }
@@ -147,17 +150,17 @@ class TransactionViewModel @ViewModelInject constructor(
             // cat values are empty if they haven't been changed so defaults to first category
             if (checkedChip.value == R.id.tran_expense_chip) {
                 tran.type = "Expense"
-                tran.category = if (expenseCat.value == "") {
+                tran.category = if (expenseCat == "") {
                     expenseCatList.value!![0]
                 } else {
-                    expenseCat.value!!
+                    expenseCat
                 }
             } else {
                 tran.type = "Income"
-                tran.category = if (incomeCat.value == "") {
+                tran.category = if (incomeCat == "") {
                     incomeCatList.value!![0]
                 } else {
-                    incomeCat.value!!
+                    incomeCat
                 }
             }
 
@@ -276,7 +279,8 @@ class TransactionViewModel @ViewModelInject constructor(
                 }
                 accountList.value = addNewToList(it, name, accCreate)
             }
-            _createAccountEvent.value = Event(name)
+            account = name
+            _createEvent.value = Event(Pair(0, name))
         }
     }
 
@@ -299,7 +303,8 @@ class TransactionViewModel @ViewModelInject constructor(
                     expenseCatList.value = addNewToList(it, name, catCreate)
                 }
             }
-            expenseCat.value = name
+            expenseCat = name
+            _createEvent.value = Event(Pair(1, name))
         } else {
             incomeCatList.value?.let {
                 // create if doesn't exist
@@ -312,7 +317,8 @@ class TransactionViewModel @ViewModelInject constructor(
                     incomeCatList.value = addNewToList(it, name, catCreate)
                 }
             }
-            incomeCat.value = name
+            incomeCat = name
+            _createEvent.value = Event(Pair(2, name))
         }
     }
 
