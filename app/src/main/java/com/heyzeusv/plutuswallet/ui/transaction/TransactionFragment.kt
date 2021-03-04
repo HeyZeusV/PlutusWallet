@@ -90,6 +90,7 @@ class TransactionFragment : BaseFragment() {
                 } else {
                     binding.tranIncomeCat.setText(transaction.category, false)
                 }
+                binding.tranPeriod.setText(tranVM.period, false)
             }
         })
 
@@ -153,6 +154,10 @@ class TransactionFragment : BaseFragment() {
             } else {
                 tranVM.incomeCat = selected
             }
+        }
+
+        binding.tranPeriod.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+            tranVM.period = adapterView.adapter.getItem(i).toString()
         }
 
         tranVM.futureTranEvent.observe(viewLifecycleOwner, EventObserver { tran: Transaction ->

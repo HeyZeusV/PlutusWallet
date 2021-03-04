@@ -50,7 +50,7 @@ class TransactionViewModel @ViewModelInject constructor(
     val date: LiveData<String> = _date
     val total: MutableLiveData<String> = MutableLiveData("")
     val checkedChip: MutableLiveData<Int> = MutableLiveData(R.id.tran_expense_chip)
-    val repeatCheck: MutableLiveData<Boolean> = MutableLiveData(false)
+    val repeat: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // Lists used by Spinners
     val accountList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
@@ -88,6 +88,15 @@ class TransactionViewModel @ViewModelInject constructor(
     var account = ""
     var expenseCat = ""
     var incomeCat = ""
+    var period = ""
+
+    /**
+     *  onClick for repeat Button that changes value of repeat.
+     */
+    fun repeatButtonOC() {
+
+        repeat.value = !repeat.value!!
+    }
 
     /**
      *  Uses [transaction] to pass values to LiveData to be displayed.
@@ -115,7 +124,16 @@ class TransactionViewModel @ViewModelInject constructor(
             checkedChip.value = R.id.tran_income_chip
             incomeCat = transaction.category
         }
-        repeatCheck.value = transaction.repeating
+        repeat.value = transaction.repeating
+        periodArray.value?.let {
+            // gets translated period value using periodArray
+            period = when (transaction.period) {
+                0 -> it[0]
+                1 -> it[1]
+                2 -> it[2]
+                else -> it[3]
+            }
+        }
     }
 
     /**
@@ -164,8 +182,9 @@ class TransactionViewModel @ViewModelInject constructor(
                 }
             }
 
-            tran.repeating = repeatCheck.value!!
+            tran.repeating = repeat.value!!
             if (tran.repeating) tran.futureDate = createFutureDate()
+            tran.period = periodArray.value!!.indexOf(period)
             // frequency must always be at least 1
             if (tran.frequency < 1) tran.frequency = 1
 

@@ -50,8 +50,8 @@ internal class TransactionViewModelTest {
         assertEquals("Cash", tranVM.account)
         assertEquals("1 000 10", tranVM.total.value)
         assertEquals(R.id.tran_expense_chip, tranVM.checkedChip.value)
-        assertEquals("Food", tranVM.expenseCat.value)
-        assertEquals(true, tranVM.repeatCheck.value)
+        assertEquals("Food", tranVM.expenseCat)
+        assertEquals(true, tranVM.repeat.value)
     }
 
     @Test
@@ -62,8 +62,8 @@ internal class TransactionViewModelTest {
         tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
         tranVM.checkedChip.value = R.id.tran_income_chip
-        tranVM.incomeCat.value = "Test Income Category"
-        tranVM.repeatCheck.value = false
+        tranVM.incomeCat = "Test Income Category"
+        tranVM.repeat.value = false
         val expectedTran = Transaction(
             1,
             "Party",
@@ -98,8 +98,8 @@ internal class TransactionViewModelTest {
         tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
         tranVM.checkedChip.value = R.id.tran_income_chip
-        tranVM.incomeCat.value = "Test Income Category"
-        tranVM.repeatCheck.value = true
+        tranVM.incomeCat = "Test Income Category"
+        tranVM.repeat.value = true
         val expectedTran = Transaction(
             1,
             "Party",
@@ -196,10 +196,10 @@ internal class TransactionViewModelTest {
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
         assertEquals(expectedExCat, repo.catList[repo.catList.size - 2])
-        assertEquals("ETest2", tranVM.expenseCat.value)
+        assertEquals("ETest2", tranVM.expenseCat)
         assertEquals(expectedInList, tranVM.incomeCatList.value)
         assertEquals(expectedInCat, repo.catList[repo.catList.size - 1])
-        assertEquals("ITest2", tranVM.incomeCat.value)
+        assertEquals("ITest2", tranVM.incomeCat)
     }
 
     @Test
@@ -218,9 +218,9 @@ internal class TransactionViewModelTest {
         tranVM.insertCategory("ITest2", "")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
-        assertEquals("ETest2", tranVM.expenseCat.value)
+        assertEquals("ETest2", tranVM.expenseCat)
         assertEquals(expectedInList, tranVM.incomeCatList.value)
-        assertEquals("ITest2", tranVM.incomeCat.value)
+        assertEquals("ITest2", tranVM.incomeCat)
         assertEquals(expectedCatRepoSize, repo.catList.size)
     }
 

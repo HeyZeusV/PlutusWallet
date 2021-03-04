@@ -34,7 +34,7 @@
     <string name="chart_total">รวม:&#160;</string>
     <string name="period_days">วัน</string>
     <string name="period_months">เดือน</string>
-    <string name="period_weeks">สัปดาห์ที่ผ่านมา</string>
+    <string name="period_weeks">สัปดาห์</string>
     <string name="period_years">ปี</string>
     <string name="preferences_currency_symbol">สัญลักษณ์สกุลเงิน</string>
     <string name="preferences_date_full">ันจันทร์ที่ 19 เมษายน ค.ศ. 1993</string>

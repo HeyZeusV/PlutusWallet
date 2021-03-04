@@ -58,7 +58,7 @@
                             android:id="@+id/tran_title_layout"
                             style="@style/TextInputLayout.OutlinedBox.Counter"
                             app:counterMaxLength="@integer/maxLengthName"
-                            app:helperText="Location of purchase"
+                            app:helperText="\u2517 Location of purchase"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
@@ -194,7 +194,7 @@
                             android:id="@+id/tran_memo_layout"
                             style="@style/TextInputLayout.OutlinedBox.Counter"
                             app:counterMaxLength="@integer/maxLengthMemo"
-                            app:helperText="Additional information"
+                            app:helperText="\u2517 Additional information"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tran_expense_cat_layout">
 
@@ -211,74 +211,62 @@
                                 android:hint="Memo" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            android:id="@+id/repeatingTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_repeating"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout" />
-
-                        <CheckBox
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/tran_repeating"
-                            style="@style/CheckBox"
-                            android:layout_marginTop="4dp"
-                            android:checked="@={tranVM.repeatCheck}"
-                            app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout" />
-
-                        <TextView
-                            android:id="@+id/frequencyTextView"
-                            style="?android:listSeparatorTextViewStyle"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_frequency"
-                            android:textSize="?attr/textSizeBase"
-                            android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
+                            android:layout_height="70dp"
+                            android:layout_marginEnd="4dp"
+                            android:onClick="@{() -> tranVM.repeatButtonOC()}"
+                            android:text="Repeat"
+                            android:textColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            android:textSize="20sp"
+                            app:layout_constraintEnd_toStartOf="@+id/tran_period_layout"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/repeatingTextView"
-                            tools:visibility="visible" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout"
+                            app:strokeColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:strokeWidth="2dp" />
 
-                        <Spinner
-                            android:id="@+id/tran_period"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_period_layout"
+                            style="@style/TextInputLayout.OutlinedBox"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="7dp"
-                            android:background="@null"
-                            android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
-                            app:entries="@{tranVM.periodArray}"
-                            app:layout_constraintEnd_toStartOf="@+id/tran_frequency"
-                            app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_repeating"
-                            app:selectedPosition="@={tranVM.tranLD.period}"
-                            tools:listitem="@layout/spinner_item"
-                            tools:visibility="visible" />
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:visibility="@{tranVM.repeat ? View.VISIBLE : View.INVISIBLE}"
+                            app:endIconMode="dropdown_menu"
+                            app:layout_constraintEnd_toStartOf="@+id/tran_frequency_layout"
+                            app:layout_constraintStart_toEndOf="@id/tran_repeating"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout">
 
-                        <EditText
-                            android:id="@+id/tran_frequency"
-                            style="@style/Transaction.EditText.Base"
-                            android:layout_marginTop="6dp"
-                            android:gravity="left"
-                            android:hint="@string/transaction_frequency_hint"
-                            android:importantForAutofill="no"
-                            android:inputType="number"
-                            android:maxLength="2"
-                            android:text="@={`` + tranVM.tranLD.frequency}"
-                            android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_period"
+                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                android:hint="Period"
+                                app:entries="@{tranVM.periodArray}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_frequency_layout"
+                            style="@style/TextInputLayout.OutlinedBox.Counter"
+                            android:layout_width="0dp"
+                            android:layout_marginStart="4dp"
+                            android:visibility="@{tranVM.repeat ? View.VISIBLE : View.INVISIBLE}"
+                            app:counterMaxLength="2"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/tran_period"
-                            app:layout_constraintTop_toBottomOf="@+id/repeatingTextView"
-                            tools:ignore="RtlHardcoded"
-                            tools:visibility="visible" />
+                            app:layout_constraintStart_toEndOf="@id/tran_period_layout"
+                            app:layout_constraintTop_toTopOf="@id/tran_repeating">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tran_frequency"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Frequency"
+                                android:inputType="number"
+                                android:maxLength="2"
+                                android:text="@={`` + tranVM.tranLD.frequency}"
+                                android:textSize="?attr/textSizeBase" />
+                        </com.google.android.material.textfield.TextInputLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </ScrollView>
             </com.google.android.material.card.MaterialCardView>

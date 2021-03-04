@@ -10,10 +10,12 @@
 
     <!-- AppTheme Colors -->
     <color name="colorSurface">@color/white</color>
+    <color name="colorOnSurface">@color/black</color>
     <color name="colorBackground">#7c43bd</color>
     <color name="colorError">#b00020</color>
-    <color name="colorButtonBackground">#33691e</color>
+    <color name="colorButtonBackground">@color/green_base</color>
     <color name="colorButtonText">@color/white</color>
+    <color name="colorButtonUnselected">#60000000</color>
 
     <!-- Chip color in ChipGroup -->
     <color name="colorChipTextAndUnselected">@color/black</color>

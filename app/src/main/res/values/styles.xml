@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/purple_base</item>
         <item name="colorPrimaryDark">@color/purple_dark</item>
         <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorSecondary">@color/green_base</item>
         <!-- views like checkboxes and text fields -->
         <item name="colorAccent">@color/green_base</item>
@@ -32,6 +33,7 @@
         <item name="colorPrimary">@color/purple_base</item>
         <item name="colorPrimaryDark">@color/purple_dark</item>
         <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorSecondary">@color/green_base</item>
         <!-- views like checkboxes and text fields -->
         <item name="colorAccent">@color/green_base</item>
@@ -324,7 +326,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColorHint">?attr/colorAccent</item>
         <item name="android:theme">@style/ThemeOverlay.TextInputLayout.OutlinedBox</item>
-        <item name="boxStrokeColor">?attr/colorAccent</item>
+        <item name="boxStrokeColor">@color/textinputlayout_stroke_color</item>
         <item name="boxStrokeErrorColor">?attr/colorError</item>
         <item name="errorEnabled">true</item>
         <item name="errorTextColor">?attr/colorError</item>
