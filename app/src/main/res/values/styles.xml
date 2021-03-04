@@ -336,7 +336,6 @@
     <!-- Material Design Text Fields with text counter -->
     <style name="TextInputLayout.OutlinedBox.Counter" parent="TextInputLayout.OutlinedBox">
         <item name="counterEnabled">true</item>
-        <item name="counterMaxLength">@integer/maxLengthName</item>
     </style>
 
     <!-- Used by TextView that warns user that no Transaction fulfill filter -->

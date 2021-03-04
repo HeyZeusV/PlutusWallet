@@ -57,6 +57,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_title_layout"
                             style="@style/TextInputLayout.OutlinedBox.Counter"
+                            app:counterMaxLength="@integer/maxLengthName"
                             app:helperText="Location of purchase"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
@@ -66,9 +67,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="text"
-                                android:maxLength="32"
+                                android:maxLength="@integer/maxLengthName"
                                 android:text="@={tranVM.tranLD.title}"
-                                android:textSize="18sp"
+                                android:textSize="?attr/textSizeBase"
                                 android:hint="Title" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -104,9 +105,8 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_total_layout"
-                            style="@style/TextInputLayout.OutlinedBox"
+                            style="@style/TextInputLayout.OutlinedBox.Counter"
                             android:layout_marginTop="8dp"
-                            app:counterEnabled="true"
                             app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
                             app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
                             app:suffixText="@{tranVM.setVals.symbolSide ? `` : tranVM.setVals.currencySymbol}"
@@ -190,28 +190,26 @@
                                 app:entries="@{tranVM.incomeCatList}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            android:id="@+id/memoTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:text="@string/transaction_memo"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintEnd_toEndOf="parent"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_memo_layout"
+                            style="@style/TextInputLayout.OutlinedBox.Counter"
+                            app:counterMaxLength="@integer/maxLengthMemo"
+                            app:helperText="Additional information"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_expense_cat_layout" />
+                            app:layout_constraintTop_toBottomOf="@id/tran_expense_cat_layout">
 
-                        <EditText
-                            android:id="@+id/tran_memo"
-                            style="@style/Transaction.EditText.MultiLine"
-                            android:layout_marginTop="6dp"
-                            android:hint="@string/transaction_memo_hint"
-                            android:importantForAutofill="no"
-                            android:text="@={tranVM.tranLD.memo}"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/memoTextView" />
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tran_memo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textMultiLine"
+                                android:minLines="1"
+                                android:maxLines="5"
+                                android:maxLength="@integer/maxLengthMemo"
+                                android:text="@={tranVM.tranLD.memo}"
+                                android:textSize="?attr/textSizeBase"
+                                android:hint="Memo" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <TextView
                             android:id="@+id/repeatingTextView"
@@ -224,7 +222,7 @@
                             android:text="@string/transaction_repeating"
                             android:textSize="?attr/textSizeBase"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_memo" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout" />
 
                         <CheckBox
                             android:id="@+id/tran_repeating"
@@ -232,7 +230,7 @@
                             android:layout_marginTop="4dp"
                             android:checked="@={tranVM.repeatCheck}"
                             app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_memo" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout" />
 
                         <TextView
                             android:id="@+id/frequencyTextView"
