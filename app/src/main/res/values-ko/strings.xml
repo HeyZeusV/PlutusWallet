@@ -52,19 +52,17 @@
     <string name="preferences_thousands_symbol">천 구분 기호</string>
     <string name="settings">설정</string>
     <string name="snackbar_saved">거래가 저장되었습니다!</string>
-    <string name="transaction_account">계정:</string>
-    <string name="transaction_category">범주:</string>
-    <string name="transaction_date">데이트:</string>
+    <string name="transaction_account">계정</string>
+    <string name="transaction_category">범주</string>
+    <string name="transaction_date">데이트</string>
     <string name="transaction_empty_title">"트랜잭션 "</string>
-    <string name="transaction_frequency">회수:</string>
-    <string name="transaction_memo">메모:</string>
-    <string name="transaction_memo_hint">필요한 추가 정보를 입력하십시오</string>
-    <string name="transaction_repeating">반복:</string>
-    <string name="transaction_title">표제:</string>
-    <string name="transaction_title_hint">구매 위치 / 웹 사이트와 같은 제목을 입력하십시오</string>
-    <string name="transaction_total">합계:</string>
-    <string name="transaction_total_hint">거래 총계 입력</string>
-    <string name="transaction_type">유형:</string>
+    <string name="transaction_frequency">회수</string>
+    <string name="transaction_memo">메모</string>
+    <string name="transaction_memo_hint">\u2517 추가 정보</string>
+    <string name="transaction_repeat">반복</string>
+    <string name="transaction_title">표제</string>
+    <string name="transaction_title_hint">\u2517 구매 장소</string>
+    <string name="transaction_total">합계</string>
     <string name="type_expense">비용</string>
     <string name="type_income">수입</string>
     <string name="categories">카테고리</string>
@@ -94,4 +92,5 @@
     <string name="preferences_theme_dark">어두운</string>
     <string name="preferences_theme_system">체계</string>
     <string name="alert_dialog_input_error">비워 둘 수 없습니다!</string>
+    <string name="transaction_period">기간</string>
 </resources>

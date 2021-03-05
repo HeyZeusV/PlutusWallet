@@ -52,19 +52,17 @@
     <string name="preferences_thousands_symbol">สัญลักษณ์ตัวคั่นหลักพัน</string>
     <string name="settings">การตั้งค่า</string>
     <string name="snackbar_saved">บันทึกธุรกรรมแล้ว!</string>
-    <string name="transaction_account">บัญชี:</string>
-    <string name="transaction_category">ประเภท:</string>
-    <string name="transaction_date">วันที่:</string>
+    <string name="transaction_account">บัญชี</string>
+    <string name="transaction_category">ประเภท</string>
+    <string name="transaction_date">วันที่</string>
     <string name="transaction_empty_title">"การซื้อขาย "</string>
-    <string name="transaction_frequency">ความถี่:</string>
-    <string name="transaction_memo">บันทึก:</string>
-    <string name="transaction_memo_hint">ป้อนข้อมูลเพิ่มเติมที่จำเป็น</string>
-    <string name="transaction_repeating">การทำซ้ำ:</string>
-    <string name="transaction_title">หัวข้อ:</string>
-    <string name="transaction_title_hint">ป้อนชื่อเช่นสถานที่ / เว็บไซต์ที่ซื้อ</string>
-    <string name="transaction_total">รวม:</string>
-    <string name="transaction_total_hint">ป้อนการทำธุรกรรมทั้งหมด</string>
-    <string name="transaction_type">ประเภท:</string>
+    <string name="transaction_frequency">ความถี่</string>
+    <string name="transaction_memo">บันทึก</string>
+    <string name="transaction_memo_hint">\u2517 ป้อนข้อมูลเพิ่มเติมที่จำเป็น</string>
+    <string name="transaction_repeat">ทำซ้ำ</string>
+    <string name="transaction_title">หัวข้อ</string>
+    <string name="transaction_title_hint">\u2517 สถานที่ซื้อ</string>
+    <string name="transaction_total">รวม</string>
     <string name="type_expense">ค่าใช้จ่าย</string>
     <string name="type_income">เงินได้</string>
     <string name="categories">หมวดหมู่</string>
@@ -94,4 +92,5 @@
     <string name="preferences_theme_light">เบา</string>
     <string name="preferences_theme">ธีม</string>
     <string name="alert_dialog_input_error">ว่างไม่ได้!</string>
+    <string name="transaction_period">ระยะเวลา</string>
 </resources>

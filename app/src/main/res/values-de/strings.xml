@@ -52,19 +52,17 @@
     <string name="preferences_thousands_symbol">Tausendertrennzeichen</string>
     <string name="settings">die Einstellungen</string>
     <string name="snackbar_saved">Transaktion gespeichert!</string>
-    <string name="transaction_account">Konto:</string>
-    <string name="transaction_category">Kategorie:</string>
-    <string name="transaction_date">Datum:</string>
+    <string name="transaction_account">Konto</string>
+    <string name="transaction_category">Kategorie</string>
+    <string name="transaction_date">Datum</string>
     <string name="transaction_empty_title">"Transaktion "</string>
-    <string name="transaction_frequency">Frequenz:</string>
-    <string name="transaction_memo">Memo:</string>
-    <string name="transaction_memo_hint">Geben Sie zusätzliche Informationen ein</string>
-    <string name="transaction_repeating">Wiederholen:</string>
-    <string name="transaction_title">Titel:</string>
-    <string name="transaction_title_hint">Geben Sie einen Titel wie Ort / Website des Kaufs ein</string>
-    <string name="transaction_total">Gesamt:</string>
-    <string name="transaction_total_hint">Geben Sie die Transaktionssumme ein</string>
-    <string name="transaction_type">Art:</string>
+    <string name="transaction_frequency">Frequenz</string>
+    <string name="transaction_memo">Memo</string>
+    <string name="transaction_memo_hint">\u2517 Zusätzliche Information</string>
+    <string name="transaction_repeat">Wiederholen</string>
+    <string name="transaction_title">Titel</string>
+    <string name="transaction_title_hint">\u2517 Ort des Kaufs</string>
+    <string name="transaction_total">Gesamt</string>
     <string name="type_expense">Aufwand</string>
     <string name="type_income">Einkommen</string>
     <string name="categories">Kategorien</string>
@@ -94,4 +92,5 @@
     <string name="preferences_theme_light">Licht</string>
     <string name="preferences_theme">Thema</string>
     <string name="alert_dialog_input_error">Kann nicht leer sein!</string>
+    <string name="transaction_period">Zeitraum</string>
 </resources>
