@@ -57,7 +57,7 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_title_layout"
-                            style="@style/TextInputLayout.OutlinedBox.Counter"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
                             app:counterMaxLength="@integer/maxLengthName"
                             app:helperText="@string/transaction_title_hint"
                             app:layout_constraintStart_toStartOf="parent"
@@ -65,12 +65,9 @@
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tran_title"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="text"
+                                style="@style/Transaction.EditText.SingleLine"
                                 android:maxLength="@integer/maxLengthName"
                                 android:text="@={tranVM.tranLD.title}"
-                                android:textSize="?attr/textSizeBase"
                                 android:hint="@string/transaction_title" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,7 +80,7 @@
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_date"
-                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
                                 android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
                                 android:text="@{tranVM.date}"
                                 android:hint="@string/transaction_date" />
@@ -91,23 +88,21 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_account_layout"
-                            style="@style/TextInputLayout.OutlinedBox"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
                             android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
-                            app:endIconMode="dropdown_menu"
-                            app:endIconTint="@color/textinputlayout_stroke_color"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_date_layout">
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_account"
-                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
                                 android:hint="@string/transaction_account"
                                 app:entries="@{tranVM.accountList}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_total_layout"
-                            style="@style/TextInputLayout.OutlinedBox.Counter"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
                             android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
                             app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
@@ -117,13 +112,11 @@
 
                             <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
                                 android:id="@+id/tran_total"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                style="@style/Transaction.EditText.Base"
                                 android:hint="@string/transaction_total"
                                 android:inputType="number"
                                 android:maxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
-                                android:text="@={tranVM.total}"
-                                android:textSize="?attr/textSizeBase" />
+                                android:text="@={tranVM.total}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.chip.ChipGroup
@@ -142,59 +135,47 @@
                             <com.google.android.material.chip.Chip
                                 android:id="@+id/tran_expense_chip"
                                 style="@style/Transaction.Chip.Outlined"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/type_expense"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_state_list" />
+                                android:text="@string/type_expense" />
 
                             <com.google.android.material.chip.Chip
                                 android:id="@+id/tran_income_chip"
                                 style="@style/Transaction.Chip.Outlined"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/type_income"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_state_list" />
+                                android:text="@string/type_income" />
                         </com.google.android.material.chip.ChipGroup>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_expense_cat_layout"
-                            style="@style/TextInputLayout.OutlinedBox"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
                             android:layout_marginTop="@dimen/tranLayoutToChipGroupMargin"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
-                            app:endIconMode="dropdown_menu"
-                            app:endIconTint="@color/textinputlayout_stroke_color"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_expense_cat"
-                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
                                 android:hint="@string/transaction_category"
                                 app:entries="@{tranVM.expenseCatList}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_income_cat_layout"
-                            style="@style/TextInputLayout.OutlinedBox"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
                             android:layout_marginTop="@dimen/tranLayoutToChipGroupMargin"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
-                            app:endIconMode="dropdown_menu"
-                            app:endIconTint="@color/textinputlayout_stroke_color"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_income_cat"
-                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
                                 android:hint="@string/transaction_category"
                                 app:entries="@{tranVM.incomeCatList}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_memo_layout"
-                            style="@style/TextInputLayout.OutlinedBox.Counter"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
                             android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:counterMaxLength="@integer/maxLengthMemo"
                             app:helperText="@string/transaction_memo_hint"
@@ -203,14 +184,9 @@
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tran_memo"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textMultiLine"
-                                android:minLines="1"
-                                android:maxLines="5"
+                                style="@style/Transaction.EditText.MultiLine"
                                 android:maxLength="@integer/maxLengthMemo"
                                 android:text="@={tranVM.tranLD.memo}"
-                                android:textSize="?attr/textSizeBase"
                                 android:hint="@string/transaction_memo" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -222,7 +198,7 @@
                             android:layout_marginTop="@dimen/tranButtonToLayout"
                             android:text="@string/transaction_repeat"
                             android:textColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                            android:textSize="20sp"
+                            android:textSize="@dimen/textSizeTranButton"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout"
                             app:strokeColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
@@ -230,45 +206,41 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_period_layout"
-                            style="@style/TextInputLayout.OutlinedBox"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
                             android:layout_width="0dp"
                             android:layout_marginTop="@dimen/tranLayoutToButton"
                             android:layout_marginEnd="4dp"
                             android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
-                            app:endIconMode="dropdown_menu"
-                            app:endIconTint="@color/textinputlayout_stroke_color"
                             app:layout_constraintEnd_toStartOf="@+id/tran_frequency_layout"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_repeat">
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_period"
-                                style="@style/TextInputLayout.AutoCompleteTextView"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
                                 android:hint="@string/transaction_period"
                                 app:entries="@{tranVM.periodArray}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_frequency_layout"
-                            style="@style/TextInputLayout.OutlinedBox.Counter"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
                             android:layout_width="0dp"
                             android:layout_marginStart="4dp"
                             android:layout_marginTop="@dimen/tranLayoutToButton"
                             android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
-                            app:counterMaxLength="2"
+                            app:counterMaxLength="@integer/maxLengthFrequency"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/tran_period_layout"
                             app:layout_constraintTop_toBottomOf="@id/tran_repeat">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tran_frequency"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                style="@style/Transaction.EditText.Base"
                                 android:hint="@string/transaction_frequency"
                                 android:inputType="number"
-                                android:maxLength="2"
-                                android:text="@={`` + tranVM.tranLD.frequency}"
-                                android:textSize="?attr/textSizeBase" />
+                                android:maxLength="@integer/maxLengthFrequency"
+                                android:text="@={`` + tranVM.tranLD.frequency}" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </ScrollView>

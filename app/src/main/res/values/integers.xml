@@ -4,4 +4,5 @@
     <integer name="maxLengthMemo">512</integer>
     <integer name="maxLengthTotalNoDecimal">18</integer>
     <integer name="maxLengthTotal">21</integer>
+    <integer name="maxLengthFrequency">2</integer>
 </resources>

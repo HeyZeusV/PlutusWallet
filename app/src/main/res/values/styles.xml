@@ -171,17 +171,20 @@
 
     <!-- Custom Outlined Chip like those shown on material.io website -->
     <style name="Transaction.Chip.Outlined" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/chip_text_color</item>
         <item name="android:textSize">20sp</item>
+        <item name="chipBackgroundColor">@color/chip_bg_state_list</item>
         <item name="chipStrokeColor">@color/chip_stroke_color</item>
         <item name="chipStrokeWidth">2dp</item>
     </style>
 
     <!-- All EditTexts in TransactionFragment use this style or child style -->
     <style name="Transaction.EditText.Base" parent="">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">?attr/textSizeBase</item>
-        <item name="android:minHeight">@dimen/minSize</item>
     </style>
 
     <!-- EditText that is multiline with max lines and length -->
@@ -196,6 +199,28 @@
     <style name="Transaction.EditText.SingleLine" parent="Transaction.EditText.Base">
         <item name="android:inputType">text</item>
         <item name="android:maxLines">1</item>
+    </style>
+
+    <!-- TextInputLayout child AutoCompleteTextView -->
+    <style name="Transaction.TextInputLayout.AutoCompleteTextView" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">?attr/textSizeBase</item>
+        <item name="android:inputType">none</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">17dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">17dp</item>
+    </style>
+
+    <!-- Material Design Text Fields with text counter -->
+    <style name="Transaction.TextInputLayout.OutlinedBox.Counter" parent="TextInputLayout.OutlinedBox">
+        <item name="counterEnabled">true</item>
+    </style>
+
+    <style name="Transaction.TextInputLayout.OutlinedBox.Spinner" parent="TextInputLayout.OutlinedBox">
+        <item name="endIconMode">dropdown_menu</item>
+        <item name="endIconTint">@color/textinputlayout_stroke_color</item>
     </style>
 
     <!-- All AppBar use this style to change icon highlight color -->
@@ -226,7 +251,6 @@
     <style name="CardView.FullScreen" parent="CardView.Base">
         <item name="android:layout_margin">@dimen/cardFullMargin</item>
     </style>
-
 
     <!-- All CheckBoxes use this style -->
     <style name="CheckBox" parent="">
@@ -308,18 +332,6 @@
         <item name="colorControlActivated">?attr/colorAccent</item>
     </style>
 
-    <!-- TextInputLayout child AutoCompleteTextView -->
-    <style name="TextInputLayout.AutoCompleteTextView" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">?attr/textSizeBase</item>
-        <item name="android:inputType">none</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingTop">17dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:paddingBottom">17dp</item>
-    </style>
-
     <!-- Material Design Text Fields -->
     <style name="TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:layout_width">match_parent</item>
@@ -333,11 +345,6 @@
         <item name="errorIconTint">?attr/colorError</item>
         <item name="hintTextColor">?attr/colorAccent</item>
         <item name="helperTextEnabled">true</item>
-    </style>
-
-    <!-- Material Design Text Fields with text counter -->
-    <style name="TextInputLayout.OutlinedBox.Counter" parent="TextInputLayout.OutlinedBox">
-        <item name="counterEnabled">true</item>
     </style>
 
     <!-- Used by TextView that warns user that no Transaction fulfill filter -->
