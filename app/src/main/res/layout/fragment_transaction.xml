@@ -66,9 +66,9 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tran_title"
                                 style="@style/Transaction.EditText.SingleLine"
+                                android:hint="@string/transaction_title"
                                 android:maxLength="@integer/maxLengthName"
-                                android:text="@={tranVM.tranLD.title}"
-                                android:hint="@string/transaction_title" />
+                                android:text="@={tranVM.tranLD.title}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -81,9 +81,9 @@
                             <AutoCompleteTextView
                                 android:id="@+id/tran_date"
                                 style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
+                                android:hint="@string/transaction_date"
                                 android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
-                                android:text="@{tranVM.date}"
-                                android:hint="@string/transaction_date" />
+                                android:text="@{tranVM.date}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -105,10 +105,10 @@
                             style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
                             android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
-                            app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
-                            app:suffixText="@{tranVM.setVals.symbolSide ? `` : tranVM.setVals.currencySymbol}"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout">
+                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout"
+                            app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
+                            app:suffixText="@{tranVM.setVals.symbolSide ? `` : tranVM.setVals.currencySymbol}">
 
                             <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
                                 android:id="@+id/tran_total"
@@ -185,9 +185,9 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tran_memo"
                                 style="@style/Transaction.EditText.MultiLine"
+                                android:hint="@string/transaction_memo"
                                 android:maxLength="@integer/maxLengthMemo"
-                                android:text="@={tranVM.tranLD.memo}"
-                                android:hint="@string/transaction_memo" />
+                                android:text="@={tranVM.tranLD.memo}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton

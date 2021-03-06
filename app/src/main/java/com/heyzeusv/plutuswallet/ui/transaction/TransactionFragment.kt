@@ -116,14 +116,6 @@ class TransactionFragment : BaseFragment() {
             }
         }
 
-        tranVM.createEvent.observe(viewLifecycleOwner, EventObserver { info: Pair<Int, String> ->
-            when (info.first) {
-                0 -> binding.tranAccount.setText(info.second, false)
-                1 -> binding.tranExpenseCat.setText(info.second, false)
-                2 -> binding.tranIncomeCat.setText(info.second, false)
-            }
-        })
-
         binding.tranExpenseCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
             val selected: String = adapterView.adapter.getItem(i).toString()
             if (selected == getString(R.string.category_create)) {
@@ -169,6 +161,14 @@ class TransactionFragment : BaseFragment() {
         binding.tranPeriod.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
             tranVM.period = adapterView.adapter.getItem(i).toString()
         }
+
+        tranVM.createEvent.observe(viewLifecycleOwner, EventObserver { info: Pair<Int, String> ->
+            when (info.first) {
+                0 -> binding.tranAccount.setText(info.second, false)
+                1 -> binding.tranExpenseCat.setText(info.second, false)
+                2 -> binding.tranIncomeCat.setText(info.second, false)
+            }
+        })
 
         tranVM.futureTranEvent.observe(viewLifecycleOwner, EventObserver { tran: Transaction ->
             futureTranDialog(tran, tranVM::futureTranPosFun, tranVM::futureTranNegFun)
