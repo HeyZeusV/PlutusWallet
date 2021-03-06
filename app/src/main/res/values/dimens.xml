@@ -45,8 +45,12 @@
     <dimen name="filterTextViewMarginEnd">44dp</dimen>
 
     <!-- TransactionFragment -->
-    <!-- TextViews that wrap_content -->
-    <dimen name="textViewPaddingWrapContent">8dp</dimen>
+    <!-- Top margin between Views, any change should be applied to the others -->
+    <dimen name="tranLayoutToLayoutMargin">4dp</dimen>
+    <dimen name="tranChipGroupToLayoutMargin">2dp</dimen>
+    <dimen name="tranLayoutToChipGroupMargin">15dp</dimen>
+    <dimen name="tranButtonToLayout">4dp</dimen>
+    <dimen name="tranLayoutToButton">10dp</dimen>
 
     <!-- TransactionListFragment -->
     <dimen name="tranListMarginOuterStartEndTop">8dp</dimen>

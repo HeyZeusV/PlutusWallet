@@ -91,14 +91,6 @@ class TransactionViewModel @ViewModelInject constructor(
     var period = ""
 
     /**
-     *  onClick for repeat Button that changes value of repeat.
-     */
-    fun repeatButtonOC() {
-
-        repeat.value = !repeat.value!!
-    }
-
-    /**
      *  Uses [transaction] to pass values to LiveData to be displayed.
      */
     fun setTranData(transaction: Transaction) {

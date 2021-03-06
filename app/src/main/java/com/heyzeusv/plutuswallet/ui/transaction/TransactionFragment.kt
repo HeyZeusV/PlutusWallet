@@ -156,6 +156,16 @@ class TransactionFragment : BaseFragment() {
             }
         }
 
+        binding.tranRepeat.setOnClickListener {
+            tranVM.repeat.value = !tranVM.repeat.value!!
+            if (tranVM.repeat.value!!) {
+                binding.tranScrollView.postDelayed({
+                        binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
+                    }, 100
+                )
+            }
+        }
+
         binding.tranPeriod.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
             tranVM.period = adapterView.adapter.getItem(i).toString()
         }

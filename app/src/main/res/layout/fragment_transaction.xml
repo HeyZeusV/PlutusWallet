@@ -45,6 +45,7 @@
                 tools:ignore="MissingConstraints">
 
                 <ScrollView
+                    android:id="@+id/tran_scrollView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -76,7 +77,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_date_layout"
                             style="@style/TextInputLayout.OutlinedBox"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tran_title_layout">
 
@@ -91,8 +92,9 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_account_layout"
                             style="@style/TextInputLayout.OutlinedBox"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:endIconMode="dropdown_menu"
+                            app:endIconTint="@color/textinputlayout_stroke_color"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_date_layout">
 
@@ -106,7 +108,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_total_layout"
                             style="@style/TextInputLayout.OutlinedBox.Counter"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
                             app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
                             app:suffixText="@{tranVM.setVals.symbolSide ? `` : tranVM.setVals.currencySymbol}"
@@ -128,7 +130,7 @@
                             android:id="@+id/tran_type_chips"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="11dp"
+                            android:layout_marginTop="@dimen/tranChipGroupToLayoutMargin"
                             app:chipSpacingHorizontal="16dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -159,9 +161,10 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_expense_cat_layout"
                             style="@style/TextInputLayout.OutlinedBox"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="@dimen/tranLayoutToChipGroupMargin"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:endIconMode="dropdown_menu"
+                            app:endIconTint="@color/textinputlayout_stroke_color"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
 
@@ -175,9 +178,10 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_income_cat_layout"
                             style="@style/TextInputLayout.OutlinedBox"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginTop="@dimen/tranLayoutToChipGroupMargin"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
                             app:endIconMode="dropdown_menu"
+                            app:endIconTint="@color/textinputlayout_stroke_color"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
 
@@ -191,6 +195,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_memo_layout"
                             style="@style/TextInputLayout.OutlinedBox.Counter"
+                            android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:counterMaxLength="@integer/maxLengthMemo"
                             app:helperText="@string/transaction_memo_hint"
                             app:layout_constraintStart_toStartOf="parent"
@@ -210,11 +215,11 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/tran_repeating"
+                            android:id="@+id/tran_repeat"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:layout_width="match_parent"
                             android:layout_height="70dp"
-                            android:onClick="@{() -> tranVM.repeatButtonOC()}"
+                            android:layout_marginTop="@dimen/tranButtonToLayout"
                             android:text="@string/transaction_repeat"
                             android:textColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
                             android:textSize="20sp"
@@ -227,12 +232,14 @@
                             android:id="@+id/tran_period_layout"
                             style="@style/TextInputLayout.OutlinedBox"
                             android:layout_width="0dp"
+                            android:layout_marginTop="@dimen/tranLayoutToButton"
                             android:layout_marginEnd="4dp"
                             android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
                             app:endIconMode="dropdown_menu"
+                            app:endIconTint="@color/textinputlayout_stroke_color"
                             app:layout_constraintEnd_toStartOf="@+id/tran_frequency_layout"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_repeating">
+                            app:layout_constraintTop_toBottomOf="@+id/tran_repeat">
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_period"
@@ -246,11 +253,12 @@
                             style="@style/TextInputLayout.OutlinedBox.Counter"
                             android:layout_width="0dp"
                             android:layout_marginStart="4dp"
+                            android:layout_marginTop="@dimen/tranLayoutToButton"
                             android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
                             app:counterMaxLength="2"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/tran_period_layout"
-                            app:layout_constraintTop_toBottomOf="@id/tran_repeating">
+                            app:layout_constraintTop_toBottomOf="@id/tran_repeat">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/tran_frequency"
