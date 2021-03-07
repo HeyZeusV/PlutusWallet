@@ -14,9 +14,6 @@
     <color name="colorButtonText">#2f1c39</color>
     <color name="colorButtonUnselected">#60ffffff</color>
 
-    <!-- Chip color in ChipGroup -->
-    <color name="colorChipTextAndUnselected">@color/white</color>
-
     <!-- Chart text colors -->
     <color name="colorChartText">@color/white</color>
     <color name="colorChartHole">#2f1c39</color>

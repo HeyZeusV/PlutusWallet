@@ -16,7 +16,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chipSelected
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withTextAndStrokeColor
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
@@ -28,10 +27,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.instanceOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -105,7 +101,8 @@ class TransactionFragmentTest {
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
         onView(withId(R.id.tran_account)).check(matches((withText(dd.acc3.account))))
         onView(withId(R.id.tran_total)).check(matches(withText("1,000.10")))
-//        onView(withId(R.id.tran_type_chips)).check(matches(chipSelected(R.id.tran_expense_chip)))
+        onView(withId(R.id.tran_type_expense)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
+        onView(withId(R.id.tran_type_income)).check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected)))
         onView(withId(R.id.tran_expense_cat)).check(matches(isDisplayed()))
         onView(withId(R.id.tran_expense_cat)).check(matches((withText(dd.cat1.category))))
         // expense Transaction so income Spinner is not needed
@@ -136,7 +133,8 @@ class TransactionFragmentTest {
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
         onView(withId(R.id.tran_account)).check(matches((withText(dd.acc2.account))))
         onView(withId(R.id.tran_total)).check(matches(withText("2,000.32")))
-//        onView(withId(R.id.tran_type_chips)).check(matches(chipSelected(R.id.tran_income_chip)))
+        onView(withId(R.id.tran_type_expense)).check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected)))
+        onView(withId(R.id.tran_type_income)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
         // income Transaction so expense Spinner is not needed
         onView(withId(R.id.tran_expense_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_income_cat)).check(matches(isDisplayed()))
@@ -182,7 +180,7 @@ class TransactionFragmentTest {
         onView(withId(R.id.tran_expense_cat)).check(matches(withText(testExCat)))
 
         // create new income Category
-//        onView(withId(R.id.tran_income_chip)).perform(click())
+        onView(withId(R.id.tran_type_income)).perform(click())
         onView(withId(R.id.tran_income_cat)).perform(click())
         onView(withText(createCat)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         onView(withId(R.id.dialog_input)).perform(typeText(testInCat))
@@ -227,7 +225,7 @@ class TransactionFragmentTest {
         onView(withId(R.id.tran_expense_cat)).check(matches(withText("Food")))
 
         // make income Spinner appear
-//        onView(withId(R.id.tran_income_chip)).perform(click())
+        onView(withId(R.id.tran_type_income)).perform(click())
         // select non-first Spinner entry
         onView(withId(R.id.tran_income_cat)).perform(click())
         onView(withText("Z Cat")).inRoot(RootMatchers.isPlatformPopup()).perform(click())

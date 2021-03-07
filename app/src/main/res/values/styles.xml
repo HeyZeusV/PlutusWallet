@@ -169,17 +169,6 @@
         <item name="layout_constraintStart_toStartOf">parent</item>
     </style>
 
-    <!-- Custom Outlined Chip like those shown on material.io website -->
-    <style name="Transaction.Chip.Outlined" parent="Widget.MaterialComponents.Chip.Choice">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/chip_text_color</item>
-        <item name="android:textSize">20sp</item>
-        <item name="chipBackgroundColor">@color/chip_bg_state_list</item>
-        <item name="chipStrokeColor">@color/chip_stroke_color</item>
-        <item name="chipStrokeWidth">2dp</item>
-    </style>
-
     <!-- All EditTexts in TransactionFragment use this style or child style -->
     <style name="Transaction.EditText.Base" parent="">
         <item name="android:layout_width">match_parent</item>
