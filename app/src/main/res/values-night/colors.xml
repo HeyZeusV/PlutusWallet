@@ -7,13 +7,15 @@
 
     <!-- AppTheme Colors -->
     <color name="colorSurface">@color/purple_base</color>
+    <color name="colorOnSurface">@color/white</color>
     <color name="colorBackground">#1b1120</color>
     <color name="colorError">#ffbaba</color>
-    <color name="colorButtonBackground">#a5d6a7</color>
+    <color name="colorButtonBackground">@color/green_base</color>
     <color name="colorButtonText">#2f1c39</color>
+    <color name="colorButtonUnselected">#60ffffff</color>
 
     <!-- Chip color in ChipGroup -->
-    <color name="colorChipGreen">#5ecc02</color>
+    <color name="colorChipTextAndUnselected">@color/white</color>
 
     <!-- Chart text colors -->
     <color name="colorChartText">@color/white</color>

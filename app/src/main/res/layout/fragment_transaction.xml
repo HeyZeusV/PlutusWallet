@@ -45,6 +45,7 @@
                 tools:ignore="MissingConstraints">
 
                 <ScrollView
+                    android:id="@+id/tran_scrollView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -54,302 +55,193 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/layoutPaddingFullScreen">
 
-                        <TextView
-                            android:id="@+id/titleTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:text="@string/transaction_title"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintEnd_toEndOf="parent"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_title_layout"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
+                            app:counterMaxLength="@integer/maxLengthName"
+                            app:helperText="@string/transaction_title_hint"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent">
 
-                        <EditText
-                            android:id="@+id/tran_title"
-                            style="@style/Transaction.EditText.SingleLine"
-                            android:layout_marginTop="8dp"
-                            android:hint="@string/transaction_title_hint"
-                            android:importantForAutofill="no"
-                            android:maxLength="32"
-                            android:text="@={tranVM.tranLD.title}"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tran_title"
+                                style="@style/Transaction.EditText.SingleLine"
+                                android:hint="@string/transaction_title"
+                                android:maxLength="@integer/maxLengthName"
+                                android:text="@={tranVM.tranLD.title}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_date_layout"
+                            style="@style/TextInputLayout.OutlinedBox"
+                            android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+                            app:layout_constraintTop_toBottomOf="@id/tran_title_layout">
 
-                        <TextView
-                            android:id="@+id/dateTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="@string/transaction_date"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_date"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
+                                android:hint="@string/transaction_date"
+                                android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
+                                android:text="@{tranVM.date}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_account_layout"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
+                            android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_title" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_date_layout">
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/tran_date"
-                            style="@style/Button.TextOnly"
-                            android:layout_marginTop="10dp"
-                            android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
-                            android:text="@{tranVM.date}"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintTop_toBottomOf="@+id/dateTextView"
-                            tools:text="Wed Nov 14" />
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_account"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
+                                android:hint="@string/transaction_account"
+                                app:entries="@{tranVM.accountList}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            android:id="@+id/accountTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_account"
-                            android:textSize="?attr/textSizeBase"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_total_layout"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
+                            android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
+                            app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_date" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_account_layout"
+                            app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
+                            app:suffixText="@{tranVM.setVals.symbolSide ? `` : tranVM.setVals.currencySymbol}">
 
-                        <Spinner
-                            android:id="@+id/tran_account"
-                            style="@style/Spinner.Base"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="12dp"
-                            app:entries="@{tranVM.accountList}"
-                            app:layout_constraintStart_toEndOf="@+id/accountTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_date"
-                            app:selectedValue="@={tranVM.account}"
-                            tools:listitem="@layout/spinner_item" />
-
-                        <TextView
-                            android:id="@+id/totalTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_total"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
-
-                        <TextView
-                            android:id="@+id/symbolLeftTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:text="@{tranVM.setVals.currencySymbol}"
-                            android:textSize="?attr/textSizeBase"
-                            android:visibility="@{tranVM.setVals.symbolSide ? View.VISIBLE : View.GONE}"
-                            app:layout_constraintStart_toEndOf="@+id/totalTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
-
-                        <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
-                            android:id="@+id/tran_total"
-                            style="@style/Transaction.EditText.SingleLine"
-                            android:layout_marginTop="7dp"
-                            android:layout_marginBottom="1dp"
-                            android:gravity="@{tranVM.setVals.symbolSide ? Gravity.LEFT : Gravity.RIGHT}"
-                            android:hint="@string/transaction_total_hint"
-                            android:importantForAutofill="no"
-                            android:maxLength="21"
-                            android:text="@={tranVM.total}"
-                            app:filter="@{tranVM.setVals}"
-                            app:layout_constraintBottom_toTopOf="@+id/tran_type_chips"
-                            app:layout_constraintEnd_toStartOf="@+id/symbolRightTextView"
-                            app:layout_constraintStart_toEndOf="@+id/symbolLeftTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView"
-                            tools:ignore="RtlHardcoded" />
-
-                        <TextView
-                            android:id="@+id/symbolRightTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:text="@{tranVM.setVals.currencySymbol}"
-                            android:textSize="?attr/textSizeBase"
-                            android:visibility="@{tranVM.setVals.symbolSide ? View.GONE : View.VISIBLE}"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
-
-                        <TextView
-                            android:id="@+id/typeTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_type"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/totalTextView" />
+                            <com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
+                                android:id="@+id/tran_total"
+                                style="@style/Transaction.EditText.Base"
+                                android:hint="@string/transaction_total"
+                                android:inputType="number"
+                                android:maxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
+                                android:text="@={tranVM.total}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.chip.ChipGroup
                             android:id="@+id/tran_type_chips"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="@dimen/tranChipGroupToLayoutMargin"
                             app:chipSpacingHorizontal="16dp"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/typeTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/totalTextView"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout"
                             app:selectedChipId="@={tranVM.checkedChip}"
+                            app:singleLine="true"
                             app:singleSelection="true">
 
                             <com.google.android.material.chip.Chip
                                 android:id="@+id/tran_expense_chip"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/type_expense"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_state_list" />
+                                style="@style/Transaction.Chip.Outlined"
+                                android:text="@string/type_expense" />
 
                             <com.google.android.material.chip.Chip
                                 android:id="@+id/tran_income_chip"
-                                style="@style/Widget.MaterialComponents.Chip.Choice"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/type_income"
-                                android:textColor="@color/chip_text_color"
-                                app:chipBackgroundColor="@color/chip_bg_state_list" />
+                                style="@style/Transaction.Chip.Outlined"
+                                android:text="@string/type_income" />
                         </com.google.android.material.chip.ChipGroup>
 
-                        <TextView
-                            android:id="@+id/categoryTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_category"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
-
-                        <Spinner
-                            android:id="@+id/tran_expense_cat"
-                            style="@style/Spinner.Base"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="18dp"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_expense_cat_layout"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
+                            android:layout_marginTop="@dimen/tranLayoutToChipGroupMargin"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
-                            app:entries="@{tranVM.expenseCatList}"
-                            app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/typeTextView"
-                            app:selectedValue="@={tranVM.expenseCat}"
-                            tools:listitem="@layout/spinner_item" />
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
 
-                        <Spinner
-                            android:id="@+id/tran_income_cat"
-                            style="@style/Spinner.Base"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="18dp"
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_expense_cat"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
+                                android:hint="@string/transaction_category"
+                                app:entries="@{tranVM.expenseCatList}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_income_cat_layout"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
+                            android:layout_marginTop="@dimen/tranLayoutToChipGroupMargin"
                             android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
-                            app:entries="@{tranVM.incomeCatList}"
-                            app:layout_constraintStart_toEndOf="@+id/categoryTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/typeTextView"
-                            app:selectedValue="@={tranVM.incomeCat}"
-                            tools:listitem="@layout/spinner_item" />
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
 
-                        <TextView
-                            android:id="@+id/memoTextView"
-                            style="?android:listSeparatorTextViewStyle"
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_income_cat"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
+                                android:hint="@string/transaction_category"
+                                app:entries="@{tranVM.incomeCatList}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_memo_layout"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
+                            android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
+                            app:counterMaxLength="@integer/maxLengthMemo"
+                            app:helperText="@string/transaction_memo_hint"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tran_expense_cat_layout">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tran_memo"
+                                style="@style/Transaction.EditText.MultiLine"
+                                android:hint="@string/transaction_memo"
+                                android:maxLength="@integer/maxLengthMemo"
+                                android:text="@={tranVM.tranLD.memo}" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/tran_repeat"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            android:layout_marginTop="@dimen/tranButtonToLayout"
+                            android:text="@string/transaction_repeat"
+                            android:textColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            android:textSize="@dimen/textSizeTranButton"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout"
+                            app:strokeColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:strokeWidth="2dp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_period_layout"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:text="@string/transaction_memo"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginTop="@dimen/tranLayoutToButton"
+                            android:layout_marginEnd="4dp"
+                            android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintEnd_toStartOf="@+id/tran_frequency_layout"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/categoryTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_repeat">
 
-                        <EditText
-                            android:id="@+id/tran_memo"
-                            style="@style/Transaction.EditText.MultiLine"
-                            android:layout_marginTop="6dp"
-                            android:hint="@string/transaction_memo_hint"
-                            android:importantForAutofill="no"
-                            android:text="@={tranVM.tranLD.memo}"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/memoTextView" />
+                            <AutoCompleteTextView
+                                android:id="@+id/tran_period"
+                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
+                                android:hint="@string/transaction_period"
+                                app:entries="@{tranVM.periodArray}" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                        <TextView
-                            android:id="@+id/repeatingTextView"
-                            style="?android:listSeparatorTextViewStyle"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tran_frequency_layout"
+                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_repeating"
-                            android:textSize="?attr/textSizeBase"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_memo" />
-
-                        <CheckBox
-                            android:id="@+id/tran_repeating"
-                            style="@style/CheckBox"
-                            android:layout_marginTop="4dp"
-                            android:checked="@={tranVM.repeatCheck}"
-                            app:layout_constraintStart_toEndOf="@+id/repeatingTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_memo" />
-
-                        <TextView
-                            android:id="@+id/frequencyTextView"
-                            style="?android:listSeparatorTextViewStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:paddingStart="@dimen/textViewPaddingWrapContent"
-                            android:paddingEnd="@dimen/textViewPaddingWrapContent"
-                            android:text="@string/transaction_frequency"
-                            android:textSize="?attr/textSizeBase"
-                            android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/repeatingTextView"
-                            tools:visibility="visible" />
-
-                        <Spinner
-                            android:id="@+id/tran_period"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="7dp"
-                            android:background="@null"
-                            android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
-                            app:entries="@{tranVM.periodArray}"
-                            app:layout_constraintEnd_toStartOf="@+id/tran_frequency"
-                            app:layout_constraintStart_toEndOf="@+id/frequencyTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_repeating"
-                            app:selectedPosition="@={tranVM.tranLD.period}"
-                            tools:listitem="@layout/spinner_item"
-                            tools:visibility="visible" />
-
-                        <EditText
-                            android:id="@+id/tran_frequency"
-                            style="@style/Transaction.EditText.Base"
-                            android:layout_marginTop="6dp"
-                            android:gravity="left"
-                            android:hint="@string/transaction_frequency_hint"
-                            android:importantForAutofill="no"
-                            android:inputType="number"
-                            android:maxLength="2"
-                            android:text="@={`` + tranVM.tranLD.frequency}"
-                            android:visibility="@{tranVM.repeatCheck ? View.VISIBLE : View.INVISIBLE}"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="@dimen/tranLayoutToButton"
+                            android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
+                            app:counterMaxLength="@integer/maxLengthFrequency"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/tran_period"
-                            app:layout_constraintTop_toBottomOf="@+id/repeatingTextView"
-                            tools:ignore="RtlHardcoded"
-                            tools:visibility="visible" />
+                            app:layout_constraintStart_toEndOf="@id/tran_period_layout"
+                            app:layout_constraintTop_toBottomOf="@id/tran_repeat">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tran_frequency"
+                                style="@style/Transaction.EditText.Base"
+                                android:hint="@string/transaction_frequency"
+                                android:inputType="number"
+                                android:maxLength="@integer/maxLengthFrequency"
+                                android:text="@={`` + tranVM.tranLD.frequency}" />
+                        </com.google.android.material.textfield.TextInputLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </ScrollView>
             </com.google.android.material.card.MaterialCardView>

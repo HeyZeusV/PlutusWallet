@@ -6,7 +6,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
 import com.github.mikephil.charting.charts.PieChart
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.textfield.TextInputLayout
 import com.heyzeusv.plutuswallet.util.bindingadapters.getSelectedChipId
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -160,6 +162,67 @@ class CustomMatchers {
 
                     val id = ContextCompat.getColor(tv.context, colorId)
                     return tv.currentTextColor == id
+                }
+            }
+        }
+
+        /**
+         *  Checks TextInputLayout [prefix] text.
+         */
+        fun withPrefix(prefix: String?): Matcher<View> {
+
+            return object : BoundedMatcher<View, TextInputLayout>(TextInputLayout::class.java) {
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("with prefix: $prefix")
+                }
+
+                override fun matchesSafely(til: TextInputLayout): Boolean {
+
+                    return til.prefixText == prefix
+                }
+            }
+        }
+
+        /**
+         *  Checks TextInputLayout [suffix] text.
+         */
+        fun withSuffix(suffix: String?): Matcher<View> {
+
+            return object : BoundedMatcher<View, TextInputLayout>(TextInputLayout::class.java) {
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("with suffix: $suffix")
+                }
+
+                override fun matchesSafely(til: TextInputLayout): Boolean {
+
+                    return til.suffixText == suffix
+                }
+            }
+        }
+
+        /**
+         *  Checks that MaterialButton text and stroke color matches [colorId].
+         */
+        fun withTextAndStrokeColor(colorId: Int): Matcher<View> {
+
+            return object : BoundedMatcher<View, MaterialButton>(MaterialButton::class.java) {
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("with color id: $colorId")
+                }
+
+                override fun matchesSafely(button: MaterialButton): Boolean {
+
+                    val color: Int = ContextCompat.getColor(button.context, colorId)
+                    val strokeColor: Boolean = color == button.strokeColor.defaultColor
+                    val textColor: Boolean = color == button.currentTextColor
+
+                    return strokeColor && textColor
                 }
             }
         }

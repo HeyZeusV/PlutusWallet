@@ -52,19 +52,17 @@
     <string name="preferences_thousands_symbol">数千の区切り記号</string>
     <string name="settings">設定</string>
     <string name="snackbar_saved">トランザクションが保存されました！</string>
-    <string name="transaction_account">口座：</string>
-    <string name="transaction_category">カテゴリー：</string>
-    <string name="transaction_date">日付：</string>
+    <string name="transaction_account">口座</string>
+    <string name="transaction_category">カテゴリー</string>
+    <string name="transaction_date">日付</string>
     <string name="transaction_empty_title">"トランザクション "</string>
-    <string name="transaction_frequency">周波数：</string>
-    <string name="transaction_memo">メモ：</string>
-    <string name="transaction_memo_hint">必要な追加情報を入力してください</string>
-    <string name="transaction_repeating">繰り返し：</string>
-    <string name="transaction_title">タイトル：</string>
-    <string name="transaction_title_hint">購入場所/ウェブサイトなどのタイトルを入力してください</string>
-    <string name="transaction_total">合計：</string>
-    <string name="transaction_total_hint">取引合計を入力してください</string>
-    <string name="transaction_type">タイプ：</string>
+    <string name="transaction_frequency">周波数</string>
+    <string name="transaction_memo">メモ</string>
+    <string name="transaction_memo_hint">\u2517 追加情報</string>
+    <string name="transaction_repeat">繰り返す</string>
+    <string name="transaction_title">タイトル</string>
+    <string name="transaction_title_hint">\u2517 購入場所</string>
+    <string name="transaction_total">合計</string>
     <string name="type_expense">費用</string>
     <string name="type_income">所得</string>
     <string name="categories">カテゴリー</string>
@@ -94,4 +92,5 @@
     <string name="preferences_theme_dark">闇</string>
     <string name="preferences_theme_system">システム</string>
     <string name="alert_dialog_input_error">空白にすることはできません！</string>
+    <string name="transaction_period">限目</string>
 </resources>

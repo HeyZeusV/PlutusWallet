@@ -14,7 +14,6 @@ import androidx.test.espresso.contrib.DrawerMatchers.isClosed
 import androidx.test.espresso.contrib.NavigationViewActions.navigateTo
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withResourceName
@@ -23,6 +22,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.rvViewHolder
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withIndex
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withPrefix
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withSuffix
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withTextColor
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
@@ -32,7 +33,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.instanceOf
-import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -151,10 +151,9 @@ class SettingsActivityTest {
             withParent(withId(R.id.tran_topBar))))
             .check(matches(withText("Transaction")))
         onView(withId(R.id.tran_date)).check(matches(withText(formattedTranDate)))
-        onView(withId(R.id.symbolLeftTextView)).check(matches(isDisplayed()))
-        onView(withId(R.id.symbolLeftTextView)).check(matches(withText("$")))
+        onView(withId(R.id.tran_total_layout)).check(matches(withPrefix("$")))
         onView(withId(R.id.tran_total)).check(matches(withText("2,000.32")))
-        onView(withId(R.id.symbolRightTextView)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.tran_total_layout)).check(matches(withSuffix(null)))
         pressBack()
         navigateToFragAndCheckTitle(R.id.accountFragment, R.id.account_topBar, "Accounts")
         navigateToFragAndCheckTitle(R.id.categoryFragment, R.id.category_topBar, "Categories")
@@ -514,13 +513,11 @@ class SettingsActivityTest {
         onView(withIndex(withId(R.id.ivt_layout), 2)).perform(click())
         onView(withId(R.id.tran_total)).check(matches(withText(total)))
         if (symbolLeft) {
-            onView(withId(R.id.symbolLeftTextView)).check(matches(isDisplayed()))
-            onView(withId(R.id.symbolLeftTextView)).check(matches(withText(currency)))
-            onView(withId(R.id.symbolRightTextView)).check(matches(not(isDisplayed())))
+            onView(withId(R.id.tran_total_layout)).check(matches(withPrefix(currency)))
+            onView(withId(R.id.tran_total_layout)).check(matches(withSuffix(null)))
         } else {
-            onView(withId(R.id.symbolLeftTextView)).check(matches(not(isDisplayed())))
-            onView(withId(R.id.symbolRightTextView)).check(matches(isDisplayed()))
-            onView(withId(R.id.symbolRightTextView)).check(matches(withText(currency)))
+            onView(withId(R.id.tran_total_layout)).check(matches(withPrefix(null)))
+            onView(withId(R.id.tran_total_layout)).check(matches(withSuffix(currency)))
         }
     }
 

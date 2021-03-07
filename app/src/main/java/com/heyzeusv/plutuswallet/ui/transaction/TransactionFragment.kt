@@ -8,7 +8,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Spinner
+import android.widget.AdapterView
+import android.widget.AutoCompleteTextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -21,7 +22,6 @@ import com.heyzeusv.plutuswallet.ui.base.BaseFragment
 import com.heyzeusv.plutuswallet.util.AlertDialogCreator
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.EventObserver
-import com.heyzeusv.plutuswallet.util.bindingadapters.setSelectedValue
 import java.util.Date
 
 /**
@@ -38,11 +38,6 @@ class TransactionFragment : BaseFragment() {
 
     // arguments from Navigation
     private val args: TransactionFragmentArgs by navArgs()
-
-    // used to record previously selected item
-    private var prevAcc = ""
-    private var prevExCat = ""
-    private var prevInCat = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,55 +84,89 @@ class TransactionFragment : BaseFragment() {
                 tranVM.tranLD.value = Transaction()
             } else {
                 tranVM.setTranData(transaction)
+                binding.tranAccount.setText(transaction.account, false)
+                if (transaction.type == "Expense") {
+                    binding.tranExpenseCat.setText(transaction.category, false)
+                } else {
+                    binding.tranIncomeCat.setText(transaction.category, false)
+                }
+                binding.tranPeriod.setText(tranVM.period, false)
             }
         })
 
-        /**
-         *  Triggered whenever user changes selection in Account/Category Spinners.
-         *  Launches dialog whenever "Create New.." entry is selected.
-         */
-        tranVM.account.observe(viewLifecycleOwner, { account: String ->
-            if (account == getString(R.string.account_create)) {
-                val alertDialogView = createAlertDialogView()
+        binding.tranDate.setOnFocusChangeListener { _, focused: Boolean ->
+            if (focused) {
+                tranVM.selectDateOC(tranVM.tranLD.value!!.date)
+            }
+        }
+
+        binding.tranAccount.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+            val selected: String = adapterView.adapter.getItem(i).toString()
+            if (selected == getString(R.string.account_create)) {
+                val alertDialogView: View = createAlertDialogView()
                 AlertDialogCreator.alertDialogInput(
-                    requireContext(), alertDialogView, account,
+                    requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                     getString(R.string.account_create),
-                    createDialogListeners(binding.tranAccount, prevAcc), tranVM::insertAccount,
+                    createDialogListeners(binding.tranAccount, tranVM.account), tranVM::insertAccount,
                     null, null, null, null, null
                 )
             } else {
-                prevAcc = account
+                tranVM.account = selected
             }
-        })
+        }
 
-        tranVM.expenseCat.observe(viewLifecycleOwner, { category: String ->
-            if (category == getString(R.string.category_create)) {
-                val alertDialogView = createAlertDialogView()
+        binding.tranExpenseCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+            val selected: String = adapterView.adapter.getItem(i).toString()
+            if (selected == getString(R.string.category_create)) {
+                val alertDialogView: View = createAlertDialogView()
                 AlertDialogCreator.alertDialogInput(
-                    requireContext(), alertDialogView, category,
+                    requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                     getString(R.string.category_create),
-                    createDialogListeners(binding.tranExpenseCat, prevExCat), tranVM::insertCategory,
-                    null, null, null, null, null
+                    createDialogListeners(binding.tranExpenseCat, tranVM.expenseCat),
+                    tranVM::insertCategory, null, null, null, null, null
                 )
             } else {
-                prevExCat = category
+                tranVM.expenseCat = selected
             }
-        })
+        }
 
-        tranVM.incomeCat.observe(viewLifecycleOwner, { category: String ->
-            if (category == getString(R.string.category_create)) {
-                val alertDialogView = createAlertDialogView()
+        binding.tranIncomeCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+            val selected: String = adapterView.adapter.getItem(i).toString()
+            if (selected == getString(R.string.category_create)) {
+                val alertDialogView: View = createAlertDialogView()
                 AlertDialogCreator.alertDialogInput(
-                    requireContext(), alertDialogView, category,
+                    requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                     getString(R.string.category_create),
-                    createDialogListeners(binding.tranIncomeCat, prevInCat), tranVM::insertCategory,
-                    null, null, null, null, null
+                    createDialogListeners(binding.tranIncomeCat, tranVM.incomeCat),
+                    tranVM::insertCategory, null, null, null, null, null
                 )
             } else {
-                prevInCat = category
+                tranVM.incomeCat = selected
+            }
+        }
+
+        binding.tranRepeat.setOnClickListener {
+            tranVM.repeat.value = !tranVM.repeat.value!!
+            if (tranVM.repeat.value!!) {
+                binding.tranScrollView.postDelayed({
+                        binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
+                    }, 100
+                )
+            }
+        }
+
+        binding.tranPeriod.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+            tranVM.period = adapterView.adapter.getItem(i).toString()
+        }
+
+        tranVM.createEvent.observe(viewLifecycleOwner, EventObserver { info: Pair<Int, String> ->
+            when (info.first) {
+                0 -> binding.tranAccount.setText(info.second, false)
+                1 -> binding.tranExpenseCat.setText(info.second, false)
+                2 -> binding.tranIncomeCat.setText(info.second, false)
             }
         })
 
@@ -180,16 +209,17 @@ class TransactionFragment : BaseFragment() {
         }
     }
 
+
     /**
      *  Creates negative onClick and onCancel listeners for AlertDialog. Which [spinner] AlertDialog
      *  is being created from and [previous] entry that was selected.
      */
-    private fun createDialogListeners(spinner: Spinner, previous: String): List<Any> {
+    private fun createDialogListeners(spinner: AutoCompleteTextView, previous: String): List<Any> {
 
         val negListener = DialogInterface.OnClickListener { _, _ ->
-            spinner.setSelectedValue(previous)
+            spinner.setText(previous, false)
         }
-        val cancelListener = DialogInterface.OnCancelListener { spinner.setSelectedValue(previous) }
+        val cancelListener = DialogInterface.OnCancelListener { spinner.setText(previous, false) }
 
         return listOf(negListener, cancelListener)
     }

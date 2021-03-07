@@ -52,19 +52,16 @@
     <string name="preferences_thousands_symbol">हजारों विभाजक प्रतीक</string>
     <string name="settings">समायोजन</string>
     <string name="snackbar_saved">लेन-देन सहेजा गया!</string>
-    <string name="transaction_account">लेखा:</string>
-    <string name="transaction_category">वर्ग:</string>
-    <string name="transaction_date">दिनांक:</string>
+    <string name="transaction_account">लेखा</string>
+    <string name="transaction_category">वर्ग</string>
+    <string name="transaction_date">दिनांक</string>
     <string name="transaction_empty_title">"लेन-देन "</string>
-    <string name="transaction_frequency">आवृत्ति:</string>
-    <string name="transaction_memo">मेमो:</string>
-    <string name="transaction_memo_hint">कोई अतिरिक्त जानकारी दर्ज करें</string>
-    <string name="transaction_repeating">दोहरा:</string>
-    <string name="transaction_title">शीर्षक:</string>
-    <string name="transaction_title_hint">स्थान / खरीद की वेबसाइट जैसे शीर्षक दर्ज करें</string>
-    <string name="transaction_total">संपूर्ण:</string>
-    <string name="transaction_total_hint">कुल लेनदेन दर्ज करें</string>
-    <string name="transaction_type">प्रकार:</string>
+    <string name="transaction_frequency">आवृत्ति</string>
+    <string name="transaction_memo_hint">\u2517 अतिरिक्त जानकारी</string>
+    <string name="transaction_repeat">दोहराना</string>
+    <string name="transaction_title">शीर्षक</string>
+    <string name="transaction_title_hint">\u2517 खरीद का स्थान</string>
+    <string name="transaction_total">संपूर्ण</string>
     <string name="type_expense">व्यय</string>
     <string name="type_income">आय</string>
     <string name="categories">श्रेणियाँ</string>
@@ -94,4 +91,6 @@
     <string name="preferences_theme_dark">अंधेरा</string>
     <string name="preferences_theme_system">체계</string>
     <string name="alert_dialog_input_error">खाली नहीं हो सकता!</string>
+    <string name="transaction_period">अवधि</string>
+    <string name="transaction_memo">मेमो</string>
 </resources>

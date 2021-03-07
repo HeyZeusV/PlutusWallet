@@ -44,14 +44,16 @@ internal class TransactionViewModelTest {
     @DisplayName("Should take Transaction given and pass its values to LiveData")
     fun setTranData() {
 
+        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
+
         tranVM.setTranData(dd.tran1)
 
         assertEquals("Thursday, January 1, 1970", tranVM.date.value)
-        assertEquals("Cash", tranVM.account.value)
+        assertEquals("Cash", tranVM.account)
         assertEquals("1 000 10", tranVM.total.value)
         assertEquals(R.id.tran_expense_chip, tranVM.checkedChip.value)
-        assertEquals("Food", tranVM.expenseCat.value)
-        assertEquals(true, tranVM.repeatCheck.value)
+        assertEquals("Food", tranVM.expenseCat)
+        assertEquals(true, tranVM.repeat.value)
     }
 
     @Test
@@ -59,11 +61,13 @@ internal class TransactionViewModelTest {
     fun saveTransaction() {
 
         tranVM.tranLD = MutableLiveData(dd.tran1)
-        tranVM.account.value = "Test Account"
+        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
+        tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
         tranVM.checkedChip.value = R.id.tran_income_chip
-        tranVM.incomeCat.value = "Test Income Category"
-        tranVM.repeatCheck.value = false
+        tranVM.incomeCat = "Test Income Category"
+        tranVM.repeat.value = false
+        tranVM.period = "Days"
         val expectedTran = Transaction(
             1,
             "Party",
@@ -93,13 +97,15 @@ internal class TransactionViewModelTest {
     fun saveTransactionRepeatWarning() {
 
         tranVM.tranLD = MutableLiveData(dd.tran1)
+        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
         // in order to get dateChanged == true
         tranVM.onDateSelected(Date(86400000 * 3))
-        tranVM.account.value = "Test Account"
+        tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
         tranVM.checkedChip.value = R.id.tran_income_chip
-        tranVM.incomeCat.value = "Test Income Category"
-        tranVM.repeatCheck.value = true
+        tranVM.incomeCat = "Test Income Category"
+        tranVM.repeat.value = true
+        tranVM.period = "Days"
         val expectedTran = Transaction(
             1,
             "Party",
@@ -159,7 +165,7 @@ internal class TransactionViewModelTest {
 
         assertEquals(expectedList, tranVM.accountList.value)
         assertEquals(expectedAcc, repo.accList[repo.accList.size - 1])
-        assertEquals("Test2", tranVM.account.value)
+        assertEquals("Test2", tranVM.account)
 
     }
 
@@ -174,7 +180,7 @@ internal class TransactionViewModelTest {
         tranVM.insertAccount("Test3", "")
 
         assertEquals(expectedList, tranVM.accountList.value)
-        assertEquals("Test3", tranVM.account.value)
+        assertEquals("Test3", tranVM.account)
         assertEquals(expectedAccRepoSize, repo.accList.size)
     }
 
@@ -196,10 +202,10 @@ internal class TransactionViewModelTest {
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
         assertEquals(expectedExCat, repo.catList[repo.catList.size - 2])
-        assertEquals("ETest2", tranVM.expenseCat.value)
+        assertEquals("ETest2", tranVM.expenseCat)
         assertEquals(expectedInList, tranVM.incomeCatList.value)
         assertEquals(expectedInCat, repo.catList[repo.catList.size - 1])
-        assertEquals("ITest2", tranVM.incomeCat.value)
+        assertEquals("ITest2", tranVM.incomeCat)
     }
 
     @Test
@@ -218,9 +224,9 @@ internal class TransactionViewModelTest {
         tranVM.insertCategory("ITest2", "")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
-        assertEquals("ETest2", tranVM.expenseCat.value)
+        assertEquals("ETest2", tranVM.expenseCat)
         assertEquals(expectedInList, tranVM.incomeCatList.value)
-        assertEquals("ITest2", tranVM.incomeCat.value)
+        assertEquals("ITest2", tranVM.incomeCat)
         assertEquals(expectedCatRepoSize, repo.catList.size)
     }
 

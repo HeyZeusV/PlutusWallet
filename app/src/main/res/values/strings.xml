@@ -9,7 +9,7 @@
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="about_version" translatable="false">v3.1.0</string>
+    <string name="about_version" translatable="false">v3.2.0</string>
     <string name="account_create">Create New Account</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
@@ -64,20 +64,17 @@
     <string name="snackbar_saved">Transaction saved!</string>
     <string name="total_number" translatable="false">%1$s</string>
     <string name="total_number_symbol" translatable="false">%1$s%2$s</string>
-    <string name="transaction_account">Account:</string>
-    <string name="transaction_category">Category:</string>
-    <string name="transaction_date">Date:</string>
+    <string name="transaction_account">Account</string>
+    <string name="transaction_category">Category</string>
+    <string name="transaction_date">Date</string>
     <string name="transaction_empty_title">"Transaction "</string>
-    <string name="transaction_frequency">Frequency:</string>
-    <string name="transaction_frequency_hint" translatable="false">1–99</string>
-    <string name="transaction_memo">Memo:</string>
-    <string name="transaction_memo_hint">Enter any additional information needed</string>
-    <string name="transaction_repeating">Repeating:</string>
-    <string name="transaction_title">Title:</string>
-    <string name="transaction_title_hint">Enter title such as location/website of purchase</string>
-    <string name="transaction_total">Total:</string>
-    <string name="transaction_total_hint">Enter transaction total</string>
-    <string name="transaction_type">Type:</string>
+    <string name="transaction_frequency">Frequency</string>
+    <string name="transaction_memo">Memo</string>
+    <string name="transaction_memo_hint">\u2517 Additional information</string>
+    <string name="transaction_repeat">Repeat</string>
+    <string name="transaction_title">Title</string>
+    <string name="transaction_title_hint">\u2517 Location of purchase</string>
+    <string name="transaction_total">Total</string>
     <string name="type_expense">Expense</string>
     <string name="type_income">Income</string>
     <string name="categories">Categories</string>
@@ -107,4 +104,5 @@
     <string name="preferences_theme_dark">Dark</string>
     <string name="preferences_theme_system">System</string>
     <string name="alert_dialog_input_error">Can\'t be blank!</string>
+    <string name="transaction_period">Period</string>
 </resources>

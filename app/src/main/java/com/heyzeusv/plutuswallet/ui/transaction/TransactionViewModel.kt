@@ -48,12 +48,9 @@ class TransactionViewModel @ViewModelInject constructor(
     // used for various Transaction Fields since property changes don't cause LiveDate updates
     private val _date: MutableLiveData<String> = MutableLiveData("")
     val date: LiveData<String> = _date
-    val account: MutableLiveData<String> = MutableLiveData("")
     val total: MutableLiveData<String> = MutableLiveData("")
     val checkedChip: MutableLiveData<Int> = MutableLiveData(R.id.tran_expense_chip)
-    val expenseCat: MutableLiveData<String> = MutableLiveData("")
-    val incomeCat: MutableLiveData<String> = MutableLiveData("")
-    val repeatCheck: MutableLiveData<Boolean> = MutableLiveData(false)
+    val repeat: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // Lists used by Spinners
     val accountList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
@@ -82,6 +79,17 @@ class TransactionViewModel @ViewModelInject constructor(
     // used to tell if date has been edited for re-repeating Transactions
     private var dateChanged = false
 
+    // Int is type: 0 = Account, 1 = Expense, 2 = Income
+    // String is name of newly created entity
+    private val _createEvent = MutableLiveData<Event<Pair<Int, String>>>()
+    val createEvent: LiveData<Event<Pair<Int, String>>> = _createEvent
+
+    // currently selected Spinner item
+    var account = ""
+    var expenseCat = ""
+    var incomeCat = ""
+    var period = ""
+
     /**
      *  Uses [transaction] to pass values to LiveData to be displayed.
      */
@@ -89,32 +97,35 @@ class TransactionViewModel @ViewModelInject constructor(
         // Date to String
         _date.value =
             DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
-        account.value = transaction.account
+        account = transaction.account
         // BigDecimal to String
-        total.value = if (setVals.decimalPlaces) {
-            when (transaction.total.toString()) {
-                "0" -> ""
-                "0.00" -> ""
-                else -> formatDecimal(
-                    transaction.total,
-                    setVals.thousandsSymbol, setVals.decimalSymbol
-                )
-            }
-        } else {
-            if (transaction.total.toString() == "0") {
-                ""
-            } else {
-                formatInteger(transaction.total, setVals.thousandsSymbol)
-            }
+        total.value = when {
+            setVals.decimalPlaces && transaction.total > BigDecimal.ZERO -> formatDecimal(
+                transaction.total, setVals.thousandsSymbol, setVals.decimalSymbol
+            )
+            setVals.decimalPlaces -> "0${setVals.decimalSymbol}00"
+            transaction.total > BigDecimal.ZERO -> formatInteger(
+                transaction.total, setVals.thousandsSymbol
+            )
+            else -> "0"
         }
         if (transaction.type == "Expense") {
             checkedChip.value = R.id.tran_expense_chip
-            expenseCat.value = transaction.category
+            expenseCat = transaction.category
         } else {
             checkedChip.value = R.id.tran_income_chip
-            incomeCat.value = transaction.category
+            incomeCat = transaction.category
         }
-        repeatCheck.value = transaction.repeating
+        repeat.value = transaction.repeating
+        periodArray.value?.let {
+            // gets translated period value using periodArray
+            period = when (transaction.period) {
+                0 -> it[0]
+                1 -> it[1]
+                2 -> it[2]
+                else -> it[3]
+            }
+        }
     }
 
     /**
@@ -132,7 +143,7 @@ class TransactionViewModel @ViewModelInject constructor(
             if (tran.title.isBlank()) tran.title = emptyTitle + tran.id
 
             // is empty if account hasn't been changed so defaults to first account
-            tran.account = if (account.value == "") accountList.value!![0] else account.value!!
+            tran.account = if (account == "") accountList.value!![0] else account
 
             // converts the totalField from String into BigDecimal
             tran.total = when {
@@ -149,22 +160,23 @@ class TransactionViewModel @ViewModelInject constructor(
             // cat values are empty if they haven't been changed so defaults to first category
             if (checkedChip.value == R.id.tran_expense_chip) {
                 tran.type = "Expense"
-                tran.category = if (expenseCat.value == "") {
+                tran.category = if (expenseCat == "") {
                     expenseCatList.value!![0]
                 } else {
-                    expenseCat.value!!
+                    expenseCat
                 }
             } else {
                 tran.type = "Income"
-                tran.category = if (incomeCat.value == "") {
+                tran.category = if (incomeCat == "") {
                     incomeCatList.value!![0]
                 } else {
-                    incomeCat.value!!
+                    incomeCat
                 }
             }
 
-            tran.repeating = repeatCheck.value!!
+            tran.repeating = repeat.value!!
             if (tran.repeating) tran.futureDate = createFutureDate()
+            tran.period = periodArray.value!!.indexOf(period)
             // frequency must always be at least 1
             if (tran.frequency < 1) tran.frequency = 1
 
@@ -278,7 +290,8 @@ class TransactionViewModel @ViewModelInject constructor(
                 }
                 accountList.value = addNewToList(it, name, accCreate)
             }
-            account.value = name
+            account = name
+            _createEvent.value = Event(Pair(0, name))
         }
     }
 
@@ -301,7 +314,8 @@ class TransactionViewModel @ViewModelInject constructor(
                     expenseCatList.value = addNewToList(it, name, catCreate)
                 }
             }
-            expenseCat.value = name
+            expenseCat = name
+            _createEvent.value = Event(Pair(1, name))
         } else {
             incomeCatList.value?.let {
                 // create if doesn't exist
@@ -314,7 +328,8 @@ class TransactionViewModel @ViewModelInject constructor(
                     incomeCatList.value = addNewToList(it, name, catCreate)
                 }
             }
-            incomeCat.value = name
+            incomeCat = name
+            _createEvent.value = Event(Pair(2, name))
         }
     }
 
