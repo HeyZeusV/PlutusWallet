@@ -1,3 +1,6 @@
+v3.2.1
+-Change: Type Buttons in Transaction page now match rest of page aesthetic.
+
 v3.2.0
 -Change: Transaction page has been redesigned.
 -Change: Reverted title and total constraints on Overview page, so that total is always full displayed while title scrolls if it is too long.
