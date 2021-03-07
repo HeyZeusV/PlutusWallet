@@ -17,9 +17,6 @@
     <color name="colorButtonText">@color/white</color>
     <color name="colorButtonUnselected">#60000000</color>
 
-    <!-- Chip color in ChipGroup -->
-    <color name="colorChipTextAndUnselected">@color/black</color>
-
     <!-- Chart text colors -->
     <color name="colorChartText">@color/black</color>
     <color name="colorChartHole">@color/white</color>
@@ -27,7 +24,6 @@
     <color name="colorAlertDialogButtonText">@color/purple_base</color>
 
     <color name="colorSnackbarText">@color/white</color>
-
 
     <!-- DatePickerDialog colors -->
     <color name="colorDatePickerBackground">@color/white</color>

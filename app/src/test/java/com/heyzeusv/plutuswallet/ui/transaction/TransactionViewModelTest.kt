@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.ui.transaction
 
 import androidx.lifecycle.MutableLiveData
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
-import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
@@ -51,7 +50,7 @@ internal class TransactionViewModelTest {
         assertEquals("Thursday, January 1, 1970", tranVM.date.value)
         assertEquals("Cash", tranVM.account)
         assertEquals("1 000 10", tranVM.total.value)
-        assertEquals(R.id.tran_expense_chip, tranVM.checkedChip.value)
+//        assertEquals(R.id.tran_expense_chip, tranVM.checkedChip.value)
         assertEquals("Food", tranVM.expenseCat)
         assertEquals(true, tranVM.repeat.value)
     }
@@ -64,7 +63,7 @@ internal class TransactionViewModelTest {
         tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
         tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
-        tranVM.checkedChip.value = R.id.tran_income_chip
+        tranVM.typeSelected.value = true
         tranVM.incomeCat = "Test Income Category"
         tranVM.repeat.value = false
         tranVM.period = "Days"
@@ -102,7 +101,7 @@ internal class TransactionViewModelTest {
         tranVM.onDateSelected(Date(86400000 * 3))
         tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
-        tranVM.checkedChip.value = R.id.tran_income_chip
+        tranVM.typeSelected.value = true
         tranVM.incomeCat = "Test Income Category"
         tranVM.repeat.value = true
         tranVM.period = "Days"
@@ -195,9 +194,9 @@ internal class TransactionViewModelTest {
         val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "")
         val expectedInCat = Category(0, "ITest2", "Income")
 
-        tranVM.checkedChip.value = R.id.tran_expense_chip
+        tranVM.typeSelected.value = false
         tranVM.insertCategory("ETest2", "")
-        tranVM.checkedChip.value = R.id.tran_income_chip
+        tranVM.typeSelected.value = true
         tranVM.insertCategory("ITest2", "")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
@@ -218,9 +217,9 @@ internal class TransactionViewModelTest {
         val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "")
         val expectedCatRepoSize: Int = repo.catList.size
 
-        tranVM.checkedChip.value = R.id.tran_expense_chip
+        tranVM.typeSelected.value = false
         tranVM.insertCategory("ETest2", "")
-        tranVM.checkedChip.value = R.id.tran_income_chip
+        tranVM.typeSelected.value = true
         tranVM.insertCategory("ITest2", "")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)

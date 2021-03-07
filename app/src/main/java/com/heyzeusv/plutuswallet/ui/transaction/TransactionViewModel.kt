@@ -49,7 +49,8 @@ class TransactionViewModel @ViewModelInject constructor(
     private val _date: MutableLiveData<String> = MutableLiveData("")
     val date: LiveData<String> = _date
     val total: MutableLiveData<String> = MutableLiveData("")
-    val checkedChip: MutableLiveData<Int> = MutableLiveData(R.id.tran_expense_chip)
+    // false = "Expense", true = "Income"
+    val typeSelected: MutableLiveData<Boolean> = MutableLiveData(false)
     val repeat: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // Lists used by Spinners
@@ -110,10 +111,10 @@ class TransactionViewModel @ViewModelInject constructor(
             else -> "0"
         }
         if (transaction.type == "Expense") {
-            checkedChip.value = R.id.tran_expense_chip
+            typeSelected.value = false
             expenseCat = transaction.category
         } else {
-            checkedChip.value = R.id.tran_income_chip
+            typeSelected.value = true
             incomeCat = transaction.category
         }
         repeat.value = transaction.repeating
@@ -158,7 +159,7 @@ class TransactionViewModel @ViewModelInject constructor(
 
             // sets type depending on Chip selected
             // cat values are empty if they haven't been changed so defaults to first category
-            if (checkedChip.value == R.id.tran_expense_chip) {
+            if (!typeSelected.value!!) {
                 tran.type = "Expense"
                 tran.category = if (expenseCat == "") {
                     expenseCatList.value!![0]
@@ -302,7 +303,7 @@ class TransactionViewModel @ViewModelInject constructor(
     fun insertCategory(name: String, catCreate: String) {
 
         // checks which type is currently selected
-        if (checkedChip.value == R.id.tran_expense_chip) {
+        if (!typeSelected.value!!) {
             expenseCatList.value?.let {
                 // create if doesn't exist
                 if (!it.contains(name)) {
@@ -384,6 +385,11 @@ class TransactionViewModel @ViewModelInject constructor(
             maxId = tranRepo.getMaxIdAsync() ?: 0
             refresh()
         }
+    }
+
+    fun typeButtonOC() {
+
+        typeSelected.value = !typeSelected.value!!
     }
 
     // manually refresh on LiveData
