@@ -119,7 +119,7 @@ class TransactionFragment : BaseFragment() {
         binding.tranExpenseCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
             val selected: String = adapterView.adapter.getItem(i).toString()
             if (selected == getString(R.string.category_create)) {
-                val alertDialogView = createAlertDialogView()
+                val alertDialogView: View = createAlertDialogView()
                 AlertDialogCreator.alertDialogInput(
                     requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
@@ -135,12 +135,12 @@ class TransactionFragment : BaseFragment() {
         binding.tranIncomeCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
             val selected: String = adapterView.adapter.getItem(i).toString()
             if (selected == getString(R.string.category_create)) {
-                val alertDialogView = createAlertDialogView()
+                val alertDialogView: View = createAlertDialogView()
                 AlertDialogCreator.alertDialogInput(
                     requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                     getString(R.string.category_create),
-                    createDialogListeners(binding.tranExpenseCat, tranVM.incomeCat),
+                    createDialogListeners(binding.tranIncomeCat, tranVM.incomeCat),
                     tranVM::insertCategory, null, null, null, null, null
                 )
             } else {

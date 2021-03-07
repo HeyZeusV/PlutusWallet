@@ -44,6 +44,8 @@ internal class TransactionViewModelTest {
     @DisplayName("Should take Transaction given and pass its values to LiveData")
     fun setTranData() {
 
+        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
+
         tranVM.setTranData(dd.tran1)
 
         assertEquals("Thursday, January 1, 1970", tranVM.date.value)
@@ -59,11 +61,13 @@ internal class TransactionViewModelTest {
     fun saveTransaction() {
 
         tranVM.tranLD = MutableLiveData(dd.tran1)
+        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
         tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
         tranVM.checkedChip.value = R.id.tran_income_chip
         tranVM.incomeCat = "Test Income Category"
         tranVM.repeat.value = false
+        tranVM.period = "Days"
         val expectedTran = Transaction(
             1,
             "Party",
@@ -93,6 +97,7 @@ internal class TransactionViewModelTest {
     fun saveTransactionRepeatWarning() {
 
         tranVM.tranLD = MutableLiveData(dd.tran1)
+        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
         // in order to get dateChanged == true
         tranVM.onDateSelected(Date(86400000 * 3))
         tranVM.account = "Test Account"
@@ -100,6 +105,7 @@ internal class TransactionViewModelTest {
         tranVM.checkedChip.value = R.id.tran_income_chip
         tranVM.incomeCat = "Test Income Category"
         tranVM.repeat.value = true
+        tranVM.period = "Days"
         val expectedTran = Transaction(
             1,
             "Party",

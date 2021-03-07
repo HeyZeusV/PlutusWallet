@@ -3,24 +3,21 @@ package com.heyzeusv.plutuswallet.ui.transaction
 import android.content.res.Resources
 import android.os.Bundle
 import android.widget.DatePicker
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions.setDate
+import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isChecked
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withSpinnerText
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chipSelected
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withTextAndStrokeColor
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
@@ -80,14 +77,14 @@ class TransactionFragmentTest {
         // Spinners will select first entry according to sorted DummyData
         onView(withId(R.id.tran_title)).check(matches(withText("")))
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
-        onView(withId(R.id.tran_account)).check(matches((withSpinnerText(dd.acc3.account))))
-        onView(withId(R.id.tran_total)).check(matches(withText("")))
+        onView(withId(R.id.tran_account)).check(matches((withText(""))))
+        onView(withId(R.id.tran_total)).check(matches(withText("0.00")))
         onView(withId(R.id.tran_type_chips)).check(matches(chipSelected(R.id.tran_expense_chip)))
         onView(withId(R.id.tran_expense_cat)).check(matches(isDisplayed()))
-        onView(withId(R.id.tran_expense_cat)).check(matches((withSpinnerText(dd.cat2.category))))
+        onView(withId(R.id.tran_expense_cat)).check(matches((withText(""))))
         onView(withId(R.id.tran_income_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_memo)).check(matches(withText("")))
-        onView(withId(R.id.tran_repeat)).check(matches(isNotChecked()))
+        onView(withId(R.id.tran_repeat)).check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected)))
         onView(withId(R.id.tran_period)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_frequency)).check(matches(not(isDisplayed())))
     }
@@ -106,17 +103,18 @@ class TransactionFragmentTest {
         // Transaction details will be displayed
         onView(withId(R.id.tran_title)).check(matches(withText("Party")))
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
-        onView(withId(R.id.tran_account)).check(matches((withSpinnerText(dd.acc3.account))))
+        onView(withId(R.id.tran_account)).check(matches((withText(dd.acc3.account))))
         onView(withId(R.id.tran_total)).check(matches(withText("1,000.10")))
         onView(withId(R.id.tran_type_chips)).check(matches(chipSelected(R.id.tran_expense_chip)))
         onView(withId(R.id.tran_expense_cat)).check(matches(isDisplayed()))
-        onView(withId(R.id.tran_expense_cat)).check(matches((withSpinnerText(dd.cat1.category))))
+        onView(withId(R.id.tran_expense_cat)).check(matches((withText(dd.cat1.category))))
         // expense Transaction so income Spinner is not needed
         onView(withId(R.id.tran_income_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_memo)).check(matches(withText("Catering for party")))
-        onView(withId(R.id.tran_repeat)).check(matches(isChecked()))
+        onView(withId(R.id.tran_repeat)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
+        onView(withId(R.id.tran_scrollView)).perform(swipeUp())
         onView(withId(R.id.tran_period)).check(matches(isDisplayed()))
-        onView(withId(R.id.tran_period)).check(matches(withSpinnerText("Days")))
+        onView(withId(R.id.tran_period)).check(matches(withText("Days")))
         onView(withId(R.id.tran_frequency)).check(matches(isDisplayed()))
         onView(withId(R.id.tran_frequency)).check(matches(withText("1")))
     }
@@ -136,17 +134,18 @@ class TransactionFragmentTest {
         // Transaction details will be displayed
         onView(withId(R.id.tran_title)).check(matches(withText("Pay Day")))
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
-        onView(withId(R.id.tran_account)).check(matches((withSpinnerText(dd.acc2.account))))
+        onView(withId(R.id.tran_account)).check(matches((withText(dd.acc2.account))))
         onView(withId(R.id.tran_total)).check(matches(withText("2,000.32")))
         onView(withId(R.id.tran_type_chips)).check(matches(chipSelected(R.id.tran_income_chip)))
         // income Transaction so expense Spinner is not needed
         onView(withId(R.id.tran_expense_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_income_cat)).check(matches(isDisplayed()))
-        onView(withId(R.id.tran_income_cat)).check(matches((withSpinnerText(dd.cat3.category))))
+        onView(withId(R.id.tran_income_cat)).check(matches((withText(dd.cat3.category))))
         onView(withId(R.id.tran_memo)).check(matches(withText("Best day of the month!")))
-        onView(withId(R.id.tran_repeat)).check(matches(isChecked()))
+        onView(withId(R.id.tran_repeat)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
+        onView(withId(R.id.tran_scrollView)).perform(swipeUp())
         onView(withId(R.id.tran_period)).check(matches(isDisplayed()))
-        onView(withId(R.id.tran_period)).check(matches(withSpinnerText("Months")))
+        onView(withId(R.id.tran_period)).check(matches(withText("Months")))
         onView(withId(R.id.tran_frequency)).check(matches(isDisplayed()))
         onView(withId(R.id.tran_frequency)).check(matches(withText("1")))
     }
@@ -168,28 +167,28 @@ class TransactionFragmentTest {
 
         // create new Account
         onView(withId(R.id.tran_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(createAcc))).perform(click())
+        onView(withText(createAcc)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         onView(withId(R.id.dialog_input)).perform(typeText(testAcc))
         onView(withId(android.R.id.button1)).perform(click())
         // check that it exists
-        onView(withId(R.id.tran_account)).check(matches(withSpinnerText(testAcc)))
+        onView(withId(R.id.tran_account)).check(matches(withText(testAcc)))
 
         // create new expense Category and check that it exists
         onView(withId(R.id.tran_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(createCat))).perform(click())
+        onView(withText(createCat)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         onView(withId(R.id.dialog_input)).perform(typeText(testExCat))
         onView(withId(android.R.id.button1)).perform(click())
         // check that it exists
-        onView(withId(R.id.tran_expense_cat)).check(matches(withSpinnerText(testExCat)))
+        onView(withId(R.id.tran_expense_cat)).check(matches(withText(testExCat)))
 
         // create new income Category
         onView(withId(R.id.tran_income_chip)).perform(click())
         onView(withId(R.id.tran_income_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(createCat))).perform(click())
+        onView(withText(createCat)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         onView(withId(R.id.dialog_input)).perform(typeText(testInCat))
         onView(withId(android.R.id.button1)).perform(click())
         // check that it exists
-        onView(withId(R.id.tran_income_cat)).check(matches(withSpinnerText(testInCat)))
+        onView(withId(R.id.tran_income_cat)).check(matches(withText(testInCat)))
     }
 
     @Test
@@ -209,35 +208,35 @@ class TransactionFragmentTest {
 
         // select non-first Spinner entry
         onView(withId(R.id.tran_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`("Unused"))).perform(click())
+        onView(withText("Unused")).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         // attempt to create new item, but cancel
         onView(withId(R.id.tran_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(createAcc))).perform(click())
+        onView(withText(createAcc)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         onView(withId(android.R.id.button2)).perform(click())
         // check that previously selected entry is now selected
-        onView(withId(R.id.tran_account)).check(matches(withSpinnerText("Unused")))
+        onView(withId(R.id.tran_account)).check(matches(withText("Unused")))
 
         // select non-first Spinner entry
         onView(withId(R.id.tran_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`("Food"))).perform(click())
+        onView(withText("Food")).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         // attempt to create new item, but cancel
         onView(withId(R.id.tran_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(createCat))).perform(click())
+        onView(withText(createCat)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         onView(withId(android.R.id.button2)).perform(click())
         // check that previously selected entry is now selected
-        onView(withId(R.id.tran_expense_cat)).check(matches(withSpinnerText("Food")))
+        onView(withId(R.id.tran_expense_cat)).check(matches(withText("Food")))
 
         // make income Spinner appear
         onView(withId(R.id.tran_income_chip)).perform(click())
         // select non-first Spinner entry
         onView(withId(R.id.tran_income_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`("Z Cat"))).perform(click())
+        onView(withText("Z Cat")).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         // attempt to create new item, but cancel
         onView(withId(R.id.tran_income_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(createCat))).perform(click())
+        onView(withText(createCat)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
         onView(withId(android.R.id.button2)).perform(click())
         // check that previously selected entry is now selected
-        onView(withId(R.id.tran_income_cat)).check(matches(withSpinnerText("Z Cat")))
+        onView(withId(R.id.tran_income_cat)).check(matches(withText("Z Cat")))
     }
 
     @Test
