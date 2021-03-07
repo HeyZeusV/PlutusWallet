@@ -48,7 +48,7 @@
     <!-- Top margin between Views, any change should be applied to the others -->
     <dimen name="tranLayoutToLayoutMargin">4dp</dimen>
     <dimen name="tranChipGroupToLayoutMargin">2dp</dimen>
-    <dimen name="tranLayoutToChipGroupMargin">15dp</dimen>
+    <dimen name="tranLayoutToChipGroupMargin">16dp</dimen>
     <dimen name="tranButtonToLayout">4dp</dimen>
     <dimen name="tranLayoutToButton">10dp</dimen>
 

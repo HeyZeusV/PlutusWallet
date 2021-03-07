@@ -1,3 +1,8 @@
+v3.2.0
+-Change: Transaction page has been redesigned.
+-Change: Reverted title and total constraints on Overview page, so that total is always full displayed while title scrolls if it is too long.
+-Fixed: Several Thai translations.
+
 v3.1.0
 -New: Dark Mode (Deep Purple).
 -New: Scrollbars where appropriate.
@@ -5,7 +10,7 @@ v3.1.0
 -Change: Memos now have max length of 512.
 -Change: Several colors in Light Mode have been updated.
 -Enhancement: Editing an Account or a Category name now has current name filled out in dialog.
--Enhancement: Checkboxes and button have been made slightly bigger.
+-Enhancement: Checkboxes and buttons have been made slightly bigger.
 -Enhancement: Text in multiple locations now continually scrolls when too long to display.
 -Fixed: No longer crashes from multiple presses on different list items.
 -Fixed: Warning messages (SnackBar) now appear at correct position.
