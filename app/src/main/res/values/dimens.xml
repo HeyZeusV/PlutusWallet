@@ -2,7 +2,6 @@
     <!-- Text sizes used throughout app -->
     <dimen name="textSizeBase">18sp</dimen>
     <dimen name="textSizeFilterButton">16sp</dimen>
-    <dimen name="textSizeTranButton">20sp</dimen>
     <dimen name="textSizeTranListViewHolder">14sp</dimen>
 
     <!-- CardView dimensions -->
@@ -46,11 +45,12 @@
 
     <!-- TransactionFragment -->
     <!-- Top margin between Views, any change should be applied to the others -->
-    <dimen name="tranLayoutToLayoutMargin">4dp</dimen>
-    <dimen name="tranChipGroupToLayoutMargin">2dp</dimen>
-    <dimen name="tranLayoutToChipGroupMargin">16dp</dimen>
-    <dimen name="tranButtonToLayout">4dp</dimen>
-    <dimen name="tranLayoutToButton">10dp</dimen>
+    <dimen name="tranLayoutToLayoutMargin">5dp</dimen>
+    <dimen name="tranButtonToLayoutMargin">4dp</dimen>
+    <dimen name="tranLayoutToButtonMargin">19dp</dimen>
+    <dimen name="tranButtonPadding">4dp</dimen>
+    <dimen name="tranButtonStrokeWidth">2dp</dimen>
+    <dimen name="tranButtonHeight">70dp</dimen>
 
     <!-- TransactionListFragment -->
     <dimen name="tranListMarginOuterStartEndTop">8dp</dimen>

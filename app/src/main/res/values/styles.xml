@@ -201,6 +201,14 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <!-- Outlined Button in TransactionFragment -->
+    <style name="Transaction.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_height">@dimen/tranButtonHeight</item>
+        <item name="android:padding">@dimen/tranButtonPadding</item>
+        <item name="android:textSize">@dimen/textSizeBase</item>
+        <item name="strokeWidth">@dimen/tranButtonStrokeWidth</item>
+    </style>
+
     <!-- TextInputLayout child AutoCompleteTextView -->
     <style name="Transaction.TextInputLayout.AutoCompleteTextView" parent="">
         <item name="android:layout_width">match_parent</item>

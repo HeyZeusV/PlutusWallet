@@ -119,37 +119,41 @@
                                 android:text="@={tranVM.total}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.chip.ChipGroup
-                            android:id="@+id/tran_type_chips"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/tranChipGroupToLayoutMargin"
-                            app:chipSpacingHorizontal="16dp"
-                            app:layout_constraintEnd_toEndOf="parent"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/tran_type_expense"
+                            style="@style/Transaction.Button.Outlined"
+                            android:layout_width="0dp"
+                            android:layout_marginTop="@dimen/tranButtonToLayoutMargin"
+                            android:layout_marginEnd="4dp"
+                            android:onClick="@{() -> tranVM.typeButtonOC()}"
+                            android:text="@string/type_expense"
+                            android:textColor="@{tranVM.typeSelected ? @color/colorButtonUnselected : @color/colorButtonBackground}"
+                            app:layout_constraintEnd_toStartOf="@id/tran_type_income"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_total_layout"
-                            app:selectedChipId="@={tranVM.checkedChip}"
-                            app:singleLine="true"
-                            app:singleSelection="true">
+                            app:strokeColor="@{tranVM.typeSelected ? @color/colorButtonUnselected : @color/colorButtonBackground}" />
 
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/tran_expense_chip"
-                                style="@style/Transaction.Chip.Outlined"
-                                android:text="@string/type_expense" />
-
-                            <com.google.android.material.chip.Chip
-                                android:id="@+id/tran_income_chip"
-                                style="@style/Transaction.Chip.Outlined"
-                                android:text="@string/type_income" />
-                        </com.google.android.material.chip.ChipGroup>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/tran_type_income"
+                            style="@style/Transaction.Button.Outlined"
+                            android:layout_width="0dp"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginTop="@dimen/tranButtonToLayoutMargin"
+                            android:onClick="@{() -> tranVM.typeButtonOC()}"
+                            android:text="@string/type_income"
+                            android:textColor="@{tranVM.typeSelected ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/tran_type_expense"
+                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout"
+                            app:strokeColor="@{tranVM.typeSelected ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_expense_cat_layout"
                             style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
-                            android:layout_marginTop="@dimen/tranLayoutToChipGroupMargin"
-                            android:visibility="@{tranVM.checkedChip == R.id.tran_expense_chip ? View.VISIBLE : View.INVISIBLE}"
+                            android:layout_marginTop="@dimen/tranLayoutToButtonMargin"
+                            android:visibility="@{tranVM.typeSelected ? View.INVISIBLE : View.VISIBLE}"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_expense">
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_expense_cat"
@@ -161,10 +165,10 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_income_cat_layout"
                             style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
-                            android:layout_marginTop="@dimen/tranLayoutToChipGroupMargin"
-                            android:visibility="@{tranVM.checkedChip == R.id.tran_income_chip ? View.VISIBLE : View.INVISIBLE}"
+                            android:layout_marginTop="@dimen/tranLayoutToButtonMargin"
+                            android:visibility="@{tranVM.typeSelected ? View.VISIBLE : View.INVISIBLE}"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_type_chips">
+                            app:layout_constraintTop_toBottomOf="@+id/tran_type_expense">
 
                             <AutoCompleteTextView
                                 android:id="@+id/tran_income_cat"
@@ -192,23 +196,20 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/tran_repeat"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            style="@style/Transaction.Button.Outlined"
                             android:layout_width="match_parent"
-                            android:layout_height="70dp"
-                            android:layout_marginTop="@dimen/tranButtonToLayout"
+                            android:layout_marginTop="@dimen/tranButtonToLayoutMargin"
                             android:text="@string/transaction_repeat"
                             android:textColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                            android:textSize="@dimen/textSizeTranButton"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout"
-                            app:strokeColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                            app:strokeWidth="2dp" />
+                            app:strokeColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_period_layout"
                             style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
                             android:layout_width="0dp"
-                            android:layout_marginTop="@dimen/tranLayoutToButton"
+                            android:layout_marginTop="@dimen/tranLayoutToButtonMargin"
                             android:layout_marginEnd="4dp"
                             android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
                             app:layout_constraintEnd_toStartOf="@+id/tran_frequency_layout"
@@ -227,7 +228,7 @@
                             style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
                             android:layout_width="0dp"
                             android:layout_marginStart="4dp"
-                            android:layout_marginTop="@dimen/tranLayoutToButton"
+                            android:layout_marginTop="@dimen/tranLayoutToButtonMargin"
                             android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
                             app:counterMaxLength="@integer/maxLengthFrequency"
                             app:layout_constraintEnd_toEndOf="parent"
