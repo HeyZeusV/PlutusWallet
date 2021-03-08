@@ -92,7 +92,7 @@
     <string name="accounts">Accounts</string>
     <string name="account_new">New Account</string>
     <string name="category_new">New Category</string>
-    <string name="transaction_new">New Transaction</string>
+    <string name="cfl_menu_transaction">New Transaction</string>
     <string name="transaction_save">Save Transaction</string>
     <string name="transaction">Transaction</string>
     <string name="cfl_overview">Overview</string>
@@ -105,4 +105,5 @@
     <string name="preferences_theme_system">System</string>
     <string name="alert_dialog_input_error">Can\'t be blank!</string>
     <string name="transaction_period">Period</string>
+    <string name="cfl_menu_filter">Edit Filter</string>
 </resources>

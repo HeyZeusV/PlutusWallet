@@ -14,7 +14,7 @@
 
     <com.google.android.material.card.MaterialCardView
         style="@style/CardView.Base"
-        android:layout_marginStart="@dimen/cardSharedMargin"
+        android:layout_marginStart="@dimen/cardFullMargin"
         android:layout_marginTop="@dimen/cardFullMargin"
         android:layout_marginEnd="@dimen/cardFullMargin"
         android:layout_marginBottom="@dimen/cardSharedMargin">

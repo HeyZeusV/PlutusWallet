@@ -79,7 +79,7 @@
     <string name="accounts">हिसाब किताब</string>
     <string name="account_new">नया खाता</string>
     <string name="category_new">नई श्रेणी</string>
-    <string name="transaction_new">नया लेन-देन</string>
+    <string name="cfl_menu_transaction">नया लेन-देन</string>
     <string name="transaction_save">लेन-देन सहेजें</string>
     <string name="transaction">लेन-देन</string>
     <string name="cfl_overview">अवलोकन</string>
@@ -93,4 +93,5 @@
     <string name="alert_dialog_input_error">खाली नहीं हो सकता!</string>
     <string name="transaction_period">अवधि</string>
     <string name="transaction_memo">मेमो</string>
+    <string name="cfl_menu_filter">फ़िल्टर संपादित करें</string>
 </resources>

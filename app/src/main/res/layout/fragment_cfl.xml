@@ -25,6 +25,7 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cfl_constraint"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorBackground"
@@ -33,27 +34,13 @@
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_chart_container"
                 android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:defaultNavHost="false"
                 app:layout_constraintHeight_percent="0.40"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.60"
                 app:navGraph="@navigation/chart_nav_graph" />
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragment_filter_container"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:defaultNavHost="false"
-                app:layout_constraintHeight_percent="0.40"
-                app:layout_constraintStart_toEndOf="@id/fragment_chart_container"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.40"
-                app:navGraph="@navigation/filter_nav_graph" />
-
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fragment_tranlist_container"
@@ -61,10 +48,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:defaultNavHost="false"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_percent="0.60"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fragment_chart_container"
                 app:navGraph="@navigation/list_nav_graph" />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragment_filter_container"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:defaultNavHost="false"
+                app:layout_constraintHeight_percent="0.70"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:navGraph="@navigation/filter_nav_graph" />
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/cfl_filter_anchor"
+                style="@style/SnackBar.Anchor"
+                android:layout_height="0dp"
+                android:layout_marginBottom="0dp"
+                app:layout_constraintHeight_percent=".30"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:ignore="MissingConstraints" />
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:id="@+id/cfl_anchor"
