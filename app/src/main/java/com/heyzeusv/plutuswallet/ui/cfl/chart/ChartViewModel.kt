@@ -155,7 +155,7 @@ class ChartViewModel @ViewModelInject constructor(
 
         return when {
             fAccount && fDate -> tranRepo.getLdCtAD(fAccountName, fStart, fEnd)
-            fAccount -> tranRepo.getLdCtA(fAccountName)
+            fAccount -> tranRepo.getLdCtA(listOf(fAccountName))
             fDate -> tranRepo.getLdCtD(fStart, fEnd)
             else -> tranRepo.getLdCt()
         }

@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.databinding.FragmentFilterBinding
@@ -83,6 +84,36 @@ class FilterFragment : Fragment() {
                 )
             }
             dateDialog.show()
+        })
+
+        filterVM.accList.observe(viewLifecycleOwner, { accounts: MutableList<String> ->
+            // don't attempt to create Chip if list hasn't been loaded
+            if (accounts.size > 0) {
+                binding.filterAccountChips.apply {
+                    // remove previous children so there won't be repeats
+                    if (this.childCount > 0) this.removeAllViews()
+                    // go through list and create Chip for each account
+                    accounts.forEachIndexed { index, account ->
+                        val chip: Chip =
+                            LayoutInflater.from(context).inflate(R.layout.chip, this, false) as Chip
+                        chip.id = index
+                        // adds empty space to be used as padding for Chip if too short
+                        chip.text = when {
+                            account.length < 2 -> "   $account   "
+                            account.length < 4 -> "  $account  "
+                            else -> account
+                        }
+                        // adds/removes from selected list
+                        chip.setOnCheckedChangeListener { _, checked: Boolean ->
+                            filterVM.accSelectedChips.apply {
+                                if (checked) add(account) else remove(account)
+                            }
+                        }
+                        // add to ChipGroup
+                        this.addView(chip)
+                    }
+                }
+            }
         })
     }
 }

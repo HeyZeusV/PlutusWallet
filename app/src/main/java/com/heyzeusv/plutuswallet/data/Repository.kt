@@ -73,7 +73,7 @@ interface Repository {
 
     fun getLdCt(): LiveData<List<CategoryTotals>>
 
-    fun getLdCtA(account: String): LiveData<List<CategoryTotals>>
+    fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>>
 
     fun getLdCtAD(account: String, start: Date, end: Date): LiveData<List<CategoryTotals>>
 
@@ -81,7 +81,7 @@ interface Repository {
 
     fun getLdIvt(): LiveData<List<ItemViewTransaction>>
 
-    fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtAD(account: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
 

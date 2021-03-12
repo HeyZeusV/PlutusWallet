@@ -3,6 +3,7 @@
     <dimen name="textSizeBase">18sp</dimen>
     <dimen name="textSizeFilterButton">16sp</dimen>
     <dimen name="textSizeTranListViewHolder">14sp</dimen>
+    <dimen name="textSizeChip">16sp</dimen>
 
     <!-- CardView dimensions -->
     <dimen name="cardCornerRadius">4dp</dimen>

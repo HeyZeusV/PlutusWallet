@@ -106,7 +106,7 @@ class TransactionRepository @Inject constructor(
 
     override fun getLdCt(): LiveData<List<CategoryTotals>> = transactionDao.getLdCt()
 
-    override fun getLdCtA(account: String): LiveData<List<CategoryTotals>> = transactionDao.getLdCtA(account)
+    override fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>> = transactionDao.getLdCtA(accounts)
 
     override fun getLdCtAD(account: String, start: Date, end: Date): LiveData<List<CategoryTotals>> =
         transactionDao.getLdCtAD(account, start, end)
@@ -116,8 +116,8 @@ class TransactionRepository @Inject constructor(
 
     override fun getLdIvt(): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvt()
 
-    override fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdIvtA(account)
+    override fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtA(accounts)
 
     override fun getLdIvtAD(account: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
         transactionDao.getLdIvtAD(account, start, end)

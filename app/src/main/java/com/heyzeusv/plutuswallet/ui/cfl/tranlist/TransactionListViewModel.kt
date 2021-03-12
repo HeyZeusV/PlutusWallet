@@ -252,7 +252,7 @@ class TransactionListViewModel @ViewModelInject constructor(
             account && category && categoryName == "All" -> tranRepo.getLdIvtAT(accountName, type)
             account && category -> tranRepo.getLdIvtATC(accountName, type, categoryName)
             account && date -> tranRepo.getLdIvtAD(accountName, start, end)
-            account -> tranRepo.getLdIvtA(accountName)
+            account -> tranRepo.getLdIvtA(listOf(accountName))
             category && date && categoryName == "All" -> tranRepo.getLdIvtTD(type, start, end)
             category && date -> tranRepo.getLdIvtTCD(type, categoryName, start, end)
             category && categoryName == "All" -> tranRepo.getLdIvtT(type)
