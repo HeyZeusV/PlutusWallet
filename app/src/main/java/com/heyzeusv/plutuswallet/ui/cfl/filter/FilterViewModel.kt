@@ -47,12 +47,14 @@ class FilterViewModel @ViewModelInject constructor(
 
     // Button status
     val accFilter: MutableLiveData<Boolean> = MutableLiveData(false)
+    val catFilter: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // Chip status
     val accSelectedChips: MutableList<String> = mutableListOf()
+    val exCatSelectedChips: MutableList<String> = mutableListOf()
+    val inCatSelectedChips: MutableList<String> = mutableListOf()
 
     // CheckBox status
-    val catCheck: MutableLiveData<Boolean> = MutableLiveData(false)
     val dateCheck: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val _dateErrorEvent = MutableLiveData<Event<Boolean>>()
@@ -95,6 +97,14 @@ class FilterViewModel @ViewModelInject constructor(
     fun accountFilterOC() {
 
         accFilter.value = !accFilter.value!!
+    }
+
+    /**
+     *  onClick for category filter Button. Switches value of catFilter Boolean.
+     */
+    fun categoryFilterOC() {
+
+        catFilter.value = !catFilter.value!!
     }
 
     /**
@@ -156,13 +166,13 @@ class FilterViewModel @ViewModelInject constructor(
 
             // updating MutableLiveData value in ViewModel
             cflTInfo = TransactionInfo(
-                accFilter.value!!, catCheck.value!!, dateCheck.value!!,
+                accFilter.value!!, catFilter.value!!, dateCheck.value!!,
                 type, account.value!!, cat,
                 startDate.value!!, endDate.value!!
             )
             // if all filters are unchecked
             if (!accFilter.value!!
-                && !catCheck.value!!
+                && !catFilter.value!!
                 && !dateCheck.value!!
             ) {
                 resetFilter()

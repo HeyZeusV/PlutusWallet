@@ -6,6 +6,10 @@
     style="@style/Widget.MaterialComponents.Chip.Filter"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:textColor="@color/chip_text_color"
     android:textSize="@dimen/textSizeChip"
     app:checkedIconEnabled="false"
+    app:chipBackgroundColor="@color/chip_bg_color"
+    app:chipStrokeColor="@color/chip_stroke_color"
+    app:chipStrokeWidth="1dp"
     tools:text="Chip" />

@@ -12,12 +12,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.databinding.FragmentFilterBinding
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.EventObserver
 import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
+import com.heyzeusv.plutuswallet.util.addAllUnique
+import com.heyzeusv.plutuswallet.util.checkAll
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -89,31 +92,71 @@ class FilterFragment : Fragment() {
         filterVM.accList.observe(viewLifecycleOwner, { accounts: MutableList<String> ->
             // don't attempt to create Chip if list hasn't been loaded
             if (accounts.size > 0) {
-                binding.filterAccountChips.apply {
-                    // remove previous children so there won't be repeats
-                    if (this.childCount > 0) this.removeAllViews()
-                    // go through list and create Chip for each account
-                    accounts.forEachIndexed { index, account ->
-                        val chip: Chip =
-                            LayoutInflater.from(context).inflate(R.layout.chip, this, false) as Chip
-                        chip.id = index
-                        // adds empty space to be used as padding for Chip if too short
-                        chip.text = when {
-                            account.length < 2 -> "   $account   "
-                            account.length < 4 -> "  $account  "
-                            else -> account
-                        }
-                        // adds/removes from selected list
-                        chip.setOnCheckedChangeListener { _, checked: Boolean ->
-                            filterVM.accSelectedChips.apply {
-                                if (checked) add(account) else remove(account)
-                            }
-                        }
-                        // add to ChipGroup
-                        this.addView(chip)
-                    }
-                }
+                createChips(binding.filterAccountChips, accounts, filterVM.accSelectedChips)
             }
         })
+
+        filterVM.exCatList.observe(viewLifecycleOwner, {categories: MutableList<String> ->
+            // don't attempt to create Chip if list hasn't been loaded
+            if (categories.size > 0) {
+                createChips(binding.filterExpenseChips, categories, filterVM.exCatSelectedChips)
+            }
+        })
+
+        filterVM.inCatList.observe(viewLifecycleOwner, {categories: MutableList<String> ->
+            // don't attempt to create Chip if list hasn't been loaded
+            if (categories.size > 0) {
+                createChips(binding.filterIncomeChips, categories, filterVM.inCatSelectedChips)
+            }
+        })
+    }
+
+    /**
+     *  Creates Chips using [entryList] and adds them to [parent] ChipGroup. When Chips are
+     *  checked/unchecked, they will be added/removed from given [selectedList].
+     */
+    private fun createChips(
+        parent: ChipGroup,
+        entryList: MutableList<String>,
+        selectedList: MutableList<String>
+    ) {
+
+        parent.apply {
+            // remove previous children so there won't be repeats
+            if (this.childCount > 0) this.removeAllViews()
+            // go through list and create Chip for each category
+            entryList.forEachIndexed { index: Int, entry: String ->
+                val chip: Chip =
+                    LayoutInflater.from(context).inflate(R.layout.chip, this, false) as Chip
+                chip.id = index
+                // adds empty space to be used as padding as Chip if too short
+                chip.text = when {
+                    entry.length < 2 -> "   $entry   "
+                    entry.length < 4 -> "  $entry  "
+                    else -> entry
+                }
+                // adds/removes from selected list
+                chip.setOnCheckedChangeListener { _, checked: Boolean ->
+                    selectedList.apply {
+                        // translated "All" Chip only in category ChipGroups
+                        if (entry == getString(R.string.category_all)) {
+                            // add all entries to list and check all Chips
+                            if (checked) {
+                                addAllUnique(entryList)
+                                parent.checkAll()
+                            // remove all entries from list and uncheck all Chips
+                            } else {
+                                clear()
+                                parent.clearCheck()
+                            }
+                        } else {
+                            if (checked) add(entry) else remove(entry)
+                        }
+                    }
+                }
+                // add to ChipGroup
+                this.addView(chip)
+            }
+        }
     }
 }
