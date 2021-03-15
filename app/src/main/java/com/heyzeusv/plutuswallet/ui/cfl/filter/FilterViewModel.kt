@@ -150,24 +150,24 @@ class FilterViewModel @ViewModelInject constructor(
         ) {
             _dateErrorEvent.value = Event(true)
         } else {
-            var cat: String
+            val cats: List<String>
             val type: String
             // sets type and category applied
             if (typeVisible.value!!) {
                 type = "Expense"
-                cat = exCategory.value!!
+                cats = exCatSelectedChips
             } else {
                 type = "Income"
-                cat = inCategory.value!!
+                cats = inCatSelectedChips
             }
 
             // translates "All"
-            if (cat == all) cat = "All"
+            if (cats.contains(all)) cats[0] = "All"
 
             // updating MutableLiveData value in ViewModel
             cflTInfo = TransactionInfo(
                 accFilter.value!!, catFilter.value!!, dateCheck.value!!,
-                type, account.value!!, cat,
+                type, accSelectedChips, cats,
                 startDate.value!!, endDate.value!!
             )
             // if all filters are unchecked

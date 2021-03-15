@@ -20,14 +20,12 @@ class CFLViewModel : ViewModel() {
     var filterChanged: Boolean = false
 
     init {
-
         // will only be used at app start up which will show all Transactions
         tInfoLiveData.value = TransactionInfo()
     }
 
     /**
      *  Updates tInfoLiveData with [newValue] which in turn will set off any Observers attached.
-
      */
     fun updateTInfo(newValue: TransactionInfo) {
 

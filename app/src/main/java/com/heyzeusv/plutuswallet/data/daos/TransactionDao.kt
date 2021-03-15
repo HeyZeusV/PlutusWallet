@@ -119,14 +119,14 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
 
     /**
-     *  Returns LD of list of CT of given [account] and between given [start]/[end] dates.
+     *  Returns LD of list of CT of given [accounts] and between given [start]/[end] dates.
      */
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
-              WHERE account=(:account) AND date BETWEEN :start AND :end
+              WHERE account IN (:accounts) AND date BETWEEN :start AND :end
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getLdCtAD(account: String, start: Date, end: Date): LiveData<List<CategoryTotals>>
+    abstract fun getLdCtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<CategoryTotals>>
 
     /**
      *  Returns LD of list of IVT.
@@ -146,67 +146,67 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>
 
     /**
-     *  Returns LD of list of IVT of given [account] and between given [start]/[end] dates.
+     *  Returns LD of list of IVT of given [accounts] and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
-              WHERE account=(:account) AND date BETWEEN :start AND :end
+              WHERE account IN (:accounts) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
     abstract fun getLdIvtAD(
-        account: String,
+        accounts: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>
 
     /**
-     *  Returns LD of list of IVT of given [account] and [type].
+     *  Returns LD of list of IVT of given [accounts] and [type].
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
-              WHERE account=(:account) AND type=(:type)
+              WHERE account IN (:accounts) AND type=(:type)
               ORDER BY date ASC""")
-    abstract fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<ItemViewTransaction>>
 
     /**
-     *  Returns LD of list of IVT of given [account], [type], and [category].
+     *  Returns LD of list of IVT of given [accounts], [type], and [categories].
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
-              WHERE account=(:account) AND type=(:type) AND category=(:category)
+              WHERE account IN (:accounts) AND type=(:type) AND category IN (:categories)
               ORDER BY date ASC""")
     abstract fun getLdIvtATC(
-        account: String,
+        accounts: List<String>,
         type: String,
-        category: String
+        categories: List<String>
     ): LiveData<List<ItemViewTransaction>>
 
     /**
-     *  Returns LD of list of IVT of given [account], [type], and between given [start]/[end] dates.
+     *  Returns LD of list of IVT of given [accounts], [type], and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
-              WHERE account=(:account) AND type=(:type) AND date BETWEEN :start AND :end
+              WHERE account IN (:accounts) AND type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
     abstract fun getLdIvtATD(
-        account: String,
+        accounts: List<String>,
         type: String,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>
 
     /**
-     *  Returns LD of list of IVT of given [account], [type], [category],
+     *  Returns LD of list of IVT of given [accounts], [type], [categories],
      *  and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
-              WHERE account=(:account) AND type=(:type) 
-                AND category=(:category) AND date BETWEEN :start AND :end
+              WHERE account IN (:accounts) AND type=(:type) 
+                AND category IN (:categories) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
     abstract fun getLdIvtATCD(
-        account: String,
+        accounts: List<String>,
         type: String,
-        category: String,
+        categories: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>
@@ -230,25 +230,25 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
 
     /**
-     *  Returns LD of list of IVT of given [type] and [category].
+     *  Returns LD of list of IVT of given [type] and [categories].
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
-              WHERE type=(:type) AND category=(:category)
+              WHERE type=(:type) AND category IN (:categories)
               ORDER BY date ASC""")
-    abstract fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtTC(type: String, categories: List<String>): LiveData<List<ItemViewTransaction>>
 
     /**
-     *  Returns LD of list of IVT of given [type], [category],
+     *  Returns LD of list of IVT of given [type], [categories],
      *  and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
-              WHERE type=(:type) AND category=(:category) AND date BETWEEN :start AND :end
+              WHERE type=(:type) AND category IN (:categories) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
     abstract fun getLdIvtTCD(
         type: String,
-        category: String,
+        categories: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>

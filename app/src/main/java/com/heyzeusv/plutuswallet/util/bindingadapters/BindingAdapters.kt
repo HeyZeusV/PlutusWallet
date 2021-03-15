@@ -13,6 +13,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
+import com.github.mikephil.charting.highlight.Highlight
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ItemViewChart
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartAdapter
@@ -60,8 +61,8 @@ fun PieChart.setUpChart(ivc: ItemViewChart) {
     // colors used for slices
     dataSet.colors = ivc.colorArray
     // size of highlighted area
-    if (ivc.fCategory == true && ivc.fType == type && ivc.fCatName != "All") {
-        dataSet.selectionShift = 7.5f
+    if (ivc.fCategory && ivc.fType == type && !ivc.fCatName.contains("All")) {
+        dataSet.selectionShift = 10f
     } else {
         dataSet.selectionShift = 0.0f
     }
@@ -94,14 +95,17 @@ fun PieChart.setUpChart(ivc: ItemViewChart) {
     setDrawCenterText(true)
     // true = use percent values
     setUsePercentValues(true)
+    val highlights: MutableList<Highlight> = mutableListOf()
     // highlights Category selected if it exists with current filters applied
-    if (ivc.fCategory == true && ivc.fType == type && ivc.fCatName != "All") {
-        // finds position of Category selected in FilterFragment in ctList
-        val position: Int = ivc.ctList.indexOfFirst { it.category == ivc.fCatName }
-        // -1 = doesn't exist
-        if (position != -1) highlightValue(position.toFloat(), 0)
-
+    if (ivc.fCategory && ivc.fType == type && !ivc.fCatName.contains("All")) {
+        for (cat: String in ivc.fCatName) {
+            // finds position of Category selected in FilterFragment in ctList
+            val position: Int = ivc.ctList.indexOfFirst { it.category == cat }
+            // -1 = doesn't exist
+            if (position != -1) highlights.add(Highlight(position.toFloat(), 0, 0))
+        }
     }
+    highlightValues(highlights.toTypedArray())
     // refreshes PieChart
     invalidate()
 }

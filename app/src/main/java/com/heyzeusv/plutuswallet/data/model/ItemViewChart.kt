@@ -17,7 +17,7 @@ data class ItemViewChart(
     val typeTrans: String = "",
     var totalText: String = "",
     val colorArray: List<Int> = emptyList(),
-    val fCategory: Boolean? = null,
-    val fCatName: String? = null,
-    val fType: String? = null
+    val fCategory: Boolean = false,
+    val fCatName: List<String> = listOf(""),
+    val fType: String = ""
 )

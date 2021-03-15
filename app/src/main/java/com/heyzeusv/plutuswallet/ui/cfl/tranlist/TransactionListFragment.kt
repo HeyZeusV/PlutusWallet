@@ -83,7 +83,7 @@ class TransactionListFragment : BaseFragment() {
         cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: TransactionInfo ->
             listVM.ivtList = listVM.filteredTransactionList(
                 tInfo.account, tInfo.category, tInfo.date,
-                tInfo.type, tInfo.accountName, tInfo.categoryName, tInfo.start, tInfo.end
+                tInfo.type, tInfo.accountNames, tInfo.categoryNames, tInfo.start, tInfo.end
             )
 
             listVM.ivtList.observe(viewLifecycleOwner, { transactions: List<ItemViewTransaction> ->
