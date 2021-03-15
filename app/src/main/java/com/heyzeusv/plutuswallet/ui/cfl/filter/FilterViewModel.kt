@@ -10,6 +10,7 @@ import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.launch
+import java.text.DateFormat
 import java.util.Date
 
 private const val MIDNIGHT_MILLI = 86399999
@@ -41,21 +42,22 @@ class FilterViewModel @ViewModelInject constructor(
     val inCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
     // Date values
-    val startDate: MutableLiveData<Date> = MutableLiveData(DateUtils.startOfDay(Date()))
-    val endDate: MutableLiveData<Date> =
-        MutableLiveData(Date(startDate.value!!.time + MIDNIGHT_MILLI))
+    var startDate: Date = DateUtils.startOfDay(Date())
+    var endDate: Date = Date(startDate.time + MIDNIGHT_MILLI)
+
+    // Date string values
+    val startDateLD: MutableLiveData<String> = MutableLiveData("")
+    val endDateLD: MutableLiveData<String> = MutableLiveData("")
 
     // Button status
     val accFilter: MutableLiveData<Boolean> = MutableLiveData(false)
     val catFilter: MutableLiveData<Boolean> = MutableLiveData(false)
+    val dateFilter: MutableLiveData<Boolean> = MutableLiveData(false)
 
     // Chip status
     val accSelectedChips: MutableList<String> = mutableListOf()
     val exCatSelectedChips: MutableList<String> = mutableListOf()
     val inCatSelectedChips: MutableList<String> = mutableListOf()
-
-    // CheckBox status
-    val dateCheck: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val _dateErrorEvent = MutableLiveData<Event<Boolean>>()
     val dateErrorEvent: LiveData<Event<Boolean>> = _dateErrorEvent
@@ -108,6 +110,14 @@ class FilterViewModel @ViewModelInject constructor(
     }
 
     /**
+     *  onClick for date filter Button. Switches value of dateFilterBoolean.
+     */
+    fun dateFilterOC() {
+
+        dateFilter.value = !dateFilter.value!!
+    }
+
+    /**
      *  Changes what Transaction type is visible.
      */
     fun typeVisibleOC() {
@@ -128,7 +138,8 @@ class FilterViewModel @ViewModelInject constructor(
      */
     fun startDateSelected(newDate: Date) {
 
-        startDate.value = newDate
+        startDate = newDate
+        startDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
     }
 
     /**
@@ -136,7 +147,8 @@ class FilterViewModel @ViewModelInject constructor(
      */
     fun endDateSelected(newDate: Date) {
 
-        endDate.value = Date(newDate.time + MIDNIGHT_MILLI)
+        endDate = Date(newDate.time + MIDNIGHT_MILLI)
+        endDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
     }
 
     /**
@@ -145,8 +157,8 @@ class FilterViewModel @ViewModelInject constructor(
     fun applyFilterOC() {
 
         // startDate must be before endDate else it displays warning and doesn't apply filters
-        if (startDate.value!! > endDate.value!!
-            && dateCheck.value!!
+        if (startDate > endDate
+            && dateFilter.value!!
         ) {
             _dateErrorEvent.value = Event(true)
         } else {
@@ -166,14 +178,14 @@ class FilterViewModel @ViewModelInject constructor(
 
             // updating MutableLiveData value in ViewModel
             cflTInfo = TransactionInfo(
-                accFilter.value!!, catFilter.value!!, dateCheck.value!!,
+                accFilter.value!!, catFilter.value!!, dateFilter.value!!,
                 type, accSelectedChips, cats,
-                startDate.value!!, endDate.value!!
+                startDate, endDate
             )
             // if all filters are unchecked
             if (!accFilter.value!!
                 && !catFilter.value!!
-                && !dateCheck.value!!
+                && !dateFilter.value!!
             ) {
                 resetFilter()
             }
@@ -187,8 +199,10 @@ class FilterViewModel @ViewModelInject constructor(
     private fun resetFilter() {
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDate.value = DateUtils.startOfDay(Date())
-        endDate.value = Date(startDate.value!!.time + MIDNIGHT_MILLI)
+        startDate = DateUtils.startOfDay(Date())
+        endDate = Date(startDate.time + MIDNIGHT_MILLI)
+        startDateLD.value = ""
+        endDateLD.value = ""
 
         // resets type Button and Spinner selections
         exCategory.value = all

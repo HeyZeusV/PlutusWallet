@@ -42,6 +42,7 @@
 
     <!-- FilterFragment margins -->
     <dimen name="filterDefaultMarginStartEnd">6dp</dimen>
+    <dimen name="filterChildMarginsStartEnd">16dp</dimen>
     <dimen name="filterTextViewMarginEnd">44dp</dimen>
 
     <!-- TransactionFragment -->

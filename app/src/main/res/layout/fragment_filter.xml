@@ -56,9 +56,9 @@
                         android:id="@+id/filter_account_scrollview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterDefaultMarginStartEnd"
+                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
                         android:layout_marginTop="14dp"
-                        android:layout_marginEnd="@dimen/filterDefaultMarginStartEnd"
+                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
                         android:background="@drawable/filter_scrollview_bg"
                         android:scrollbars="vertical"
                         android:visibility="@{filterVM.accFilter ? View.VISIBLE : View.GONE}"
@@ -95,9 +95,9 @@
                         style="@style/Transaction.Button.Outlined"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterDefaultMarginStartEnd"
+                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="@dimen/filterDefaultMarginStartEnd"
+                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
                         android:onClick="@{() -> filterVM.typeVisibleOC()}"
                         android:text="@{filterVM.typeVisible ? @string/type_expense : @string/type_income}"
                         android:textColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
@@ -111,9 +111,9 @@
                         android:id="@+id/filter_category_scrollview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterDefaultMarginStartEnd"
+                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
                         android:layout_marginTop="14dp"
-                        android:layout_marginEnd="@dimen/filterDefaultMarginStartEnd"
+                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
                         android:background="@drawable/filter_scrollview_bg"
                         android:scrollbars="vertical"
                         android:visibility="@{filterVM.catFilter ? View.VISIBLE : View.GONE}"
@@ -145,39 +145,53 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView>
 
-                    <TextView
-                        android:id="@+id/dateTextView"
-                        style="@style/Filter.TextView"
-                        android:layout_marginTop="36dp"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/filter_date"
+                        style="@style/Transaction.Button.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/filterDefaultMarginStartEnd"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="@dimen/filterDefaultMarginStartEnd"
+                        android:onClick="@{() -> filterVM.dateFilterOC()}"
                         android:text="@string/transaction_date"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_category_scrollview" />
-
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/filter_date_check"
-                        style="@style/CheckBox"
-                        android:layout_marginTop="25dp"
-                        android:checked="@={filterVM.dateCheck}"
-                        android:translationX="5dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_category_scrollview" />
+                        android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/filter_category_scrollview"
+                        app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/filter_start_date"
-                        style="@style/Filter.Button.Outlined"
+                        style="@style/Transaction.Button.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
                         android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
-                        android:text="@{filterVM.dateCheck ? DateFormat.getDateInstance(DateFormat.SHORT).format(filterVM.startDate) : @string/filter_start}"
-                        android:translationY="8dp"
-                        app:isEnabled="@{filterVM.dateCheck}"
-                        app:layout_constraintTop_toBottomOf="@+id/dateTextView"
+                        android:text="@{filterVM.startDateLD == `` ? @string/filter_start : filterVM.startDateLD}"
+                        android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                        android:visibility="@{filterVM.dateFilter ? View.VISIBLE : View.GONE}"
+                        app:isEnabled="@{filterVM.dateFilter}"
+                        app:layout_constraintTop_toBottomOf="@+id/filter_date"
+                        app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
                         tools:text="Start Date" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/filter_end_date"
-                        style="@style/Filter.Button.Outlined"
+                        style="@style/Transaction.Button.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
                         android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
-                        android:text="@{filterVM.dateCheck ? DateFormat.getDateInstance(DateFormat.SHORT).format(filterVM.endDate) : @string/filter_end}"
-                        app:isEnabled="@{filterVM.dateCheck}"
+                        android:text="@{filterVM.endDateLD == `` ? @string/filter_end : filterVM.endDateLD}"
+                        android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                        android:visibility="@{filterVM.dateFilter ? View.VISIBLE : View.GONE}"
+                        app:isEnabled="@{filterVM.dateFilter}"
                         app:layout_constraintTop_toBottomOf="@+id/filter_start_date"
+                        app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
                         tools:text="End Date" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </ScrollView>
@@ -188,7 +202,7 @@
                 android:layout_marginStart="@dimen/filterDefaultMarginStartEnd"
                 android:layout_marginEnd="@dimen/filterDefaultMarginStartEnd"
                 android:onClick="@{() -> filterVM.applyFilterOC()}"
-                android:text="@{(!filterVM.accFilter &amp;&amp; !filterVM.catFilter &amp;&amp; !filterVM.dateCheck) ? @string/filter_reset : @string/filter_apply}"
+                android:text="@{(!filterVM.accFilter &amp;&amp; !filterVM.catFilter &amp;&amp; !filterVM.dateFilter) ? @string/filter_reset : @string/filter_apply}"
                 android:textSize="@dimen/textSizeFilterButton"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="Reset" />
