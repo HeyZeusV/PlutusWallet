@@ -60,24 +60,13 @@
                 android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
                 android:elevation="2dp"
                 app:defaultNavHost="false"
                 app:layout_constraintBottom_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent="0.70"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintHeight_percent="0.80"
                 app:navGraph="@navigation/filter_nav_graph" />
-
-<!--            <androidx.coordinatorlayout.widget.CoordinatorLayout-->
-<!--                android:id="@+id/cfl_filter_anchor"-->
-<!--                style="@style/SnackBar.Anchor"-->
-<!--                android:layout_height="0dp"-->
-<!--                android:layout_marginBottom="0dp"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintHeight_percent="0.30"-->
-<!--                tools:ignore="MissingConstraints" />-->
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:id="@+id/cfl_anchor"
