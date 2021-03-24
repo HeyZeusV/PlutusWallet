@@ -53,6 +53,7 @@ class CFLFragment : Fragment() {
         // clicking outside the filter area will close it
         binding.cflFilterMask.setOnClickListener {
             binding.cflConstraint.transitionToStart()
+            filterShown = false
         }
 
         // handles menu selection
@@ -70,10 +71,10 @@ class CFLFragment : Fragment() {
                 R.id.cfl_edit_filter -> {
                     filterShown = if (filterShown) {
                         binding.cflConstraint.transitionToStart()
-                        !filterShown
+                        false
                     } else {
                         binding.cflConstraint.transitionToEnd()
-                        !filterShown
+                        true
                     }
                     true
                 }
@@ -82,6 +83,17 @@ class CFLFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        cflVM.tInfoLiveData.observe(viewLifecycleOwner, {
+            if (filterShown) {
+                binding.cflConstraint.transitionToStart()
+                filterShown = false
+            }
+        })
     }
 
     override fun onPause() {

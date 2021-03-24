@@ -60,6 +60,10 @@ class FilterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // used by SnackBars
+        val snackBarAnchor: CoordinatorLayout? =
+            parentFragment?.view?.rootView?.findViewById(R.id.cfl_anchor)
+
         filterVM.cflChange.observe(viewLifecycleOwner, EventObserver { change: Boolean ->
             // updates MutableLiveData, causing Chart/ListFragment refresh
             cflVM.updateTInfo(filterVM.cflTInfo)
@@ -90,13 +94,24 @@ class FilterFragment : Fragment() {
             }
         }
 
+        filterVM.noChipEvent.observe(viewLifecycleOwner, EventObserver {
+            val chipBar: Snackbar = Snackbar.make(
+                binding.root, if (it) {
+                    "Please select at least one account!!"
+                } else {
+                    "Please select at least one category!!"
+                }, Snackbar.LENGTH_SHORT
+            )
+            chipBar.anchorView = snackBarAnchor
+            chipBar.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSnackbarText))
+            chipBar.show()
+        })
+
         filterVM.dateErrorEvent.observe(viewLifecycleOwner, EventObserver {
-            val anchor: CoordinatorLayout? =
-                parentFragment?.view?.rootView?.findViewById(R.id.cfl_anchor)
             val dateBar: Snackbar = Snackbar.make(
                 binding.root, getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT
             )
-            dateBar.anchorView = anchor
+            dateBar.anchorView = snackBarAnchor
             dateBar.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSnackbarText))
             dateBar.show()
         })

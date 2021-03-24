@@ -59,6 +59,10 @@ class FilterViewModel @ViewModelInject constructor(
     val exCatSelectedChips: MutableList<String> = mutableListOf()
     val inCatSelectedChips: MutableList<String> = mutableListOf()
 
+    // Events
+    private val _noChipEvent = MutableLiveData<Event<Boolean>>()
+    val noChipEvent: LiveData<Event<Boolean>> = _noChipEvent
+
     private val _dateErrorEvent = MutableLiveData<Event<Boolean>>()
     val dateErrorEvent: LiveData<Event<Boolean>> = _dateErrorEvent
 
@@ -68,6 +72,7 @@ class FilterViewModel @ViewModelInject constructor(
     // used to pass TransactionInfo to CFLViewModel
     private val _cflChange = MutableLiveData<Event<Boolean>>()
     val cflChange: LiveData<Event<Boolean>> = _cflChange
+
     var cflTInfo: TransactionInfo = TransactionInfo()
 
     /**
@@ -140,40 +145,44 @@ class FilterViewModel @ViewModelInject constructor(
      */
     fun applyFilterOC() {
 
-        // startDate must be before endDate else it displays warning and doesn't apply filters
-        if (startDate > endDate
-            && dateFilter.value!!
-        ) {
-            _dateErrorEvent.value = Event(true)
-        } else {
-            val cats: List<String>
-            val type: String
-            // sets type and category applied
-            if (typeVisible.value!!) {
-                type = "Expense"
-                cats = exCatSelectedChips
-            } else {
-                type = "Income"
-                cats = inCatSelectedChips
-            }
+        when {
+            accFilter.value!! && accSelectedChips.isEmpty() -> _noChipEvent.value = Event(true)
+            catFilter.value!! && typeVisible.value!! && exCatSelectedChips.isEmpty() ->
+                _noChipEvent.value = Event(false)
+            catFilter.value!! && !typeVisible.value!! && inCatSelectedChips.isEmpty() ->
+                _noChipEvent.value = Event(false)
+            // startDate must be before endDate else it displays warning and doesn't apply filters
+            dateFilter.value!! && startDate > endDate -> _dateErrorEvent.value = Event(true)
+            else -> {
+                val cats: List<String>
+                val type: String
+                // sets type and category applied
+                if (typeVisible.value!!) {
+                    type = "Expense"
+                    cats = exCatSelectedChips
+                } else {
+                    type = "Income"
+                    cats = inCatSelectedChips
+                }
 
-            // translates "All"
-            if (cats.contains(all)) cats[0] = "All"
+                // translates "All"
+                if (cats.contains(all)) cats[0] = "All"
 
-            // updating MutableLiveData value in ViewModel
-            cflTInfo = TransactionInfo(
-                accFilter.value!!, catFilter.value!!, dateFilter.value!!,
-                type, accSelectedChips, cats,
-                startDate, endDate
-            )
-            // if all filters are unchecked
-            if (!accFilter.value!!
-                && !catFilter.value!!
-                && !dateFilter.value!!
-            ) {
-                resetFilter()
+                // updating MutableLiveData value in ViewModel
+                cflTInfo = TransactionInfo(
+                    accFilter.value!!, catFilter.value!!, dateFilter.value!!,
+                    type, accSelectedChips, cats,
+                    startDate, endDate
+                )
+                // if all filters are unchecked
+                if (!accFilter.value!!
+                    && !catFilter.value!!
+                    && !dateFilter.value!!
+                ) {
+                    resetFilter()
+                }
+                _cflChange.value = Event(true)
             }
-            _cflChange.value = Event(true)
         }
     }
 
