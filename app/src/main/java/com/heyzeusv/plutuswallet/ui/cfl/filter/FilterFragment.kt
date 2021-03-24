@@ -66,8 +66,33 @@ class FilterFragment : Fragment() {
             cflVM.filterChanged = change
         })
 
+        binding.filterCategory.setOnClickListener {
+            filterVM.catFilter.value = !filterVM.catFilter.value!!
+            if (filterVM.catFilter.value!!) {
+                // after a short delay, scroll down to show all children
+                binding.filterScroll.postDelayed({
+                    binding.filterScroll.smoothScrollBy(0, if (filterVM.typeVisible.value!!) {
+                        binding.filterExpenseChips.bottom
+                    } else {
+                        binding.filterIncomeChips.bottom
+                    })
+                }, 100)
+            }
+        }
+
+        binding.filterDate.setOnClickListener {
+            filterVM.dateFilter.value = !filterVM.dateFilter.value!!
+            if (filterVM.dateFilter.value!!) {
+                // after a short delay, scroll down to show all children
+                binding.filterScroll.postDelayed({
+                    binding.filterScroll.smoothScrollBy(0, binding.filterScroll.bottom)
+                }, 100)
+            }
+        }
+
         filterVM.dateErrorEvent.observe(viewLifecycleOwner, EventObserver {
-            val anchor = parentFragment?.view?.rootView?.findViewById<CoordinatorLayout>(R.id.cfl_anchor)
+            val anchor: CoordinatorLayout? =
+                parentFragment?.view?.rootView?.findViewById(R.id.cfl_anchor)
             val dateBar: Snackbar = Snackbar.make(
                 binding.root, getString(R.string.filter_date_warning), Snackbar.LENGTH_SHORT
             )

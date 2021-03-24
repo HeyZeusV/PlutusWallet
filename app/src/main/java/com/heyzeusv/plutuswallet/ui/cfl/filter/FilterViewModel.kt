@@ -102,22 +102,6 @@ class FilterViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  onClick for category filter Button. Switches value of catFilter Boolean.
-     */
-    fun categoryFilterOC() {
-
-        catFilter.value = !catFilter.value!!
-    }
-
-    /**
-     *  onClick for date filter Button. Switches value of dateFilterBoolean.
-     */
-    fun dateFilterOC() {
-
-        dateFilter.value = !dateFilter.value!!
-    }
-
-    /**
      *  Changes what Transaction type is visible.
      */
     fun typeVisibleOC() {

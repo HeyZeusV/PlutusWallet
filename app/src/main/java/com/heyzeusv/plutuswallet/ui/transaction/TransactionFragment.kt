@@ -153,9 +153,8 @@ class TransactionFragment : BaseFragment() {
             if (tranVM.repeat.value!!) {
                 // after a short delay, scrolls to the bottom of ScrollView
                 binding.tranScrollView.postDelayed({
-                        binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
-                    }, 100
-                )
+                    binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
+                }, 100)
             }
         }
 
