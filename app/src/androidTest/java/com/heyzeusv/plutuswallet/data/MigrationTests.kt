@@ -24,6 +24,18 @@ class MigrationTests {
 
     @Test
     @Throws(IOException::class)
+    fun migrate23to24() {
+
+        helper.createDatabase(testDB, 23).apply {
+
+            close()
+        }
+
+        helper.runMigrationsAndValidate(testDB, 24, true, Migrations.migration23to24)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun migrate22to23() {
 
         val migration22to23 = object : Migration(22, 23) {

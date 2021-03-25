@@ -100,7 +100,7 @@ class AccountFragment : BaseFragment() {
 
             AlertDialogCreator.alertDialog(
                 requireContext(), getString(R.string.alert_dialog_delete_account),
-                getString(R.string.alert_dialog_delete_warning, account.account),
+                getString(R.string.alert_dialog_delete_warning, account.name),
                 getString(R.string.alert_dialog_yes), posFun,
                 getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
             )

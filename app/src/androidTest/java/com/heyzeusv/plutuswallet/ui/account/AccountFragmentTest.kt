@@ -66,13 +66,13 @@ class AccountFragmentTest {
         onView(withId(R.id.account_rv)).check(matches(rvSize(4)))
         // check that Accounts are sorted
         onView(withId(R.id.account_rv))
-            .check(matches(rvViewHolder(0, withText(dd.acc3.account), R.id.iva_name)))
+            .check(matches(rvViewHolder(0, withText(dd.acc3.name), R.id.iva_name)))
         onView(withId(R.id.account_rv))
-            .check(matches(rvViewHolder(1, withText(dd.acc1.account), R.id.iva_name)))
+            .check(matches(rvViewHolder(1, withText(dd.acc1.name), R.id.iva_name)))
         onView(withId(R.id.account_rv))
-            .check(matches(rvViewHolder(2, withText(dd.acc2.account), R.id.iva_name)))
+            .check(matches(rvViewHolder(2, withText(dd.acc2.name), R.id.iva_name)))
         onView(withId(R.id.account_rv))
-            .check(matches(rvViewHolder(3, withText(dd.acc4.account), R.id.iva_name)))
+            .check(matches(rvViewHolder(3, withText(dd.acc4.name), R.id.iva_name)))
     }
 
     @Test
@@ -97,12 +97,12 @@ class AccountFragmentTest {
 
         // create new Account and save it
         onView(withId(R.id.account_new)).perform(click())
-        onView(withId(R.id.dialog_input)).perform(typeText(dd.acc1.account))
+        onView(withId(R.id.dialog_input)).perform(typeText(dd.acc1.name))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Snackbar appears warning user that Account exists
         onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.acc1.account))))
+            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.acc1.name))))
     }
 
     @Test
@@ -126,7 +126,7 @@ class AccountFragmentTest {
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.iva_edit)))
 
         // check that AlertDialog input has Account name already filled out
-        onView(withId(R.id.dialog_input)).check(matches(withText(dd.acc2.account)))
+        onView(withId(R.id.dialog_input)).check(matches(withText(dd.acc2.name)))
     }
 
     @Test
@@ -152,11 +152,11 @@ class AccountFragmentTest {
         // click on edit Button in ViewHolder at position 2 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.account_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.iva_edit)))
-        onView(withId(R.id.dialog_input)).perform(replaceText(dd.acc3.account))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.acc3.name))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Snackbar appears warning user that Account exists
         onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.acc3.account))))
+            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.acc3.name))))
     }
 }

@@ -9,7 +9,6 @@ import com.github.mikephil.charting.charts.PieChart
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
-import com.heyzeusv.plutuswallet.util.bindingadapters.getSelectedChipId
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -35,7 +34,7 @@ class CustomMatchers {
 
                 override fun matchesSafely(chipGroup: ChipGroup): Boolean {
 
-                    return chipGroup.getSelectedChipId() == id
+                    return chipGroup.checkedChipId == id
                 }
 
             }

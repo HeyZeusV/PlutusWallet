@@ -99,12 +99,12 @@ class TransactionFragmentTest {
         // Transaction details will be displayed
         onView(withId(R.id.tran_title)).check(matches(withText("Party")))
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
-        onView(withId(R.id.tran_account)).check(matches((withText(dd.acc3.account))))
+        onView(withId(R.id.tran_account)).check(matches((withText(dd.acc3.name))))
         onView(withId(R.id.tran_total)).check(matches(withText("1,000.10")))
         onView(withId(R.id.tran_type_expense)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
         onView(withId(R.id.tran_type_income)).check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected)))
         onView(withId(R.id.tran_expense_cat)).check(matches(isDisplayed()))
-        onView(withId(R.id.tran_expense_cat)).check(matches((withText(dd.cat1.category))))
+        onView(withId(R.id.tran_expense_cat)).check(matches((withText(dd.cat1.name))))
         // expense Transaction so income Spinner is not needed
         onView(withId(R.id.tran_income_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_memo)).check(matches(withText("Catering for party")))
@@ -131,14 +131,14 @@ class TransactionFragmentTest {
         // Transaction details will be displayed
         onView(withId(R.id.tran_title)).check(matches(withText("Pay Day")))
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
-        onView(withId(R.id.tran_account)).check(matches((withText(dd.acc2.account))))
+        onView(withId(R.id.tran_account)).check(matches((withText(dd.acc2.name))))
         onView(withId(R.id.tran_total)).check(matches(withText("2,000.32")))
         onView(withId(R.id.tran_type_expense)).check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected)))
         onView(withId(R.id.tran_type_income)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
         // income Transaction so expense Spinner is not needed
         onView(withId(R.id.tran_expense_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_income_cat)).check(matches(isDisplayed()))
-        onView(withId(R.id.tran_income_cat)).check(matches((withText(dd.cat3.category))))
+        onView(withId(R.id.tran_income_cat)).check(matches((withText(dd.cat3.name))))
         onView(withId(R.id.tran_memo)).check(matches(withText("Best day of the month!")))
         onView(withId(R.id.tran_repeat)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
         onView(withId(R.id.tran_scrollView)).perform(swipeUp())

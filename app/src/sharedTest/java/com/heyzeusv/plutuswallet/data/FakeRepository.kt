@@ -19,18 +19,18 @@ class FakeRepository @Inject constructor() : Repository {
     var catList: MutableList<Category> = dd.catList
     var tranList: MutableList<Transaction> = dd.tranList
 
-    private val accListLD = MutableLiveData(accList.sortedBy { it.account })
+    private val accListLD = MutableLiveData(accList.sortedBy { it.name })
     private val catExListLD =
-        MutableLiveData(catList.filter { it.type == "Expense" }.sortedBy { it.category })
+        MutableLiveData(catList.filter { it.type == "Expense" }.sortedBy { it.name })
     private val catInListLD =
-        MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.category })
+        MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.name })
     private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
 
     override suspend fun getAccountNamesAsync(): MutableList<String> {
 
         val accNames: MutableList<String> = mutableListOf()
         for (acc: Account in accList) {
-            accNames.add(acc.account)
+            accNames.add(acc.name)
         }
         accNames.sort()
         return accNames
@@ -44,24 +44,24 @@ class FakeRepository @Inject constructor() : Repository {
     override suspend fun deleteAccount(account: Account) {
 
         accList.remove(account)
-        accListLD.value = accList.sortedBy { it.account }
+        accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun insertAccount(account: Account) {
 
         accList.add(account)
-        accListLD.value = accList.sortedBy { it.account }
+        accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun updateAccount(account: Account) {
 
         accList.replace(accList.find { it.id == account.id }!!, account)
-        accListLD.value = accList.sortedBy { it.account }
+        accListLD.value = accList.sortedBy { it.name }
     }
 
     override fun getLDAccounts(): LiveData<List<Account>> {
 
-        accListLD.value = accList.sortedBy { it.account }
+        accListLD.value = accList.sortedBy { it.name }
         return accListLD
     }
 
@@ -69,7 +69,7 @@ class FakeRepository @Inject constructor() : Repository {
 
         val typeNameList: MutableList<String> = mutableListOf()
         for (cat: Category in catList.filter { it.type == type}) {
-            typeNameList.add(cat.category)
+            typeNameList.add(cat.name)
         }
         typeNameList.sort()
         return typeNameList
@@ -83,29 +83,29 @@ class FakeRepository @Inject constructor() : Repository {
     override suspend fun deleteCategory(category: Category) {
 
         catList.remove(category)
-        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
-        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
 
     override suspend fun insertCategory(category: Category) {
 
         catList.add(category)
-        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
-        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
 
     override suspend fun updateCategory(category: Category) {
 
         catList.replace(catList.find { it.id == category.id }!!, category)
-        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
-        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
 
     override suspend fun insertCategories(categories: List<Category>) {
 
         catList.addAll(categories)
-        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.category })
-        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.category })
+        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
+        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
 
     override fun getLDCategoriesByType(type: String): LiveData<List<Category>> {
@@ -239,14 +239,14 @@ class FakeRepository @Inject constructor() : Repository {
         return MutableLiveData(createCatTotals(listOfTranLists))
     }
 
-    override fun getLdCtA(account: String): LiveData<List<CategoryTotals>> {
+    override fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>> {
 
         val catLists: List<List<String>> = getCatLists()
         val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
         for (cat: String in catLists[0]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && it.account == account
+                it.category == cat && it.type == "Expense" && accounts.contains(it.account)
             }) {
                 listOfTran.add(tran)
             }
@@ -255,7 +255,7 @@ class FakeRepository @Inject constructor() : Repository {
         for (cat: String in catLists[1]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && it.account == account
+                it.category == cat && it.type == "Income" && accounts.contains(it.account)
             }) {
                 listOfTran.add(tran)
             }
@@ -266,7 +266,7 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override fun getLdCtAD(
-        account: String,
+        accounts: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<CategoryTotals>> {
@@ -276,7 +276,7 @@ class FakeRepository @Inject constructor() : Repository {
         for (cat: String in catLists[0]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && it.account == account &&
+                it.category == cat && it.type == "Expense" && accounts.contains(it.account) &&
                         it.date >= start && it.date <= end
             }) {
                 listOfTran.add(tran)
@@ -286,7 +286,7 @@ class FakeRepository @Inject constructor() : Repository {
         for (cat: String in catLists[1]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && it.account == account &&
+                it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
                         it.date >= start && it.date <= end
             }) {
                 listOfTran.add(tran)
@@ -337,10 +337,10 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtListLD
     }
 
-    override fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>> {
+    override fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.account == account }) {
+        for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
@@ -352,14 +352,14 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override fun getLdIvtAD(
-        account: String,
+        accounts: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.account == account && it.date >= start && it.date <= end
+            accounts.contains(it.account) && it.date >= start && it.date <= end
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -371,10 +371,13 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtListLD
     }
 
-    override fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>> {
+    override fun getLdIvtAT(
+        accounts: List<String>,
+        type: String
+    ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.account == account && it.type == type }) {
+        for (tran: Transaction in tranList.filter { accounts.contains(it.account) && it.type == type }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
@@ -386,14 +389,14 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override fun getLdIvtATC(
-        account: String,
+        accounts: List<String>,
         type: String,
-        category: String
+        categories: List<String>
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.account == account && it.type == type && it.category == category
+            accounts.contains(it.account) && it.type == type && categories.contains(it.category)
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -406,7 +409,7 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override fun getLdIvtATD(
-        account: String,
+        accounts: List<String>,
         type: String,
         start: Date,
         end: Date
@@ -414,7 +417,7 @@ class FakeRepository @Inject constructor() : Repository {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.account == account && it.type == type && it.date >= start && it.date <= end
+            accounts.contains(it.account) && it.type == type && it.date >= start && it.date <= end
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -427,16 +430,16 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override fun getLdIvtATCD(
-        account: String,
+        accounts: List<String>,
         type: String,
-        category: String,
+        categories: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.account == account && it.type == type && it.category == category &&
+            accounts.contains(it.account) && it.type == type && categories.contains(it.category) &&
                     it.date >= start && it.date <= end
         }) {
             val ivt = ItemViewTransaction(
@@ -477,10 +480,13 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtListLD
     }
 
-    override fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>> {
+    override fun getLdIvtTC(
+        type: String,
+        categories: List<String>
+    ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.type == type && it.category == category }) {
+        for (tran: Transaction in tranList.filter { it.type == type && categories.contains(it.category) }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
@@ -493,14 +499,14 @@ class FakeRepository @Inject constructor() : Repository {
 
     override fun getLdIvtTCD(
         type: String,
-        category: String,
+        categories: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.type == type && it.category == category && it.date >= start && it.date <= end
+            it.type == type && categories.contains(it.category) && it.date >= start && it.date <= end
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category

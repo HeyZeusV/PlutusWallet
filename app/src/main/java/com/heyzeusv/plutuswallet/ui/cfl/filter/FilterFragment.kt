@@ -175,6 +175,8 @@ class FilterFragment : Fragment() {
                     entry.length < 4 -> "  $entry  "
                     else -> entry
                 }
+                // checks Chip if entry is in selectedList
+                chip.isChecked = selectedList.contains(entry)
                 // adds/removes from selected list
                 chip.setOnCheckedChangeListener { _, checked: Boolean ->
                     selectedList.apply {

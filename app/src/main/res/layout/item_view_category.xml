@@ -24,7 +24,7 @@
         <TextView
             android:id="@+id/ivcat_name"
             style="@style/AccCat.TextView.Scrollable"
-            android:text="@{category.category}"
+            android:text="@{category.name}"
             app:layout_constraintEnd_toStartOf="@+id/ivcat_edit"
             app:selected="@{true}"
             tools:text="Category Name" />
@@ -42,7 +42,7 @@
             android:enabled="false"
             android:onClick="@{() -> catVM.deleteCategoryOC(category)}"
             app:icon="@drawable/ic_baseline_delete_24"
-            app:isEnabled="@{(!catVM.catsUsed[type].contains(category.category) &amp;&amp; catVM.catNames[type].size > 1) ? true : false}"
+            app:isEnabled="@{(!catVM.catsUsed[type].contains(category.name) &amp;&amp; catVM.catNames[type].size > 1) ? true : false}"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

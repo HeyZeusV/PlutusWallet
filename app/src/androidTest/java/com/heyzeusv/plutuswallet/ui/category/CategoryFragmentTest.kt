@@ -25,13 +25,11 @@ import com.heyzeusv.plutuswallet.CustomMatchers.Companion.rvViewHolder
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.launchFragmentInHiltContainer
 import com.heyzeusv.plutuswallet.util.ViewPager2IdlingResource
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -87,11 +85,11 @@ class CategoryFragmentTest {
         onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
         // check that expense Categories are sorted
         onView(withId(R.id.ivcl_rv))
-            .check(matches(rvViewHolder(0, withText(dd.cat2.category), R.id.ivcat_name)))
+            .check(matches(rvViewHolder(0, withText(dd.cat2.name), R.id.ivcat_name)))
         onView(withId(R.id.ivcl_rv))
-            .check(matches(rvViewHolder(1, withText(dd.cat1.category), R.id.ivcat_name)))
+            .check(matches(rvViewHolder(1, withText(dd.cat1.name), R.id.ivcat_name)))
         onView(withId(R.id.ivcl_rv))
-            .check(matches(rvViewHolder(2, withText(dd.cat5.category), R.id.ivcat_name)))
+            .check(matches(rvViewHolder(2, withText(dd.cat5.name), R.id.ivcat_name)))
 
         // swipe to income Categories
         onView(withId(R.id.category_vp)).perform(swipeLeft())
@@ -99,11 +97,11 @@ class CategoryFragmentTest {
         // check that income list of Categories loaded in
         onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
         onView(withId(R.id.ivcl_rv))
-            .check(matches(rvViewHolder(0, withText(dd.cat3.category), R.id.ivcat_name)))
+            .check(matches(rvViewHolder(0, withText(dd.cat3.name), R.id.ivcat_name)))
         onView(withId(R.id.ivcl_rv))
-            .check(matches(rvViewHolder(1, withText(dd.cat6.category), R.id.ivcat_name)))
+            .check(matches(rvViewHolder(1, withText(dd.cat6.name), R.id.ivcat_name)))
         onView(withId(R.id.ivcl_rv))
-            .check(matches(rvViewHolder(2, withText(dd.cat4.category), R.id.ivcat_name)))
+            .check(matches(rvViewHolder(2, withText(dd.cat4.name), R.id.ivcat_name)))
     }
 
     @Test
@@ -142,26 +140,26 @@ class CategoryFragmentTest {
 
         // create new expense Category and save it
         onView(withId(R.id.category_new)).perform(click())
-        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat1.category))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat1.name))
         onView(withId((android.R.id.button1))).perform(click())
 
         // check Snackbar appears warning user that Category exists and list remains same size
         onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
         onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat1.category))))
+            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat1.name))))
 
         // swipe to income Categories
         onView(withId(R.id.category_vp)).perform(swipeLeft())
 
         // create new income Category and save it
         onView(withId(R.id.category_new)).perform(click())
-        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat3.category))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat3.name))
         onView(withId((android.R.id.button1))).perform(click())
 
         // check Snackbar appears warning user that Category exists and list remains same size
         onView(withId(R.id.ivcl_rv)).check(matches(rvSize(3)))
         onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat3.category))))
+            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat3.name))))
     }
 
     @Test
@@ -197,7 +195,7 @@ class CategoryFragmentTest {
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.ivcat_edit)))
 
         // check that AlertDialog input has Category name already filled out
-        onView(withId(R.id.dialog_input)).check(matches(withText(dd.cat5.category)))
+        onView(withId(R.id.dialog_input)).check(matches(withText(dd.cat5.name)))
         onView(withId(android.R.id.button1)).perform(click())
 
         // swipe to income Categories
@@ -208,7 +206,7 @@ class CategoryFragmentTest {
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(2, rvViewClick(R.id.ivcat_edit)))
 
         // check that AlertDialog input has Category name already filled out
-        onView(withId(R.id.dialog_input)).check(matches(withText(dd.cat4.category)))
+        onView(withId(R.id.dialog_input)).check(matches(withText(dd.cat4.name)))
     }
 
     @Test
@@ -248,12 +246,12 @@ class CategoryFragmentTest {
         // click on edit Button in ViewHolder at position 1 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(1, rvViewClick(R.id.ivcat_edit)))
-        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat2.category))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat2.name))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Snackbar appears warning user that Category exists
         onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat2.category))))
+            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat2.name))))
 
         // swipe to income Categories
         onView(withId(R.id.category_vp)).perform(swipeLeft())
@@ -261,12 +259,12 @@ class CategoryFragmentTest {
         // click on edit Button in ViewHolder at position 0 in RecyclerView, enter new name, and confirm
         onView(withId(R.id.ivcl_rv)).perform(RecyclerViewActions
             .actionOnItemAtPosition<RecyclerView.ViewHolder>(0, rvViewClick(R.id.ivcat_edit)))
-        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat4.category))
+        onView(withId(R.id.dialog_input)).perform(replaceText(dd.cat4.name))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check Snackbar appears warning user that Category exists
         onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat4.category))))
+            .check(matches(withText(resource.getString(R.string.snackbar_exists, dd.cat4.name))))
     }
 
     /**

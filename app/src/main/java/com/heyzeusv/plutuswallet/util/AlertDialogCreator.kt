@@ -93,8 +93,8 @@ class AlertDialogCreator {
             val input: EditText = dialogView.findViewById(R.id.dialog_input)
 
             // sets text (if any) from parameter
-            if (account != null) input.setText(account.account)
-            if (category != null) input.setText(category.category)
+            if (account != null) input.setText(account.name)
+            if (category != null) input.setText(category.name)
 
             // negative onClick and onCancel listeners
             var negFun = doNothing

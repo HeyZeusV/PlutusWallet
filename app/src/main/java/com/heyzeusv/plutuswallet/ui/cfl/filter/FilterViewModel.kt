@@ -166,7 +166,7 @@ class FilterViewModel @ViewModelInject constructor(
                 }
 
                 // translates "All"
-                if (cats.contains(all)) cats[0] = "All"
+                if (cats.contains(all)) cats[cats.indexOf(all)] = "All"
 
                 // updating MutableLiveData value in ViewModel
                 cflTInfo = TransactionInfo(

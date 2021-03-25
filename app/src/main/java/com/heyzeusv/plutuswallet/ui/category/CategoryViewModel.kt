@@ -77,8 +77,8 @@ class CategoryViewModel @ViewModelInject constructor(
      */
     fun deleteCategoryPosFun(category: Category, type: Int) {
 
-        catNames[type].remove(category.category)
-        catsUsed[type].remove(category.category)
+        catNames[type].remove(category.name)
+        catsUsed[type].remove(category.name)
         viewModelScope.launch {
             tranRepo.deleteCategory(category)
         }
@@ -94,11 +94,11 @@ class CategoryViewModel @ViewModelInject constructor(
             _existsCategoryEvent.value = Event(newName)
         } else {
             // replaces previous name in lists with new value
-            catNames[type].replace(category.category, newName)
-            if (catsUsed[type].contains(category.category)) {
-                catsUsed[type].replace(category.category, newName)
+            catNames[type].replace(category.name, newName)
+            if (catsUsed[type].contains(category.name)) {
+                catsUsed[type].replace(category.name, newName)
             }
-            category.category = newName
+            category.name = newName
             viewModelScope.launch {
                 tranRepo.updateCategory(category)
             }
@@ -123,7 +123,7 @@ class CategoryViewModel @ViewModelInject constructor(
         } else {
             // adds new name to list to prevent new Category with same name
             catNames[type].add(name)
-            category.category = name
+            category.name = name
             category.type = if (type == 0) "Expense" else "Income"
             viewModelScope.launch {
                 tranRepo.insertCategory(category)

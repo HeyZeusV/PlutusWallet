@@ -9,14 +9,14 @@ import androidx.room.PrimaryKey
  *
  *  @Index unique since account is not primary key and foreign keys must be unique.
  *
- *  @param id      unique id of Account.
- *  @param account name of Account.
+ *  @param id   unique id of Account.
+ *  @param name name of Account.
  */
-@Entity(indices = [Index(value = ["account"],
+@Entity(indices = [Index(value = ["name"],
                          name = "index_account",
                          unique = true)])
 data class Account(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
-    var account: String
+    var name: String
 )

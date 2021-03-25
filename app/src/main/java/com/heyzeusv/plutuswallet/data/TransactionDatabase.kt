@@ -21,7 +21,7 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 @Database(entities = [Account::class,
                       Category::class,
                       Transaction::class],
-          version = 23,
+          version = 24,
           exportSchema = true)
 @TypeConverters(TransactionTypeConverters::class)
 abstract class TransactionDatabase : RoomDatabase() {

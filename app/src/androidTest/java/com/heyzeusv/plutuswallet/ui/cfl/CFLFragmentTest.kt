@@ -126,17 +126,17 @@ class CFLFragmentTest {
         onView(withId(R.id.emptyTextView)).check(matches(not(isDisplayed())))
 
         // check that nothing in filter is selected
-        onView(withId(R.id.filter_account_check)).check(matches(isNotChecked()))
+//        onView(withId(R.id.filter_account_check)).check(matches(isNotChecked()))
         onView(withId(R.id.filter_account)).check(matches(not(isEnabled())))
-        onView(withId(R.id.filter_account)).check(matches(withSpinnerText(dd.acc3.account)))
-        onView(withId(R.id.filter_cat_check)).check(matches(isNotChecked()))
+        onView(withId(R.id.filter_account)).check(matches(withSpinnerText(dd.acc3.name)))
+//        onView(withId(R.id.filter_cat_check)).check(matches(isNotChecked()))
         onView(withId(R.id.filter_type)).check(matches(not(isEnabled())))
         onView(withId(R.id.filter_type)).check(matches(withText(R.string.filter_type)))
-        onView(withId(R.id.filter_expense_cat)).check(matches(not(isEnabled())))
-        onView(withId(R.id.filter_expense_cat)).check(matches(withSpinnerText(R.string.category_all)))
-        onView(withId(R.id.filter_income_cat)).check(matches(not(isDisplayed())))
+//        onView(withId(R.id.filter_expense_cat)).check(matches(not(isEnabled())))
+//        onView(withId(R.id.filter_expense_cat)).check(matches(withSpinnerText(R.string.category_all)))
+//        onView(withId(R.id.filter_income_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.filter_scroll)).perform(swipeUp())
-        onView(withId(R.id.filter_date_check)).check(matches(isNotChecked()))
+//        onView(withId(R.id.filter_date_check)).check(matches(isNotChecked()))
         onView(withId(R.id.filter_start_date)).check(matches(not(isEnabled())))
         onView(withId(R.id.filter_start_date)).check(matches(withText(R.string.filter_start)))
         onView(withId(R.id.filter_end_date)).check(matches(not(isEnabled())))
@@ -160,7 +160,7 @@ class CFLFragmentTest {
         val expenseTotal = resource.getString(R.string.chart_total, "$", "1,100.10")
 
         // apply Account filter
-        onView(withId(R.id.filter_account_check)).perform(click())
+//        onView(withId(R.id.filter_account_check)).perform(click())
         onView(withId(R.id.filter_action)).perform(click())
 
         // check expense Chart values
@@ -193,9 +193,9 @@ class CFLFragmentTest {
         val expenseTotal = resource.getString(R.string.chart_total, "$", "55.45")
 
         // apply expense Category filter
-        onView(withId(R.id.filter_cat_check)).perform(click())
-        onView(withId(R.id.filter_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat2.category))).perform(click())
+//        onView(withId(R.id.filter_cat_check)).perform(click())
+//        onView(withId(R.id.filter_expense_cat)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat2.name))).perform(click())
         onView(withId(R.id.filter_action)).perform(click())
 
         // check expense Chart values
@@ -227,11 +227,11 @@ class CFLFragmentTest {
         val incomeTotal = resource.getString(R.string.chart_total, "$", "0.00")
 
         // apply income Category filter
-        onView(withId(R.id.filter_cat_check)).perform(click())
+//        onView(withId(R.id.filter_cat_check)).perform(click())
         onView(withId(R.id.filter_type)).perform(click())
-        onView(withId(R.id.filter_expense_cat)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.filter_income_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat4.category))).perform(click())
+//        onView(withId(R.id.filter_expense_cat)).check(matches(not(isDisplayed())))
+//        onView(withId(R.id.filter_income_cat)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat4.name))).perform(click())
         onView(withId(R.id.filter_action)).perform(click())
 
         // check expense Chart values
@@ -257,7 +257,7 @@ class CFLFragmentTest {
 
         // apply Date filter
         onView(withId(R.id.filter_scroll)).perform(swipeUp())
-        onView(withId(R.id.filter_date_check)).perform(click())
+//        onView(withId(R.id.filter_date_check)).perform(click())
         onView(withId(R.id.filter_start_date)).perform(click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 20))
         onView(withId(android.R.id.button1)).perform(click())
@@ -293,10 +293,10 @@ class CFLFragmentTest {
         val incomeTotal = resource.getString(R.string.chart_total, "$", "4,000.64")
 
         // apply Account and Category filter
-        onView(withId(R.id.filter_account_check)).perform(click())
+//        onView(withId(R.id.filter_account_check)).perform(click())
         onView(withId(R.id.filter_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc2.account))).perform(click())
-        onView(withId(R.id.filter_cat_check)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc2.name))).perform(click())
+//        onView(withId(R.id.filter_cat_check)).perform(click())
         onView(withId(R.id.filter_type)).perform(click())
         onView(withId(R.id.filter_action)).perform(click())
 
@@ -330,11 +330,11 @@ class CFLFragmentTest {
         val expenseTotal = resource.getString(R.string.chart_total, "$", "55.45")
 
         // apply Account and Date filter
-        onView(withId(R.id.filter_account_check)).perform(click())
+//        onView(withId(R.id.filter_account_check)).perform(click())
         onView(withId(R.id.filter_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc1.account))).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc1.name))).perform(click())
         onView(withId(R.id.filter_scroll)).perform(swipeUp())
-        onView(withId(R.id.filter_date_check)).perform(click())
+//        onView(withId(R.id.filter_date_check)).perform(click())
         onView(withId(R.id.filter_start_date)).perform(click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 4))
         onView(withId(android.R.id.button1)).perform(click())
@@ -375,11 +375,11 @@ class CFLFragmentTest {
         val expenseTotal = resource.getString(R.string.chart_total, "$", "100.00")
 
         // apply Category and Date filter
-        onView(withId(R.id.filter_cat_check)).perform(click())
-        onView(withId(R.id.filter_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat1.category))).perform(click())
+//        onView(withId(R.id.filter_cat_check)).perform(click())
+//        onView(withId(R.id.filter_expense_cat)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat1.name))).perform(click())
         onView(withId(R.id.filter_scroll)).perform(swipeUp())
-        onView(withId(R.id.filter_date_check)).perform(click())
+//        onView(withId(R.id.filter_date_check)).perform(click())
         onView(withId(R.id.filter_start_date)).perform(click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 2))
         onView(withId(android.R.id.button1)).perform(click())
@@ -419,14 +419,14 @@ class CFLFragmentTest {
         val expenseTotal = resource.getString(R.string.chart_total, "$", "1,000.10")
 
         // apply all filters
-        onView(withId(R.id.filter_account_check)).perform(click())
+//        onView(withId(R.id.filter_account_check)).perform(click())
         onView(withId(R.id.filter_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc3.account))).perform(click())
-        onView(withId(R.id.filter_cat_check)).perform(click())
-        onView(withId(R.id.filter_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat1.category))).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc3.name))).perform(click())
+//        onView(withId(R.id.filter_cat_check)).perform(click())
+//        onView(withId(R.id.filter_expense_cat)).perform(click())
+        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat1.name))).perform(click())
         onView(withId(R.id.filter_scroll)).perform(swipeUp())
-        onView(withId(R.id.filter_date_check)).perform(click())
+//        onView(withId(R.id.filter_date_check)).perform(click())
         onView(withId(R.id.filter_start_date)).perform(click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 1))
         onView(withId(android.R.id.button1)).perform(click())
