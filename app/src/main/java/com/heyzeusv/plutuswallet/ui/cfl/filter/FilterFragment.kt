@@ -97,9 +97,9 @@ class FilterFragment : Fragment() {
         filterVM.noChipEvent.observe(viewLifecycleOwner, EventObserver {
             val chipBar: Snackbar = Snackbar.make(
                 binding.root, if (it) {
-                    "Please select at least one account!!"
+                    getString(R.string.filter_no_chip_account)
                 } else {
-                    "Please select at least one category!!"
+                    getString(R.string.filter_no_chip_category)
                 }, Snackbar.LENGTH_SHORT
             )
             chipBar.anchorView = snackBarAnchor

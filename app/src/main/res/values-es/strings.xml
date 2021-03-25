@@ -94,4 +94,6 @@
     <string name="alert_dialog_input_error">¡No puede estar en blanco!</string>
     <string name="transaction_period">Período</string>
     <string name="cfl_menu_filter">Editar filtro</string>
+    <string name="filter_no_chip_account">Por favor, seleccione al menos una cuenta.</string>
+    <string name="filter_no_chip_category">Por favor, seleccione al menos una categoría.</string>
 </resources>

@@ -94,4 +94,6 @@
     <string name="alert_dialog_input_error">ว่างไม่ได้!</string>
     <string name="transaction_period">ระยะเวลา</string>
     <string name="cfl_menu_filter">แก้ไขตัวกรอง</string>
+    <string name="filter_no_chip_account">โปรดเลือกอย่างน้อยหนึ่งบัญชี !!</string>
+    <string name="filter_no_chip_category">"กรุณาเลือกอย่างน้อยหนึ่งหมวด !! "</string>
 </resources>
