@@ -64,13 +64,13 @@ class FilterFragment : Fragment() {
         val snackBarAnchor: CoordinatorLayout? =
             parentFragment?.view?.rootView?.findViewById(R.id.cfl_anchor)
 
-        filterVM.cflChange.observe(viewLifecycleOwner, EventObserver { change: Boolean ->
-            // updates MutableLiveData, causing Chart/ListFragment refresh
-            cflVM.updateTInfo(filterVM.cflTInfo)
-            cflVM.filterChanged = change
-        })
+        binding.filterAccount.setOnClickListener {
+            it.isActivated = !it.isActivated
+            filterVM.accFilter.value = !filterVM.accFilter.value!!
+        }
 
         binding.filterCategory.setOnClickListener {
+            it.isActivated = !it.isActivated
             filterVM.catFilter.value = !filterVM.catFilter.value!!
             if (filterVM.catFilter.value!!) {
                 // after a short delay, scroll down to show all children
@@ -85,6 +85,7 @@ class FilterFragment : Fragment() {
         }
 
         binding.filterDate.setOnClickListener {
+            it.isActivated = !it.isActivated
             filterVM.dateFilter.value = !filterVM.dateFilter.value!!
             if (filterVM.dateFilter.value!!) {
                 // after a short delay, scroll down to show all children
@@ -93,6 +94,12 @@ class FilterFragment : Fragment() {
                 }, 100)
             }
         }
+
+        filterVM.cflChange.observe(viewLifecycleOwner, EventObserver { change: Boolean ->
+            // updates MutableLiveData, causing Chart/ListFragment refresh
+            cflVM.updateTInfo(filterVM.cflTInfo)
+            cflVM.filterChanged = change
+        })
 
         filterVM.noChipEvent.observe(viewLifecycleOwner, EventObserver {
             val chipBar: Snackbar = Snackbar.make(
