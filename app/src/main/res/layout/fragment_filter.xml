@@ -35,174 +35,261 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/filter_motion_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_account"
-                        style="@style/Transaction.Button.Outlined"
+                    <androidx.constraintlayout.motion.widget.MotionLayout
+                        android:id="@+id/filter_account_motion"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterParentMarginStartEnd"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
-                        android:text="@string/transaction_account"
-                        android:textColor="@{filterVM.accFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        app:icon="@drawable/asl_button_drop_arrow"
-                        app:iconGravity="end"
-                        app:iconPadding="-24dp"
-                        app:iconTint="@{filterVM.accFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                        app:layoutDescription="@xml/motion_filter_account"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:strokeColor="@{filterVM.accFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView
-                        android:id="@+id/filter_account_scrollview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
-                        android:layout_marginTop="@dimen/filterNestedSvToButtonMargin"
-                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
-                        android:background="@drawable/filter_scrollview_bg"
-                        android:scrollbars="vertical"
-                        android:visibility="@{filterVM.accFilter ? View.VISIBLE : View.GONE}"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/filter_account"
-                        app:maxHeight="144dp">
-
-                        <com.google.android.material.chip.ChipGroup
-                            android:id="@+id/filter_account_chips"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="4dp"
-                            app:chipSpacingHorizontal="4dp" />
-                    </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_category"
-                        style="@style/Transaction.Button.Outlined"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterParentMarginStartEnd"
-                        android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
-                        android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
-                        android:text="@string/transaction_category"
-                        android:textColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        app:icon="@drawable/asl_button_drop_arrow"
-                        app:iconGravity="end"
-                        app:iconPadding="-24dp"
-                        app:iconTint="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/filter_account_scrollview"
-                        app:strokeColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_type"
-                        style="@style/Transaction.Button.Outlined"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
-                        android:layout_marginTop="@dimen/filterButtonToButtonMargin"
-                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
-                        android:onClick="@{() -> filterVM.typeVisibleOC()}"
-                        android:text="@{filterVM.typeVisible ? @string/type_expense : @string/type_income}"
-                        android:textColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        android:visibility="@{filterVM.catFilter ? View.VISIBLE : View.GONE}"
-                        app:isEnabled="@{filterVM.catFilter}"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_category"
-                        app:strokeColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        tools:text="Expense" />
-
-                    <com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView
-                        android:id="@+id/filter_category_scrollview"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
-                        android:layout_marginTop="@dimen/filterNestedSvToButtonMargin"
-                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
-                        android:background="@drawable/filter_scrollview_bg"
-                        android:scrollbars="vertical"
-                        android:visibility="@{filterVM.catFilter ? View.VISIBLE : View.GONE}"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/filter_type"
-                        app:maxHeight="144dp">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_account"
+                            style="@style/Transaction.Button.Outlined"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/filterParentMarginStartEnd"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
+                            android:outlineProvider="none"
+                            android:text="@string/transaction_account"
+                            android:textColor="@{filterVM.accFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            android:translationZ="2dp"
+                            app:icon="@drawable/asl_button_drop_arrow"
+                            app:iconGravity="end"
+                            app:iconPadding="-24dp"
+                            app:iconTint="@{filterVM.accFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:strokeColor="@{filterVM.accFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
+
+                        <View
+                            android:id="@+id/account_mask"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="6dp"
+                            android:background="@color/colorFilterBackground"
+                            android:outlineProvider="none"
+                            android:translationZ="1dp"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_account"
+                            app:layout_constraintEnd_toEndOf="@id/filter_account"
+                            app:layout_constraintStart_toStartOf="@id/filter_account"
+                            app:layout_constraintTop_toTopOf="@id/filter_account" />
+
+                        <com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView
+                            android:id="@+id/filter_account_scrollview"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginBottom="6dp"
+                            android:background="@{filterVM.accFilter ? @drawable/filter_scrollview_active_bg : @drawable/filter_scrollview_bg}"
+                            android:scrollbars="vertical"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_account"
+                            app:layout_constraintEnd_toEndOf="@id/filter_account"
+                            app:layout_constraintStart_toStartOf="@id/filter_account"
+                            app:layout_constraintTop_toTopOf="@id/filter_account"
+                            app:maxHeight="144dp">
 
                             <com.google.android.material.chip.ChipGroup
-                                android:id="@+id/filter_expense_chips"
+                                android:id="@+id/filter_account_chips"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:visibility="@{filterVM.typeVisible ? View.VISIBLE : View.GONE}"
-                                app:chipSpacingHorizontal="4dp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                android:layout_marginStart="4dp"
+                                android:layout_marginEnd="4dp"
+                                app:chipSpacingHorizontal="4dp" />
+                        </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView>
+                    </androidx.constraintlayout.motion.widget.MotionLayout>
 
-                            <com.google.android.material.chip.ChipGroup
-                                android:id="@+id/filter_income_chips"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:visibility="@{filterVM.typeVisible ? View.GONE : View.VISIBLE}"
-                                app:chipSpacingHorizontal="4dp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_date"
-                        style="@style/Transaction.Button.Outlined"
+                    <androidx.constraintlayout.motion.widget.MotionLayout
+                        android:id="@+id/filter_category_motion"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterParentMarginStartEnd"
-                        android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
-                        android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
-                        android:text="@string/transaction_date"
-                        android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        app:icon="@drawable/asl_button_drop_arrow"
-                        app:iconGravity="end"
-                        app:iconPadding="-24dp"
-                        app:iconTint="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                        app:layoutDescription="@xml/motion_filter_category"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/filter_category_scrollview"
-                        app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
+                        app:layout_constraintTop_toBottomOf="@id/filter_account_motion">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_start_date"
-                        style="@style/Transaction.Button.Outlined"
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_category"
+                            style="@style/Transaction.Button.Outlined"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/filterParentMarginStartEnd"
+                            android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
+                            android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
+                            android:text="@string/transaction_category"
+                            android:textColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            android:translationZ="2dp"
+                            android:outlineProvider="none"
+                            app:icon="@drawable/asl_button_drop_arrow"
+                            app:iconGravity="end"
+                            app:iconPadding="-24dp"
+                            app:iconTint="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/filter_account_scrollview"
+                            app:strokeColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
+
+                        <View
+                            android:id="@+id/category_mask"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="6dp"
+                            android:background="@color/colorFilterBackground"
+                            android:translationZ="1dp"
+                            android:outlineProvider="none"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_category"
+                            app:layout_constraintEnd_toEndOf="@id/filter_category"
+                            app:layout_constraintStart_toStartOf="@id/filter_category"
+                            app:layout_constraintTop_toTopOf="@id/filter_category" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_type"
+                            style="@style/Transaction.Button.Outlined"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginBottom="6dp"
+                            android:onClick="@{() -> filterVM.typeVisibleOC()}"
+                            android:text="@{filterVM.typeVisible ? @string/type_expense : @string/type_income}"
+                            android:textColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:strokeColor="@{filterVM.catFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_category"
+                            app:layout_constraintEnd_toEndOf="@id/filter_category"
+                            app:layout_constraintStart_toStartOf="@id/filter_category"
+                            app:layout_constraintTop_toTopOf="@id/filter_category"
+                            tools:text="Expense" />
+
+                        <com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView
+                            android:id="@+id/filter_category_scrollview"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginBottom="6dp"
+                            android:background="@{filterVM.catFilter ? @drawable/filter_scrollview_active_bg : @drawable/filter_scrollview_bg}"
+                            android:scrollbars="vertical"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_category"
+                            app:layout_constraintEnd_toEndOf="@id/filter_category"
+                            app:layout_constraintStart_toStartOf="@id/filter_category"
+                            app:layout_constraintTop_toTopOf="@id/filter_category"
+                            app:maxHeight="144dp">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/category_chip_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/filter_expense_chips"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="@{filterVM.typeVisible ? View.VISIBLE : View.GONE}"
+                                    app:chipSpacingHorizontal="4dp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/filter_income_chips"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="@{filterVM.typeVisible ? View.GONE : View.VISIBLE}"
+                                    app:chipSpacingHorizontal="4dp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView>
+                    </androidx.constraintlayout.motion.widget.MotionLayout>
+
+                    <androidx.constraintlayout.motion.widget.MotionLayout
+                        android:id="@+id/filter_date_motion"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
-                        android:layout_marginTop="@dimen/filterButtonToButtonMargin"
-                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
-                        android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
-                        android:text="@{filterVM.startDateLD == `` ? @string/filter_start : filterVM.startDateLD}"
-                        android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        android:visibility="@{filterVM.dateFilter ? View.VISIBLE : View.GONE}"
-                        app:isEnabled="@{filterVM.dateFilter}"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_date"
-                        app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        tools:text="Start Date" />
+                        app:layoutDescription="@xml/motion_filter_date"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/filter_category_motion">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_end_date"
-                        style="@style/Transaction.Button.Outlined"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
-                        android:layout_marginTop="@dimen/filterButtonToButtonMargin"
-                        android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
-                        android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
-                        android:text="@{filterVM.endDateLD == `` ? @string/filter_end : filterVM.endDateLD}"
-                        android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        android:visibility="@{filterVM.dateFilter ? View.VISIBLE : View.GONE}"
-                        app:isEnabled="@{filterVM.dateFilter}"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_start_date"
-                        app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
-                        tools:text="End Date" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_date"
+                            style="@style/Transaction.Button.Outlined"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/filterParentMarginStartEnd"
+                            android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
+                            android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
+                            android:text="@string/transaction_date"
+                            android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            android:translationZ="2dp"
+                            android:outlineProvider="none"
+                            app:icon="@drawable/asl_button_drop_arrow"
+                            app:iconGravity="end"
+                            app:iconPadding="-24dp"
+                            app:iconTint="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/filter_category_scrollview"
+                            app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
+
+                        <View
+                            android:id="@+id/date_mask"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="6dp"
+                            android:background="@color/colorFilterBackground"
+                            android:translationZ="1dp"
+                            android:outlineProvider="none"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_date"
+                            app:layout_constraintEnd_toEndOf="@id/filter_date"
+                            app:layout_constraintStart_toStartOf="@id/filter_date"
+                            app:layout_constraintTop_toTopOf="@id/filter_date" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_start_date"
+                            style="@style/Transaction.Button.Outlined"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginBottom="6dp"
+                            android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
+                            android:text="@{filterVM.startDateLD == `` ? @string/filter_start : filterVM.startDateLD}"
+                            android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_date"
+                            app:layout_constraintEnd_toEndOf="@id/filter_date"
+                            app:layout_constraintStart_toStartOf="@id/filter_date"
+                            app:layout_constraintTop_toTopOf="@id/filter_date"
+                            app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            tools:text="Start Date" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_end_date"
+                            style="@style/Transaction.Button.Outlined"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
+                            android:layout_marginBottom="6dp"
+                            android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
+                            android:text="@{filterVM.endDateLD == `` ? @string/filter_end : filterVM.endDateLD}"
+                            android:textColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_date"
+                            app:layout_constraintEnd_toEndOf="@id/filter_date"
+                            app:layout_constraintStart_toStartOf="@id/filter_date"
+                            app:layout_constraintTop_toTopOf="@id/filter_date"
+                            app:strokeColor="@{filterVM.dateFilter ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            tools:text="End Date" />
+                    </androidx.constraintlayout.motion.widget.MotionLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightScrollView>
 

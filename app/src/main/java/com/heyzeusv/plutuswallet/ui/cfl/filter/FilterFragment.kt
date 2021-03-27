@@ -67,11 +67,21 @@ class FilterFragment : Fragment() {
         binding.filterAccount.setOnClickListener {
             it.isActivated = !it.isActivated
             filterVM.accFilter.value = !filterVM.accFilter.value!!
+            if (filterVM.accFilter.value!!) {
+                binding.filterAccountMotion.transitionToEnd()
+            } else {
+                binding.filterAccountMotion.transitionToStart()
+            }
         }
 
         binding.filterCategory.setOnClickListener {
             it.isActivated = !it.isActivated
             filterVM.catFilter.value = !filterVM.catFilter.value!!
+            if (filterVM.catFilter.value!!) {
+                binding.filterCategoryMotion.transitionToEnd()
+            } else {
+                binding.filterCategoryMotion.transitionToStart()
+            }
             if (filterVM.catFilter.value!!) {
                 // after a short delay, scroll down to show all children
                 binding.filterScroll.postDelayed({
@@ -80,7 +90,7 @@ class FilterFragment : Fragment() {
                     } else {
                         binding.filterIncomeChips.bottom
                     })
-                }, 100)
+                }, 450)
             }
         }
 
@@ -88,10 +98,15 @@ class FilterFragment : Fragment() {
             it.isActivated = !it.isActivated
             filterVM.dateFilter.value = !filterVM.dateFilter.value!!
             if (filterVM.dateFilter.value!!) {
+                binding.filterDateMotion.transitionToEnd()
+            } else {
+                binding.filterDateMotion.transitionToStart()
+            }
+            if (filterVM.dateFilter.value!!) {
                 // after a short delay, scroll down to show all children
                 binding.filterScroll.postDelayed({
                     binding.filterScroll.smoothScrollBy(0, binding.filterScroll.bottom)
-                }, 100)
+                }, 450)
             }
         }
 

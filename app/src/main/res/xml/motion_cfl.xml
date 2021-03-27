@@ -4,12 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Transition
-        app:constraintSetStart="@+id/filter_motion_start"
-        app:constraintSetEnd="@+id/filter_motion_end"
+        app:constraintSetStart="@+id/cfl_motion_start"
+        app:constraintSetEnd="@+id/cfl_motion_end"
         app:duration="800" />
 
     <ConstraintSet
-        android:id="@+id/filter_motion_start">
+        android:id="@+id/cfl_motion_start">
 
         <Constraint
             android:id="@+id/fragment_filter_container"
@@ -35,7 +35,7 @@
     </ConstraintSet>
 
     <ConstraintSet
-        android:id="@+id/filter_motion_end">
+        android:id="@+id/cfl_motion_end">
 
         <Constraint
             android:id="@+id/fragment_filter_container"

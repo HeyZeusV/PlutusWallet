@@ -13,6 +13,7 @@
     <color name="colorButtonBackground">@color/green_base</color>
     <color name="colorButtonText">#2f1c39</color>
     <color name="colorButtonUnselected">#60ffffff</color>
+    <color name="colorFilterBackground">#362340</color>
 
     <!-- Chart text colors -->
     <color name="colorChartText">@color/white</color>
