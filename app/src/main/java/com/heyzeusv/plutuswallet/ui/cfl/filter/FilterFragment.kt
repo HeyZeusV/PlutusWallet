@@ -67,20 +67,16 @@ class FilterFragment : Fragment() {
         binding.filterAccount.setOnClickListener {
             it.isActivated = !it.isActivated
             filterVM.accFilter.value = !filterVM.accFilter.value!!
-            if (filterVM.accFilter.value!!) {
-                binding.filterAccountMotion.transitionToEnd()
-            } else {
-                binding.filterAccountMotion.transitionToStart()
+            binding.filterAccountMotion.apply {
+                if (filterVM.accFilter.value!!) transitionToEnd() else transitionToStart()
             }
         }
 
         binding.filterCategory.setOnClickListener {
             it.isActivated = !it.isActivated
             filterVM.catFilter.value = !filterVM.catFilter.value!!
-            if (filterVM.catFilter.value!!) {
-                binding.filterCategoryMotion.transitionToEnd()
-            } else {
-                binding.filterCategoryMotion.transitionToStart()
+            binding.filterCategoryMotion.apply {
+                if (filterVM.catFilter.value!!) transitionToEnd() else transitionToStart()
             }
             if (filterVM.catFilter.value!!) {
                 // after a short delay, scroll down to show all children
@@ -97,10 +93,8 @@ class FilterFragment : Fragment() {
         binding.filterDate.setOnClickListener {
             it.isActivated = !it.isActivated
             filterVM.dateFilter.value = !filterVM.dateFilter.value!!
-            if (filterVM.dateFilter.value!!) {
-                binding.filterDateMotion.transitionToEnd()
-            } else {
-                binding.filterDateMotion.transitionToStart()
+            binding.filterDateMotion.apply {
+                if (filterVM.dateFilter.value!!) transitionToEnd() else transitionToStart()
             }
             if (filterVM.dateFilter.value!!) {
                 // after a short delay, scroll down to show all children
@@ -171,6 +165,15 @@ class FilterFragment : Fragment() {
                 createChips(binding.filterIncomeChips, categories, filterVM.inCatSelectedChips)
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // opens filters back up if they were open before user left screen
+        if (filterVM.accFilter.value!!) binding.filterAccountMotion.transitionToEnd()
+        if (filterVM.catFilter.value!!) binding.filterCategoryMotion.transitionToEnd()
+        if (filterVM.dateFilter.value!!) binding.filterDateMotion.transitionToEnd()
     }
 
     /**
