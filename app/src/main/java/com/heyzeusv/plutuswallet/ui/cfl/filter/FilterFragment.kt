@@ -65,6 +65,7 @@ class FilterFragment : Fragment() {
             parentFragment?.view?.rootView?.findViewById(R.id.cfl_anchor)
 
         binding.filterAccount.setOnClickListener {
+            // causes icon animation
             it.isActivated = !it.isActivated
             filterVM.accFilter.value = !filterVM.accFilter.value!!
             binding.filterAccountMotion.apply {
@@ -73,12 +74,11 @@ class FilterFragment : Fragment() {
         }
 
         binding.filterCategory.setOnClickListener {
+            // causes icon animation
             it.isActivated = !it.isActivated
             filterVM.catFilter.value = !filterVM.catFilter.value!!
-            binding.filterCategoryMotion.apply {
-                if (filterVM.catFilter.value!!) transitionToEnd() else transitionToStart()
-            }
             if (filterVM.catFilter.value!!) {
+                binding.filterCategoryMotion.transitionToEnd()
                 // after a short delay, scroll down to show all children
                 binding.filterScroll.postDelayed({
                     binding.filterScroll.smoothScrollBy(0, if (filterVM.typeVisible.value!!) {
@@ -87,20 +87,23 @@ class FilterFragment : Fragment() {
                         binding.filterIncomeChips.bottom
                     })
                 }, 450)
+            } else {
+                binding.filterCategoryMotion.transitionToStart()
             }
         }
 
         binding.filterDate.setOnClickListener {
+            // causes icon animation
             it.isActivated = !it.isActivated
             filterVM.dateFilter.value = !filterVM.dateFilter.value!!
-            binding.filterDateMotion.apply {
-                if (filterVM.dateFilter.value!!) transitionToEnd() else transitionToStart()
-            }
             if (filterVM.dateFilter.value!!) {
+                binding.filterDateMotion.transitionToEnd()
                 // after a short delay, scroll down to show all children
                 binding.filterScroll.postDelayed({
                     binding.filterScroll.smoothScrollBy(0, binding.filterScroll.bottom)
                 }, 450)
+            } else {
+                binding.filterDateMotion.transitionToStart()
             }
         }
 

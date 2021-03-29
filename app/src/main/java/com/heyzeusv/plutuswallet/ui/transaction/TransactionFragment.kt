@@ -149,12 +149,17 @@ class TransactionFragment : BaseFragment() {
         }
 
         binding.tranRepeat.setOnClickListener {
+            // causes icon animation
+            it.isActivated = !it.isActivated
             tranVM.repeat.value = !tranVM.repeat.value!!
             if (tranVM.repeat.value!!) {
+                binding.tranRepeatMotion.transitionToEnd()
                 // after a short delay, scrolls to the bottom of ScrollView
                 binding.tranScrollView.postDelayed({
                     binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
-                }, 100)
+                }, 450)
+            } else {
+                binding.tranRepeatMotion.transitionToStart()
             }
         }
 
@@ -207,6 +212,12 @@ class TransactionFragment : BaseFragment() {
                 false
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (tranVM.repeat.value!!) binding.tranRepeatMotion.transitionToEnd()
     }
 
 
