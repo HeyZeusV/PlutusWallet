@@ -28,8 +28,7 @@ class FilterViewModel @ViewModelInject constructor(
     // translated "All"
     var all = "All"
 
-    // current Account selected and Account list
-    val account: MutableLiveData<String> = MutableLiveData("None")
+    // Account list
     val accList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
     // type of Category selected and which is visible, true = "Expense" false = "Income"
