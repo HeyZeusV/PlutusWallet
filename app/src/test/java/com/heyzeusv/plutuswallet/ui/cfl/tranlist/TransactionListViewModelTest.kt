@@ -125,7 +125,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedATD,
             tlVM.filteredTransactionList(
                 account = true, category = true, date = true, "Expense",
-                "Cash", "All", Date(0), Date(86400001 * 2)
+                listOf("Cash"), listOf("All"), Date(0), Date(86400001 * 2)
             ).value
         )
 
@@ -136,7 +136,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedATCD,
             tlVM.filteredTransactionList(
                 account = true, category = true, date = true, "Income",
-                "Debit Card", "Salary", Date(0), Date(86400001 * 6)
+                listOf("Debit Card"), listOf("Salary"), Date(0), Date(86400001 * 6)
             ).value
         )
 
@@ -147,7 +147,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedAT,
             tlVM.filteredTransactionList(
                 account = true, category = true, date = false, "Expense",
-                "Credit Card", "All", Date(), Date()
+                listOf("Credit Card"), listOf("All"), Date(), Date()
             ).value
         )
 
@@ -158,7 +158,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedATC,
             tlVM.filteredTransactionList(
                 account = true, category = true, date = false, "Expense",
-                "Credit Card", "Entertainment", Date(0), Date()
+                listOf("Credit Card"), listOf("Entertainment"), Date(0), Date()
             ).value
         )
 
@@ -166,7 +166,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedAD,
             tlVM.filteredTransactionList(
                 account = true, category = false, date = true, "",
-                "None", "", Date(0), Date(86400001 * 6)
+                listOf("None"), listOf(), Date(0), Date(86400001 * 6)
             ).value
         )
 
@@ -177,7 +177,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedA,
             tlVM.filteredTransactionList(
                 account = true, category = false, date = false, "",
-                "Credit Card", "", Date(), Date()
+                listOf("Credit Card"), listOf(), Date(), Date()
             ).value
         )
 
@@ -185,7 +185,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedTD,
             tlVM.filteredTransactionList(
                 account = false, category = true, date = true, "Income",
-                "", "All", Date(86400001 * 15), Date()
+                listOf(), listOf("All"), Date(86400001 * 15), Date()
             ).value
         )
 
@@ -196,7 +196,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedTCD,
             tlVM.filteredTransactionList(
                 account = false, category = true, date = true, "Expense",
-                "", "Food", Date(86400000 * 2), Date()
+                listOf(), listOf("Food"), Date(86400000 * 2), Date()
             ).value
         )
 
@@ -211,7 +211,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedT,
             tlVM.filteredTransactionList(
                 account = false, category = true, date = false, "Expense",
-                "", "All", Date(), Date()
+                listOf(), listOf("All"), Date(), Date()
             ).value
         )
 
@@ -222,7 +222,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedTC,
             tlVM.filteredTransactionList(
                 account = false, category = true, date = false, "Expense",
-                "", "Entertainment", Date(), Date()
+                listOf(), listOf("Entertainment"), Date(), Date()
             ).value
         )
 
@@ -235,7 +235,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expectedD,
             tlVM.filteredTransactionList(
                 account = false, category = false, date = true, "",
-                "", "", Date(86400000 * 2), Date(86400000 * 4)
+                listOf(), listOf(), Date(86400000 * 2), Date(86400000 * 4)
             ).value
         )
 
@@ -252,7 +252,7 @@ internal class TransactionListViewModelTest {
         assertEquals(expected,
             tlVM.filteredTransactionList(
                 account = false, category = false, date = false, "",
-                "", "", Date(), Date()
+                listOf(), listOf(), Date(), Date()
             ).value
         )
     }

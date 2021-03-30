@@ -8,6 +8,7 @@ import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -32,9 +33,17 @@ internal class FilterViewModelTest {
         filterVM = FilterViewModel(repo)
     }
 
+    @AfterEach
+    fun clearLists() {
+
+        filterVM.accSelectedChips.clear()
+        filterVM.exCatSelectedChips.clear()
+        filterVM.inCatSelectedChips.clear()
+    }
+
     @Test
-    @DisplayName("Should retrieve data to be displayed in Spinners from Database")
-    fun prepareSpinners() {
+    @DisplayName("Should retrieve data to be displayed in ChipGroups from Database")
+    fun prepareChipData() {
 
         val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
         val expectedExCatList: MutableList<String> = mutableListOf("All", "Entertainment", "Food", "Unused Expense")
@@ -73,7 +82,7 @@ internal class FilterViewModelTest {
 
         filterVM.startDateSelected(Date(10000000))
 
-        assertEquals(Date(10000000), filterVM.startDate.value)
+        assertEquals(Date(10000000), filterVM.startDate)
     }
 
     @Test
@@ -82,22 +91,22 @@ internal class FilterViewModelTest {
 
         filterVM.endDateSelected(Date(1000))
 
-        assertEquals(Date(1000 + 86399999), filterVM.endDate.value)
+        assertEquals(Date(1000 + 86399999), filterVM.endDate)
     }
 
     @Test
     @DisplayName("Should apply filters selected and create cflChange event")
     fun applyFilterOC() {
 
-        filterVM.catCheck.value = true
+        filterVM.catFilter.value = true
         filterVM.account.value = "Cash"
-        filterVM.exCategory.value = "Food"
-        filterVM.startDate.value = Date(0)
-        filterVM.endDate.value = Date(1000)
-        filterVM.exCategory.value = "Food"
+        filterVM.accSelectedChips.add("Cash")
+        filterVM.exCatSelectedChips.add("Food")
+        filterVM.startDate = Date(0)
+        filterVM.endDate = Date(1000)
         val expectedCFLtInfo = TransactionInfo(
             account = false, category = true, date = false,
-            "Expense", "Cash", "Food", Date(0), Date(1000)
+            "Expense", listOf("Cash"), listOf("Food"), Date(0), Date(1000)
         )
 
         filterVM.applyFilterOC()
@@ -107,26 +116,23 @@ internal class FilterViewModelTest {
         assertEquals(true, cflChangeEvent.getContentIfNotHandled())
 
         // check if filters reset properly
-        filterVM.catCheck.value = false
+        filterVM.catFilter.value = false
         val expectedStartDate: Date = DateUtils.startOfDay(Date())
         val expectedEndDate = Date(expectedStartDate.time + 86399999)
 
         filterVM.applyFilterOC()
 
-        assertEquals(expectedStartDate, filterVM.startDate.value)
-        assertEquals(expectedEndDate, filterVM.endDate.value)
-        assertEquals("All", filterVM.exCategory.value)
-        assertEquals("All", filterVM.inCategory.value)
-
+        assertEquals(expectedStartDate, filterVM.startDate)
+        assertEquals(expectedEndDate, filterVM.endDate)
     }
 
     @Test
     @DisplayName("Should create dateError Event when applying filter with endDate before startDate")
     fun applyFilterOCDateError() {
 
-        filterVM.dateCheck.value = true
-        filterVM.startDate.value = Date()
-        filterVM.endDate.value = Date(0)
+        filterVM.dateFilter.value = true
+        filterVM.startDate = Date()
+        filterVM.endDate = Date(0)
 
         filterVM.applyFilterOC()
         val dateErrorEvent: Event<Boolean> = filterVM.dateErrorEvent.value!!

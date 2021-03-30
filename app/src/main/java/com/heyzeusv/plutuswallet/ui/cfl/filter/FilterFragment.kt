@@ -142,6 +142,14 @@ class FilterFragment : Fragment() {
             dateDialog.show()
         })
 
+        filterVM.resetEvent.observe(viewLifecycleOwner, EventObserver  { reset: Boolean  ->
+            if (reset) {
+                binding.filterAccountChips.clearCheck()
+                binding.filterExpenseChips.clearCheck()
+                binding.filterIncomeChips.clearCheck()
+            }
+        })
+
         filterVM.accList.observe(viewLifecycleOwner, { accounts: MutableList<String> ->
             // don't attempt to create Chip if list hasn't been loaded
             if (accounts.size > 0) {

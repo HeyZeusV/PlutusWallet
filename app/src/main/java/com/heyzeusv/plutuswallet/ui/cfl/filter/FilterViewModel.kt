@@ -35,9 +35,7 @@ class FilterViewModel @ViewModelInject constructor(
     // type of Category selected and which is visible, true = "Expense" false = "Income"
     var typeVisible: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    // current Category selected and Category list, both by type
-    val exCategory: MutableLiveData<String> = MutableLiveData("")
-    val inCategory: MutableLiveData<String> = MutableLiveData("")
+    // Category list by type
     val exCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     val inCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
@@ -69,6 +67,9 @@ class FilterViewModel @ViewModelInject constructor(
     private val _selectDateEvent = MutableLiveData<Event<Int>>()
     val selectDateEvent: LiveData<Event<Int>> = _selectDateEvent
 
+    private val _resetEvent = MutableLiveData<Event<Boolean>>()
+    val resetEvent: LiveData<Event<Boolean>> = _resetEvent
+
     // used to pass TransactionInfo to CFLViewModel
     private val _cflChange = MutableLiveData<Event<Boolean>>()
     val cflChange: LiveData<Event<Boolean>> = _cflChange
@@ -91,10 +92,6 @@ class FilterViewModel @ViewModelInject constructor(
             mInCatList.add(0, all)
             exCatList.value = mExCatList
             inCatList.value = mInCatList
-
-            // sets Spinner to previous value since it might have moved position in list
-            exCategory.value = exCategory.value
-            inCategory.value = inCategory.value
         }
     }
 
@@ -185,14 +182,16 @@ class FilterViewModel @ViewModelInject constructor(
      */
     private fun resetFilter() {
 
+        // clear Chip lists and launch resetEvent to clear Chips
+        accSelectedChips.clear()
+        exCatSelectedChips.clear()
+        inCatSelectedChips.clear()
+        _resetEvent.value = Event(true)
+
         // sets the startDate to very start of current day and endDate to right before the next day
         startDate = DateUtils.startOfDay(Date())
         endDate = Date(startDate.time + MIDNIGHT_MILLI)
         startDateLD.value = ""
         endDateLD.value = ""
-
-        // resets type Button and Spinner selections
-        exCategory.value = all
-        inCategory.value = all
     }
 }

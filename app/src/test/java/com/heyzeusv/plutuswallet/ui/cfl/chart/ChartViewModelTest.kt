@@ -55,7 +55,7 @@ internal class ChartViewModelTest {
 
         // retrieve all
         val ctList: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = false, fDate = false, "", Date(0), Date(0)
+            fAccount = false, fDate = false, listOf(), Date(0), Date(0)
         )
         // no filter
         chartVM.prepareLists(ctList.value!!, false, "")
@@ -94,28 +94,28 @@ internal class ChartViewModelTest {
 
         // no filter
         val ctList: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = false, fDate = false, "", Date(0), Date(0)
+            fAccount = false, fDate = false, listOf(), Date(0), Date(0)
         )
         chartVM.prepareLists(ctList.value!!, false, "")
 
         // All expense categories
-        chartVM.prepareTotals(true, "All", "Expense")
+        chartVM.prepareTotals(true, listOf("All"), "Expense")
         assertEquals(expectedAllExTotal, chartVM.exTotal)
         assertEquals(expectedTotalZero, chartVM.inTotal)
         // Food expense category
-        chartVM.prepareTotals(true, "Food", "Expense")
+        chartVM.prepareTotals(true, listOf("Food"), "Expense")
         assertEquals(expectedFoodExTotal, chartVM.exTotal)
         assertEquals(expectedTotalZero, chartVM.inTotal)
         // All income categories
-        chartVM.prepareTotals(true, "All", "Income")
+        chartVM.prepareTotals(true, listOf("All"), "Income")
         assertEquals(expectedTotalZero, chartVM.exTotal)
         assertEquals(expectedAllInTotal, chartVM.inTotal)
         // Test income category
-        chartVM.prepareTotals(true, "Test", "Income")
+        chartVM.prepareTotals(true, listOf("Test"), "Income")
         assertEquals(expectedTotalZero, chartVM.exTotal)
         assertEquals(expectedTestInTotal, chartVM.inTotal)
         // All categories
-        chartVM.prepareTotals(null, null, null)
+        chartVM.prepareTotals(false, listOf(), "Expense")
         assertEquals(expectedAllExTotal, chartVM.exTotal)
         assertEquals(expectedAllInTotal, chartVM.inTotal)
     }
@@ -143,16 +143,16 @@ internal class ChartViewModelTest {
 
         // testing all filter options
         val noFilter: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = false, fDate = false, "", Date(0), Date(0)
+            fAccount = false, fDate = false, listOf(), Date(0), Date(0)
         )
         val accFilter: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = true, fDate = false, "Cash", Date(0), Date(0)
+            fAccount = true, fDate = false, listOf("Cash"), Date(0), Date(0)
         )
         val dateFilter: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = false, fDate = true, "", Date(86400000 * 2), Date(86400000 * 5)
+            fAccount = false, fDate = true, listOf(), Date(86400000 * 2), Date(86400000 * 5)
         )
         val bothFilter: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = true, fDate = true, "Cash", Date(0), Date(86400000)
+            fAccount = true, fDate = true, listOf("Cash"), Date(0), Date(86400000)
         )
 
         assertEquals(expectedNoFilter, noFilter.value)
