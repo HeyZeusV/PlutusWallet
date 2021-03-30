@@ -78,7 +78,7 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Retrieves data that will be displayed in Spinners from Repository.
      */
-    fun prepareSpinners() {
+    fun prepareChipData() {
 
         viewModelScope.launch {
             // Account data
@@ -96,14 +96,6 @@ class FilterViewModel @ViewModelInject constructor(
             exCategory.value = exCategory.value
             inCategory.value = inCategory.value
         }
-    }
-
-    /**
-     *  onClick for account filter Button. Switches value of accFilter Boolean.
-     */
-    fun accountFilterOC() {
-
-        accFilter.value = !accFilter.value!!
     }
 
     /**
@@ -141,11 +133,13 @@ class FilterViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  Applies filters or shows Snackbar warning if end date is before start date.
+     *  Applies filters or shows Snackbar warning if no Chips are selected or if end date is before
+     *  start date.
      */
     fun applyFilterOC() {
 
         when {
+            // users must select at least 1 Chip
             accFilter.value!! && accSelectedChips.isEmpty() -> _noChipEvent.value = Event(true)
             catFilter.value!! && typeVisible.value!! && exCatSelectedChips.isEmpty() ->
                 _noChipEvent.value = Event(false)

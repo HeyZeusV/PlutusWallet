@@ -90,6 +90,7 @@ class TransactionFragment : BaseFragment() {
                 } else {
                     binding.tranIncomeCat.setText(transaction.category, false)
                 }
+                if (tranVM.repeat.value!!) binding.tranRepeatMotion.transitionToEnd()
                 binding.tranPeriod.setText(tranVM.period, false)
             }
         })
@@ -149,8 +150,6 @@ class TransactionFragment : BaseFragment() {
         }
 
         binding.tranRepeat.setOnClickListener {
-            // causes icon animation
-            it.isActivated = !it.isActivated
             tranVM.repeat.value = !tranVM.repeat.value!!
             if (tranVM.repeat.value!!) {
                 binding.tranRepeatMotion.transitionToEnd()
@@ -213,13 +212,6 @@ class TransactionFragment : BaseFragment() {
             }
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-
-        if (tranVM.repeat.value!!) binding.tranRepeatMotion.transitionToEnd()
-    }
-
 
     /**
      *  Creates negative onClick and onCancel listeners for AlertDialog. Which [spinner] AlertDialog

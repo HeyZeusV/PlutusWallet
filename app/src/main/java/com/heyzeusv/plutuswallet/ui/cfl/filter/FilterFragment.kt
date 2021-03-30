@@ -52,7 +52,7 @@ class FilterFragment : Fragment() {
         binding.filterVM = filterVM
 
         // preparing data/listeners
-        filterVM.prepareSpinners()
+        filterVM.prepareChipData()
 
         return binding.root
     }

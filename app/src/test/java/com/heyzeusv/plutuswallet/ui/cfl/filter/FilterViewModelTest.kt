@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.ui.cfl.filter
 
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
-import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
@@ -41,7 +40,7 @@ internal class FilterViewModelTest {
         val expectedExCatList: MutableList<String> = mutableListOf("All", "Entertainment", "Food", "Unused Expense")
         val expectedInCatList: MutableList<String> = mutableListOf("All", "Salary", "Unused Income", "Zelle")
 
-        filterVM.prepareSpinners()
+        filterVM.prepareChipData()
 
         assertEquals(expectedAccList, filterVM.accList.value)
         assertEquals(expectedExCatList, filterVM.exCatList.value)
