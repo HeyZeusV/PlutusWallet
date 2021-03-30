@@ -180,3 +180,12 @@ fun AutoCompleteTextView.setEntries(entries: List<String>?) {
 
     }
 }
+
+/**
+ *  Sets Views activated state to [activated].
+ */
+@BindingAdapter("isActivated")
+fun View.activated(activated: Boolean) {
+
+    this.isActivated = activated
+}

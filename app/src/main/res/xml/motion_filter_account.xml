@@ -14,11 +14,9 @@
 
         <Constraint
             android:id="@+id/filter_account_scrollview"
-            android:layout_width="match_parent"
+            style="@style/Filter.ScrollView.Nested.MaxHeight"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
             android:layout_marginTop="6dp"
-            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
             android:layout_marginBottom="6dp"
             app:layout_constraintBottom_toBottomOf="@id/filter_account"
             app:layout_constraintEnd_toEndOf="@id/filter_account"
@@ -31,14 +29,9 @@
 
         <Constraint
             android:id="@+id/filter_account_scrollview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+            style="@style/Filter.ScrollView.Nested.MaxHeight"
             android:layout_marginTop="@dimen/filterNestedSvToButtonMargin"
-            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
             android:layout_marginBottom="@dimen/filterNestedSvToButtonMargin"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filter_account"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/filter_account" />
     </ConstraintSet>
 </MotionScene>

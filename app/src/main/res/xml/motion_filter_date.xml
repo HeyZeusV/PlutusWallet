@@ -14,12 +14,9 @@
 
         <Constraint
             android:id="@+id/filter_start_date"
-            style="@style/Transaction.Button.Outlined"
-            android:layout_width="match_parent"
+            style="@style/Filter.Button.Outlined.Child"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
             android:layout_marginTop="6dp"
-            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
             android:layout_marginBottom="6dp"
             app:layout_constraintBottom_toBottomOf="@id/filter_date"
             app:layout_constraintEnd_toEndOf="@id/filter_date"
@@ -28,12 +25,9 @@
 
         <Constraint
             android:id="@+id/filter_end_date"
-            style="@style/Transaction.Button.Outlined"
-            android:layout_width="match_parent"
+            style="@style/Filter.Button.Outlined.Child"
             android:layout_height="0dp"
-            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
             android:layout_marginTop="6dp"
-            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
             android:layout_marginBottom="6dp"
             app:layout_constraintBottom_toBottomOf="@id/filter_date"
             app:layout_constraintEnd_toEndOf="@id/filter_date"
@@ -46,24 +40,14 @@
 
         <Constraint
             android:id="@+id/filter_start_date"
-            style="@style/Transaction.Button.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+            style="@style/Filter.Button.Outlined.Child"
             android:layout_marginTop="@dimen/filterButtonToButtonMargin"
-            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/filter_date" />
 
         <Constraint
             android:id="@+id/filter_end_date"
-            style="@style/Transaction.Button.Outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/filterChildMarginsStartEnd"
+            style="@style/Filter.Button.Outlined.Child"
             android:layout_marginTop="@dimen/filterButtonToButtonMargin"
-            android:layout_marginEnd="@dimen/filterChildMarginsStartEnd"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/filter_start_date" />
     </ConstraintSet>
 </MotionScene>

@@ -5,6 +5,10 @@
     <dimen name="textSizeTranListViewHolder">14sp</dimen>
     <dimen name="textSizeChip">16sp</dimen>
 
+    <dimen name="buttonPadding">4dp</dimen>
+    <dimen name="buttonStrokeWidth">2dp</dimen>
+    <dimen name="buttonIconPadding">-24dp</dimen>
+
     <!-- CardView dimensions -->
     <dimen name="cardCornerRadius">4dp</dimen>
     <dimen name="cardFullMargin">4dp</dimen>
@@ -43,6 +47,9 @@
     <!-- FilterFragment margins -->
     <dimen name="filterParentMarginStartEnd">10dp</dimen>
     <dimen name="filterChildMarginsStartEnd">16dp</dimen>
+    <dimen name="filterChipGroupMarginStartEnd">4dp</dimen>
+    <dimen name="filterChipSpacing">4dp</dimen>
+    <dimen name="filterNSVMaxHeight">144dp</dimen>
     <!-- Top margin between Views, any change should be applied to the others -->
     <dimen name="filterNestedSvToButtonMargin">10dp</dimen>
     <dimen name="filterButtonToNestedSvMargin">10dp</dimen>
@@ -53,8 +60,6 @@
     <dimen name="tranLayoutToLayoutMargin">5dp</dimen>
     <dimen name="tranButtonToLayoutMargin">4dp</dimen>
     <dimen name="tranLayoutToButtonMargin">19dp</dimen>
-    <dimen name="tranButtonPadding">4dp</dimen>
-    <dimen name="tranButtonStrokeWidth">2dp</dimen>
     <dimen name="tranButtonHeight">70dp</dimen>
 
     <!-- TransactionListFragment -->
