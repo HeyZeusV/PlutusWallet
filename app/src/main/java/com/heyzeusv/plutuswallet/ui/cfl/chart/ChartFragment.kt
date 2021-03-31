@@ -69,16 +69,16 @@ class ChartFragment : BaseFragment() {
             // LiveData of list of CategoryTotals
             val ctLiveData: LiveData<List<CategoryTotals>> =
                 chartVM.filteredCategoryTotals(
-                    tInfo.account, tInfo.date, tInfo.accountName, tInfo.start, tInfo.end
+                    tInfo.account, tInfo.date, tInfo.accountNames, tInfo.start, tInfo.end
                 )
 
             ctLiveData.observe(viewLifecycleOwner, { ctList: List<CategoryTotals> ->
                 // prepares list of ItemViewCharts that will be used to create PieCharts
                 chartVM.prepareLists(ctList, tInfo.category, tInfo.type)
-                chartVM.prepareTotals(tInfo.category, tInfo.categoryName, tInfo.type)
+                chartVM.prepareTotals(tInfo.category, tInfo.categoryNames, tInfo.type)
                 prepareTotalTexts()
-                chartVM.prepareIvgAdapter(
-                    tInfo.category, tInfo.categoryName, tInfo.type,
+                chartVM.prepareIvcAdapter(
+                    tInfo.category, tInfo.categoryNames, tInfo.type,
                     getString(R.string.type_expense), getString(R.string.type_income),
                     exColors, inColors
                 )
@@ -115,7 +115,6 @@ class ChartFragment : BaseFragment() {
     private fun prepareTotalTexts() {
 
         when {
-
             setVals.decimalPlaces && setVals.symbolSide -> {
                 chartVM.exTotText = getString(
                     R.string.chart_amount,

@@ -80,7 +80,7 @@
     <string name="accounts">アカウント</string>
     <string name="account_new">新しいアカウント</string>
     <string name="category_new">新たなカテゴリー</string>
-    <string name="transaction_new">新規取引</string>
+    <string name="cfl_menu_transaction">新規取引</string>
     <string name="transaction_save">トランザクションを保存</string>
     <string name="transaction">トランザクション</string>
     <string name="cfl_overview">概要概要</string>
@@ -93,4 +93,7 @@
     <string name="preferences_theme_system">システム</string>
     <string name="alert_dialog_input_error">空白にすることはできません！</string>
     <string name="transaction_period">限目</string>
+    <string name="cfl_menu_filter">フィルタの編集</string>
+    <string name="filter_no_chip_account">アカウントを1つ以上選択してください!!</string>
+    <string name="filter_no_chip_category">"カテゴリを1つ以上選択してください!! "</string>
 </resources>

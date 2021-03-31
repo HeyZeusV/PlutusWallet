@@ -90,6 +90,7 @@ class TransactionFragment : BaseFragment() {
                 } else {
                     binding.tranIncomeCat.setText(transaction.category, false)
                 }
+                if (tranVM.repeat.value!!) binding.tranRepeatMotion.transitionToEnd()
                 binding.tranPeriod.setText(tranVM.period, false)
             }
         })
@@ -151,10 +152,13 @@ class TransactionFragment : BaseFragment() {
         binding.tranRepeat.setOnClickListener {
             tranVM.repeat.value = !tranVM.repeat.value!!
             if (tranVM.repeat.value!!) {
+                binding.tranRepeatMotion.transitionToEnd()
+                // after a short delay, scrolls to the bottom of ScrollView
                 binding.tranScrollView.postDelayed({
-                        binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
-                    }, 100
-                )
+                    binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
+                }, 450)
+            } else {
+                binding.tranRepeatMotion.transitionToStart()
             }
         }
 
@@ -208,7 +212,6 @@ class TransactionFragment : BaseFragment() {
             }
         }
     }
-
 
     /**
      *  Creates negative onClick and onCancel listeners for AlertDialog. Which [spinner] AlertDialog

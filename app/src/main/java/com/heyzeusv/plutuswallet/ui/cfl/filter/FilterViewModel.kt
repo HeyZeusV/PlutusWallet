@@ -10,6 +10,7 @@ import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.launch
+import java.text.DateFormat
 import java.util.Date
 
 private const val MIDNIGHT_MILLI = 86399999
@@ -27,28 +28,37 @@ class FilterViewModel @ViewModelInject constructor(
     // translated "All"
     var all = "All"
 
-    // current Account selected and Account list
-    val account: MutableLiveData<String> = MutableLiveData("None")
+    // Account list
     val accList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
     // type of Category selected and which is visible, true = "Expense" false = "Income"
     var typeVisible: MutableLiveData<Boolean> = MutableLiveData(true)
 
-    // current Category selected and Category list, both by type
-    val exCategory: MutableLiveData<String> = MutableLiveData("")
-    val inCategory: MutableLiveData<String> = MutableLiveData("")
+    // Category list by type
     val exCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     val inCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
     // Date values
-    val startDate: MutableLiveData<Date> = MutableLiveData(DateUtils.startOfDay(Date()))
-    val endDate: MutableLiveData<Date> =
-        MutableLiveData(Date(startDate.value!!.time + MIDNIGHT_MILLI))
+    var startDate: Date = DateUtils.startOfDay(Date())
+    var endDate: Date = Date(startDate.time + MIDNIGHT_MILLI)
 
-    // CheckBox status
-    val accCheck: MutableLiveData<Boolean> = MutableLiveData(false)
-    val catCheck: MutableLiveData<Boolean> = MutableLiveData(false)
-    val dateCheck: MutableLiveData<Boolean> = MutableLiveData(false)
+    // Date string values
+    val startDateLD: MutableLiveData<String> = MutableLiveData("")
+    val endDateLD: MutableLiveData<String> = MutableLiveData("")
+
+    // Button status
+    val accFilter: MutableLiveData<Boolean> = MutableLiveData(false)
+    val catFilter: MutableLiveData<Boolean> = MutableLiveData(false)
+    val dateFilter: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    // Chip status
+    val accSelectedChips: MutableList<String> = mutableListOf()
+    val exCatSelectedChips: MutableList<String> = mutableListOf()
+    val inCatSelectedChips: MutableList<String> = mutableListOf()
+
+    // Events
+    private val _noChipEvent = MutableLiveData<Event<Boolean>>()
+    val noChipEvent: LiveData<Event<Boolean>> = _noChipEvent
 
     private val _dateErrorEvent = MutableLiveData<Event<Boolean>>()
     val dateErrorEvent: LiveData<Event<Boolean>> = _dateErrorEvent
@@ -56,15 +66,19 @@ class FilterViewModel @ViewModelInject constructor(
     private val _selectDateEvent = MutableLiveData<Event<Int>>()
     val selectDateEvent: LiveData<Event<Int>> = _selectDateEvent
 
+    private val _resetEvent = MutableLiveData<Event<Boolean>>()
+    val resetEvent: LiveData<Event<Boolean>> = _resetEvent
+
     // used to pass TransactionInfo to CFLViewModel
     private val _cflChange = MutableLiveData<Event<Boolean>>()
     val cflChange: LiveData<Event<Boolean>> = _cflChange
+
     var cflTInfo: TransactionInfo = TransactionInfo()
 
     /**
      *  Retrieves data that will be displayed in Spinners from Repository.
      */
-    fun prepareSpinners() {
+    fun prepareChipData() {
 
         viewModelScope.launch {
             // Account data
@@ -77,10 +91,6 @@ class FilterViewModel @ViewModelInject constructor(
             mInCatList.add(0, all)
             exCatList.value = mExCatList
             inCatList.value = mInCatList
-
-            // sets Spinner to previous value since it might have moved position in list
-            exCategory.value = exCategory.value
-            inCategory.value = inCategory.value
         }
     }
 
@@ -105,7 +115,8 @@ class FilterViewModel @ViewModelInject constructor(
      */
     fun startDateSelected(newDate: Date) {
 
-        startDate.value = newDate
+        startDate = newDate
+        startDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
     }
 
     /**
@@ -113,48 +124,55 @@ class FilterViewModel @ViewModelInject constructor(
      */
     fun endDateSelected(newDate: Date) {
 
-        endDate.value = Date(newDate.time + MIDNIGHT_MILLI)
+        endDate = Date(newDate.time + MIDNIGHT_MILLI)
+        endDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
     }
 
     /**
-     *  Applies filters or shows Snackbar warning if end date is before start date.
+     *  Applies filters or shows Snackbar warning if no Chips are selected or if end date is before
+     *  start date.
      */
     fun applyFilterOC() {
 
-        // startDate must be before endDate else it displays warning and doesn't apply filters
-        if (startDate.value!! > endDate.value!!
-            && dateCheck.value!!
-        ) {
-            _dateErrorEvent.value = Event(true)
-        } else {
-            var cat: String
-            val type: String
-            // sets type and category applied
-            if (typeVisible.value!!) {
-                type = "Expense"
-                cat = exCategory.value!!
-            } else {
-                type = "Income"
-                cat = inCategory.value!!
-            }
+        when {
+            // users must select at least 1 Chip
+            accFilter.value!! && accSelectedChips.isEmpty() -> _noChipEvent.value = Event(true)
+            catFilter.value!! && typeVisible.value!! && exCatSelectedChips.isEmpty() ->
+                _noChipEvent.value = Event(false)
+            catFilter.value!! && !typeVisible.value!! && inCatSelectedChips.isEmpty() ->
+                _noChipEvent.value = Event(false)
+            // startDate must be before endDate else it displays warning and doesn't apply filters
+            dateFilter.value!! && startDate > endDate -> _dateErrorEvent.value = Event(true)
+            else -> {
+                val cats: List<String>
+                val type: String
+                // sets type and category applied
+                if (typeVisible.value!!) {
+                    type = "Expense"
+                    cats = exCatSelectedChips
+                } else {
+                    type = "Income"
+                    cats = inCatSelectedChips
+                }
 
-            // translates "All"
-            if (cat == all) cat = "All"
+                // translates "All"
+                if (cats.contains(all)) cats[cats.indexOf(all)] = "All"
 
-            // updating MutableLiveData value in ViewModel
-            cflTInfo = TransactionInfo(
-                accCheck.value!!, catCheck.value!!, dateCheck.value!!,
-                type, account.value!!, cat,
-                startDate.value!!, endDate.value!!
-            )
-            // if all filters are unchecked
-            if (!accCheck.value!!
-                && !catCheck.value!!
-                && !dateCheck.value!!
-            ) {
-                resetFilter()
+                // updating MutableLiveData value in ViewModel
+                cflTInfo = TransactionInfo(
+                    accFilter.value!!, catFilter.value!!, dateFilter.value!!,
+                    type, accSelectedChips, cats,
+                    startDate, endDate
+                )
+                // if all filters are unchecked
+                if (!accFilter.value!!
+                    && !catFilter.value!!
+                    && !dateFilter.value!!
+                ) {
+                    resetFilter()
+                }
+                _cflChange.value = Event(true)
             }
-            _cflChange.value = Event(true)
         }
     }
 
@@ -163,12 +181,16 @@ class FilterViewModel @ViewModelInject constructor(
      */
     private fun resetFilter() {
 
-        // sets the startDate to very start of current day and endDate to right before the next day
-        startDate.value = DateUtils.startOfDay(Date())
-        endDate.value = Date(startDate.value!!.time + MIDNIGHT_MILLI)
+        // clear Chip lists and launch resetEvent to clear Chips
+        accSelectedChips.clear()
+        exCatSelectedChips.clear()
+        inCatSelectedChips.clear()
+        _resetEvent.value = Event(true)
 
-        // resets type Button and Spinner selections
-        exCategory.value = all
-        inCategory.value = all
+        // sets the startDate to very start of current day and endDate to right before the next day
+        startDate = DateUtils.startOfDay(Date())
+        endDate = Date(startDate.time + MIDNIGHT_MILLI)
+        startDateLD.value = ""
+        endDateLD.value = ""
     }
 }

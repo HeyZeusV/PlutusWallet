@@ -16,6 +16,7 @@
     <color name="colorButtonBackground">@color/green_base</color>
     <color name="colorButtonText">@color/white</color>
     <color name="colorButtonUnselected">#60000000</color>
+    <color name="colorFilterBackground">@color/white</color>
 
     <!-- Chart text colors -->
     <color name="colorChartText">@color/black</color>

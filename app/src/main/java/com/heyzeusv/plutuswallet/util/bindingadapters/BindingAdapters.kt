@@ -1,28 +1,22 @@
 package com.heyzeusv.plutuswallet.util.bindingadapters
 
-import android.text.InputFilter
-import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
-import androidx.databinding.BindingAdapter
-import androidx.databinding.InverseBindingAdapter
-import androidx.databinding.InverseBindingListener
+import androidx.databinding.*
 import androidx.viewpager2.widget.ViewPager2
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
-import com.google.android.material.chip.ChipGroup
+import com.github.mikephil.charting.highlight.Highlight
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ItemViewChart
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartAdapter
-import com.heyzeusv.plutuswallet.ui.transaction.CurrencyEditText
 import com.heyzeusv.plutuswallet.util.MaterialSpinnerAdapter
 import java.io.BufferedReader
 import java.io.IOException
@@ -67,8 +61,8 @@ fun PieChart.setUpChart(ivc: ItemViewChart) {
     // colors used for slices
     dataSet.colors = ivc.colorArray
     // size of highlighted area
-    if (ivc.fCategory == true && ivc.fType == type && ivc.fCatName != "All") {
-        dataSet.selectionShift = 7.5f
+    if (ivc.fCategory && ivc.fType == type && !ivc.fCatName.contains("All")) {
+        dataSet.selectionShift = 10f
     } else {
         dataSet.selectionShift = 0.0f
     }
@@ -101,14 +95,17 @@ fun PieChart.setUpChart(ivc: ItemViewChart) {
     setDrawCenterText(true)
     // true = use percent values
     setUsePercentValues(true)
+    val highlights: MutableList<Highlight> = mutableListOf()
     // highlights Category selected if it exists with current filters applied
-    if (ivc.fCategory == true && ivc.fType == type && ivc.fCatName != "All") {
-        // finds position of Category selected in FilterFragment in ctList
-        val position: Int = ivc.ctList.indexOfFirst { it.category == ivc.fCatName }
-        // -1 = doesn't exist
-        if (position != -1) highlightValue(position.toFloat(), 0)
-
+    if (ivc.fCategory && ivc.fType == type && !ivc.fCatName.contains("All")) {
+        for (cat: String in ivc.fCatName) {
+            // finds position of Category selected in FilterFragment in ctList
+            val position: Int = ivc.ctList.indexOfFirst { it.category == cat }
+            // -1 = doesn't exist
+            if (position != -1) highlights.add(Highlight(position.toFloat(), 0, 0))
+        }
     }
+    highlightValues(highlights.toTypedArray())
     // refreshes PieChart
     invalidate()
 }
@@ -120,71 +117,6 @@ fun PieChart.setUpChart(ivc: ItemViewChart) {
 fun View.setIsEnabled(enabled: Boolean) {
 
     isEnabled = enabled
-}
-
-/**
- *  Selects Chip with [id] in ChipGroup
- */
-@BindingAdapter("selectedChipId")
-fun ChipGroup.setSelectedChipId(id: Int) {
-
-    if (id != checkedChipId) check(id)
-}
-
-/**
- *  InverseListener for ChipGroup 2-way DataBinding.
- *  [inverseBindingListener] gets triggered when a chip is selected.
- */
-@BindingAdapter("selectedChipIdAttrChanged")
-fun ChipGroup.chipIdInverseBindingListener(inverseBindingListener: InverseBindingListener?) {
-
-    if (inverseBindingListener == null) {
-        setOnCheckedChangeListener(null)
-    } else {
-        setOnCheckedChangeListener { group: ChipGroup, _ ->
-            // ensures a chip is always selected
-            for (i: Int in 0 until group.childCount) {
-                val chip: View = group.getChildAt(i)
-                chip.isClickable = chip.id != group.checkedChipId
-            }
-            inverseBindingListener.onChange()
-        }
-    }
-}
-
-/**
- *  Returns selected Chip when InverseListener is triggered.
- */
-@InverseBindingAdapter(attribute = "selectedChipId", event = "selectedChipIdAttrChanged")
-fun ChipGroup.getSelectedChipId(): Int = checkedChipId
-
-/**
- *  Sets filter that prevents user from typing decimal symbol when turned off in [setVals].
- */
-@BindingAdapter("filter")
-fun CurrencyEditText.setFilter(setVals: SettingsValues) {
-
-    // user selects no decimal places
-    if (!setVals.decimalPlaces) {
-        // filter that prevents user from typing decimalSymbol thus only integers
-        filters += object : InputFilter {
-
-            override fun filter(
-                source: CharSequence?,
-                start: Int,
-                end: Int,
-                dest: Spanned?,
-                dstart: Int,
-                dend: Int
-            ): CharSequence? {
-
-                for (i: Int in start until end) {
-                    if (source == setVals.decimalSymbol.toString()) return ""
-                }
-                return null
-            }
-        }
-    }
 }
 
 /**
@@ -247,4 +179,13 @@ fun AutoCompleteTextView.setEntries(entries: List<String>?) {
         setAdapter(arrayAdapter)
 
     }
+}
+
+/**
+ *  Sets Views activated state to [activated].
+ */
+@BindingAdapter("isActivated")
+fun View.activated(activated: Boolean) {
+
+    this.isActivated = activated
 }

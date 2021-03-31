@@ -14,9 +14,8 @@
 
     <com.google.android.material.card.MaterialCardView
         style="@style/CardView.Base"
-        android:layout_marginStart="@dimen/cardSharedMargin"
-        android:layout_marginTop="@dimen/cardFullMargin"
-        android:layout_marginEnd="@dimen/cardFullMargin"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-5dp"
         android:layout_marginBottom="@dimen/cardSharedMargin">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,10 +23,11 @@
             android:layout_height="match_parent"
             tools:ignore="MissingConstraints">
 
-            <ScrollView
+            <com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightScrollView
                 android:id="@+id/filter_scroll"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
                 android:scrollbarSize="@dimen/scrollbarSmall"
                 app:layout_constraintBottom_toTopOf="@+id/filter_action"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -35,130 +35,197 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/filter_motion_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/accountTextView"
-                        style="@style/Filter.TextView"
-                        android:layout_marginTop="11dp"
-                        android:text="@string/filter_account"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    <androidx.constraintlayout.motion.widget.MotionLayout
+                        android:id="@+id/filter_account_motion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutDescription="@xml/motion_filter_account"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/filter_account_check"
-                        style="@style/CheckBox"
-                        android:layout_marginTop="1dp"
-                        android:checked="@={filterVM.accCheck}"
-                        android:translationX="5dp"
-                        android:translationY="-1dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_account"
+                            style="@style/Filter.Button.Outlined.DropDown"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/transaction_account"
+                            app:isActivated="@{filterVM.accFilter}"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                    <Spinner
-                        android:id="@+id/filter_account"
-                        style="@style/Filter.Spinner"
-                        android:layout_marginTop="7dp"
-                        app:entries="@{filterVM.accList}"
-                        app:isEnabled="@{filterVM.accCheck}"
-                        app:layout_constraintTop_toBottomOf="@+id/accountTextView"
-                        app:selectedValue="@={filterVM.account}"
-                        tools:listitem="@layout/spinner_item" />
+                        <View
+                            android:id="@+id/account_mask"
+                            style="@style/View.Mask"
+                            android:background="@color/colorFilterBackground"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_account"
+                            app:layout_constraintEnd_toEndOf="@id/filter_account"
+                            app:layout_constraintStart_toStartOf="@id/filter_account"
+                            app:layout_constraintTop_toTopOf="@id/filter_account" />
 
-                    <TextView
-                        android:id="@+id/categoryTextView"
-                        style="@style/Filter.TextView"
-                        android:layout_marginTop="38dp"
-                        android:text="@string/filter_category"
-                        app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                        <com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView
+                            android:id="@+id/filter_account_scrollview"
+                            style="@style/Filter.ScrollView.Nested.MaxHeight"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="6dp"
+                            app:isActivated="@{filterVM.accFilter}"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_account"
+                            app:layout_constraintEnd_toEndOf="@id/filter_account"
+                            app:layout_constraintStart_toStartOf="@id/filter_account"
+                            app:layout_constraintTop_toTopOf="@id/filter_account">
 
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/filter_cat_check"
-                        style="@style/CheckBox"
-                        android:layout_marginTop="28dp"
-                        android:checked="@={filterVM.catCheck}"
-                        android:translationX="5dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/accountTextView" />
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/filter_account_chips"
+                                style="@style/Filter.ChipGroup" />
+                        </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView>
+                    </androidx.constraintlayout.motion.widget.MotionLayout>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_type"
-                        style="@style/Filter.Button.Outlined"
-                        android:layout_marginTop="8dp"
-                        android:onClick="@{() -> filterVM.typeVisibleOC()}"
-                        android:text="@{filterVM.catCheck ? (filterVM.typeVisible ? @string/type_expense : @string/type_income) : @string/filter_type}"
-                        app:isEnabled="@{filterVM.catCheck}"
-                        app:layout_constraintTop_toBottomOf="@+id/categoryTextView"
-                        tools:text="Type" />
+                    <androidx.constraintlayout.motion.widget.MotionLayout
+                        android:id="@+id/filter_category_motion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutDescription="@xml/motion_filter_category"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/filter_account_motion">
 
-                    <Spinner
-                        android:id="@+id/filter_expense_cat"
-                        style="@style/Filter.Spinner"
-                        android:layout_marginTop="5dp"
-                        android:visibility="@{filterVM.typeVisible ? View.VISIBLE : View.INVISIBLE}"
-                        app:entries="@{filterVM.exCatList}"
-                        app:isEnabled="@{filterVM.catCheck}"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_type"
-                        app:selectedValue="@={filterVM.exCategory}"
-                        tools:listitem="@layout/spinner_item" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_category"
+                            style="@style/Filter.Button.Outlined.DropDown"
+                            android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
+                            android:text="@string/transaction_category"
+                            app:isActivated="@{filterVM.catFilter}"
+                            app:layout_constraintTop_toBottomOf="@id/filter_account_scrollview" />
 
-                    <Spinner
-                        android:id="@+id/filter_income_cat"
-                        style="@style/Filter.Spinner"
-                        android:layout_marginTop="5dp"
-                        android:visibility="@{filterVM.typeVisible ? View.INVISIBLE : View.VISIBLE}"
-                        app:entries="@{filterVM.inCatList}"
-                        app:isEnabled="@{filterVM.catCheck}"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_type"
-                        app:selectedValue="@={filterVM.inCategory}"
-                        tools:listitem="@layout/spinner_item" />
+                        <View
+                            android:id="@+id/category_mask"
+                            style="@style/View.Mask"
+                            android:background="@color/colorFilterBackground"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_category"
+                            app:layout_constraintEnd_toEndOf="@id/filter_category"
+                            app:layout_constraintStart_toStartOf="@id/filter_category"
+                            app:layout_constraintTop_toTopOf="@id/filter_category" />
 
-                    <TextView
-                        android:id="@+id/dateTextView"
-                        style="@style/Filter.TextView"
-                        android:layout_marginTop="36dp"
-                        android:text="@string/transaction_date"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_type" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_type"
+                            style="@style/Filter.Button.Outlined.Child"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="6dp"
+                            android:onClick="@{() -> filterVM.typeVisibleOC()}"
+                            android:text="@{filterVM.typeVisible ? @string/type_expense : @string/type_income}"
+                            app:isActivated="@{filterVM.catFilter}"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_category"
+                            app:layout_constraintEnd_toEndOf="@id/filter_category"
+                            app:layout_constraintStart_toStartOf="@id/filter_category"
+                            app:layout_constraintTop_toTopOf="@id/filter_category"
+                            tools:text="Expense" />
 
-                    <com.google.android.material.checkbox.MaterialCheckBox
-                        android:id="@+id/filter_date_check"
-                        style="@style/CheckBox"
-                        android:layout_marginTop="25dp"
-                        android:checked="@={filterVM.dateCheck}"
-                        android:translationX="5dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_type" />
+                        <com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView
+                            android:id="@+id/filter_category_scrollview"
+                            style="@style/Filter.ScrollView.Nested.MaxHeight"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="6dp"
+                            app:isActivated="@{filterVM.catFilter}"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_category"
+                            app:layout_constraintEnd_toEndOf="@id/filter_category"
+                            app:layout_constraintStart_toStartOf="@id/filter_category"
+                            app:layout_constraintTop_toTopOf="@id/filter_category">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_start_date"
-                        style="@style/Filter.Button.Outlined"
-                        android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
-                        android:text="@{filterVM.dateCheck ? DateFormat.getDateInstance(DateFormat.SHORT).format(filterVM.startDate) : @string/filter_start}"
-                        android:translationY="8dp"
-                        app:isEnabled="@{filterVM.dateCheck}"
-                        app:layout_constraintTop_toBottomOf="@+id/dateTextView"
-                        tools:text="Start Date" />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/category_chip_layout"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/filter_end_date"
-                        style="@style/Filter.Button.Outlined"
-                        android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
-                        android:text="@{filterVM.dateCheck ? DateFormat.getDateInstance(DateFormat.SHORT).format(filterVM.endDate) : @string/filter_end}"
-                        app:isEnabled="@{filterVM.dateCheck}"
-                        app:layout_constraintTop_toBottomOf="@+id/filter_start_date"
-                        tools:text="End Date" />
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/filter_expense_chips"
+                                    style="@style/Filter.ChipGroup"
+                                    android:visibility="@{filterVM.typeVisible ? View.VISIBLE : View.GONE}"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <com.google.android.material.chip.ChipGroup
+                                    android:id="@+id/filter_income_chips"
+                                    style="@style/Filter.ChipGroup"
+                                    android:visibility="@{filterVM.typeVisible ? View.GONE : View.VISIBLE}"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView>
+                    </androidx.constraintlayout.motion.widget.MotionLayout>
+
+                    <androidx.constraintlayout.motion.widget.MotionLayout
+                        android:id="@+id/filter_date_motion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutDescription="@xml/motion_filter_date"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/filter_category_motion">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_date"
+                            style="@style/Filter.Button.Outlined.DropDown"
+                            android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
+                            android:text="@string/transaction_date"
+                            app:isActivated="@{filterVM.dateFilter}"
+                            app:layout_constraintTop_toBottomOf="@id/filter_category_scrollview" />
+
+                        <View
+                            android:id="@+id/date_mask"
+                            style="@style/View.Mask"
+                            android:background="@color/colorFilterBackground"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_date"
+                            app:layout_constraintEnd_toEndOf="@id/filter_date"
+                            app:layout_constraintStart_toStartOf="@id/filter_date"
+                            app:layout_constraintTop_toTopOf="@id/filter_date" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_start_date"
+                            style="@style/Filter.Button.Outlined.Child"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="6dp"
+                            android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
+                            android:text="@{filterVM.startDateLD == `` ? @string/filter_start : filterVM.startDateLD}"
+                            app:isActivated="@{filterVM.dateFilter}"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_date"
+                            app:layout_constraintEnd_toEndOf="@id/filter_date"
+                            app:layout_constraintStart_toStartOf="@id/filter_date"
+                            app:layout_constraintTop_toTopOf="@id/filter_date"
+                            tools:text="Start Date" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/filter_end_date"
+                            style="@style/Filter.Button.Outlined.Child"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="6dp"
+                            android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
+                            android:text="@{filterVM.endDateLD == `` ? @string/filter_end : filterVM.endDateLD}"
+                            app:isActivated="@{filterVM.dateFilter}"
+                            app:layout_constraintBottom_toBottomOf="@id/filter_date"
+                            app:layout_constraintEnd_toEndOf="@id/filter_date"
+                            app:layout_constraintStart_toStartOf="@id/filter_date"
+                            app:layout_constraintTop_toTopOf="@id/filter_date"
+                            tools:text="End Date" />
+                    </androidx.constraintlayout.motion.widget.MotionLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </ScrollView>
+            </com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightScrollView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/filter_action"
                 style="@style/Button.TextOnly"
-                android:layout_marginStart="@dimen/filterDefaultMarginStartEnd"
-                android:layout_marginEnd="@dimen/filterDefaultMarginStartEnd"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="@dimen/filterParentMarginStartEnd"
+                android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
                 android:onClick="@{() -> filterVM.applyFilterOC()}"
-                android:text="@{(!filterVM.accCheck &amp;&amp; !filterVM.catCheck &amp;&amp; !filterVM.dateCheck) ? @string/filter_reset : @string/filter_apply}"
+                android:text="@{(!filterVM.accFilter &amp;&amp; !filterVM.catFilter &amp;&amp; !filterVM.dateFilter) ? @string/filter_reset : @string/filter_apply}"
                 android:textSize="@dimen/textSizeFilterButton"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/filter_scroll"
                 tools:text="Reset" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

@@ -73,35 +73,42 @@ class ChartViewModel @ViewModelInject constructor(
 
     /**
      *  Calculates totals for each list depending on category filter [fCat],
-     *  category selected filter [fCatName], and type of category filter [fType].
+     *  category selected filter [fCatNames], and type of category filter [fType].
      */
-    fun prepareTotals(fCat: Boolean?, fCatName: String?, fType: String?) {
+    fun prepareTotals(fCat: Boolean, fCatNames: List<String>, fType: String) {
 
+        // zero out totals
+        exTotal = BigDecimal.ZERO
+        inTotal = BigDecimal.ZERO
         // if fCatName = "All", add up all totals of given type
         // else total is total of Category selected in filter if there exists entries else 0
         // sets opposite type total to 0
         when {
-            fCat == true && fType == "Expense" && fCatName == "All" -> {
+            fCat && fType == "Expense" && fCatNames.contains("All") -> {
                 exTotal =
                     exCatTotals.fold(BigDecimal.ZERO) { total: BigDecimal, next: CategoryTotals ->
                         total + next.total
                     }
-                inTotal = BigDecimal.ZERO
             }
-            fCat == true && fType == "Expense" -> {
-                exTotal = exCatTotals.find { it.category == fCatName }?.total ?: BigDecimal.ZERO
-                inTotal = BigDecimal.ZERO
+            fCat && fType == "Expense" -> {
+                for (ct: CategoryTotals in exCatTotals) {
+                    if (fCatNames.contains(ct.category)) {
+                        exTotal += ct.total
+                    }
+                }
             }
-            fCat == true && fType == "Income" && fCatName == "All" -> {
-                exTotal = BigDecimal.ZERO
+            fCat && fType == "Income" && fCatNames.contains("All") -> {
                 inTotal =
                     inCatTotals.fold(BigDecimal.ZERO) { total: BigDecimal, next: CategoryTotals ->
                         total + next.total
                     }
             }
-            fCat == true && fType == "Income" -> {
-                exTotal = BigDecimal.ZERO
-                inTotal = inCatTotals.find { it.category == fCatName }?.total ?: BigDecimal.ZERO
+            fCat && fType == "Income" -> {
+                for (ct: CategoryTotals in inCatTotals) {
+                    if (fCatNames.contains(ct.category)) {
+                        inTotal += ct.total
+                    }
+                }
             }
             else -> {
                 // Category filter is not applied, so add up all the totals
@@ -123,10 +130,10 @@ class ChartViewModel @ViewModelInject constructor(
      *  and type of category filter [fType], passes them translated strings [expense]/[income],
      *  colors used for Chart [exColors]/[inColors], and passes them to adapter, and notifies changes.
      */
-    fun prepareIvgAdapter(
-        fCat: Boolean?,
-        fCatName: String?,
-        fType: String?,
+    fun prepareIvcAdapter(
+        fCat: Boolean,
+        fCatName: List<String>,
+        fType: String,
         expense: String,
         income: String,
         exColors: List<Int>,
@@ -142,20 +149,20 @@ class ChartViewModel @ViewModelInject constructor(
 
     /**
      *  Tells Repository which CategoryTotals list to return depending on
-     *  [fAccount] and [fDate] filters, account name [fAccountName],
+     *  [fAccount] and [fDate] filters, account name [fAccountNames],
      *  and the start/end dates [fStart]/[fEnd]
      */
     fun filteredCategoryTotals(
         fAccount: Boolean,
         fDate: Boolean,
-        fAccountName: String,
+        fAccountNames: List<String>,
         fStart: Date,
         fEnd: Date
     ): LiveData<List<CategoryTotals>> {
 
         return when {
-            fAccount && fDate -> tranRepo.getLdCtAD(fAccountName, fStart, fEnd)
-            fAccount -> tranRepo.getLdCtA(fAccountName)
+            fAccount && fDate -> tranRepo.getLdCtAD(fAccountNames, fStart, fEnd)
+            fAccount -> tranRepo.getLdCtA(fAccountNames)
             fDate -> tranRepo.getLdCtD(fStart, fEnd)
             else -> tranRepo.getLdCt()
         }

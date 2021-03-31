@@ -231,32 +231,32 @@ class TransactionListViewModel @ViewModelInject constructor(
 
     /**
      *  Returns LiveData of list of Transactions depending on [account]/[category]/[date] filters,
-     *  [type] selected, [accountName]/[categoryName] selected, and [start]/[end] dates selected.
+     *  [type] selected, [accountNames]/[categoryNames] selected, and [start]/[end] dates selected.
      */
     fun filteredTransactionList(
         account: Boolean,
         category: Boolean,
         date: Boolean,
         type: String,
-        accountName: String,
-        categoryName: String,
+        accountNames: List<String>,
+        categoryNames: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>> {
 
         return when {
-            account && category && date && categoryName == "All" ->
-                tranRepo.getLdIvtATD(accountName, type, start, end)
+            account && category && date && categoryNames.contains("All") ->
+                tranRepo.getLdIvtATD(accountNames, type, start, end)
             account && category && date ->
-                tranRepo.getLdIvtATCD(accountName, type, categoryName, start, end)
-            account && category && categoryName == "All" -> tranRepo.getLdIvtAT(accountName, type)
-            account && category -> tranRepo.getLdIvtATC(accountName, type, categoryName)
-            account && date -> tranRepo.getLdIvtAD(accountName, start, end)
-            account -> tranRepo.getLdIvtA(accountName)
-            category && date && categoryName == "All" -> tranRepo.getLdIvtTD(type, start, end)
-            category && date -> tranRepo.getLdIvtTCD(type, categoryName, start, end)
-            category && categoryName == "All" -> tranRepo.getLdIvtT(type)
-            category -> tranRepo.getLdIvtTC(type, categoryName)
+                tranRepo.getLdIvtATCD(accountNames, type, categoryNames, start, end)
+            account && category && categoryNames.contains("All") -> tranRepo.getLdIvtAT(accountNames, type)
+            account && category -> tranRepo.getLdIvtATC(accountNames, type, categoryNames)
+            account && date -> tranRepo.getLdIvtAD(accountNames, start, end)
+            account -> tranRepo.getLdIvtA(accountNames)
+            category && date && categoryNames.contains("All") -> tranRepo.getLdIvtTD(type, start, end)
+            category && date -> tranRepo.getLdIvtTCD(type, categoryNames, start, end)
+            category && categoryNames.contains("All") -> tranRepo.getLdIvtT(type)
+            category -> tranRepo.getLdIvtTC(type, categoryNames)
             date -> tranRepo.getLdIvtD(start, end)
             else -> tranRepo.getLdIvt()
         }

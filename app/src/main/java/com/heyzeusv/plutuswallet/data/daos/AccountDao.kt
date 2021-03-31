@@ -19,9 +19,9 @@ abstract class AccountDao : BaseDao<Account>() {
     /**
      *  Returns a list of Account names in alphabetical order.
      */
-    @Query("""SELECT account
+    @Query("""SELECT name
               FROM account
-              ORDER BY account ASC""")
+              ORDER BY name ASC""")
     abstract suspend fun getAccountNames(): MutableList<String>
 
     /**
@@ -36,6 +36,6 @@ abstract class AccountDao : BaseDao<Account>() {
      */
     @Query("""SELECT *
               FROM account
-              ORDER BY account ASC""")
+              ORDER BY name ASC""")
     abstract fun getLDAccounts(): LiveData<List<Account>>
 }

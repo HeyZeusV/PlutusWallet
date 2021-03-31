@@ -21,7 +21,7 @@
         <TextView
             android:id="@+id/iva_name"
             style="@style/AccCat.TextView.Scrollable"
-            android:text="@{account.account}"
+            android:text="@{account.name}"
             app:layout_constraintEnd_toStartOf="@+id/iva_edit"
             app:selected="@{true}"
             tools:text="Account Name" />
@@ -39,7 +39,7 @@
             android:enabled="false"
             android:onClick="@{() -> accountVM.deleteAccountOC(account)}"
             app:icon="@drawable/ic_baseline_delete_24"
-            app:isEnabled="@{(!accountVM.accountsUsed.contains(account.account) &amp;&amp; accountVM.accountLD.size() > 1) ? true : false}"
+            app:isEnabled="@{(!accountVM.accountsUsed.contains(account.name) &amp;&amp; accountVM.accountLD.size() > 1) ? true : false}"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

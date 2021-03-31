@@ -31,11 +31,11 @@ import java.util.Date
  *  @param futureTCreated true if this Transaction has had a future Transaction created for it.
  */
 @Entity(foreignKeys = [ForeignKey(entity = Account::class,
-                                  parentColumns = arrayOf("account"),
+                                  parentColumns = arrayOf("name"),
                                   childColumns = arrayOf("account"),
                                   onUpdate = CASCADE),
                        ForeignKey(entity = Category::class,
-                                  parentColumns = arrayOf("category", "type"),
+                                  parentColumns = arrayOf("name", "type"),
                                   childColumns = arrayOf("category", "type"),
                                   onUpdate = CASCADE)],
         indices = [Index(value = ["category", "type"],

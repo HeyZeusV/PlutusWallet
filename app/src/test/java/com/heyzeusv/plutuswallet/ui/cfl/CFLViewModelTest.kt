@@ -30,7 +30,7 @@ internal class CFLViewModelTest {
 
         val tInfo = TransactionInfo(
             account = true, category = true, date = true,
-            "Test", "Test", "Test", Date(), Date()
+            "Test", listOf("Test"), listOf("Test"), Date(), Date()
         )
 
         cflVM.updateTInfo(tInfo)

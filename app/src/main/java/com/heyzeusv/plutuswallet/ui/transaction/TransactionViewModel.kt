@@ -387,6 +387,9 @@ class TransactionViewModel @ViewModelInject constructor(
         }
     }
 
+    /**
+     *  onClick for type Button. Switches value of typeSelected Boolean.
+     */
     fun typeButtonOC() {
 
         typeSelected.value = !typeSelected.value!!

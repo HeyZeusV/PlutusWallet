@@ -73,37 +73,37 @@ interface Repository {
 
     fun getLdCt(): LiveData<List<CategoryTotals>>
 
-    fun getLdCtA(account: String): LiveData<List<CategoryTotals>>
+    fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>>
 
-    fun getLdCtAD(account: String, start: Date, end: Date): LiveData<List<CategoryTotals>>
+    fun getLdCtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<CategoryTotals>>
 
     fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
 
     fun getLdIvt(): LiveData<List<ItemViewTransaction>>
 
-    fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>
 
-    fun getLdIvtAD(account: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
 
-    fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtATC(
-        account: String,
+        accounts: List<String>,
         type: String,
-        category: String
+        categories: List<String>
     ): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtATD(
-        account: String,
+        accounts: List<String>,
         type: String,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtATCD(
-        account: String,
+        accounts: List<String>,
         type: String,
-        category: String,
+        categories: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>
@@ -112,11 +112,11 @@ interface Repository {
 
     fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
 
-    fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtTC(type: String, categories: List<String>): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtTCD(
         type: String,
-        category: String,
+        categories: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>>

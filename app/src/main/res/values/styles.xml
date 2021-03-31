@@ -135,40 +135,40 @@
         <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
 
-    <!-- Outlined Button style used by several Buttons in FilterFragment -->
-    <style name="Filter.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:layout_width">0dp</item>
+    <!-- Outlined Button style used by child Buttons in FilterFragment -->
+    <style name="Filter.Button.Outlined.Child" parent="Button.Outlined.Base.Constraint">
+        <item name="android:layout_marginStart">@dimen/filterChildMarginsStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/filterChildMarginsStartEnd</item>
+    </style>
+
+    <!-- Outlined Button style used by parent Buttons in FilterFragment -->
+    <style name="Filter.Button.Outlined.DropDown" parent="Button.Outlined.DropDown">
+        <item name="android:layout_marginStart">@dimen/filterParentMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/filterParentMarginStartEnd</item>
+    </style>
+
+    <!-- Used by all ChipGroups in FilterFragment -->
+    <style name="Filter.ChipGroup" parent="">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
-        <item name="android:layout_marginEnd">@dimen/filterDefaultMarginStartEnd</item>
-        <item name="android:minHeight">@dimen/minSize</item>
-        <item name="android:textColor">@color/button_outlined_color_selector</item>
-        <item name="android:textSize">@dimen/textSizeFilterButton</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-        <item name="strokeColor">@color/button_outlined_color_selector</item>
+        <item name="android:layout_marginStart">@dimen/filterChipGroupMarginStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/filterChildMarginsStartEnd</item>
+        <item name="chipSpacingHorizontal">@dimen/filterChipSpacing</item>
     </style>
 
-    <!-- Used by all Spinners in FilterFragment -->
-    <style name="Filter.Spinner" parent="Spinner.Base">
-        <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
-        <item name="android:layout_marginEnd">@dimen/filterDefaultMarginStartEnd</item>
-        <item name="layout_constraintStart_toStartOf">parent</item>
-    </style>
-
-    <!-- All TextViews in FilterFragment use this style -->
-    <style name="Filter.TextView" parent="">
-        <item name="android:layout_width">0dp</item>
+    <!-- Used by all NestedScrollViews in FilterFragment -->
+    <style name="Filter.ScrollView.Nested.MaxHeight" parent="">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/filterDefaultMarginStartEnd</item>
-        <item name="android:layout_marginEnd">@dimen/filterTextViewMarginEnd</item>
-        <item name="android:textColor">@color/textColorSecondary</item>
-        <item name="android:textSize">?attr/textSizeBase</item>
-        <item name="android:textStyle">bold</item>
-        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="android:layout_marginStart">@dimen/filterChildMarginsStartEnd</item>
+        <item name="android:layout_marginEnd">@dimen/filterChildMarginsStartEnd</item>
+        <item name="android:background">@drawable/dsl_filter_scrollview_bg</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="maxHeight">@dimen/filterNSVMaxHeight</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
     </style>
-
+    
     <!-- All EditTexts in TransactionFragment use this style or child style -->
     <style name="Transaction.EditText.Base" parent="">
         <item name="android:layout_width">match_parent</item>
@@ -188,14 +188,6 @@
     <style name="Transaction.EditText.SingleLine" parent="Transaction.EditText.Base">
         <item name="android:inputType">text</item>
         <item name="android:maxLines">1</item>
-    </style>
-
-    <!-- Outlined Button in TransactionFragment -->
-    <style name="Transaction.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:layout_height">@dimen/tranButtonHeight</item>
-        <item name="android:padding">@dimen/tranButtonPadding</item>
-        <item name="android:textSize">@dimen/textSizeBase</item>
-        <item name="strokeWidth">@dimen/tranButtonStrokeWidth</item>
     </style>
 
     <!-- TextInputLayout child AutoCompleteTextView -->
@@ -225,6 +217,32 @@
         <item name="colorControlHighlight">@color/colorRipple</item>
     </style>
 
+    <!-- Used by all Outlined Buttons within app -->
+    <style name="Button.Outlined.Base" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/buttonPadding</item>
+        <item name="android:textSize">@dimen/textSizeBase</item>
+        <item name="android:textColor">@color/csl_button_outlined</item>
+        <item name="strokeWidth">@dimen/buttonStrokeWidth</item>
+        <item name="strokeColor">@color/csl_button_outlined</item>
+    </style>
+
+    <!-- Only 1 Outlined Button does not require this... income Button in TransactionFragment -->
+    <style name="Button.Outlined.Base.Constraint" parent="Button.Outlined.Base">
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <!-- Style used by Outlined Buttons that contain Views hidden beneath them -->
+    <style name="Button.Outlined.DropDown" parent="Button.Outlined.Base.Constraint">
+        <item name="android:outlineProvider">none</item>
+        <item name="android:translationZ">2dp</item>
+        <item name="icon">@drawable/asl_button_drop_arrow</item>
+        <item name="iconGravity">end</item>
+        <item name="iconPadding">@dimen/buttonIconPadding</item>
+        <item name="iconTint">@color/csl_button_outlined</item>
+    </style>
+
     <!-- Text only Material Button -->
     <style name="Button.TextOnly" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:layout_width">0dp</item>
@@ -247,14 +265,6 @@
     <!-- Used by CardViews that take full screen, ie. TransactionFragment -->
     <style name="CardView.FullScreen" parent="CardView.Base">
         <item name="android:layout_margin">@dimen/cardFullMargin</item>
-    </style>
-
-    <!-- All CheckBoxes use this style -->
-    <style name="CheckBox" parent="">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:drawableRight">@drawable/checkbox_anim</item>
-        <item name="android:button">@null</item>
     </style>
 
     <!-- All CircleIndicator use this style -->
@@ -377,5 +387,13 @@
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="android:layout_width">match_parent</item>
         <item name="titleTextColor">@color/white</item>
+    </style>
+
+    <!-- Mask that is placed under a Button to hide Views underneath it -->
+    <style name="View.Mask" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:outlineProvider">none</item>
+        <item name="android:translationZ">1dp</item>
     </style>
 </resources>

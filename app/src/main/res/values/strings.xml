@@ -9,7 +9,7 @@
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="about_version" translatable="false">v3.2.1</string>
+    <string name="about_version" translatable="false">v3.3.0</string>
     <string name="account_create">Create New Account</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
@@ -92,7 +92,7 @@
     <string name="accounts">Accounts</string>
     <string name="account_new">New Account</string>
     <string name="category_new">New Category</string>
-    <string name="transaction_new">New Transaction</string>
+    <string name="cfl_menu_transaction">New Transaction</string>
     <string name="transaction_save">Save Transaction</string>
     <string name="transaction">Transaction</string>
     <string name="cfl_overview">Overview</string>
@@ -105,4 +105,7 @@
     <string name="preferences_theme_system">System</string>
     <string name="alert_dialog_input_error">Can\'t be blank!</string>
     <string name="transaction_period">Period</string>
+    <string name="cfl_menu_filter">Edit Filter</string>
+    <string name="filter_no_chip_account">Please select at least one account!!</string>
+    <string name="filter_no_chip_category">Please select at least one category!!</string>
 </resources>

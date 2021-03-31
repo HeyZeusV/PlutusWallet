@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/ic_baseline_arrow_drop_up_24">
+
+    <target android:name="arrow_up">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="rotation"
+                    android:duration="600"
+                    android:valueFrom="0"
+                    android:valueTo="180"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+
+                <objectAnimator
+                    android:propertyName="pivotX"
+                    android:duration="600"
+                    android:valueFrom="12"
+                    android:valueTo="12"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+
+                <objectAnimator
+                    android:propertyName="pivotY"
+                    android:duration="600"
+                    android:valueFrom="12"
+                    android:valueTo="12"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_slow_in" />
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

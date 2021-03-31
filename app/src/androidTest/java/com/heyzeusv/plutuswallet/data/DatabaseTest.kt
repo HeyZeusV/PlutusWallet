@@ -175,7 +175,7 @@ class DatabaseTest {
 
                 val expected: List<CategoryTotals> =
                     listOf(CategoryTotals("Food", BigDecimal("200.1"), "Expense"))
-                assertEquals(expected, tranDao.getLdCtA("Cash").blockingObserve()!!)
+                assertEquals(expected, tranDao.getLdCtA(listOf("Cash")).blockingObserve()!!)
             }
 
             @Test
@@ -198,7 +198,7 @@ class DatabaseTest {
                     listOf(CategoryTotals("Salary", BigDecimal("2000.32"), "Income"))
                 assertEquals(
                     expected, tranDao.getLdCtAD(
-                        "Debit Card", Date(86400000 * 3),
+                        listOf("Debit Card"), Date(86400000 * 3),
                         Date(86400010 * 4)
                     ).blockingObserve()!!
                 )
@@ -224,7 +224,7 @@ class DatabaseTest {
             @DisplayName("LD of list of IVT of given account")
             fun getLdIvtA() {
 
-                assertEquals(listOf(ivt1, ivt2), tranDao.getLdIvtA("Cash").blockingObserve())
+                assertEquals(listOf(ivt1, ivt2), tranDao.getLdIvtA(listOf("Cash")).blockingObserve())
             }
 
             @Test
@@ -232,7 +232,7 @@ class DatabaseTest {
             fun getLdIvtAD() {
 
                 assertEquals(listOf(ivt2),
-                    tranDao.getLdIvtAD("Cash", Date(86400010), Date(86400010 * 2)).blockingObserve())
+                    tranDao.getLdIvtAD(listOf("Cash"), Date(86400010), Date(86400010 * 2)).blockingObserve())
             }
 
             @Test
@@ -240,7 +240,7 @@ class DatabaseTest {
             fun getLdIvtAT() {
 
                 assertEquals(emptyList<ItemViewTransaction>(),
-                    tranDao.getLdIvtAT("Cash", "Income").blockingObserve())
+                    tranDao.getLdIvtAT(listOf("Cash"), "Income").blockingObserve())
             }
 
             @Test
@@ -248,14 +248,14 @@ class DatabaseTest {
             fun getLdIvtATC() {
 
                 assertEquals(listOf(ivt1, ivt2),
-                    tranDao.getLdIvtATC("Cash", "Expense", "Food").blockingObserve())
+                    tranDao.getLdIvtATC(listOf("Cash"), "Expense", listOf("Food")).blockingObserve())
             }
 
             @Test
             @DisplayName("LD of list of IVT of given account, type, and between given dates")
             fun getLdIvtATD() {
 
-                assertEquals(listOf(ivt2), tranDao.getLdIvtATD("Cash", "Expense",
+                assertEquals(listOf(ivt2), tranDao.getLdIvtATD(listOf("Cash"), "Expense",
                     Date(86400010), Date(86400010 * 2)).blockingObserve())
             }
 
@@ -263,8 +263,8 @@ class DatabaseTest {
             @DisplayName("LD of list of IVT of given account, type, category, and between given dates")
             fun getLdIvtATCD() {
 
-                assertEquals(listOf(ivt2), tranDao.getLdIvtATCD("Cash", "Expense", "Food",
-                    Date(86400010), Date(86400010 * 2)).blockingObserve())
+                assertEquals(listOf(ivt2), tranDao.getLdIvtATCD(listOf("Cash"), "Expense",
+                    listOf("Food"), Date(86400010), Date(86400010 * 2)).blockingObserve())
             }
 
             @Test
@@ -286,14 +286,14 @@ class DatabaseTest {
             @DisplayName("LD of list of IVT of given type and category")
             fun getLdIvtTC() {
 
-                assertEquals(listOf(ivt3), tranDao.getLdIvtTC("Income", "Salary").blockingObserve())
+                assertEquals(listOf(ivt3), tranDao.getLdIvtTC("Income", listOf("Salary")).blockingObserve())
             }
 
             @Test
             @DisplayName("LD of list of IVT of given type, category, and between given dates")
             fun getLdIvtTCD() {
 
-                assertEquals(listOf(ivt3), tranDao.getLdIvtTCD("Income", "Salary",
+                assertEquals(listOf(ivt3), tranDao.getLdIvtTCD("Income", listOf("Salary"),
                     Date(86400010 * 3), Date(86400010 * 6)).blockingObserve())
             }
 

@@ -19,10 +19,10 @@ abstract class CategoryDao : BaseDao<Category>() {
     /**
      *  Returns list of Category names of [type] in alphabetical order.
      */
-    @Query("""SELECT category
+    @Query("""SELECT name
               FROM category
               WHERE type=(:type)
-              ORDER BY category ASC""")
+              ORDER BY name ASC""")
     abstract suspend fun getCategoryNamesByType(type: String): MutableList<String>
 
     /**
@@ -38,6 +38,6 @@ abstract class CategoryDao : BaseDao<Category>() {
     @Query("""SELECT *
               FROM category
               WHERE type=(:type)
-              ORDER BY category ASC""")
+              ORDER BY name ASC""")
     abstract fun getLDCategoriesByType(type: String): LiveData<List<Category>>
 }

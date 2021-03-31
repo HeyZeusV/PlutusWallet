@@ -105,7 +105,7 @@ class CategoryFragment : BaseFragment() {
 
             AlertDialogCreator.alertDialog(
                 requireContext(), getString(R.string.alert_dialog_delete_category),
-                getString(R.string.alert_dialog_delete_warning, category.category),
+                getString(R.string.alert_dialog_delete_warning, category.name),
                 getString(R.string.alert_dialog_yes), posFun,
                 getString(R.string.alert_dialog_no), AlertDialogCreator.doNothing
             )

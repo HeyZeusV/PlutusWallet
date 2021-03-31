@@ -121,31 +121,32 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/tran_type_expense"
-                            style="@style/Transaction.Button.Outlined"
+                            style="@style/Button.Outlined.Base.Constraint"
                             android:layout_width="0dp"
+                            android:layout_height="@dimen/tranButtonHeight"
                             android:layout_marginTop="@dimen/tranButtonToLayoutMargin"
                             android:layout_marginEnd="4dp"
                             android:onClick="@{() -> tranVM.typeButtonOC()}"
                             android:text="@string/type_expense"
                             android:textColor="@{tranVM.typeSelected ? @color/colorButtonUnselected : @color/colorButtonBackground}"
+                            app:strokeColor="@{tranVM.typeSelected ? @color/colorButtonUnselected : @color/colorButtonBackground}"
                             app:layout_constraintEnd_toStartOf="@id/tran_type_income"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout"
-                            app:strokeColor="@{tranVM.typeSelected ? @color/colorButtonUnselected : @color/colorButtonBackground}" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/tran_type_income"
-                            style="@style/Transaction.Button.Outlined"
+                            style="@style/Button.Outlined.Base"
                             android:layout_width="0dp"
+                            android:layout_height="@dimen/tranButtonHeight"
                             android:layout_marginStart="4dp"
                             android:layout_marginTop="@dimen/tranButtonToLayoutMargin"
                             android:onClick="@{() -> tranVM.typeButtonOC()}"
                             android:text="@string/type_income"
                             android:textColor="@{tranVM.typeSelected ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            app:strokeColor="@{tranVM.typeSelected ? @color/colorButtonBackground : @color/colorButtonUnselected}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@id/tran_type_expense"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout"
-                            app:strokeColor="@{tranVM.typeSelected ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_total_layout" />
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_expense_cat_layout"
@@ -194,55 +195,75 @@
                                 android:text="@={tranVM.tranLD.memo}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/tran_repeat"
-                            style="@style/Transaction.Button.Outlined"
+                        <androidx.constraintlayout.motion.widget.MotionLayout
+                            android:id="@+id/tran_repeat_motion"
                             android:layout_width="match_parent"
-                            android:layout_marginTop="@dimen/tranButtonToLayoutMargin"
-                            android:text="@string/transaction_repeat"
-                            android:textColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}"
+                            android:layout_height="wrap_content"
+                            app:layoutDescription="@xml/motion_transaction"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout"
-                            app:strokeColor="@{tranVM.repeat ? @color/colorButtonBackground : @color/colorButtonUnselected}" />
+                            app:layout_constraintTop_toBottomOf="@+id/tran_memo_layout">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tran_period_layout"
-                            style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
-                            android:layout_width="0dp"
-                            android:layout_marginTop="@dimen/tranLayoutToButtonMargin"
-                            android:layout_marginEnd="4dp"
-                            android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
-                            app:layout_constraintEnd_toStartOf="@+id/tran_frequency_layout"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/tran_repeat">
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/tran_repeat"
+                                style="@style/Button.Outlined.DropDown"
+                                android:layout_height="@dimen/tranButtonHeight"
+                                android:layout_marginTop="@dimen/tranButtonToLayoutMargin"
+                                android:text="@string/transaction_repeat"
+                                app:isActivated="@{tranVM.repeat}"
+                                app:layout_constraintTop_toTopOf="parent" />
 
-                            <AutoCompleteTextView
-                                android:id="@+id/tran_period"
-                                style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
-                                android:hint="@string/transaction_period"
-                                app:entries="@{tranVM.periodArray}" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                            <View
+                                android:id="@+id/repeat_mask"
+                                style="@style/View.Mask"
+                                android:background="@color/colorButtonText"
+                                app:layout_constraintBottom_toBottomOf="@id/tran_repeat"
+                                app:layout_constraintEnd_toEndOf="@id/tran_repeat"
+                                app:layout_constraintStart_toStartOf="@id/tran_repeat"
+                                app:layout_constraintTop_toTopOf="@id/tran_repeat" />
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tran_frequency_layout"
-                            style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
-                            android:layout_width="0dp"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginTop="@dimen/tranLayoutToButtonMargin"
-                            android:visibility="@{tranVM.repeat ? View.VISIBLE : View.GONE}"
-                            app:counterMaxLength="@integer/maxLengthFrequency"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/tran_period_layout"
-                            app:layout_constraintTop_toBottomOf="@id/tran_repeat">
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/tran_period_layout"
+                                style="@style/Transaction.TextInputLayout.OutlinedBox.Spinner"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_marginTop="6dp"
+                                android:layout_marginEnd="4dp"
+                                android:layout_marginBottom="6dp"
+                                app:layout_constraintBottom_toBottomOf="@+id/tran_repeat"
+                                app:layout_constraintEnd_toStartOf="@+id/tran_frequency_layout"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="@+id/tran_repeat">
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/tran_frequency"
-                                style="@style/Transaction.EditText.Base"
-                                android:hint="@string/transaction_frequency"
-                                android:inputType="number"
-                                android:maxLength="@integer/maxLengthFrequency"
-                                android:text="@={`` + tranVM.tranLD.frequency}" />
-                        </com.google.android.material.textfield.TextInputLayout>
+                                <AutoCompleteTextView
+                                    android:id="@+id/tran_period"
+                                    style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
+                                    android:hint="@string/transaction_period"
+                                    app:entries="@{tranVM.periodArray}" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/tran_frequency_layout"
+                                style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
+                                android:layout_width="0dp"
+                                android:layout_height="0dp"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginTop="6dp"
+                                android:layout_marginBottom="6dp"
+                                app:counterMaxLength="@integer/maxLengthFrequency"
+                                app:layout_constraintBottom_toBottomOf="@+id/tran_repeat"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/tran_period_layout"
+                                app:layout_constraintTop_toTopOf="@id/tran_repeat">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/tran_frequency"
+                                    style="@style/Transaction.EditText.Base"
+                                    android:hint="@string/transaction_frequency"
+                                    android:inputType="number"
+                                    android:maxLength="@integer/maxLengthFrequency"
+                                    android:text="@={`` + tranVM.tranLD.frequency}" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </androidx.constraintlayout.motion.widget.MotionLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </ScrollView>
             </com.google.android.material.card.MaterialCardView>

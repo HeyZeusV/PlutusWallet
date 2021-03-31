@@ -9,16 +9,16 @@ import androidx.room.PrimaryKey
  *
  *  @Index unique since category and type are not primary keys and foreign keys must be unique.
  *
- *  @param id       unique id for all Categories
- *  @param category the name of the category
- *  @param type     either "Expense" or "Income"
+ *  @param id   unique id for all Categories
+ *  @param name the name of the category
+ *  @param type either "Expense" or "Income"
  */
-@Entity(indices = [Index(value = ["category", "type"],
+@Entity(indices = [Index(value = ["name", "type"],
                          name = "index_cat_type",
                          unique = true)])
 data class Category(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    var category: String,
+    var name: String,
     var type: String
 )

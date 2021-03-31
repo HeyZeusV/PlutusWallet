@@ -14,7 +14,7 @@
         style="@style/CardView.Base"
         android:layout_marginStart="@dimen/cardFullMargin"
         android:layout_marginTop="@dimen/cardFullMargin"
-        android:layout_marginEnd="@dimen/cardSharedMargin"
+        android:layout_marginEnd="@dimen/cardFullMargin"
         android:layout_marginBottom="@dimen/cardSharedMargin">
 
         <androidx.constraintlayout.widget.ConstraintLayout

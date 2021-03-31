@@ -71,8 +71,8 @@ class AccountViewModel @ViewModelInject constructor(
      */
     fun deleteAccountPosFun(account: Account) {
 
-        accountNames.remove(account.account)
-        accountsUsed.remove(account.account)
+        accountNames.remove(account.name)
+        accountsUsed.remove(account.name)
         viewModelScope.launch {
             tranRepo.deleteAccount(account)
         }
@@ -88,11 +88,11 @@ class AccountViewModel @ViewModelInject constructor(
             _existsAccountEvent.value = Event(newName)
         } else {
             // replaces previous name in lists with new value
-            accountNames.replace(account.account, newName)
-            if (accountsUsed.contains(account.account)) {
-                accountsUsed.replace(account.account, newName)
+            accountNames.replace(account.name, newName)
+            if (accountsUsed.contains(account.name)) {
+                accountsUsed.replace(account.name, newName)
             }
-            account.account = newName
+            account.name = newName
             viewModelScope.launch {
                 tranRepo.updateAccount(account)
             }
@@ -113,7 +113,7 @@ class AccountViewModel @ViewModelInject constructor(
         } else {
             // adds new name to list to prevent new Account with same name
             accountNames.add(name)
-            account.account = name
+            account.name = name
             viewModelScope.launch {
                 tranRepo.insertAccount(account)
             }

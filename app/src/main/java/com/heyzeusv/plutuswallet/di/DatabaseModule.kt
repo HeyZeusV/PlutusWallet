@@ -46,7 +46,10 @@ object DatabaseModule {
             TransactionDatabase::class.java,
             "transaction-database"
         )
-            .addMigrations(Migrations.migration16to22, Migrations.migration22to23)
+            .addMigrations(
+                Migrations.migration16to22,
+                Migrations.migration22to23,
+                Migrations.migration23to24)
             .build()
     }
 

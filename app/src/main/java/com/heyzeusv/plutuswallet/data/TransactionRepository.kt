@@ -102,66 +102,82 @@ class TransactionRepository @Inject constructor(
      *  D   = Date
      *  T   = Type
      */
-    override fun getLdTransaction(id: Int): LiveData<Transaction?> = transactionDao.getLDTransaction(id)
+    override fun getLdTransaction(id: Int): LiveData<Transaction?> =
+        transactionDao.getLDTransaction(id)
 
     override fun getLdCt(): LiveData<List<CategoryTotals>> = transactionDao.getLdCt()
 
-    override fun getLdCtA(account: String): LiveData<List<CategoryTotals>> = transactionDao.getLdCtA(account)
+    override fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>> =
+        transactionDao.getLdCtA(accounts)
 
-    override fun getLdCtAD(account: String, start: Date, end: Date): LiveData<List<CategoryTotals>> =
-        transactionDao.getLdCtAD(account, start, end)
+    override fun getLdCtAD(
+        accounts: List<String>,
+        start: Date,
+        end: Date
+    ): LiveData<List<CategoryTotals>> = transactionDao.getLdCtAD(accounts, start, end)
 
     override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> =
         transactionDao.getLdCtD(start, end)
 
     override fun getLdIvt(): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvt()
 
-    override fun getLdIvtA(account: String): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdIvtA(account)
+    override fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtA(accounts)
 
-    override fun getLdIvtAD(account: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdIvtAD(account, start, end)
+    override fun getLdIvtAD(
+        accounts: List<String>,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtAD(accounts, start, end)
 
-    override fun getLdIvtAT(account: String, type: String): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdIvtAT(account, type)
+    override fun getLdIvtAT(
+        accounts: List<String>,
+        type: String
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtAT(accounts, type)
 
     override fun getLdIvtATC(
-        account: String,
+        accounts: List<String>,
         type: String,
-        category: String
-    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtATC(account, type, category)
+        categories: List<String>
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtATC(accounts, type, categories)
 
     override fun getLdIvtATD(
-        account: String,
+        accounts: List<String>,
         type: String,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtATD(account, type, start, end)
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtATD(accounts, type, start, end)
 
     override fun getLdIvtATCD(
-        account: String,
+        accounts: List<String>,
         type: String,
-        category: String,
+        categories: List<String>,
         start: Date,
         end: Date
     ): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdIvtATCD(account, type, category, start, end)
+        transactionDao.getLdIvtATCD(accounts, type, categories, start, end)
 
     override fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
         transactionDao.getLdIvtD(start, end)
 
-    override fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtT(type)
+    override fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>> =
+        transactionDao.getLdIvtT(type)
 
-    override fun getLdIvtTC(type: String, category: String): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdIvtTC(type, category)
+    override fun getLdIvtTC(
+        type: String,
+        categories: List<String>
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtTC(type, categories)
 
     override fun getLdIvtTCD(
         type: String,
-        category: String,
+        categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtTCD(type, category, start, end)
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtTCD(type, categories, start, end)
 
-    override fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
-        transactionDao.getLdIvtTD(type, start, end)
+    override fun getLdIvtTD(
+        type: String,
+        start: Date,
+        end: Date
+    ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtTD(type, start, end)
 }
