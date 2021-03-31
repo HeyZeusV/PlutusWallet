@@ -1,3 +1,8 @@
+v3.3.0
+-Change: Filter has been completely redesigned!! Can be found with new filter button in the top bar in the Overview page.
+-Enhancement: Select multiple Accounts and Categories when applying a filter.
+-Enhancement: Animated icon added to repeat button in Transaction page.
+
 v3.2.1
 -Change: Type Buttons in Transaction page now match rest of page aesthetic.
 
