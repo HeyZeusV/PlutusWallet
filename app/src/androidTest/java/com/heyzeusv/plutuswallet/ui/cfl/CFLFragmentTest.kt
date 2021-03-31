@@ -4,32 +4,29 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.widget.DatePicker
 import androidx.fragment.app.Fragment
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.action.ViewActions.swipeLeft
-import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions.setDate
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isEnabled
-import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withSpinnerText
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.viewpager2.widget.ViewPager2
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.allChipsSelected
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartEntry
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartText
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.isActivated
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.noChipsSelected
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.rvSize
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.rvViewHolder
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withBackgroundState
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withIndex
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withTextAndStrokeColor
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.withTextColor
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
@@ -40,9 +37,7 @@ import com.heyzeusv.plutuswallet.util.ViewPager2IdlingResource
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
@@ -103,8 +98,8 @@ class CFLFragmentTest {
     fun displayFragments() {
 
         // Chart totals
-        val expenseTotal = resource.getString(R.string.chart_total, "$", "1,155.55")
-        val incomeTotal = resource.getString(R.string.chart_total, "$", "2,000.32")
+        val expenseTotal: String = resource.getString(R.string.chart_total, "$", "1,155.55")
+        val incomeTotal: String = resource.getString(R.string.chart_total, "$", "2,000.32")
 
         // check expense Chart values
         onView(withIndex(withId(R.id.ivchart_pie), 0)).check(matches(chartText("Expense")))
@@ -126,22 +121,12 @@ class CFLFragmentTest {
         onView(withId(R.id.emptyTextView)).check(matches(not(isDisplayed())))
 
         // check that nothing in filter is selected
-//        onView(withId(R.id.filter_account_check)).check(matches(isNotChecked()))
-        onView(withId(R.id.filter_account)).check(matches(not(isEnabled())))
-        onView(withId(R.id.filter_account)).check(matches(withSpinnerText(dd.acc3.name)))
-//        onView(withId(R.id.filter_cat_check)).check(matches(isNotChecked()))
-        onView(withId(R.id.filter_type)).check(matches(not(isEnabled())))
-        onView(withId(R.id.filter_type)).check(matches(withText(R.string.filter_type)))
-//        onView(withId(R.id.filter_expense_cat)).check(matches(not(isEnabled())))
-//        onView(withId(R.id.filter_expense_cat)).check(matches(withSpinnerText(R.string.category_all)))
-//        onView(withId(R.id.filter_income_cat)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.filter_scroll)).perform(swipeUp())
-//        onView(withId(R.id.filter_date_check)).check(matches(isNotChecked()))
-        onView(withId(R.id.filter_start_date)).check(matches(not(isEnabled())))
-        onView(withId(R.id.filter_start_date)).check(matches(withText(R.string.filter_start)))
-        onView(withId(R.id.filter_end_date)).check(matches(not(isEnabled())))
-        onView(withId(R.id.filter_end_date)).check(matches(withText(R.string.filter_end)))
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
+        onView(withId(R.id.filter_account)).check(matches(isActivated(false)))
+        onView(withId(R.id.filter_category)).check(matches(isActivated(false)))
+        onView(withId(R.id.filter_date)).check(matches(isActivated(false)))
         onView(withId(R.id.filter_action)).check(matches(withText(R.string.filter_reset)))
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
 
         // check that all Transactions loaded
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(4)))
@@ -157,10 +142,16 @@ class CFLFragmentTest {
     fun applyAccountFilter() {
 
         // Chart total
-        val expenseTotal = resource.getString(R.string.chart_total, "$", "1,100.10")
+        val expenseTotal: String = resource.getString(R.string.chart_total, "$", "1,155.55")
 
-        // apply Account filter
-//        onView(withId(R.id.filter_account_check)).perform(click())
+        // apply account filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
+        onView(withId(R.id.filter_account)).perform(click())
+        Thread.sleep(50)
+        onView(allOf(withText("Cash"), withParent(withId(R.id.filter_account_chips))))
+            .perform(click())
+        onView(allOf(withText("Credit Card"), withParent(withId(R.id.filter_account_chips))))
+            .perform(click())
         onView(withId(R.id.filter_action)).perform(click())
 
         // check expense Chart values
@@ -168,6 +159,8 @@ class CFLFragmentTest {
         onView(withIndex(withId(R.id.ivchart_total), 0)).check(matches(withText(expenseTotal)))
         onView(withIndex(withId(R.id.ivchart_pie), 0))
             .check(matches(chartEntry("Food", 1100.10F)))
+        onView(withIndex(withId(R.id.ivchart_pie), 0))
+            .check(matches(chartEntry("Entertainment", 55.45F)))
         onView(withIndex(withId(R.id.emptyTextView), 0)).check(matches(not(isDisplayed())))
 
         // swipe to income Chart
@@ -179,23 +172,31 @@ class CFLFragmentTest {
         onView(withId(R.id.emptyTextView)).check(matches(isDisplayed()))
 
         // check that all Transactions loaded
-        onView(withId(R.id.tranlist_rv)).check(matches(rvSize(2)))
+        onView(withId(R.id.tranlist_rv)).check(matches(rvSize(3)))
         onView(withId(R.id.emptyListTextView)).check(matches(not(isDisplayed())))
         // check that all data for Transactions is loaded correctly and in correct position
         checkTranViewHolder(0, dd.tran1, R.color.colorExpenseTotal)
         checkTranViewHolder(1, dd.tran2, R.color.colorExpenseTotal)
+        checkTranViewHolder(2, dd.tran4, R.color.colorExpenseTotal)
     }
 
     @Test
     fun applyExpenseCategoryFilter() {
 
         // Chart total
-        val expenseTotal = resource.getString(R.string.chart_total, "$", "55.45")
+        val expenseTotal: String = resource.getString(R.string.chart_total, "$", "55.45")
 
-        // apply expense Category filter
-//        onView(withId(R.id.filter_cat_check)).perform(click())
-//        onView(withId(R.id.filter_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat2.name))).perform(click())
+        // apply expense category filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
+        onView(withId(R.id.filter_category)).perform(click())
+        Thread.sleep(50)
+        onView(withId(R.id.filter_type)).check(matches(withText("Expense")))
+        onView(withId(R.id.filter_expense_chips)).check(matches(isDisplayed()))
+        onView(withId(R.id.filter_income_chips)).check(matches(not(isDisplayed())))
+        onView(allOf(withText("Entertainment"), withParent(withId(R.id.filter_expense_chips))))
+            .perform(click())
+        onView(allOf(withText("Unused Expense"), withParent(withId(R.id.filter_expense_chips))))
+            .perform(click())
         onView(withId(R.id.filter_action)).perform(click())
 
         // check expense Chart values
@@ -224,14 +225,20 @@ class CFLFragmentTest {
     fun applyIncomeCategoryFilter() {
 
         // Chart total
-        val incomeTotal = resource.getString(R.string.chart_total, "$", "0.00")
+        val incomeTotal: String = resource.getString(R.string.chart_total, "$", "0.00")
 
-        // apply income Category filter
-//        onView(withId(R.id.filter_cat_check)).perform(click())
+        // apply income category filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
+        onView(withId(R.id.filter_category)).perform(click())
+        Thread.sleep(50)
         onView(withId(R.id.filter_type)).perform(click())
-//        onView(withId(R.id.filter_expense_cat)).check(matches(not(isDisplayed())))
-//        onView(withId(R.id.filter_income_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat4.name))).perform(click())
+        onView(withId(R.id.filter_type)).check(matches(withText("Income")))
+        onView(withId(R.id.filter_expense_chips)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.filter_income_chips)).check(matches(isDisplayed()))
+        onView(allOf(withText("Unused Income"), withParent(withId(R.id.filter_income_chips))))
+            .perform(click())
+        onView(allOf(withText("Zelle"), withParent(withId(R.id.filter_income_chips))))
+            .perform(click())
         onView(withId(R.id.filter_action)).perform(click())
 
         // check expense Chart values
@@ -255,9 +262,12 @@ class CFLFragmentTest {
     @Test
     fun applyDateFilter() {
 
-        // apply Date filter
-        onView(withId(R.id.filter_scroll)).perform(swipeUp())
-//        onView(withId(R.id.filter_date_check)).perform(click())
+        // apply date filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
+        onView(withId(R.id.filter_date)).perform(click())
+        Thread.sleep(50)
+        onView(withId(R.id.filter_start_date)).check(matches(withText("Start")))
+        onView(withId(R.id.filter_end_date)).check(matches(withText("End")))
         onView(withId(R.id.filter_start_date)).perform(click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 20))
         onView(withId(android.R.id.button1)).perform(click())
@@ -290,14 +300,23 @@ class CFLFragmentTest {
     fun applyAccountCategoryFilters() {
 
         // Chart total
-        val incomeTotal = resource.getString(R.string.chart_total, "$", "4,000.64")
+        val incomeTotal: String = resource.getString(R.string.chart_total, "$", "4,000.64")
 
-        // apply Account and Category filter
-//        onView(withId(R.id.filter_account_check)).perform(click())
+        // apply account filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
         onView(withId(R.id.filter_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc2.name))).perform(click())
-//        onView(withId(R.id.filter_cat_check)).perform(click())
+        Thread.sleep(50)
+        onView(allOf(withText("Debit Card"), withParent(withId(R.id.filter_account_chips))))
+            .perform(click())
+
+        // apply category filter
+        onView(withId(R.id.filter_category)).perform(click())
+        Thread.sleep(50)
         onView(withId(R.id.filter_type)).perform(click())
+        onView(allOf(withText("Salary"), withParent(withId(R.id.filter_income_chips))))
+            .perform(click())
+        onView(allOf(withText("Unused Income"), withParent(withId(R.id.filter_income_chips))))
+            .perform(click())
         onView(withId(R.id.filter_action)).perform(click())
 
         // check expense Chart values
@@ -327,14 +346,20 @@ class CFLFragmentTest {
     fun applyAccountDateFilters() {
 
         // Chart total
-        val expenseTotal = resource.getString(R.string.chart_total, "$", "55.45")
+        val expenseTotal: String = resource.getString(R.string.chart_total, "$", "55.45")
 
-        // apply Account and Date filter
-//        onView(withId(R.id.filter_account_check)).perform(click())
+        // apply account filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
         onView(withId(R.id.filter_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc1.name))).perform(click())
-        onView(withId(R.id.filter_scroll)).perform(swipeUp())
-//        onView(withId(R.id.filter_date_check)).perform(click())
+        Thread.sleep(50)
+        onView(allOf(withText("Cash"), withParent(withId(R.id.filter_account_chips))))
+            .perform(click())
+        onView(allOf(withText("Credit Card"), withParent(withId(R.id.filter_account_chips))))
+            .perform(click())
+
+        // apply date filter
+        onView(withId(R.id.filter_date)).perform(click())
+        Thread.sleep(100)
         onView(withId(R.id.filter_start_date)).perform(click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 4))
         onView(withId(android.R.id.button1)).perform(click())
@@ -344,7 +369,6 @@ class CFLFragmentTest {
         onView(withId(android.R.id.button1)).perform(click())
         onView(withId(R.id.filter_end_date)).check(matches(withText("1/6/70")))
         onView(withId(R.id.filter_action)).perform(click())
-
 
         // check expense Chart values
         onView(withIndex(withId(R.id.ivchart_pie), 0)).check(matches(chartText("Expense")))
@@ -374,12 +398,16 @@ class CFLFragmentTest {
         // Chart total
         val expenseTotal = resource.getString(R.string.chart_total, "$", "100.00")
 
-        // apply Category and Date filter
-//        onView(withId(R.id.filter_cat_check)).perform(click())
-//        onView(withId(R.id.filter_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat1.name))).perform(click())
-        onView(withId(R.id.filter_scroll)).perform(swipeUp())
-//        onView(withId(R.id.filter_date_check)).perform(click())
+        // apply category filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
+        onView(withId(R.id.filter_category)).perform(click())
+        Thread.sleep(50)
+        onView(allOf(withText("Food"), withParent(withId(R.id.filter_expense_chips))))
+            .perform(click())
+
+        // apply date filter
+        onView(withId(R.id.filter_date)).perform(click())
+        Thread.sleep(50)
         onView(withId(R.id.filter_start_date)).perform(click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 2))
         onView(withId(android.R.id.button1)).perform(click())
@@ -418,15 +446,22 @@ class CFLFragmentTest {
         // Chart total
         val expenseTotal = resource.getString(R.string.chart_total, "$", "1,000.10")
 
-        // apply all filters
-//        onView(withId(R.id.filter_account_check)).perform(click())
+        // apply account filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
         onView(withId(R.id.filter_account)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.acc3.name))).perform(click())
-//        onView(withId(R.id.filter_cat_check)).perform(click())
-//        onView(withId(R.id.filter_expense_cat)).perform(click())
-        onData(allOf(`is`(instanceOf(String::class.java)), `is`(dd.cat1.name))).perform(click())
-        onView(withId(R.id.filter_scroll)).perform(swipeUp())
-//        onView(withId(R.id.filter_date_check)).perform(click())
+        Thread.sleep(50)
+        onView(allOf(withText("Cash"), withParent(withId(R.id.filter_account_chips))))
+            .perform(click())
+
+        // apply category filter
+        onView(withId(R.id.filter_category)).perform(click())
+        Thread.sleep(50)
+        onView(allOf(withText("  All  "), withParent(withId(R.id.filter_expense_chips))))
+            .perform(click())
+
+        // apply date filter
+        onView(withId(R.id.filter_date)).perform(click())
+        Thread.sleep(50)
         onView(withId(R.id.filter_start_date)).perform(click())
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 1))
         onView(withId(android.R.id.button1)).perform(click())
@@ -470,6 +505,54 @@ class CFLFragmentTest {
         // check that 1 Transaction was deleted
         onView(withId(R.id.tranlist_rv)).check(matches(rvSize(3)))
         onView(withText(dd.tran4.title)).check(doesNotExist())
+    }
+
+    @Test
+    fun checkFilterColors() {
+
+        // open filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
+
+        // check filter Button colors
+        checkFilterColors(R.color.colorButtonUnselected, false)
+
+        // click on filter Buttons
+        onView(withId(R.id.filter_account)).perform(click())
+        Thread.sleep(50)
+        onView(withId(R.id.filter_category)).perform(click())
+        Thread.sleep(50)
+        onView(withId(R.id.filter_date)).perform(click())
+        Thread.sleep(50)
+
+        // check filter Button colors again
+        checkFilterColors(R.color.colorButtonBackground, true)
+    }
+
+    @Test
+    fun checkAllChips() {
+
+        // open filter
+        onView(withId(R.id.cfl_edit_filter)).perform(click())
+        onView(withId(R.id.filter_category)).perform(click())
+        Thread.sleep(50)
+        // click "All" and check that all Chips were selected
+        onView(allOf(withText("  All  "), withParent(withId(R.id.filter_expense_chips))))
+            .perform(click())
+        onView(withId(R.id.filter_expense_chips)).check(matches(allChipsSelected()))
+        // re-click "All" and check that all Chips were unselected
+        onView(allOf(withText("  All  "), withParent(withId(R.id.filter_expense_chips))))
+            .perform(click())
+        onView(withId(R.id.filter_expense_chips)).check(matches(noChipsSelected()))
+        // change ChipGroup
+        onView(withId(R.id.filter_type)).perform(click())
+        // click "All" and check that all Chips were selected
+        onView(allOf(withText("  All  "), withParent(withId(R.id.filter_income_chips))))
+            .perform(click())
+        onView(withId(R.id.filter_income_chips)).check(matches(allChipsSelected()))
+        // re-click "All" and check that all Chips were unselected
+        onView(allOf(withText("  All  "), withParent(withId(R.id.filter_income_chips))))
+            .perform(click())
+        onView(withId(R.id.filter_income_chips)).check(matches(noChipsSelected()))
     }
 
     /**
@@ -520,5 +603,29 @@ class CFLFragmentTest {
             .check(matches(rvViewHolder(pos, withTextColor(color), R.id.ivt_total)))
         onView(withId(R.id.tranlist_rv))
             .check(matches(rvViewHolder(pos, withText(tran.category), R.id.ivt_category)))
+    }
+
+    /**
+     *  Helper function for checkFilterColors() test. Checks the colors of filter Buttons and
+     *  MaxHeightNestedScrollView using [colorId] and [activated].
+     */
+    private fun checkFilterColors(colorId: Int, activated: Boolean) {
+
+        onView(withId(R.id.filter_account))
+            .check(matches(withTextAndStrokeColor(colorId, activated)))
+        onView(withId(R.id.filter_account_scrollview))
+            .check(matches(withBackgroundState(activated)))
+        onView(withId(R.id.filter_category))
+            .check(matches(withTextAndStrokeColor(colorId, activated)))
+        onView(withId(R.id.filter_type))
+            .check(matches(withTextAndStrokeColor(colorId, activated)))
+        onView(withId(R.id.filter_category_scrollview))
+            .check(matches(withBackgroundState(activated)))
+        onView(withId(R.id.filter_date))
+            .check(matches(withTextAndStrokeColor(colorId, activated)))
+        onView(withId(R.id.filter_start_date))
+            .check(matches(withTextAndStrokeColor(colorId, activated)))
+        onView(withId(R.id.filter_end_date))
+            .check(matches(withTextAndStrokeColor(colorId, activated)))
     }
 }

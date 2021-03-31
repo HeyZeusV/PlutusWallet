@@ -10,6 +10,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.PickerActions.setDate
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -80,9 +81,10 @@ class TransactionFragmentTest {
         onView(withId(R.id.tran_expense_cat)).check(matches((withText(""))))
         onView(withId(R.id.tran_income_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_memo)).check(matches(withText("")))
-        onView(withId(R.id.tran_repeat)).check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected)))
-        onView(withId(R.id.tran_period)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.tran_frequency)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.tran_repeat))
+            .check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected, false)))
+        onView(withId(R.id.tran_period)).check(matches(not(isCompletelyDisplayed())))
+        onView(withId(R.id.tran_frequency)).check(matches(not(isCompletelyDisplayed())))
     }
 
     @Test
@@ -101,14 +103,17 @@ class TransactionFragmentTest {
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
         onView(withId(R.id.tran_account)).check(matches((withText(dd.acc3.name))))
         onView(withId(R.id.tran_total)).check(matches(withText("1,000.10")))
-        onView(withId(R.id.tran_type_expense)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
-        onView(withId(R.id.tran_type_income)).check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected)))
+        onView(withId(R.id.tran_type_expense))
+            .check(matches(withTextAndStrokeColor(R.color.colorButtonBackground, true)))
+        onView(withId(R.id.tran_type_income))
+            .check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected, false)))
         onView(withId(R.id.tran_expense_cat)).check(matches(isDisplayed()))
         onView(withId(R.id.tran_expense_cat)).check(matches((withText(dd.cat1.name))))
         // expense Transaction so income Spinner is not needed
         onView(withId(R.id.tran_income_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_memo)).check(matches(withText("Catering for party")))
-        onView(withId(R.id.tran_repeat)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
+        onView(withId(R.id.tran_repeat))
+            .check(matches(withTextAndStrokeColor(R.color.colorButtonBackground, true)))
         onView(withId(R.id.tran_scrollView)).perform(swipeUp())
         onView(withId(R.id.tran_period)).check(matches(isDisplayed()))
         onView(withId(R.id.tran_period)).check(matches(withText("Days")))
@@ -133,15 +138,17 @@ class TransactionFragmentTest {
         onView(withId(R.id.tran_date)).check(matches(withText(expectedFormattedDate)))
         onView(withId(R.id.tran_account)).check(matches((withText(dd.acc2.name))))
         onView(withId(R.id.tran_total)).check(matches(withText("2,000.32")))
-        onView(withId(R.id.tran_type_expense)).check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected)))
-        onView(withId(R.id.tran_type_income)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
+        onView(withId(R.id.tran_type_expense))
+            .check(matches(withTextAndStrokeColor(R.color.colorButtonUnselected, false)))
+        onView(withId(R.id.tran_type_income))
+            .check(matches(withTextAndStrokeColor(R.color.colorButtonBackground, true)))
         // income Transaction so expense Spinner is not needed
         onView(withId(R.id.tran_expense_cat)).check(matches(not(isDisplayed())))
         onView(withId(R.id.tran_income_cat)).check(matches(isDisplayed()))
         onView(withId(R.id.tran_income_cat)).check(matches((withText(dd.cat3.name))))
         onView(withId(R.id.tran_memo)).check(matches(withText("Best day of the month!")))
-        onView(withId(R.id.tran_repeat)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground)))
         onView(withId(R.id.tran_scrollView)).perform(swipeUp())
+        onView(withId(R.id.tran_repeat)).check(matches(withTextAndStrokeColor(R.color.colorButtonBackground, true)))
         onView(withId(R.id.tran_period)).check(matches(isDisplayed()))
         onView(withId(R.id.tran_period)).check(matches(withText("Months")))
         onView(withId(R.id.tran_frequency)).check(matches(isDisplayed()))

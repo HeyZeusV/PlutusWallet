@@ -3,12 +3,14 @@ package com.heyzeusv.plutuswallet
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.BoundedMatcher
 import com.github.mikephil.charting.charts.PieChart
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textfield.TextInputLayout
+import com.heyzeusv.plutuswallet.ui.cfl.filter.MaxHeightNestedScrollView
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
@@ -21,22 +23,43 @@ class CustomMatchers {
     companion object {
 
         /**
-         *  Checks if id of Chip currently selected in ChipGroup matches the given [id].
+         *  Checks that all Chips are selected in ChipGroup.
          */
-        fun chipSelected(id: Int): Matcher<View> {
+        fun allChipsSelected(): Matcher<View> {
 
             return object : BoundedMatcher<View, ChipGroup>(ChipGroup::class.java) {
 
                 override fun describeTo(description: Description?) {
 
-                    description?.appendText("Chip id is: $id")
+                    description?.appendText("with all chips selected")
                 }
 
                 override fun matchesSafely(chipGroup: ChipGroup): Boolean {
 
-                    return chipGroup.checkedChipId == id
+                    chipGroup.children.forEach {
+                        if (!chipGroup.checkedChipIds.contains(it.id)) return false
+                    }
+                    return true
+                }
+            }
+        }
+
+        /**
+         *  Check that no Chips are selected in ChipGroup
+         */
+        fun noChipsSelected(): Matcher<View> {
+
+            return object : BoundedMatcher<View, ChipGroup>(ChipGroup::class.java) {
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("with no chips selected")
                 }
 
+                override fun matchesSafely(chipGroup: ChipGroup): Boolean {
+
+                    return chipGroup.checkedChipIds.isEmpty()
+                }
             }
         }
 
@@ -44,16 +67,16 @@ class CustomMatchers {
          *  Checks if the number of entries in RecyclerView matches given [size].
          */
         fun rvSize(size: Int): Matcher<View> {
-            
+
             return object : BoundedMatcher<View, RecyclerView>(RecyclerView::class.java) {
-                
+
                 override fun describeTo(description: Description?) {
-                    
+
                     description?.appendText("with list size: $size")
                 }
 
                 override fun matchesSafely(recyclerView: RecyclerView): Boolean {
-                    
+
                     return recyclerView.adapter?.itemCount == size
                 }
             }
@@ -120,6 +143,25 @@ class CustomMatchers {
                 override fun matchesSafely(chart: PieChart): Boolean {
 
                     return chart.centerText == centerText
+                }
+            }
+        }
+
+        /**
+         *  Checks that Views activated state is [activated]
+         */
+        fun isActivated(activated: Boolean): Matcher<View> {
+
+            return object : TypeSafeMatcher<View>() {
+
+                override fun describeTo(description: Description?) {
+
+                    description?.appendText("with activated state: $activated")
+                }
+
+                override fun matchesSafely(view: View): Boolean {
+
+                    return view.isActivated == activated
                 }
             }
         }
@@ -205,23 +247,55 @@ class CustomMatchers {
 
         /**
          *  Checks that MaterialButton text and stroke color matches [colorId].
+         *  Uses [activated] to determine method to use to find stroke color
          */
-        fun withTextAndStrokeColor(colorId: Int): Matcher<View> {
+        fun withTextAndStrokeColor(colorId: Int, activated: Boolean): Matcher<View> {
 
             return object : BoundedMatcher<View, MaterialButton>(MaterialButton::class.java) {
 
                 override fun describeTo(description: Description?) {
 
-                    description?.appendText("with color id: $colorId")
+                    description?.appendText("with color id: $colorId and activated state: $activated")
                 }
 
                 override fun matchesSafely(button: MaterialButton): Boolean {
 
                     val color: Int = ContextCompat.getColor(button.context, colorId)
-                    val strokeColor: Boolean = color == button.strokeColor.defaultColor
+                    val strokeColor: Boolean = color == if (activated) {
+                        button.strokeColor.getColorForState(
+                            intArrayOf(android.R.attr.state_activated), 0
+                        )
+                    } else {
+                        button.strokeColor.defaultColor
+                    }
                     val textColor: Boolean = color == button.currentTextColor
 
                     return strokeColor && textColor
+                }
+            }
+        }
+
+        /**
+         *  Checks that MaxHeightNestedScrollView background is using correct background depending
+         *  on [activated]
+         */
+        fun withBackgroundState(activated: Boolean): Matcher<View> {
+
+            return object :
+                BoundedMatcher<View, MaxHeightNestedScrollView>(MaxHeightNestedScrollView::class.java) {
+
+                override fun describeTo(description: Description?) {
+                    description?.appendText("with background drawable with activated state of: $activated")
+                }
+
+                override fun matchesSafely(view: MaxHeightNestedScrollView): Boolean {
+
+                    val activatedState: Int = android.R.attr.state_activated
+                    return if (activated) {
+                        view.background.current.state.contains(activatedState)
+                    } else {
+                        !view.background.current.state.contains(activatedState)
+                    }
                 }
             }
         }
