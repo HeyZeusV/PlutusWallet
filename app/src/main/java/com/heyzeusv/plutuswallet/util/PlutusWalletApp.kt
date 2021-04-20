@@ -4,6 +4,11 @@ import android.app.Application
 import com.heyzeusv.plutuswallet.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 /**
  *  Maintains global application state and used to call one-time operations.
@@ -24,5 +29,20 @@ class PlutusWalletApp : Application() {
                 super.log(priority, "PW_$tag", message, t)
             }
         })
+
+        val dateTest = Date()
+        val dateToZone = ZonedDateTime.ofInstant(dateTest.toInstant(), ZoneId.systemDefault())
+        val zonedTest = ZonedDateTime.now(ZoneId.systemDefault())
+        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - hh:mm:ss a Z")
+        val zonedString = zonedTest.format(formatter)
+        val dateString = dateToZone.format(formatter)
+
+
+        Timber.d("Instant: ${Instant.ofEpochMilli(System.currentTimeMillis())}")
+        Timber.d("Date to Long: ${Date().time}")
+        Timber.d("System: ${System.currentTimeMillis()}")
+        Timber.d("Zoned to Instant to Long: ${zonedTest.toInstant().toEpochMilli()}")
+        Timber.d("date to Zoned: $dateString")
+        Timber.d("Zoned: $zonedString")
     }
 }
