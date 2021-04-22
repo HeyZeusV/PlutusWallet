@@ -2,7 +2,9 @@ package com.heyzeusv.plutuswallet.data
 
 import androidx.room.TypeConverter
 import java.math.BigDecimal
-import java.util.Date
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 /**
  *  Converts complex types.
@@ -14,15 +16,17 @@ import java.util.Date
 class TransactionTypeConverters {
 
     @TypeConverter
-    fun fromDate(date: Date?): Long? {
+    fun fromZonedDateTime(date: ZonedDateTime?): Long? {
 
-        return date?.time
+        return date?.toInstant()?.toEpochMilli()
     }
 
     @TypeConverter
-    fun toDate(millisSinceEpoch: Long?): Date? {
+    fun toZonedDateTime(millisSinceEpoch: Long?): ZonedDateTime? {
 
-        return millisSinceEpoch?.let { Date(it) }
+        return millisSinceEpoch?.let {
+            ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault())
+        }
     }
 
     @TypeConverter
@@ -34,6 +38,6 @@ class TransactionTypeConverters {
     @TypeConverter
     fun toBigDecimal(total: String?): BigDecimal? {
 
-        return BigDecimal(total)
+        return total?.let { BigDecimal(total) }
     }
 }

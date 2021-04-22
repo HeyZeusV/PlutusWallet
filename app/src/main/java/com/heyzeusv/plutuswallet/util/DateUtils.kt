@@ -2,6 +2,8 @@ package com.heyzeusv.plutuswallet.util
 
 import android.app.DatePickerDialog
 import android.view.View
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
@@ -10,6 +12,20 @@ import java.util.GregorianCalendar
  *  Function used in multiple classes focused on Dates.
  */
 object DateUtils {
+
+    /**
+     *  Returns a DateTimeFormatter using [format] to determine how it should format
+     *  ZonedDateTime.
+     */
+    fun formatString(format: Int): DateTimeFormatter {
+
+        return DateTimeFormatter.ofLocalizedDate(when(format) {
+            0 -> FormatStyle.SHORT
+            1 -> FormatStyle.MEDIUM
+            2 -> FormatStyle.LONG
+            else -> FormatStyle.FULL
+        })
+    }
 
     /**
      *  Returns Date object starting at the beginning of the day using [date].

@@ -5,9 +5,11 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.heyzeusv.plutuswallet.util.DateUtils
 import java.math.BigDecimal
-import java.util.Date
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 /**
  *  Representation of Transaction table.
@@ -46,7 +48,7 @@ data class Transaction(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     var title: String = "",
-    var date: Date = DateUtils.startOfDay(Date()),
+    var date: ZonedDateTime = ZonedDateTime.now(ZoneId.systemDefault()),
     var total: BigDecimal = BigDecimal("0"),
     var account: String = "",
     var type: String = "Expense",
@@ -55,6 +57,6 @@ data class Transaction(
     var repeating: Boolean = false,
     var frequency: Int = 1,
     var period: Int = 0,
-    var futureDate: Date = Date(Long.MAX_VALUE),
+    var futureDate: ZonedDateTime = Instant.ofEpochMilli(Long.MAX_VALUE).atZone(ZoneOffset.UTC),
     var futureTCreated: Boolean = false
 )

@@ -6,12 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -19,8 +19,8 @@ import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.Calendar
-import java.util.Date
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
@@ -66,8 +66,8 @@ class TransactionViewModel @ViewModelInject constructor(
     private val _saveTranEvent: MutableLiveData<Event<Boolean>> = MutableLiveData<Event<Boolean>>()
     val saveTranEvent: LiveData<Event<Boolean>> = _saveTranEvent
 
-    private val _selectDateEvent = MutableLiveData<Event<Date>>()
-    val selectDateEvent: LiveData<Event<Date>> = _selectDateEvent
+    private val _selectDateEvent = MutableLiveData<Event<ZonedDateTime>>()
+    val selectDateEvent: LiveData<Event<ZonedDateTime>> = _selectDateEvent
 
     // SettingsValues will be retrieved from Fragment
     var setVals: SettingsValues = SettingsValues()
@@ -176,7 +176,7 @@ class TransactionViewModel @ViewModelInject constructor(
             }
 
             tran.repeating = repeat.value!!
-            if (tran.repeating) tran.futureDate = createFutureDate()
+            if (tran.repeating) createFutureDate()
             tran.period = periodArray.value!!.indexOf(period)
             // frequency must always be at least 1
             if (tran.frequency < 1) tran.frequency = 1
@@ -223,29 +223,22 @@ class TransactionViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  Returns date from Transaction after adding frequency * period.
+     *  Edits Transaction's futureDate by adding frequency * period.
      */
-    private fun createFutureDate(): Date {
+    private fun createFutureDate() {
 
-        val calendar: Calendar = Calendar.getInstance()
         tranLD.value?.let {
-            // set to Transaction date rather than current time due to Users being able
-            // to select a Date in the past or future
-            calendar.time = it.date
-
-            // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-            calendar.add(
+            it.futureDate = it.date
+            it.futureDate.apply {
+                // 0 = Day, 1 = Week, 2 = Month, 3 = Year
                 when (it.period) {
-                    0 -> Calendar.DAY_OF_MONTH
-                    1 -> Calendar.WEEK_OF_YEAR
-                    2 -> Calendar.MONTH
-                    else -> Calendar.YEAR
-                },
-                it.frequency
-            )
+                    0 -> plusDays(it.frequency.toLong())
+                    1 -> plusWeeks(it.frequency.toLong())
+                    2 -> plusMonths(it.frequency.toLong())
+                    else -> plusMonths(it.frequency.toLong())
+                }
+            }
         }
-
-        return calendar.time
     }
 
     /**
@@ -351,7 +344,7 @@ class TransactionViewModel @ViewModelInject constructor(
     /**
      *  Event to show DatePickerDialog starting at [date].
      */
-    fun selectDateOC(date: Date) {
+    fun selectDateOC(date: ZonedDateTime) {
 
         _selectDateEvent.value = Event(date)
     }
@@ -359,13 +352,13 @@ class TransactionViewModel @ViewModelInject constructor(
     /**
      *  Takes [newDate] user selects, changes Transaction date, and formats it to be displayed.
      */
-    fun onDateSelected(newDate: Date) {
+    fun onDateSelected(newDate: ZonedDateTime) {
 
         // true if newDate is different from previous date
         dateChanged = tranLD.value!!.date != newDate
         tranLD.value!!.date = newDate
         // turns date selected into Date type
-        _date.value = DateFormat.getDateInstance(setVals.dateFormat).format(newDate)
+        _date.value = newDate.format(DateUtils.formatString(setVals.dateFormat))
     }
 
     /**
