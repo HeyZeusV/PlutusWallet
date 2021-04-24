@@ -9,7 +9,7 @@ import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.replace
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class FakeRepository @Inject constructor() : Repository {
@@ -19,10 +19,10 @@ class FakeRepository @Inject constructor() : Repository {
     var catList: MutableList<Category> = dd.catList
     var tranList: MutableList<Transaction> = dd.tranList
 
-    private val accListLD = MutableLiveData(accList.sortedBy { it.name })
-    private val catExListLD =
+    private val accListLD: MutableLiveData<List<Account>> = MutableLiveData(accList.sortedBy { it.name })
+    private val catExListLD: MutableLiveData<List<Category>> =
         MutableLiveData(catList.filter { it.type == "Expense" }.sortedBy { it.name })
-    private val catInListLD =
+    private val catInListLD: MutableLiveData<List<Category>> =
         MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.name })
     private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
 
@@ -136,10 +136,12 @@ class FakeRepository @Inject constructor() : Repository {
         return catList.distinct().sorted() as MutableList<String>
     }
 
-    override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {
+    override suspend fun getFutureTransactionsAsync(currentDate: ZonedDateTime): List<Transaction> {
 
         val futureList: MutableList<Transaction> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.date < currentDate && it.repeating && !it.futureTCreated }) {
+        for (tran: Transaction in tranList.filter {
+            it.date.isBefore(currentDate) && it.repeating && !it.futureTCreated }
+        ) {
             futureList.add(tran)
         }
 
@@ -267,8 +269,8 @@ class FakeRepository @Inject constructor() : Repository {
 
     override fun getLdCtAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<CategoryTotals>> {
 
         val catLists: List<List<String>> = getCatLists()
@@ -276,8 +278,9 @@ class FakeRepository @Inject constructor() : Repository {
         for (cat: String in catLists[0]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && accounts.contains(it.account) &&
-                        it.date >= start && it.date <= end
+                it.category == cat && it.type == "Expense" && accounts.contains(it.account)
+                        && (it.date.isAfter(start) || it.date.equals(start))
+                        && (it.date.isBefore(end) || it.date.equals(end))
             }) {
                 listOfTran.add(tran)
             }
@@ -286,8 +289,9 @@ class FakeRepository @Inject constructor() : Repository {
         for (cat: String in catLists[1]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
-                        it.date >= start && it.date <= end
+                it.category == cat && it.type == "Income" && accounts.contains(it.account)
+                        && (it.date.isAfter(start) || it.date.equals(start))
+                        && (it.date.isBefore(end) || it.date.equals(end))
             }) {
                 listOfTran.add(tran)
             }
@@ -297,14 +301,16 @@ class FakeRepository @Inject constructor() : Repository {
         return MutableLiveData(createCatTotals(listOfTranLists))
     }
 
-    override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> {
+    override fun getLdCtD(start: ZonedDateTime, end: ZonedDateTime): LiveData<List<CategoryTotals>> {
 
         val catLists: List<List<String>> = getCatLists()
         val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
         for (cat: String in catLists[0]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && it.date >= start && it.date <= end
+                it.category == cat && it.type == "Expense"
+                        && (it.date.isAfter(start) || it.date.equals(start))
+                        && (it.date.isBefore(end) || it.date.equals(end))
             }) {
                 listOfTran.add(tran)
             }
@@ -313,7 +319,9 @@ class FakeRepository @Inject constructor() : Repository {
         for (cat: String in catLists[1]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && it.date >= start && it.date <= end
+                it.category == cat && it.type == "Income"
+                        && (it.date.isAfter(start) || it.date.equals(start))
+                        && (it.date.isBefore(end) || it.date.equals(end))
             }) {
                 listOfTran.add(tran)
             }
@@ -353,13 +361,15 @@ class FakeRepository @Inject constructor() : Repository {
 
     override fun getLdIvtAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.date >= start && it.date <= end
+            accounts.contains(it.account)
+                    && (it.date.isAfter(start) || it.date.equals(start))
+                    && (it.date.isBefore(end) || it.date.equals(end))
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -411,13 +421,16 @@ class FakeRepository @Inject constructor() : Repository {
     override fun getLdIvtATD(
         accounts: List<String>,
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.type == type && it.date >= start && it.date <= end
+            accounts.contains(it.account) && it.type == type
+                    && (it.date.isAfter(start) || it.date.equals(start))
+                    && (it.date.isBefore(end) || it.date.equals(end))
+
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -433,14 +446,15 @@ class FakeRepository @Inject constructor() : Repository {
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.type == type && categories.contains(it.category) &&
-                    it.date >= start && it.date <= end
+            accounts.contains(it.account) && it.type == type && categories.contains(it.category)
+                    && (it.date.isAfter(start) || it.date.equals(start))
+                    && (it.date.isBefore(end) || it.date.equals(end))
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -452,10 +466,12 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtListLD
     }
 
-    override fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> {
+    override fun getLdIvtD(start: ZonedDateTime, end: ZonedDateTime): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.date in start..end }) {
+        for (tran: Transaction in tranList.filter {
+            (it.date.isAfter(start) || it.date.equals(start))
+                    && (it.date.isBefore(end) || it.date.equals(end)) }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
@@ -500,13 +516,15 @@ class FakeRepository @Inject constructor() : Repository {
     override fun getLdIvtTCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.type == type && categories.contains(it.category) && it.date >= start && it.date <= end
+            it.type == type && categories.contains(it.category)
+                    && (it.date.isAfter(start) || it.date.equals(start))
+                    && (it.date.isBefore(end) || it.date.equals(end))
         }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -520,13 +538,15 @@ class FakeRepository @Inject constructor() : Repository {
 
     override fun getLdIvtTD(
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.type == type  && it.date >= start && it.date <= end }) {
+            it.type == type
+                    && (it.date.isAfter(start) || it.date.equals(start))
+                    && (it.date.isBefore(end) || it.date.equals(end))}) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )

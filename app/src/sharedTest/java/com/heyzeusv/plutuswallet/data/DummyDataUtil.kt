@@ -51,7 +51,7 @@ class DummyDataUtil {
 
     val ivt1 = ItemViewTransaction(
         1, "Party", ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault()),
-        BigDecimal("100.10"), "Cash", "Expense", "Food"
+        BigDecimal("1000.10"), "Cash", "Expense", "Food"
     )
     val ivt2 = ItemViewTransaction(
         2, "Party2", ZonedDateTime.of(2018, 8, 11, 0, 0, 0, 0, ZoneId.systemDefault()),

@@ -55,7 +55,8 @@ class DatabaseTest {
         @DisplayName("List of Account names in alphabetical order")
         fun getAccountNames() {
 
-            val expected : MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card")
+            val expected : MutableList<String> =
+                mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
             assertEquals(expected, runBlocking { accDao.getAccountNames()  })
         }
 
@@ -63,7 +64,7 @@ class DatabaseTest {
         @DisplayName("Size of table")
         fun getAccountSize() {
 
-            assertEquals(3, runBlocking { accDao.getAccountSize() })
+            assertEquals(4, runBlocking { accDao.getAccountSize() })
         }
 
         @Test
@@ -71,7 +72,7 @@ class DatabaseTest {
         fun getLDAccounts() {
 
             val ldAccList : List<Account> = accDao.getLDAccounts().blockingObserve()!!
-            assertEquals(listOf(dd.acc3, dd.acc1, dd.acc2), ldAccList)
+            assertEquals(listOf(dd.acc3, dd.acc1, dd.acc2, dd.acc4), ldAccList)
         }
     }
 
@@ -83,7 +84,7 @@ class DatabaseTest {
         @DisplayName("List of Category names of type in alphabetical order")
         fun getCategoryNamesByType() {
 
-            val expected : MutableList<String> = mutableListOf("Entertainment", "Food")
+            val expected : MutableList<String> = mutableListOf("Entertainment", "Food", "Unused Expense")
             assertEquals(expected, runBlocking { catDao.getCategoryNamesByType("Expense") })
         }
 
@@ -91,7 +92,7 @@ class DatabaseTest {
         @DisplayName("Size of table")
         fun getAccountSize() {
 
-            assertEquals(3, runBlocking { catDao.getCategorySize() })
+            assertEquals(6, runBlocking { catDao.getCategorySize() })
         }
 
         @Test
@@ -99,7 +100,7 @@ class DatabaseTest {
         fun getLDCategoriesByType() {
 
             val ldCatList : List<Category> = catDao.getLDCategoriesByType("Expense").blockingObserve()!!
-            assertEquals(listOf(dd.cat2, dd.cat1), ldCatList)
+            assertEquals(listOf(dd.cat2, dd.cat1, dd.cat5), ldCatList)
         }
     }
 
@@ -166,7 +167,7 @@ class DatabaseTest {
                 val expected: List<CategoryTotals> =
                     listOf(
                         CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense"),
-                        CategoryTotals("Food", BigDecimal("200.1"), "Expense"),
+                        CategoryTotals("Food", BigDecimal("1100.1"), "Expense"),
                         CategoryTotals("Salary", BigDecimal("2000.32"), "Income")
                     )
                 assertEquals(expected, tranDao.getLdCt().blockingObserve()!!)
@@ -177,7 +178,7 @@ class DatabaseTest {
             fun getLdCtA() {
 
                 val expected: List<CategoryTotals> =
-                    listOf(CategoryTotals("Food", BigDecimal("200.1"), "Expense"))
+                    listOf(CategoryTotals("Food", BigDecimal("1100.1"), "Expense"))
                 assertEquals(expected, tranDao.getLdCtA(listOf("Cash")).blockingObserve()!!)
             }
 
@@ -186,7 +187,7 @@ class DatabaseTest {
             fun getLdCtD() {
 
                 val expected: List<CategoryTotals> =
-                    listOf(CategoryTotals("Food", BigDecimal("100.1"), "Expense"))
+                    listOf(CategoryTotals("Food", BigDecimal("1000.1"), "Expense"))
                 assertEquals(
                     expected,
                     tranDao.getLdCtD(
@@ -241,8 +242,8 @@ class DatabaseTest {
                 assertEquals(listOf(dd.ivt2),
                     tranDao.getLdIvtAD(
                         listOf("Cash"),
-                        ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault()),
-                        ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault())
+                        ZonedDateTime.of(2018, 8, 11, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 11, 10, 0, 0, 0, ZoneId.systemDefault())
                     ).blockingObserve())
             }
 
@@ -282,7 +283,7 @@ class DatabaseTest {
                 assertEquals(
                     listOf(dd.ivt2),
                     tranDao.getLdIvtATCD(listOf("Cash"), "Expense", listOf("Food"),
-                        ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 11, 0, 0, 0, 0, ZoneId.systemDefault()),
                         ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault())
                     ).blockingObserve()
                 )
