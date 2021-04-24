@@ -6,7 +6,7 @@ import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import java.util.Date
+import java.time.ZonedDateTime
 
 /**
  *  Queries that can be applied to Transaction table.
@@ -41,7 +41,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT * 
               FROM `transaction` 
               WHERE futureDate < :currentDate AND futureTCreated == 0""")
-    abstract suspend fun getFutureTransactions(currentDate: Date): List<Transaction>
+    abstract suspend fun getFutureTransactions(currentDate: ZonedDateTime): List<Transaction>
 
     /**
      *  Returns highest id in table or null if empty.
@@ -73,7 +73,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  Ivt = ItemViewTransaction
      *  A   = Account
      *  C   = Category
-     *  D   = Date
+     *  D   = ZonedDateTime
      *  T   = Type
      *
      *  CategoryTotals(CT): Used for ChartFragment contains Category and Total sum of
@@ -85,8 +85,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  account: the account to be matched against
      *  type: either "Expense" or "Income"
      *  category: the category name to be matched against
-     *  start: the start Date to be compared with
-     *  end: the end Date to be compared with
+     *  start: the start ZonedDateTime to be compared with
+     *  end: the end ZonedDateTime to be compared with
      *
      */
     /**
@@ -116,7 +116,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               WHERE date BETWEEN :start AND :end
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
+    abstract fun getLdCtD(start: ZonedDateTime, end: ZonedDateTime): LiveData<List<CategoryTotals>>
 
     /**
      *  Returns LD of list of CT of given [accounts] and between given [start]/[end] dates.
@@ -126,7 +126,11 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               WHERE account IN (:accounts) AND date BETWEEN :start AND :end
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getLdCtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<CategoryTotals>>
+    abstract fun getLdCtAD(
+        accounts: List<String>,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): LiveData<List<CategoryTotals>>
 
     /**
      *  Returns LD of list of IVT.
@@ -154,8 +158,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               ORDER BY date ASC""")
     abstract fun getLdIvtAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>>
 
     /**
@@ -190,8 +194,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdIvtATD(
         accounts: List<String>,
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>>
 
     /**
@@ -207,8 +211,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>>
 
     /**
@@ -218,7 +222,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtD(start: ZonedDateTime, end: ZonedDateTime): LiveData<List<ItemViewTransaction>>
 
     /**
      *  Returns LD of list of IVT of given [type].
@@ -249,8 +253,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdIvtTCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>>
 
     /**
@@ -260,5 +264,9 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtTD(
+        type: String,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): LiveData<List<ItemViewTransaction>>
 }
