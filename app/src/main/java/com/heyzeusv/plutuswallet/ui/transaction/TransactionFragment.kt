@@ -22,7 +22,7 @@ import com.heyzeusv.plutuswallet.ui.base.BaseFragment
 import com.heyzeusv.plutuswallet.util.AlertDialogCreator
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.EventObserver
-import java.util.Date
+import java.time.ZonedDateTime
 
 /**
  *  Shows all the information in database of one Transaction and allows users to
@@ -188,7 +188,7 @@ class TransactionFragment : BaseFragment() {
             savedBar.show()
         })
 
-        tranVM.selectDateEvent.observe(viewLifecycleOwner, EventObserver { date: Date ->
+        tranVM.selectDateEvent.observe(viewLifecycleOwner, EventObserver { date: ZonedDateTime ->
             val dateDialog: DatePickerDialog =
                 DateUtils.datePickerDialog(binding.root, date, tranVM::onDateSelected)
             dateDialog.show()

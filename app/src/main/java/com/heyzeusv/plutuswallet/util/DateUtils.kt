@@ -13,6 +13,23 @@ import java.time.format.FormatStyle
 object DateUtils {
 
     /**
+     *  Returns FutureDate set at the beginning of the day by calculating
+     *  ([frequency] * [period]) + [date].
+     */
+    fun createFutureDate(date: ZonedDateTime, period: Int, frequency: Int): ZonedDateTime {
+
+        return date.apply {
+            // 0 = Day, 1 = Week, 2 = Month, 3 = Year
+            when (period) {
+                0 -> plusDays(frequency.toLong())
+                1 -> plusWeeks(frequency.toLong())
+                2 -> plusMonths(frequency.toLong())
+                else -> plusMonths(frequency.toLong())
+            }
+        }
+    }
+
+    /**
      *  Returns a DateTimeFormatter using [format] to determine how it should format
      *  ZonedDateTime.
      */
@@ -54,6 +71,7 @@ object DateUtils {
         val initYear: Int = initDate.year
         val initMonth: Int = initDate.monthValue
         val initDay: Int = initDate.dayOfMonth
+
         // retrieves date selected in DateDialog and passes to function from ViewModel
         val dateListener =
             DatePickerDialog.OnDateSetListener { _, year: Int, month: Int, day: Int ->

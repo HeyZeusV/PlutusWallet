@@ -11,13 +11,14 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 private const val EXPENSE = "Expense"
 private const val INCOME = "Income"
@@ -119,27 +120,6 @@ class TransactionListViewModel @ViewModelInject constructor(
     }
 
     /**
-     *  Returns FutureDate set at the beginning of the day by calculating
-     *  ([frequency] * [period]) + [date].
-     */
-    private fun createFutureDate(date: Date, period: Int, frequency: Int): Date {
-
-        val calendar: Calendar = Calendar.getInstance()
-        // set to Transaction date
-        calendar.time = date
-
-        // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-        when (period) {
-            0 -> calendar.add(Calendar.DAY_OF_MONTH, frequency)
-            1 -> calendar.add(Calendar.WEEK_OF_YEAR, frequency)
-            2 -> calendar.add(Calendar.MONTH, frequency)
-            3 -> calendar.add(Calendar.YEAR, frequency)
-        }
-
-        return calendar.time
-    }
-
-    /**
      *  Adds new Transactions depending on existing Transactions futureDate.
      */
     fun futureTransactions() {
@@ -149,7 +129,8 @@ class TransactionListViewModel @ViewModelInject constructor(
             moreToCreate = false
             // returns list of all Transactions whose futureDate is before current date
             val futureTranList: MutableList<Transaction> =
-                tranRepo.getFutureTransactionsAsync(Date()).toMutableList()
+                tranRepo.getFutureTransactionsAsync(ZonedDateTime.now(ZoneId.systemDefault()))
+                    .toMutableList()
 
             // return if empty
             if (futureTranList.isNotEmpty()) {
@@ -180,14 +161,14 @@ class TransactionListViewModel @ViewModelInject constructor(
             newTran.id = 0
             newTran.date = transaction.futureDate
             newTran.title = incrementString(newTran.title)
-            newTran.futureDate = createFutureDate(
+            newTran.futureDate = DateUtils.createFutureDate(
                 newTran.date,
                 newTran.period,
                 newTran.frequency
             )
             // if new futureDate is before current time,
             // then there are more Transactions to be added
-            if (newTran.futureDate < Date()) moreToCreate = true
+            if (newTran.futureDate < ZonedDateTime.now(ZoneId.systemDefault())) moreToCreate = true
 
             // stops this Transaction from being repeated again if user switches its date
             transaction.futureTCreated = true
@@ -240,8 +221,8 @@ class TransactionListViewModel @ViewModelInject constructor(
         type: String,
         accountNames: List<String>,
         categoryNames: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> {
 
         return when {

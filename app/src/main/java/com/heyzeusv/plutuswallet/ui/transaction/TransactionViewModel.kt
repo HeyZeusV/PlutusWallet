@@ -176,7 +176,9 @@ class TransactionViewModel @ViewModelInject constructor(
             }
 
             tran.repeating = repeat.value!!
-            if (tran.repeating) createFutureDate()
+            if (tran.repeating) {
+                tran.futureDate = DateUtils.createFutureDate(tran.date, tran.period, tran.frequency)
+            }
             tran.period = periodArray.value!!.indexOf(period)
             // frequency must always be at least 1
             if (tran.frequency < 1) tran.frequency = 1
@@ -220,25 +222,6 @@ class TransactionViewModel @ViewModelInject constructor(
             tranRepo.upsertTransaction(tran)
         }
         _saveTranEvent.value = Event(true)
-    }
-
-    /**
-     *  Edits Transaction's futureDate by adding frequency * period.
-     */
-    private fun createFutureDate() {
-
-        tranLD.value?.let {
-            it.futureDate = it.date
-            it.futureDate.apply {
-                // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-                when (it.period) {
-                    0 -> plusDays(it.frequency.toLong())
-                    1 -> plusWeeks(it.frequency.toLong())
-                    2 -> plusMonths(it.frequency.toLong())
-                    else -> plusMonths(it.frequency.toLong())
-                }
-            }
-        }
     }
 
     /**
