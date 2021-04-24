@@ -58,7 +58,9 @@ object DateUtils {
         val dateListener =
             DatePickerDialog.OnDateSetListener { _, year: Int, month: Int, day: Int ->
 
-                val date = ZonedDateTime.of(year, month, day, 0, 0, 0, 0, ZoneId.systemDefault())
+                val date: ZonedDateTime = ZonedDateTime.of(
+                    year, month, day, 0, 0, 0, 0, ZoneId.systemDefault()
+                )
                 onDateSelected(date)
             }
 
