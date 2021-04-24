@@ -29,7 +29,8 @@ import org.junit.jupiter.api.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -70,7 +71,7 @@ class DatabaseTest {
         fun getLDAccounts() {
 
             val ldAccList : List<Account> = accDao.getLDAccounts().blockingObserve()!!
-            assertEquals(listOf(acc3, acc1, acc2), ldAccList)
+            assertEquals(listOf(dd.acc3, dd.acc1, dd.acc2), ldAccList)
         }
     }
 
@@ -98,7 +99,7 @@ class DatabaseTest {
         fun getLDCategoriesByType() {
 
             val ldCatList : List<Category> = catDao.getLDCategoriesByType("Expense").blockingObserve()!!
-            assertEquals(listOf(cat2, cat1), ldCatList)
+            assertEquals(listOf(dd.cat2, dd.cat1), ldCatList)
         }
     }
 
@@ -126,8 +127,10 @@ class DatabaseTest {
         @DisplayName("List of all Transactions with futureDate before Date given and futureTCreated is false.")
         fun getFutureTransactions() {
 
-            val expected : List<Transaction> = listOf(tran2)
-            assertEquals(expected, runBlocking { tranDao.getFutureTransactions(Date(86400000 * 4)) })
+            val expected : List<Transaction> = listOf(dd.tran2)
+            assertEquals(expected, runBlocking {
+                tranDao.getFutureTransactions(ZonedDateTime.of(2018, 8, 13, 0, 0, 0, 0, ZoneId.systemDefault()))
+            })
         }
 
         @Test
@@ -141,7 +144,7 @@ class DatabaseTest {
         @DisplayName("Transaction with given id")
         fun getTransaction() {
 
-            assertEquals(tran3, runBlocking { tranDao.getTransaction(3) })
+            assertEquals(dd.tran3, runBlocking { tranDao.getTransaction(3) })
         }
 
         @Test
@@ -149,7 +152,7 @@ class DatabaseTest {
         fun getLDTransaction() {
 
             val tran : Transaction = tranDao.getLDTransaction(2).blockingObserve()!!
-            assertEquals(tran2, tran)
+            assertEquals(dd.tran2, tran)
         }
 
         @Nested
@@ -186,7 +189,10 @@ class DatabaseTest {
                     listOf(CategoryTotals("Food", BigDecimal("100.1"), "Expense"))
                 assertEquals(
                     expected,
-                    tranDao.getLdCtD(Date(0), Date(86400010)).blockingObserve()!!
+                    tranDao.getLdCtD(
+                        ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 10, 10, 0, 0, 0, ZoneId.systemDefault())
+                    ).blockingObserve()!!
                 )
             }
 
@@ -198,8 +204,9 @@ class DatabaseTest {
                     listOf(CategoryTotals("Salary", BigDecimal("2000.32"), "Income"))
                 assertEquals(
                     expected, tranDao.getLdCtAD(
-                        listOf("Debit Card"), Date(86400000 * 3),
-                        Date(86400010 * 4)
+                        listOf("Debit Card"),
+                        ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 20, 0, 0, 0, 0, ZoneId.systemDefault())
                     ).blockingObserve()!!
                 )
             }
@@ -217,22 +224,26 @@ class DatabaseTest {
             @DisplayName("LD of list of IVT")
             fun getLdIvt() {
 
-                assertEquals(listOf(ivt1, ivt2, ivt3, ivt4), tranDao.getLdIvt().blockingObserve())
+                assertEquals(listOf(dd.ivt1, dd.ivt2, dd.ivt3, dd.ivt4), tranDao.getLdIvt().blockingObserve())
             }
 
             @Test
             @DisplayName("LD of list of IVT of given account")
             fun getLdIvtA() {
 
-                assertEquals(listOf(ivt1, ivt2), tranDao.getLdIvtA(listOf("Cash")).blockingObserve())
+                assertEquals(listOf(dd.ivt1, dd.ivt2), tranDao.getLdIvtA(listOf("Cash")).blockingObserve())
             }
 
             @Test
             @DisplayName("LD of list of IVT of given account and between given dates")
             fun getLdIvtAD() {
 
-                assertEquals(listOf(ivt2),
-                    tranDao.getLdIvtAD(listOf("Cash"), Date(86400010), Date(86400010 * 2)).blockingObserve())
+                assertEquals(listOf(dd.ivt2),
+                    tranDao.getLdIvtAD(
+                        listOf("Cash"),
+                        ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault())
+                    ).blockingObserve())
             }
 
             @Test
@@ -247,7 +258,7 @@ class DatabaseTest {
             @DisplayName("LD of list of IVT of given account, type, and category")
             fun getLdIvtATC() {
 
-                assertEquals(listOf(ivt1, ivt2),
+                assertEquals(listOf(dd.ivt1, dd.ivt2),
                     tranDao.getLdIvtATC(listOf("Cash"), "Expense", listOf("Food")).blockingObserve())
             }
 
@@ -255,54 +266,81 @@ class DatabaseTest {
             @DisplayName("LD of list of IVT of given account, type, and between given dates")
             fun getLdIvtATD() {
 
-                assertEquals(listOf(ivt2), tranDao.getLdIvtATD(listOf("Cash"), "Expense",
-                    Date(86400010), Date(86400010 * 2)).blockingObserve())
+                assertEquals(
+                    listOf(dd.ivt2),
+                    tranDao.getLdIvtATD(listOf("Cash"), "Expense",
+                        ZonedDateTime.of(2018, 8, 11, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 11, 12, 0, 0, 0, ZoneId.systemDefault())
+                    ).blockingObserve()
+                )
             }
 
             @Test
             @DisplayName("LD of list of IVT of given account, type, category, and between given dates")
             fun getLdIvtATCD() {
 
-                assertEquals(listOf(ivt2), tranDao.getLdIvtATCD(listOf("Cash"), "Expense",
-                    listOf("Food"), Date(86400010), Date(86400010 * 2)).blockingObserve())
+                assertEquals(
+                    listOf(dd.ivt2),
+                    tranDao.getLdIvtATCD(listOf("Cash"), "Expense", listOf("Food"),
+                        ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault())
+                    ).blockingObserve()
+                )
             }
 
             @Test
             @DisplayName("LD of list of IVT between given dates")
             fun getLdIvtD() {
 
-                assertEquals(listOf(ivt3, ivt4),
-                    tranDao.getLdIvtD(Date(86400010 * 3), Date(86400010 * 6)).blockingObserve())
+                assertEquals(
+                    listOf(dd.ivt3, dd.ivt4),
+                    tranDao.getLdIvtD(
+                        ZonedDateTime.of(2018, 8, 13, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 17, 0, 0, 0, 0, ZoneId.systemDefault())
+                    ).blockingObserve()
+                )
             }
 
             @Test
             @DisplayName("LD of list of IVT of given type")
             fun getLdIvtT() {
 
-                assertEquals(listOf(ivt3), tranDao.getLdIvtT("Income").blockingObserve())
+                assertEquals(listOf(dd.ivt3), tranDao.getLdIvtT("Income").blockingObserve())
             }
 
             @Test
             @DisplayName("LD of list of IVT of given type and category")
             fun getLdIvtTC() {
 
-                assertEquals(listOf(ivt3), tranDao.getLdIvtTC("Income", listOf("Salary")).blockingObserve())
+                assertEquals(listOf(dd.ivt3), tranDao.getLdIvtTC("Income", listOf("Salary")).blockingObserve())
             }
 
             @Test
             @DisplayName("LD of list of IVT of given type, category, and between given dates")
             fun getLdIvtTCD() {
 
-                assertEquals(listOf(ivt3), tranDao.getLdIvtTCD("Income", listOf("Salary"),
-                    Date(86400010 * 3), Date(86400010 * 6)).blockingObserve())
+                assertEquals(
+                    listOf(dd.ivt3),
+                    tranDao.getLdIvtTCD(
+                        "Income", listOf("Salary"),
+                        ZonedDateTime.of(2018, 8, 13, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 15, 0, 0, 0, 0, ZoneId.systemDefault())
+                    ).blockingObserve()
+                )
             }
 
             @Test
             @DisplayName("LD of list of IVT of given type and between given dates")
             fun getLdIvtTD() {
 
-                assertEquals(listOf(ivt1, ivt2, ivt4),
-                    tranDao.getLdIvtTD("Expense", Date(0), Date(86400010 * 6)).blockingObserve())
+                assertEquals(
+                    listOf(dd.ivt1, dd.ivt2, dd.ivt4),
+                    tranDao.getLdIvtTD(
+                        "Expense",
+                        ZonedDateTime.of(2018, 8, 8, 0, 0, 0, 0, ZoneId.systemDefault()),
+                        ZonedDateTime.of(2018, 8, 22, 0, 0, 0, 0, ZoneId.systemDefault())
+                    ).blockingObserve()
+                )
             }
         }
     }
@@ -320,9 +358,7 @@ class DatabaseTest {
             latch.countDown()
         }
 
-        Handler(Looper.getMainLooper()).post {
-            observeForever(observer)
-        }
+        Handler(Looper.getMainLooper()).post { observeForever(observer) }
 
         latch.await(2, TimeUnit.SECONDS)
         return value
@@ -336,26 +372,7 @@ class DatabaseTest {
         private lateinit var catDao  : CategoryDao
         private lateinit var tranDao : TransactionDao
 
-        private val acc1 = Account(1, "Credit Card")
-        private val acc2 = Account(2, "Debit Card")
-        private val acc3 = Account(3, "Cash")
-        private val accList : List<Account> = listOf(acc1, acc2, acc3)
-
-        private val cat1 = Category(1, "Food", "Expense")
-        private val cat2 = Category(2, "Entertainment", "Expense")
-        private val cat3 = Category(3, "Salary", "Income")
-        private val catList : List<Category> = listOf(cat1, cat2, cat3)
-
-        private val tran1 = Transaction(1, "Party", Date(86400000), BigDecimal("100.10"), "Cash", "Expense", "Food", "", true, 1, 0, Date(86400000 * 2), true)
-        private val tran2 = Transaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"), "Cash", "Expense", "Food", "", true, 1, 0, Date(86400000 * 3), false)
-        private val tran3 = Transaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"), "Debit Card", "Income", "Salary", "", true, 2, 1, Date(86400000 * 11), false)
-        private val tran4 = Transaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"), "Credit Card", "Expense", "Entertainment")
-        private val tranList : List<Transaction> = listOf(tran1, tran2, tran3, tran4)
-
-        private val ivt1 = ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("100.10"), "Cash", "Expense", "Food")
-        private val ivt2 = ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"), "Cash", "Expense", "Food")
-        private val ivt3 = ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"), "Debit Card", "Income", "Salary")
-        private val ivt4 = ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"), "Credit Card", "Expense", "Entertainment")
+        private val dd = DummyDataUtil()
 
         @BeforeAll
         @JvmStatic
@@ -368,10 +385,9 @@ class DatabaseTest {
             tranDao = db.transactionDao()
 
             runBlocking {
-
-                accDao .insert(accList)
-                catDao .insert(catList)
-                tranDao.insert(tranList)
+                accDao .insert(dd.accList)
+                catDao .insert(dd.catList)
+                tranDao.insert(dd.tranList)
             }
         }
 
