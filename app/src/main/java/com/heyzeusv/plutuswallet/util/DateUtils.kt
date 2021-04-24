@@ -2,11 +2,10 @@ package com.heyzeusv.plutuswallet.util
 
 import android.app.DatePickerDialog
 import android.view.View
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Calendar
-import java.util.Date
-import java.util.GregorianCalendar
 
 /**
  *  Function used in multiple classes focused on Dates.
@@ -30,16 +29,14 @@ object DateUtils {
     /**
      *  Returns Date object starting at the beginning of the day using [date].
      */
-    fun startOfDay(date: Date): Date {
+    fun startOfDay(date: ZonedDateTime): ZonedDateTime {
 
-        val calendar = GregorianCalendar()
-        calendar.timeInMillis = date.time
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
+        date.minusNanos(date.nano.toLong())
+        date.minusSeconds(date.second.toLong())
+        date.minusMinutes(date.minute.toLong())
+        date.minusHours(date.hour.toLong())
 
-        return calendar.time
+        return date
     }
 
     /**
@@ -49,26 +46,22 @@ object DateUtils {
      */
     fun datePickerDialog(
         view: View,
-        initDate: Date,
-        onDateSelected: (Date) -> Unit
+        initDate: ZonedDateTime,
+        onDateSelected: (ZonedDateTime) -> Unit
     ): DatePickerDialog {
 
-        // set up Calendar with initial Date
-        val calendar: Calendar = Calendar.getInstance()
-        calendar.time = initDate
         // variables used to initialize DateDialog
-        val initYear: Int = calendar.get(Calendar.YEAR)
-        val initMonth: Int = calendar.get(Calendar.MONTH)
-        val initDay: Int = calendar.get(Calendar.DAY_OF_MONTH)
+        val initYear: Int = initDate.year
+        val initMonth: Int = initDate.monthValue
+        val initDay: Int = initDate.dayOfMonth
         // retrieves date selected in DateDialog and passes to function from ViewModel
         val dateListener =
             DatePickerDialog.OnDateSetListener { _, year: Int, month: Int, day: Int ->
 
-                val date: Date = GregorianCalendar(year, month, day).time
+                val date = ZonedDateTime.of(year, month, day, 0, 0, 0, 0, ZoneId.systemDefault())
                 onDateSelected(date)
             }
 
         return DatePickerDialog(view.context, dateListener, initYear, initMonth, initDay)
     }
-
 }
