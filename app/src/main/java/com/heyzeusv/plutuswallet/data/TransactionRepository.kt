@@ -7,7 +7,7 @@ import com.heyzeusv.plutuswallet.data.daos.TransactionDao
 import com.heyzeusv.plutuswallet.data.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.Date
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 /**
@@ -75,7 +75,7 @@ class TransactionRepository @Inject constructor(
     override suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String> =
         withContext(Dispatchers.IO) { transactionDao.getDistinctCatsByType(type) }
 
-    override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> =
+    override suspend fun getFutureTransactionsAsync(currentDate: ZonedDateTime): List<Transaction> =
         withContext(Dispatchers.IO) { transactionDao.getFutureTransactions(currentDate) }
 
     override suspend fun getMaxIdAsync(): Int? =
@@ -99,7 +99,7 @@ class TransactionRepository @Inject constructor(
      *  Ivt = ItemViewTransaction
      *  A   = Account
      *  C   = Category
-     *  D   = Date
+     *  D   = ZonedDateTime
      *  T   = Type
      */
     override fun getLdTransaction(id: Int): LiveData<Transaction?> =
@@ -112,11 +112,11 @@ class TransactionRepository @Inject constructor(
 
     override fun getLdCtAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<CategoryTotals>> = transactionDao.getLdCtAD(accounts, start, end)
 
-    override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> =
+    override fun getLdCtD(start: ZonedDateTime, end: ZonedDateTime): LiveData<List<CategoryTotals>> =
         transactionDao.getLdCtD(start, end)
 
     override fun getLdIvt(): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvt()
@@ -126,8 +126,8 @@ class TransactionRepository @Inject constructor(
 
     override fun getLdIvtAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtAD(accounts, start, end)
 
     override fun getLdIvtAT(
@@ -144,20 +144,23 @@ class TransactionRepository @Inject constructor(
     override fun getLdIvtATD(
         accounts: List<String>,
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtATD(accounts, type, start, end)
 
     override fun getLdIvtATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> =
         transactionDao.getLdIvtATCD(accounts, type, categories, start, end)
 
-    override fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>> =
+    override fun getLdIvtD(
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): LiveData<List<ItemViewTransaction>> =
         transactionDao.getLdIvtD(start, end)
 
     override fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>> =
@@ -171,13 +174,13 @@ class TransactionRepository @Inject constructor(
     override fun getLdIvtTCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtTCD(type, categories, start, end)
 
     override fun getLdIvtTD(
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvtTD(type, start, end)
 }

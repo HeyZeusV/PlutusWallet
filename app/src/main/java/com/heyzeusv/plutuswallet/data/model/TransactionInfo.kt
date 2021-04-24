@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.data.model
 
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 /**
  *  Holds data to be sent to CFLViewModel that then gets passed to Repository to complete a query.
@@ -21,6 +22,6 @@ data class TransactionInfo(
     val type: String = "",
     val accountNames: List<String> = listOf(""),
     val categoryNames: List<String> = listOf(""),
-    val start: Date = Date(0),
-    val end: Date = Date(0)
+    val start: ZonedDateTime = ZonedDateTime.now(ZoneId.systemDefault()),
+    val end: ZonedDateTime = ZonedDateTime.now(ZoneId.systemDefault())
 )

@@ -11,7 +11,8 @@ import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.launch
 import java.text.DateFormat
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 private const val MIDNIGHT_MILLI = 86399999
 
@@ -39,8 +40,8 @@ class FilterViewModel @ViewModelInject constructor(
     val inCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
     // Date values
-    var startDate: Date = DateUtils.startOfDay(Date())
-    var endDate: Date = Date(startDate.time + MIDNIGHT_MILLI)
+    var startDate: ZonedDateTime = DateUtils.startOfDay(ZonedDateTime.now(ZoneId.systemDefault()))
+    var endDate: ZonedDateTime = DateUtils.endOfDay(startDate)
 
     // Date string values
     val startDateLD: MutableLiveData<String> = MutableLiveData("")
@@ -113,7 +114,7 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Takes [newDate] user selected on Start button and saves to be used in query.
      */
-    fun startDateSelected(newDate: Date) {
+    fun startDateSelected(newDate: ZonedDateTime) {
 
         startDate = newDate
         startDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
@@ -122,9 +123,9 @@ class FilterViewModel @ViewModelInject constructor(
     /**
      *  Takes [newDate] user selected on End button and saves to be used in query
      */
-    fun endDateSelected(newDate: Date) {
+    fun endDateSelected(newDate: ZonedDateTime) {
 
-        endDate = Date(newDate.time + MIDNIGHT_MILLI)
+        endDate = DateUtils.endOfDay(newDate)
         endDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
     }
 
@@ -188,8 +189,8 @@ class FilterViewModel @ViewModelInject constructor(
         _resetEvent.value = Event(true)
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDate = DateUtils.startOfDay(Date())
-        endDate = Date(startDate.time + MIDNIGHT_MILLI)
+        startDate = DateUtils.startOfDay(ZonedDateTime.now(ZoneId.systemDefault()))
+        endDate = DateUtils.endOfDay(startDate)
         startDateLD.value = ""
         endDateLD.value = ""
     }

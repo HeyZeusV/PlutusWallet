@@ -7,7 +7,7 @@ import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewChart
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZonedDateTime
 
 /**
  *  Data manager for GraphFragments.
@@ -156,8 +156,8 @@ class ChartViewModel @ViewModelInject constructor(
         fAccount: Boolean,
         fDate: Boolean,
         fAccountNames: List<String>,
-        fStart: Date,
-        fEnd: Date
+        fStart: ZonedDateTime,
+        fEnd: ZonedDateTime
     ): LiveData<List<CategoryTotals>> {
 
         return when {

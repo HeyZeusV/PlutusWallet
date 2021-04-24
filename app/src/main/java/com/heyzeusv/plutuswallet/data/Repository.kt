@@ -6,7 +6,7 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import java.util.Date
+import java.time.ZonedDateTime
 
 interface Repository {
     /**
@@ -48,7 +48,7 @@ interface Repository {
 
     suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String>
 
-    suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction>
+    suspend fun getFutureTransactionsAsync(currentDate: ZonedDateTime): List<Transaction>
 
     suspend fun getMaxIdAsync(): Int?
 
@@ -66,7 +66,7 @@ interface Repository {
      *  Ivt = ItemViewTransaction
      *  A   = Account
      *  C   = Category
-     *  D   = Date
+     *  D   = ZonedDateTime
      *  T   = Type
      */
     fun getLdTransaction(id: Int): LiveData<Transaction?>
@@ -75,15 +75,23 @@ interface Repository {
 
     fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>>
 
-    fun getLdCtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<CategoryTotals>>
+    fun getLdCtAD(
+        accounts: List<String>,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): LiveData<List<CategoryTotals>>
 
-    fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
+    fun getLdCtD(start: ZonedDateTime, end: ZonedDateTime): LiveData<List<CategoryTotals>>
 
     fun getLdIvt(): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>
 
-    fun getLdIvtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtAD(
+        accounts: List<String>,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<ItemViewTransaction>>
 
@@ -96,19 +104,19 @@ interface Repository {
     fun getLdIvtATD(
         accounts: List<String>,
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>>
 
-    fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtD(start: ZonedDateTime, end: ZonedDateTime): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
 
@@ -117,9 +125,13 @@ interface Repository {
     fun getLdIvtTCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): LiveData<List<ItemViewTransaction>>
 
-    fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtTD(
+        type: String,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): LiveData<List<ItemViewTransaction>>
 }

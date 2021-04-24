@@ -44,12 +44,27 @@ object DateUtils {
     }
 
     /**
-     *  Returns Date object starting at the beginning of the day using [date].
+     *  Returns ZonedDateTime object starting at the beginning of the day using [date].
      */
     fun startOfDay(date: ZonedDateTime): ZonedDateTime {
 
         date.minusNanos(date.nano.toLong())
         date.minusSeconds(date.second.toLong())
+        date.minusMinutes(date.minute.toLong())
+        date.minusHours(date.hour.toLong())
+
+        return date
+    }
+
+    /**
+     *  Return ZonedDateTime object at 1 second before midnight using [date].
+     */
+    fun endOfDay(date: ZonedDateTime): ZonedDateTime {
+
+        date.plusDays(1L)
+
+        date.minusNanos(date.nano.toLong())
+        date.minusSeconds(date.second.toLong() + 1L)
         date.minusMinutes(date.minute.toLong())
         date.minusHours(date.hour.toLong())
 
