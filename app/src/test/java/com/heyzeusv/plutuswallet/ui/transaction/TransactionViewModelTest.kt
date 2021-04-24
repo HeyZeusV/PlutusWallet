@@ -15,8 +15,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.math.BigDecimal
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 @ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
@@ -47,7 +47,7 @@ internal class TransactionViewModelTest {
 
         tranVM.setTranData(dd.tran1)
 
-        assertEquals("Thursday, January 1, 1970", tranVM.date.value)
+        assertEquals("8/10/18", tranVM.date.value)
         assertEquals("Cash", tranVM.account)
         assertEquals("1 000 10", tranVM.total.value)
 //        assertEquals(R.id.tran_expense_chip, tranVM.checkedChip.value)
@@ -61,33 +61,18 @@ internal class TransactionViewModelTest {
 
         tranVM.tranLD = MutableLiveData(dd.tran1)
         tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
-        tranVM.account = "Test Account"
-        tranVM.total.value = "1000.99"
-        tranVM.typeSelected.value = true
-        tranVM.incomeCat = "Test Income Category"
-        tranVM.repeat.value = false
+        tranVM.account = "Cash"
+        tranVM.total.value = "1000.10"
+        tranVM.typeSelected.value = false
+        tranVM.expenseCat = "Food"
+        tranVM.repeat.value = true
         tranVM.period = "Days"
-        val expectedTran = Transaction(
-            1,
-            "Party",
-            Date(86400000),
-            BigDecimal("1000.99"),
-            "Test Account",
-            "Income",
-            "Test Income Category",
-            "Catering for party",
-            false,
-            1,
-            0,
-            Date(86400000 * 2),
-            true
-        )
 
         tranVM.saveTransaction("")
         val saveEvent: Event<Boolean> = tranVM.saveTranEvent.value!!
 
-        assertEquals(expectedTran, tranVM.tranLD.value)
-        assertEquals(expectedTran, repo.tranList[0])
+        assertEquals(dd.tran1, tranVM.tranLD.value)
+        assertEquals(dd.tran1, repo.tranList[0])
         assertEquals(true, saveEvent.getContentIfNotHandled())
     }
 
@@ -98,28 +83,15 @@ internal class TransactionViewModelTest {
         tranVM.tranLD = MutableLiveData(dd.tran1)
         tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
         // in order to get dateChanged == true
-        tranVM.onDateSelected(Date(86400000 * 3))
-        tranVM.account = "Test Account"
-        tranVM.total.value = "1000.99"
-        tranVM.typeSelected.value = true
-        tranVM.incomeCat = "Test Income Category"
+        tranVM.onDateSelected(ZonedDateTime.of(2018, 8, 15, 0, 0, 0, 0, ZoneId.systemDefault()))
+        tranVM.account = "Cash"
+        tranVM.total.value = "1000.10"
+        tranVM.typeSelected.value = false
+        tranVM.expenseCat = "Food"
         tranVM.repeat.value = true
         tranVM.period = "Days"
-        val expectedTran = Transaction(
-            1,
-            "Party",
-            Date(86400000 * 3),
-            BigDecimal("1000.99"),
-            "Test Account",
-            "Income",
-            "Test Income Category",
-            "Catering for party",
-            true,
-            1,
-            0,
-            Date(86400000 * 4),
-            true
-        )
+        val expectedTran: Transaction = dd.tran1
+        expectedTran.date = ZonedDateTime.of(2018, 8, 16, 0, 0, 0, 0, ZoneId.systemDefault())
 
         tranVM.saveTransaction("")
         val futureEvent: Event<Transaction> = tranVM.futureTranEvent.value!!
@@ -233,10 +205,13 @@ internal class TransactionViewModelTest {
     @DisplayName("Should create selectDateEvent containing Date when dateButton is pressed")
     fun selectDateOC() {
 
-        tranVM.selectDateOC(Date(86400000))
-        val selectDateEvent: Event<Date> = tranVM.selectDateEvent.value!!
+        tranVM.selectDateOC(ZonedDateTime.of(2018, 8, 15, 0, 0, 0, 0, ZoneId.systemDefault()))
+        val selectDateEvent: Event<ZonedDateTime> = tranVM.selectDateEvent.value!!
 
-        assertEquals(Date(86400000), selectDateEvent.getContentIfNotHandled())
+        assertEquals(
+            ZonedDateTime.of(2018, 8, 15, 0, 0, 0, 0, ZoneId.systemDefault()),
+            selectDateEvent.getContentIfNotHandled()
+        )
     }
 
     @Test
@@ -244,21 +219,26 @@ internal class TransactionViewModelTest {
     fun onDateSelected() {
 
         tranVM.tranLD.value = dd.tran2
-        val expectedFormattedDate = "Saturday, January 3, 1970"
 
-        tranVM.onDateSelected(Date(86400000*3))
+        tranVM.onDateSelected(ZonedDateTime.of(2018, 1, 3, 0, 0, 0, 0, ZoneId.systemDefault()))
 
-        assertEquals(Date(86400000*3), tranVM.tranLD.value!!.date)
-        assertEquals(expectedFormattedDate, tranVM.date.value)
+        assertEquals(ZonedDateTime.of(2018, 1, 3, 0, 0, 0, 0, ZoneId.systemDefault()), tranVM.tranLD.value!!.date)
+        assertEquals("1/3/18", tranVM.date.value)
     }
 
     @Test
     @DisplayName("Should retrieve lists of Accounts and Categories by type, add 'Create New...', and retrieve highest ID from Database")
     fun prepareLists() {
 
-        val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create New...")
-        val expectedExCatList: MutableList<String> = mutableListOf("Entertainment", "Food", "Unused Expense", "Create New...")
-        val expectedInCatList: MutableList<String> = mutableListOf("Salary", "Unused Income", "Zelle", "Create New...")
+        val expectedAccList: MutableList<String> = mutableListOf(
+            "Cash", "Credit Card", "Debit Card", "Unused", "Create New..."
+        )
+        val expectedExCatList: MutableList<String> = mutableListOf(
+            "Entertainment", "Food", "Unused Expense", "Create New..."
+        )
+        val expectedInCatList: MutableList<String> = mutableListOf(
+            "Salary", "Unused Income", "Zelle", "Create New..."
+        )
 
         tranVM.prepareLists("Create New...", "Create New...")
 

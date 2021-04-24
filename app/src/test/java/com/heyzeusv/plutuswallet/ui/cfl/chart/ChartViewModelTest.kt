@@ -3,7 +3,6 @@ package com.heyzeusv.plutuswallet.ui.cfl.chart
 import androidx.lifecycle.LiveData
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
-import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,7 +12,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 @ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
@@ -24,9 +24,6 @@ internal class ChartViewModelTest {
 
     // what is being tested
     private lateinit var chartVM: ChartViewModel
-
-    // dummy data
-    private val dd = DummyDataUtil()
 
     @BeforeEach
     fun setUpViewModel() {
@@ -55,7 +52,8 @@ internal class ChartViewModelTest {
 
         // retrieve all
         val ctList: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = false, fDate = false, listOf(), Date(0), Date(0)
+            fAccount = false, fDate = false, listOf(),
+            ZonedDateTime.now(ZoneId.systemDefault()), ZonedDateTime.now(ZoneId.systemDefault())
         )
         // no filter
         chartVM.prepareLists(ctList.value!!, false, "")
@@ -94,7 +92,8 @@ internal class ChartViewModelTest {
 
         // no filter
         val ctList: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = false, fDate = false, listOf(), Date(0), Date(0)
+            fAccount = false, fDate = false, listOf(),
+            ZonedDateTime.now(ZoneId.systemDefault()), ZonedDateTime.now(ZoneId.systemDefault())
         )
         chartVM.prepareLists(ctList.value!!, false, "")
 
@@ -143,16 +142,22 @@ internal class ChartViewModelTest {
 
         // testing all filter options
         val noFilter: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = false, fDate = false, listOf(), Date(0), Date(0)
+            fAccount = false, fDate = false, listOf(),
+            ZonedDateTime.now(ZoneId.systemDefault()), ZonedDateTime.now(ZoneId.systemDefault())
         )
         val accFilter: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = true, fDate = false, listOf("Cash"), Date(0), Date(0)
+            fAccount = true, fDate = false, listOf("Cash"),
+            ZonedDateTime.now(ZoneId.systemDefault()), ZonedDateTime.now(ZoneId.systemDefault())
         )
         val dateFilter: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = false, fDate = true, listOf(), Date(86400000 * 2), Date(86400000 * 5)
+            fAccount = false, fDate = true, listOf(),
+            ZonedDateTime.of(2018, 8, 11, 0, 0, 0, 0, ZoneId.systemDefault()),
+            ZonedDateTime.of(2018, 8, 20, 0, 0, 0, 0, ZoneId.systemDefault())
         )
         val bothFilter: LiveData<List<CategoryTotals>> = chartVM.filteredCategoryTotals(
-            fAccount = true, fDate = true, listOf("Cash"), Date(0), Date(86400000)
+            fAccount = true, fDate = true, listOf("Cash"),
+            ZonedDateTime.of(2018, 8, 1, 0, 0, 0, 0, ZoneId.systemDefault()),
+            ZonedDateTime.of(2018, 8, 10, 0, 0, 0, 0, ZoneId.systemDefault())
         )
 
         assertEquals(expectedNoFilter, noFilter.value)

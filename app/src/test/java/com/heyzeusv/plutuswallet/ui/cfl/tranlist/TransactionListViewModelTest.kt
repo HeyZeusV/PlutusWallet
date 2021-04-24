@@ -16,7 +16,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 @ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
@@ -54,7 +55,8 @@ internal class TransactionListViewModelTest {
     fun deleteTranOC() {
 
         val expectedIVT = ItemViewTransaction(
-            0, "", Date(), BigDecimal("0"), "", "", ""
+            0, "", ZonedDateTime.now(ZoneId.systemDefault()),
+            BigDecimal("0"), "", "", ""
         )
 
         tlVM.deleteTranOC(expectedIVT)
@@ -69,7 +71,8 @@ internal class TransactionListViewModelTest {
 
         // deletes using ID so only need correct ID to test deletion
         val deletedIVT = ItemViewTransaction(
-            1, "", Date(), BigDecimal("0"), "", "", ""
+            1, "", ZonedDateTime.now(ZoneId.systemDefault()),
+            BigDecimal("0"), "", "", ""
         )
 
         runBlockingTest {
@@ -116,143 +119,134 @@ internal class TransactionListViewModelTest {
     @DisplayName("Returns LiveData containing list of ItemViewTransactions depending on filters applied")
     fun filteredTransactionList() {
 
-        val expectedATD: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("1000.10"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food")
-        )
-        assertEquals(expectedATD,
+        // ATD
+        assertEquals(
+            listOf(dd.ivt1, dd.ivt2),
             tlVM.filteredTransactionList(
                 account = true, category = true, date = true, "Expense",
-                listOf("Cash"), listOf("All"), Date(0), Date(86400001 * 2)
+                listOf("Cash"), listOf("All"),
+                ZonedDateTime.of(2018, 8, 9, 0, 0, 0, 0, ZoneId.systemDefault()),
+                ZonedDateTime.of(2018, 8, 12, 0, 0, 0, 0, ZoneId.systemDefault())
             ).value
         )
 
-        val expectedATCD: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
-                "Debit Card", "Income", "Salary")
-        )
-        assertEquals(expectedATCD,
+        // ATCD
+        assertEquals(
+            listOf(dd.ivt3),
             tlVM.filteredTransactionList(
                 account = true, category = true, date = true, "Income",
-                listOf("Debit Card"), listOf("Salary"), Date(0), Date(86400001 * 6)
+                listOf("Debit Card"), listOf("Salary"),
+                ZonedDateTime.of(2018, 8, 5, 0, 0, 0, 0, ZoneId.systemDefault()),
+                ZonedDateTime.of(2018, 8, 16, 0, 0, 0, 0, ZoneId.systemDefault())
             ).value
         )
 
-        val expectedAT: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-            "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedAT,
+        // AT
+        assertEquals(
+            listOf(dd.ivt4),
             tlVM.filteredTransactionList(
                 account = true, category = true, date = false, "Expense",
-                listOf("Credit Card"), listOf("All"), Date(), Date()
+                listOf("Credit Card"), listOf("All"),
+                ZonedDateTime.now(ZoneId.systemDefault()),
+                ZonedDateTime.now(ZoneId.systemDefault())
             ).value
         )
 
-        val expectedATC: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedATC,
+        // ATC
+        assertEquals(
+            listOf(dd.ivt4),
             tlVM.filteredTransactionList(
                 account = true, category = true, date = false, "Expense",
-                listOf("Credit Card"), listOf("Entertainment"), Date(0), Date()
+                listOf("Credit Card"), listOf("Entertainment"),
+                ZonedDateTime.now(ZoneId.systemDefault()),
+                ZonedDateTime.now(ZoneId.systemDefault())
             ).value
         )
 
-        val expectedAD: List<ItemViewTransaction> = listOf()
-        assertEquals(expectedAD,
+        // AD
+        assertEquals(
+            listOf<ItemViewTransaction>(),
             tlVM.filteredTransactionList(
                 account = true, category = false, date = true, "",
-                listOf("None"), listOf(), Date(0), Date(86400001 * 6)
+                listOf("None"), listOf(),
+                ZonedDateTime.of(2018, 8, 1, 0, 0, 0, 0, ZoneId.systemDefault()),
+                ZonedDateTime.of(2018, 8, 25, 0, 0, 0, 0, ZoneId.systemDefault())
             ).value
         )
 
-        val expectedA: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedA,
+        // A
+        assertEquals(
+            listOf(dd.ivt4),
             tlVM.filteredTransactionList(
                 account = true, category = false, date = false, "",
-                listOf("Credit Card"), listOf(), Date(), Date()
+                listOf("Credit Card"), listOf(),
+                ZonedDateTime.now(ZoneId.systemDefault()),
+                ZonedDateTime.now(ZoneId.systemDefault())
             ).value
         )
 
-        val expectedTD: List<ItemViewTransaction> = listOf()
-        assertEquals(expectedTD,
+        assertEquals(
+            listOf<ItemViewTransaction>(),
             tlVM.filteredTransactionList(
                 account = false, category = true, date = true, "Income",
-                listOf(), listOf("All"), Date(86400001 * 15), Date()
+                listOf(), listOf("All"),
+                ZonedDateTime.of(2018, 8, 25, 0, 0, 0, 0, ZoneId.systemDefault()),
+                ZonedDateTime.now(ZoneId.systemDefault())
             ).value
         )
 
-        val expectedTCD: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food")
-        )
-        assertEquals(expectedTCD,
+        // TCD
+        assertEquals(
+            listOf(dd.ivt2),
             tlVM.filteredTransactionList(
                 account = false, category = true, date = true, "Expense",
-                listOf(), listOf("Food"), Date(86400000 * 2), Date()
+                listOf(), listOf("Food"),
+                ZonedDateTime.of(2018, 8, 11, 0, 0, 0, 0, ZoneId.systemDefault()),
+                ZonedDateTime.now(ZoneId.systemDefault())
             ).value
         )
 
-        val expectedT: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("1000.10"),
-            "Cash", "Expense", "Food"),
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedT,
+        // T
+        assertEquals(
+            listOf(dd.ivt1, dd.ivt2, dd.ivt4),
             tlVM.filteredTransactionList(
                 account = false, category = true, date = false, "Expense",
-                listOf(), listOf("All"), Date(), Date()
+                listOf(), listOf("All"),
+                ZonedDateTime.now(ZoneId.systemDefault()),
+                ZonedDateTime.now(ZoneId.systemDefault())
             ).value
         )
 
-        val expectedTC: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedTC,
+        // TC
+        assertEquals(
+            listOf(dd.ivt4),
             tlVM.filteredTransactionList(
                 account = false, category = true, date = false, "Expense",
-                listOf(), listOf("Entertainment"), Date(), Date()
+                listOf(), listOf("Entertainment"),
+                ZonedDateTime.now(ZoneId.systemDefault()),
+                ZonedDateTime.now(ZoneId.systemDefault())
             ).value
         )
 
-        val expectedD: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
-                "Debit Card", "Income", "Salary")
-        )
-        assertEquals(expectedD,
+        // D
+        assertEquals(
+            listOf(dd.ivt2, dd.ivt3),
             tlVM.filteredTransactionList(
                 account = false, category = false, date = true, "",
-                listOf(), listOf(), Date(86400000 * 2), Date(86400000 * 4)
+                listOf(), listOf(),
+                ZonedDateTime.of(2018, 8, 11, 0, 0, 0, 0, ZoneId.systemDefault()),
+                ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault())
             ).value
         )
 
-        val expected: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("1000.10"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
-                "Debit Card", "Income", "Salary"),
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expected,
+        // No filter
+        assertEquals(
+            listOf(dd.ivt1, dd.ivt2, dd.ivt3, dd.ivt4),
             tlVM.filteredTransactionList(
                 account = false, category = false, date = false, "",
-                listOf(), listOf(), Date(), Date()
+                listOf(), listOf(),
+                ZonedDateTime.now(ZoneId.systemDefault()),
+                ZonedDateTime.now(ZoneId.systemDefault())
             ).value
         )
     }

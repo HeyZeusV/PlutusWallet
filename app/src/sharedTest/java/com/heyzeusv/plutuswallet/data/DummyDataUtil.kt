@@ -41,7 +41,7 @@ class DummyDataUtil {
         3, "Pay Day", ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault()),
         BigDecimal("2000.32"), "Debit Card", "Income", "Salary",
         "Best day of the month!", true, 1, 2,
-        ZonedDateTime.of(2018, 9, 10, 0, 0, 0, 0, ZoneId.systemDefault()), false
+        ZonedDateTime.of(2018, 9, 14, 0, 0, 0, 0, ZoneId.systemDefault()), false
     )
     val tran4 = Transaction(
         4, "Movie Date", ZonedDateTime.of(2018, 8, 15, 0, 0, 0, 0, ZoneId.systemDefault()),

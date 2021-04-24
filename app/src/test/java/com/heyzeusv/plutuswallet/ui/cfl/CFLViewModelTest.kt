@@ -9,7 +9,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 @ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
@@ -30,7 +31,8 @@ internal class CFLViewModelTest {
 
         val tInfo = TransactionInfo(
             account = true, category = true, date = true,
-            "Test", listOf("Test"), listOf("Test"), Date(), Date()
+            "Test", listOf("Test"), listOf("Test"),
+            ZonedDateTime.now(ZoneId.systemDefault()), ZonedDateTime.now(ZoneId.systemDefault())
         )
 
         cflVM.updateTInfo(tInfo)

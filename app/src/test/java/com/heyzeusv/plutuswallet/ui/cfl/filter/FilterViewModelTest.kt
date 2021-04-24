@@ -13,7 +13,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.Date
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @ExperimentalCoroutinesApi
 @ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
@@ -80,20 +81,20 @@ internal class FilterViewModelTest {
     @DisplayName("Should save date user selected after pressing Start button")
     fun startDateSelected() {
 
-        filterVM.startDateSelected(Date(864000000))
+        filterVM.startDateSelected(ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault()))
 
-        assertEquals(Date(864000000), filterVM.startDate)
-        assertEquals("1/10/70", filterVM.startDateLD.value!!)
+        assertEquals(ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault()), filterVM.startDate)
+        assertEquals("8/14/18", filterVM.startDateLD.value!!)
     }
 
     @Test
     @DisplayName("Should save date user selected after pressing End button")
     fun endDateSelected() {
 
-        filterVM.endDateSelected(Date(864000000))
+        filterVM.endDateSelected(ZonedDateTime.of(2018, 8, 15, 0, 0, 0, 0, ZoneId.systemDefault()))
 
-        assertEquals(Date(864000000 + 86399999), filterVM.endDate)
-        assertEquals("1/11/70", filterVM.endDateLD.value!!)
+        assertEquals(ZonedDateTime.of(2018, 8, 15, 23, 59, 59, 0, ZoneId.systemDefault()), filterVM.endDate)
+        assertEquals("8/15/18", filterVM.endDateLD.value!!)
     }
 
     @Test
@@ -103,11 +104,13 @@ internal class FilterViewModelTest {
         filterVM.catFilter.value = true
         filterVM.accSelectedChips.add("Cash")
         filterVM.exCatSelectedChips.add("Food")
-        filterVM.startDate = Date(0)
-        filterVM.endDate = Date(1000)
+        filterVM.startDate = ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault())
+        filterVM.endDate = ZonedDateTime.of(2018, 8, 20, 0, 0, 0, 0, ZoneId.systemDefault())
         val expectedCFLtInfo = TransactionInfo(
             account = false, category = true, date = false,
-            "Expense", listOf("Cash"), listOf("Food"), Date(0), Date(1000)
+            "Expense", listOf("Cash"), listOf("Food"),
+            ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault()),
+            ZonedDateTime.of(2018, 8, 20, 0, 0, 0, 0, ZoneId.systemDefault())
         )
 
         filterVM.applyFilterOC()
@@ -124,11 +127,11 @@ internal class FilterViewModelTest {
         filterVM.accSelectedChips.addAll(listOf("Test1", "Test2", "Test3"))
         filterVM.exCatSelectedChips.addAll(listOf("Test1", "Test2", "Test3"))
         filterVM.inCatSelectedChips.addAll(listOf("Test1", "Test2", "Test3"))
-        val expectedStartDate: Date = DateUtils.startOfDay(Date())
-        val expectedEndDate = Date(expectedStartDate.time + 86399999)
+        val expectedStartDate: ZonedDateTime = DateUtils.startOfDay(ZonedDateTime.now(ZoneId.systemDefault()))
+        val expectedEndDate: ZonedDateTime = DateUtils.endOfDay(ZonedDateTime.now(ZoneId.systemDefault()))
         val expectedCFLtInfo = TransactionInfo(
             account = false, category = false, date = false, "Expense",
-            listOf(), listOf(), expectedStartDate, Date(expectedStartDate.time + 86399999)
+            listOf(), listOf(), expectedStartDate, expectedEndDate
         )
 
         filterVM.applyFilterOC()
@@ -152,8 +155,8 @@ internal class FilterViewModelTest {
     fun applyFilterOCDateError() {
 
         filterVM.dateFilter.value = true
-        filterVM.startDate = Date()
-        filterVM.endDate = Date(0)
+        filterVM.startDate = ZonedDateTime.now(ZoneId.systemDefault())
+        filterVM.endDate = ZonedDateTime.of(2018, 8, 14, 0, 0, 0, 0, ZoneId.systemDefault())
 
         filterVM.applyFilterOC()
         val dateErrorEvent: Event<Boolean> = filterVM.dateErrorEvent.value!!

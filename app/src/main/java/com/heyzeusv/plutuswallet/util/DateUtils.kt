@@ -47,12 +47,13 @@ object DateUtils {
      */
     fun startOfDay(date: ZonedDateTime): ZonedDateTime {
 
-        date.minusNanos(date.nano.toLong())
-        date.minusSeconds(date.second.toLong())
-        date.minusMinutes(date.minute.toLong())
-        date.minusHours(date.hour.toLong())
+        var startDay: ZonedDateTime = date
+        startDay = startDay.minusNanos(date.nano.toLong())
+        startDay = startDay.minusSeconds(date.second.toLong())
+        startDay = startDay.minusMinutes(date.minute.toLong())
+        startDay = startDay.minusHours(date.hour.toLong())
 
-        return date
+        return startDay
     }
 
     /**
@@ -60,14 +61,15 @@ object DateUtils {
      */
     fun endOfDay(date: ZonedDateTime): ZonedDateTime {
 
-        date.plusDays(1L)
+        var endDay: ZonedDateTime = date
+        endDay = endDay.plusDays(1L)
 
-        date.minusNanos(date.nano.toLong())
-        date.minusSeconds(date.second.toLong() + 1L)
-        date.minusMinutes(date.minute.toLong())
-        date.minusHours(date.hour.toLong())
+        endDay = endDay.minusNanos(date.nano.toLong())
+        endDay = endDay.minusSeconds(date.second.toLong() + 1L)
+        endDay = endDay.minusMinutes(date.minute.toLong())
+        endDay = endDay.minusHours(date.hour.toLong())
 
-        return date
+        return endDay
     }
 
     /**
