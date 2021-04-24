@@ -10,11 +10,8 @@ import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.launch
-import java.text.DateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
-
-private const val MIDNIGHT_MILLI = 86399999
 
 /**
  *  Data manager for FilterFragments.
@@ -117,7 +114,7 @@ class FilterViewModel @ViewModelInject constructor(
     fun startDateSelected(newDate: ZonedDateTime) {
 
         startDate = newDate
-        startDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
+        startDateLD.value = DateUtils.formatString(startDate, 0)
     }
 
     /**
@@ -126,7 +123,7 @@ class FilterViewModel @ViewModelInject constructor(
     fun endDateSelected(newDate: ZonedDateTime) {
 
         endDate = DateUtils.endOfDay(newDate)
-        endDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
+        endDateLD.value = DateUtils.formatString(endDate, 0)
     }
 
     /**

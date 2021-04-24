@@ -16,11 +16,9 @@ import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
@@ -96,8 +94,7 @@ class TransactionViewModel @ViewModelInject constructor(
      */
     fun setTranData(transaction: Transaction) {
         // Date to String
-        _date.value =
-            DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
+        _date.value = DateUtils.formatString(transaction.date, setVals.dateFormat)
         account = transaction.account
         // BigDecimal to String
         total.value = when {
@@ -341,7 +338,7 @@ class TransactionViewModel @ViewModelInject constructor(
         dateChanged = tranLD.value!!.date != newDate
         tranLD.value!!.date = newDate
         // turns date selected into Date type
-        _date.value = newDate.format(DateUtils.formatString(setVals.dateFormat))
+        _date.value = DateUtils.formatString(newDate, setVals.dateFormat)
     }
 
     /**

@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="java.text.DateFormat" />
         <variable
             name="ivt"
             type="com.heyzeusv.plutuswallet.data.model.ItemViewTransaction" />
@@ -58,7 +57,6 @@
             android:layout_marginTop="@dimen/tranListMarginOuterBottomInnerTopBottom"
             android:layout_marginEnd="@dimen/tranListMarginInnerStartEnd"
             android:layout_marginBottom="@dimen/tranListMarginOuterBottomInnerTopBottom"
-            android:text="@{DateFormat.getDateInstance(listVM.setVals.dateFormat).format(ivt.date)}"
             android:textSize="@dimen/textSizeTranListViewHolder"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"

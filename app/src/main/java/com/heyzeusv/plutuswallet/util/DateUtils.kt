@@ -30,17 +30,16 @@ object DateUtils {
     }
 
     /**
-     *  Returns a DateTimeFormatter using [format] to determine how it should format
-     *  ZonedDateTime.
+     *  Returns formatted [date] string using [format] to determine version.
      */
-    fun formatString(format: Int): DateTimeFormatter {
+    fun formatString(date: ZonedDateTime, format: Int): String {
 
-        return DateTimeFormatter.ofLocalizedDate(when(format) {
+        return date.format(DateTimeFormatter.ofLocalizedDate(when(format) {
             0 -> FormatStyle.SHORT
             1 -> FormatStyle.MEDIUM
             2 -> FormatStyle.LONG
             else -> FormatStyle.FULL
-        })
+        }))
     }
 
     /**

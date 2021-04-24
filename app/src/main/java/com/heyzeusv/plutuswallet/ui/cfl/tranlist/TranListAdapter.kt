@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.databinding.ItemViewTransactionBinding
+import com.heyzeusv.plutuswallet.util.DateUtils
 
 /**
  *  Adapter for Transaction list.
@@ -70,6 +71,8 @@ class TranListAdapter(private val listVM: TransactionListViewModel) :
                         listVM.setVals.currencySymbol
                     )
             }
+            // formats date correctly
+            binding.ivtDate.text = DateUtils.formatString(ivt.date, listVM.setVals.dateFormat)
         }
     }
 }
