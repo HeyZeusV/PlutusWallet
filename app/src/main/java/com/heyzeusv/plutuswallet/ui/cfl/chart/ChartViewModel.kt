@@ -1,13 +1,14 @@
 package com.heyzeusv.plutuswallet.ui.cfl.chart
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewChart
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.util.Date
+import javax.inject.Inject
 
 /**
  *  Data manager for GraphFragments.
@@ -15,7 +16,8 @@ import java.util.Date
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class ChartViewModel @ViewModelInject constructor(
+@HiltViewModel
+class ChartViewModel @Inject constructor(
     private val tranRepo: Repository
 ) : ViewModel() {
 

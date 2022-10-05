@@ -497,6 +497,8 @@ class SettingsActivityTest {
      */
     private fun checkViewHoldersAndTranSymbol(symbolLeft: Boolean, currency: String, total: String) {
 
+        // return from settings and close menu
+        pressBack()
         pressBack()
         checkAllTranViewHolders()
         checkTransactionSymbols(symbolLeft, currency, total)
@@ -535,7 +537,8 @@ class SettingsActivityTest {
         // update DateFormatter
         dateFormatter = DateFormat.getDateInstance(dateStyle)
 
-        // navigate back to CFLFragment
+        // navigate back to CFLFragment and close menu
+        pressBack()
         pressBack()
         // check all ViewHolder display correct info
         checkAllTranViewHolders()

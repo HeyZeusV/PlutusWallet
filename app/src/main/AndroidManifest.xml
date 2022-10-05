@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.heyzeusv.plutuswallet">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:name=".util.PlutusWalletApp"
@@ -26,6 +25,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             android:configChanges="locale|orientation|uiMode"
+            android:exported="true"
             tools:ignore="LockedOrientationActivity">
 
             <intent-filter>

@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.account
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +8,8 @@ import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.util.Event
 import com.heyzeusv.plutuswallet.util.replace
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 /**
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class AccountViewModel @ViewModelInject constructor(
+@HiltViewModel
+class AccountViewModel @Inject constructor(
     private val tranRepo: Repository
 ) : ViewModel() {
 

@@ -238,6 +238,7 @@
                                     android:id="@+id/tran_period"
                                     style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
                                     android:hint="@string/transaction_period"
+                                    android:visibility="@{tranVM.repeat ? View.VISIBLE : View.INVISIBLE}"
                                     app:entries="@{tranVM.periodArray}" />
                             </com.google.android.material.textfield.TextInputLayout>
 
@@ -261,7 +262,8 @@
                                     android:hint="@string/transaction_frequency"
                                     android:inputType="number"
                                     android:maxLength="@integer/maxLengthFrequency"
-                                    android:text="@={`` + tranVM.tranLD.frequency}" />
+                                    android:text="@={`` + tranVM.tranLD.frequency}"
+                                    android:visibility="@{tranVM.repeat ? View.VISIBLE : View.INVISIBLE}" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </androidx.constraintlayout.motion.widget.MotionLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,14 +8,14 @@ apply plugin: 'de.mannodermaus.android-junit5'
 android {
     compileSdkVersion rootProject.compileSdkVersion
     defaultConfig {
+        testInstrumentationRunnerArguments runnerBuilder: 'de.mannodermaus.junit5.AndroidJUnit5Builder'
         applicationId "com.heyzeusv.plutuswallet"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 25
         versionName "3.3.0"
         testInstrumentationRunner "com.heyzeusv.plutuswallet.CustomTestRunner"
-        testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
-        resConfigs "en", "es", "de", "hi", "ja", "ko", "th"
+        resConfigs 'en', 'es', 'de', 'hi', 'ja', 'ko', 'th'
         javaCompileOptions {
             annotationProcessorOptions {
                 // location to save schemas to
@@ -53,9 +53,12 @@ android {
         }
     }
     packagingOptions {
-        exclude "META-INF/LICENSE*"
-        exclude 'META-INF/AL2.0'
-        exclude 'META-INF/LGPL2.1'
+        jniLibs {
+            excludes += ['META-INF/LICENSE*']
+        }
+        resources {
+            excludes += ['META-INF/LICENSE*', 'META-INF/AL2.0', 'META-INF/LGPL2.1']
+        }
     }
     testOptions {
         animationsDisabled true
@@ -64,6 +67,7 @@ android {
             returnDefaultValues = true
         }
     }
+    namespace 'com.heyzeusv.plutuswallet'
 }
 
 repositories {
@@ -85,8 +89,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
     // Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
-    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltJetpackVersion"
+    androidTestImplementation project(path: ':app')
+    kapt "com.google.dagger:hilt-compiler:$hiltVersion"
     kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleExtVersion"

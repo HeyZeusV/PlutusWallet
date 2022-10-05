@@ -1,18 +1,17 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -22,6 +21,7 @@ import java.text.DecimalFormatSymbols
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
 /**
  *  Data manager for TransactionFragments.
@@ -29,7 +29,8 @@ import java.util.Locale
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class TransactionViewModel @ViewModelInject constructor(
+@HiltViewModel
+class TransactionViewModel @Inject constructor(
     private val tranRepo: Repository
 ) : ViewModel() {
 

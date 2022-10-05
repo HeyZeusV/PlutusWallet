@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.cfl.filter
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,9 +8,11 @@ import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.TransactionInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.Date
+import javax.inject.Inject
 
 private const val MIDNIGHT_MILLI = 86399999
 
@@ -21,7 +22,8 @@ private const val MIDNIGHT_MILLI = 86399999
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class FilterViewModel @ViewModelInject constructor(
+@HiltViewModel
+class FilterViewModel @Inject constructor(
     private val tranRepo: Repository
 ) : ViewModel() {
 

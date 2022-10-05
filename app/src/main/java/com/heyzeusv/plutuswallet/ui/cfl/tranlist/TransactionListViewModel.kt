@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.cfl.tranlist
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,12 +11,14 @@ import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
+import javax.inject.Inject
 
 private const val EXPENSE = "Expense"
 private const val INCOME = "Income"
@@ -28,7 +29,8 @@ private const val INCOME = "Income"
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
-class TransactionListViewModel @ViewModelInject constructor(
+@HiltViewModel
+class TransactionListViewModel @Inject constructor(
     private val tranRepo: Repository
 ) : ViewModel() {
 
