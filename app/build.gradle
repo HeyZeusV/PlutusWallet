@@ -76,8 +76,8 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    //noinspection GradleDependency SDK 33
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
     // CircleIndicator
@@ -169,6 +169,7 @@ dependencies {
     androidTestImplementation "androidx.navigation:navigation-testing:$navigationVersion"
 
     // Resolve conflicts between main and test APK:
+    //noinspection GradleDependency SDK 33
     androidTestImplementation "androidx.annotation:annotation:$androidXAnnotations"
     androidTestImplementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
     androidTestImplementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
