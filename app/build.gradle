@@ -123,7 +123,6 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params:$jupiterVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jupiterVersion"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiterVersion"
-    testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
     testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
@@ -145,8 +144,6 @@ dependencies {
 
     // Dependencies for Android unit tests
     androidTestImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
-    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineVersion"
 
     // AndroidX Test - Instrumented testing
