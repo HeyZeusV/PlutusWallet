@@ -82,6 +82,7 @@ class TransactionFragment : BaseFragment() {
                 Column {
                     TransactionTextInput("", "Title", "Helper Text", maxLength = 10)
                     TransactionDate(tranVM)
+                    TransactionDropDownMenu(tranVM)
                 }
             }
         }

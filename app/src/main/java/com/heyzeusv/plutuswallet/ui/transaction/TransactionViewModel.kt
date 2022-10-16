@@ -22,6 +22,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  *  Data manager for TransactionFragments.
@@ -53,6 +54,12 @@ class TransactionViewModel @Inject constructor(
     // false = "Expense", true = "Income"
     val typeSelected: MutableLiveData<Boolean> = MutableLiveData(false)
     val repeat: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val showDialog = MutableStateFlow(false)
+
+    fun updateShowDialog(newValue: Boolean) {
+        showDialog.value = newValue
+    }
 
     // Lists used by Spinners
     val accountList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
