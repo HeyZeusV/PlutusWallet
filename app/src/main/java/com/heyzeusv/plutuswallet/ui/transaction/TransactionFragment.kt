@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AutoCompleteTextView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -69,6 +70,17 @@ class TransactionFragment : BaseFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.tranVM = tranVM
+
+        binding.composeView.apply {
+            // Dispose the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                TransactionTextInput("", "Title", "Helper Text", maxLength = 10)
+            }
+        }
 
         return binding.root
     }
