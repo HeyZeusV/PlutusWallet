@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AutoCompleteTextView
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -78,7 +79,10 @@ class TransactionFragment : BaseFragment() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
             setContent {
-                TransactionTextInput("", "Title", "Helper Text", maxLength = 10)
+                Column {
+                    TransactionTextInput("", "Title", "Helper Text", maxLength = 10)
+                    TransactionDate(tranVM)
+                }
             }
         }
 
