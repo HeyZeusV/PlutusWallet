@@ -53,6 +53,10 @@ class TransactionViewModel @Inject constructor(
     val total: MutableLiveData<String> = MutableLiveData("")
     // false = "Expense", true = "Income"
     val typeSelected: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    fun updateTypeSelected(newValue: Boolean) {
+        typeSelected.value = newValue
+    }
     val repeat: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val showDialog = MutableStateFlow(false)

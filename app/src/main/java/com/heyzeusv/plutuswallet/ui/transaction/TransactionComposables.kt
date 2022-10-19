@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
 import android.content.SharedPreferences
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -8,13 +9,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.ChipDefaults
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FilterChip
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -33,14 +39,18 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.util.Key
@@ -285,7 +295,9 @@ fun TransactionCurrencyInput(
                 selection = TextRange(formattedAmount.length)
             )
         },
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     )
 }
@@ -329,6 +341,80 @@ private fun removeSymbols(
         chars == "" -> "0"
         // returns just a string of numbers
         else -> chars
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun TransactionCategories(
+    tranVM: TransactionViewModel,
+    modifier: Modifier = Modifier
+) {
+    val typeSelected by tranVM.typeSelected.observeAsState()
+    Row(
+        modifier = modifier.fillMaxWidth().padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FilterChip(
+            selected = typeSelected == false,
+            onClick = {
+                tranVM.updateTypeSelected(false)
+            },
+            modifier = modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .weight(1f)
+                .padding(end = 4.dp),
+            shape = RoundedCornerShape(4.dp),
+            border = BorderStroke(
+                width = 1.dp,
+                color = when {
+                    !typeSelected!! -> colorResource(R.color.colorButtonBackground)
+                    else -> colorResource(R.color.colorButtonUnselected)
+                }
+            ),
+            colors = ChipDefaults.filterChipColors(
+                backgroundColor = Color.White,
+                selectedBackgroundColor = Color.White
+            ),
+            content = {
+                Text(
+                    text = stringResource(id = R.string.type_expense),
+                    modifier = modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+        )
+        FilterChip(
+            selected = typeSelected == true,
+            onClick = {
+                tranVM.updateTypeSelected(true)
+            },
+            modifier = modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .weight(1f)
+                .padding(start = 4.dp),
+            shape = RoundedCornerShape(4.dp),
+            border = BorderStroke(
+                width = 1.dp,
+                color = when {
+                    typeSelected!! -> colorResource(R.color.colorButtonBackground)
+                    else -> colorResource(R.color.colorButtonUnselected)
+                }
+            ),
+            colors = ChipDefaults.filterChipColors(
+                backgroundColor = Color.White,
+                selectedBackgroundColor = Color.White
+            ),
+            content = {
+                Text(
+                    text = stringResource(id = R.string.type_income),
+                    modifier = modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+        )
     }
 }
 

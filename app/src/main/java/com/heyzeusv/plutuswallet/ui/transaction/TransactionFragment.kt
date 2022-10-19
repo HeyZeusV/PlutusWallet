@@ -84,6 +84,7 @@ class TransactionFragment : BaseFragment() {
                     TransactionDate(tranVM)
                     TransactionDropDownMenu(tranVM)
                     TransactionCurrencyInput(sharedPref)
+                    TransactionCategories(tranVM)
                 }
             }
         }
