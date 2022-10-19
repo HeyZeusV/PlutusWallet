@@ -23,6 +23,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  *  Data manager for TransactionFragments.
@@ -98,9 +99,15 @@ class TransactionViewModel @Inject constructor(
     val createEvent: LiveData<Event<Pair<Int, String>>> = _createEvent
 
     // currently selected Spinner item
-    var account = ""
-    var expenseCat = ""
-    var incomeCat = ""
+    private val _account = MutableStateFlow("")
+    val account: StateFlow<String> get() = _account
+    fun updateAccount(newValue: String) { _account.value = newValue }
+    private val _expenseCat = MutableStateFlow("")
+    val expenseCat: StateFlow<String> get() = _expenseCat
+    fun updateExpenseCat(newValue: String) { _expenseCat.value = newValue }
+    private val _incomeCat = MutableStateFlow("")
+    val incomeCat: StateFlow<String> get() = _incomeCat
+    fun updateIncomeCat(newValue: String) { _incomeCat.value = newValue }
     var period = ""
 
     /**
@@ -110,7 +117,7 @@ class TransactionViewModel @Inject constructor(
         // Date to String
         _date.value =
             DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
-        account = transaction.account
+        updateAccount(transaction.account)
         // BigDecimal to String
         total.value = when {
             setVals.decimalPlaces && transaction.total > BigDecimal.ZERO -> formatDecimal(
@@ -124,10 +131,10 @@ class TransactionViewModel @Inject constructor(
         }
         if (transaction.type == "Expense") {
             typeSelected.value = false
-            expenseCat = transaction.category
+            updateExpenseCat(transaction.category)
         } else {
             typeSelected.value = true
-            incomeCat = transaction.category
+            updateIncomeCat(transaction.category)
         }
         repeat.value = transaction.repeating
         periodArray.value?.let {
@@ -156,7 +163,7 @@ class TransactionViewModel @Inject constructor(
             if (tran.title.isBlank()) tran.title = emptyTitle + tran.id
 
             // is empty if account hasn't been changed so defaults to first account
-            tran.account = if (account == "") accountList.value!![0] else account
+            tran.account = if (account.value == "") accountList.value!![0] else account.value
 
             // converts the totalField from String into BigDecimal
             tran.total = when {
@@ -173,17 +180,17 @@ class TransactionViewModel @Inject constructor(
             // cat values are empty if they haven't been changed so defaults to first category
             if (!typeSelected.value!!) {
                 tran.type = "Expense"
-                tran.category = if (expenseCat == "") {
+                tran.category = if (expenseCat.value == "") {
                     expenseCatList.value!![0]
                 } else {
-                    expenseCat
+                    expenseCat.value
                 }
             } else {
                 tran.type = "Income"
-                tran.category = if (incomeCat == "") {
+                tran.category = if (incomeCat.value == "") {
                     incomeCatList.value!![0]
                 } else {
-                    incomeCat
+                    incomeCat.value
                 }
             }
 
@@ -303,7 +310,7 @@ class TransactionViewModel @Inject constructor(
                 }
                 accountList.value = addNewToList(it, name, accCreate)
             }
-            account = name
+            updateAccount(name)
             _createEvent.value = Event(Pair(0, name))
         }
     }
@@ -327,7 +334,7 @@ class TransactionViewModel @Inject constructor(
                     expenseCatList.value = addNewToList(it, name, catCreate)
                 }
             }
-            expenseCat = name
+            updateExpenseCat(name)
             _createEvent.value = Event(Pair(1, name))
         } else {
             incomeCatList.value?.let {
@@ -341,7 +348,7 @@ class TransactionViewModel @Inject constructor(
                     incomeCatList.value = addNewToList(it, name, catCreate)
                 }
             }
-            incomeCat = name
+            updateIncomeCat(name)
             _createEvent.value = Event(Pair(2, name))
         }
     }

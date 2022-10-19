@@ -124,18 +124,36 @@ fun TransactionDate(
     if (source.collectIsPressedAsState().value) tranVM.selectDateOC(tranVM.tranLD.value!!.date)
 }
 
+enum class Types(val stringId: Int) {
+    ACCOUNT(R.string.transaction_account),
+    EXPENSE(R.string.type_expense),
+    INCOME(R.string.type_income)
+}
+
 @Composable
 fun TransactionDropDownMenu(
+    type: Types,
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val accounts by tranVM.accountList.observeAsState()
     var expanded by remember { mutableStateOf(false) }
     // used to make sure DropdownMenuItems are the same size as OutlinedTextField
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     val source = remember { MutableInteractionSource() }
     val showDialog by tranVM.showDialog.collectAsState()
+    val typeSelected by tranVM.typeSelected.observeAsState()
+
+    val value = when {
+        type == Types.ACCOUNT -> tranVM.account.collectAsState()
+        typeSelected!! -> tranVM.incomeCat.collectAsState()
+        else -> tranVM.expenseCat.collectAsState()
+    }
+    val list by when {
+        type == Types.ACCOUNT -> tranVM.accountList.observeAsState()
+        typeSelected!! -> tranVM.incomeCatList.observeAsState()
+        else -> tranVM.expenseCatList.observeAsState()
+    }
+    val label = stringResource(id = type.stringId)
 
     Column(modifier = modifier.padding(horizontal = 12.dp)) {
         DisableSelection {
@@ -147,7 +165,7 @@ fun TransactionDropDownMenu(
                 )
             }
             OutlinedTextField(
-                value = tranVM.account,
+                value = value.value,
                 onValueChange = { },
                 modifier = modifier
                     .fillMaxWidth()
@@ -155,7 +173,7 @@ fun TransactionDropDownMenu(
                         textFieldSize = coordinates.size.toSize()
                     },
                 readOnly = true,
-                label = { Text(stringResource(id = R.string.transaction_account))},
+                label = { Text(label)},
                 trailingIcon = {
                     Icon(
                         imageVector = if (expanded) {
@@ -176,18 +194,22 @@ fun TransactionDropDownMenu(
                     .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                     .padding(start = 12.dp)
             ) {
-                accounts!!.forEach { label ->
+                list!!.forEachIndexed { index, name ->
                     DropdownMenuItem(
                         onClick = {
-                            if (label == context.getString(R.string.account_create)) {
+                            if (index == list!!.size - 1) {
                                 tranVM.updateShowDialog(true)
                             } else {
-                                tranVM.account = label
+                                when(type) {
+                                    Types.ACCOUNT -> tranVM.updateAccount(name)
+                                    Types.EXPENSE -> tranVM.updateExpenseCat(name)
+                                    Types.INCOME -> tranVM.updateIncomeCat(name)
+                                }
                                 expanded = false
                             }
                         }
                     ) {
-                        Text(text = label)
+                        Text(text = name)
                     }
                 }
             }
@@ -351,69 +373,80 @@ fun TransactionCategories(
     modifier: Modifier = Modifier
 ) {
     val typeSelected by tranVM.typeSelected.observeAsState()
-    Row(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = modifier
     ) {
-        FilterChip(
-            selected = typeSelected == false,
-            onClick = {
-                tranVM.updateTypeSelected(false)
-            },
+        Row(
             modifier = modifier
                 .fillMaxWidth()
-                .height(64.dp)
-                .weight(1f)
-                .padding(end = 4.dp),
-            shape = RoundedCornerShape(4.dp),
-            border = BorderStroke(
-                width = 1.dp,
-                color = when {
-                    !typeSelected!! -> colorResource(R.color.colorButtonBackground)
-                    else -> colorResource(R.color.colorButtonUnselected)
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            FilterChip(
+                selected = typeSelected == false,
+                onClick = {
+                    tranVM.updateTypeSelected(false)
+                },
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .weight(1f)
+                    .padding(end = 4.dp),
+                shape = RoundedCornerShape(4.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = when {
+                        !typeSelected!! -> colorResource(R.color.colorButtonBackground)
+                        else -> colorResource(R.color.colorButtonUnselected)
+                    }
+                ),
+                colors = ChipDefaults.filterChipColors(
+                    backgroundColor = Color.White,
+                    selectedBackgroundColor = Color.White
+                ),
+                content = {
+                    Text(
+                        text = stringResource(id = R.string.type_expense),
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                 }
-            ),
-            colors = ChipDefaults.filterChipColors(
-                backgroundColor = Color.White,
-                selectedBackgroundColor = Color.White
-            ),
-            content = {
-                Text(
-                    text = stringResource(id = R.string.type_expense),
-                    modifier = modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            }
-        )
-        FilterChip(
-            selected = typeSelected == true,
-            onClick = {
-                tranVM.updateTypeSelected(true)
-            },
+            )
+            FilterChip(
+                selected = typeSelected == true,
+                onClick = {
+                    tranVM.updateTypeSelected(true)
+                },
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .weight(1f)
+                    .padding(start = 4.dp),
+                shape = RoundedCornerShape(4.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = when {
+                        typeSelected!! -> colorResource(R.color.colorButtonBackground)
+                        else -> colorResource(R.color.colorButtonUnselected)
+                    }
+                ),
+                colors = ChipDefaults.filterChipColors(
+                    backgroundColor = Color.White,
+                    selectedBackgroundColor = Color.White
+                ),
+                content = {
+                    Text(
+                        text = stringResource(id = R.string.type_income),
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            )
+        }
+        TransactionDropDownMenu(
+            type = if (tranVM.typeSelected.value!!) Types.INCOME else Types.EXPENSE,
+            tranVM = tranVM,
             modifier = modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .weight(1f)
-                .padding(start = 4.dp),
-            shape = RoundedCornerShape(4.dp),
-            border = BorderStroke(
-                width = 1.dp,
-                color = when {
-                    typeSelected!! -> colorResource(R.color.colorButtonBackground)
-                    else -> colorResource(R.color.colorButtonUnselected)
-                }
-            ),
-            colors = ChipDefaults.filterChipColors(
-                backgroundColor = Color.White,
-                selectedBackgroundColor = Color.White
-            ),
-            content = {
-                Text(
-                    text = stringResource(id = R.string.type_income),
-                    modifier = modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            }
         )
     }
 }

@@ -82,7 +82,7 @@ class TransactionFragment : BaseFragment() {
                 Column {
                     TransactionTextInput("", "Title", "Helper Text", maxLength = 10)
                     TransactionDate(tranVM)
-                    TransactionDropDownMenu(tranVM)
+                    TransactionDropDownMenu(Types.ACCOUNT, tranVM)
                     TransactionCurrencyInput(sharedPref)
                     TransactionCategories(tranVM)
                 }
@@ -128,11 +128,11 @@ class TransactionFragment : BaseFragment() {
                     requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                     getString(R.string.account_create),
-                    createDialogListeners(binding.tranAccount, tranVM.account), tranVM::insertAccount,
+                    createDialogListeners(binding.tranAccount, tranVM.account.value), tranVM::insertAccount,
                     null, null, null, null, null
                 )
             } else {
-                tranVM.account = selected
+                tranVM.updateAccount(selected)
             }
         }
 
@@ -144,11 +144,11 @@ class TransactionFragment : BaseFragment() {
                     requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                     getString(R.string.category_create),
-                    createDialogListeners(binding.tranExpenseCat, tranVM.expenseCat),
+                    createDialogListeners(binding.tranExpenseCat, tranVM.expenseCat.value),
                     tranVM::insertCategory, null, null, null, null, null
                 )
             } else {
-                tranVM.expenseCat = selected
+                tranVM.updateExpenseCat(selected)
             }
         }
 
@@ -160,11 +160,11 @@ class TransactionFragment : BaseFragment() {
                     requireContext(), alertDialogView, selected,
                     getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                     getString(R.string.category_create),
-                    createDialogListeners(binding.tranIncomeCat, tranVM.incomeCat),
+                    createDialogListeners(binding.tranIncomeCat, tranVM.incomeCat.value),
                     tranVM::insertCategory, null, null, null, null, null
                 )
             } else {
-                tranVM.incomeCat = selected
+                tranVM.updateIncomeCat(selected)
             }
         }
 
