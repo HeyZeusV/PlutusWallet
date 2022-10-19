@@ -83,6 +83,7 @@ class TransactionFragment : BaseFragment() {
                     TransactionTextInput("", "Title", "Helper Text", maxLength = 10)
                     TransactionDate(tranVM)
                     TransactionDropDownMenu(tranVM)
+                    TransactionCurrencyInput(sharedPref)
                 }
             }
         }

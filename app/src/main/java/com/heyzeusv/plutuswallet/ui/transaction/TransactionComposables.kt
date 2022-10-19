@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.DropdownMenu
@@ -36,8 +38,19 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.util.Key
+import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
+import com.heyzeusv.plutuswallet.util.SettingsUtils
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 @Composable
 fun TransactionTextInput(
@@ -227,6 +240,95 @@ fun AlertDialogInput(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun TransactionCurrencyInput(
+    sharedPref: SharedPreferences
+) {
+    // keys from separator symbols
+    val decimalKey: String = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
+    val thousandsKey: String = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
+    val decimalPlaces: Boolean = sharedPref[Key.KEY_DECIMAL_PLACES, true]
+
+    // symbols used
+    val decimalSymbol: Char = SettingsUtils.getSeparatorSymbol(decimalKey)
+    val thousandsSymbol: Char = SettingsUtils.getSeparatorSymbol(thousandsKey)
+
+    // set up decimal/thousands symbol
+    val customSymbols = DecimalFormatSymbols(Locale.US)
+    customSymbols.decimalSeparator = decimalSymbol
+    customSymbols.groupingSeparator = thousandsSymbol
+
+    // formatters using custom symbols
+    val decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
+    val integerFormatter = DecimalFormat("#,##0", customSymbols)
+    decimalFormatter.roundingMode = RoundingMode.HALF_UP
+    integerFormatter.roundingMode = RoundingMode.HALF_UP
+
+    var textFieldValue by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = "",
+                selection = TextRange.Zero
+            )
+        )
+    }
+
+    OutlinedTextField(
+        value = textFieldValue, // text,
+        onValueChange = {
+            val formattedAmount = formatAmount(it.text, decimalPlaces, decimalFormatter, integerFormatter)
+            textFieldValue = TextFieldValue(
+                text = formattedAmount,
+                selection = TextRange(formattedAmount.length)
+            )
+        },
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+    )
+}
+
+private fun formatAmount(
+    amount: String,
+    decimalPlaces: Boolean,
+    decimalFormatter: DecimalFormat,
+    integerFormatter: DecimalFormat
+): String {
+
+    val result: String = removeSymbols(amount, decimalPlaces)
+    val amt: BigDecimal
+    if (result.isEmpty()) return "" else amt = BigDecimal(result)
+
+    // uses decimal formatter depending on number of decimal places entered
+    return when {
+        decimalPlaces -> decimalFormatter.format(amt)
+        else -> integerFormatter.format(amt)
+    }
+}
+
+private fun removeSymbols(
+    numString: String,
+    decimalPlaces: Boolean
+): String {
+
+    var chars = ""
+    // retrieves only numbers in numString
+    for (i: Char in numString) {
+        if (i.isDigit()) chars += i
+    }
+
+    return when {
+        // doesn't allow string to be empty
+        decimalPlaces && chars == "" -> "0.00"
+        // divides numbers by 100 in order to easily get decimal places
+        decimalPlaces -> BigDecimal(chars)
+            .divide(BigDecimal(100), 2, RoundingMode.HALF_UP).toString()
+        // doesn't allow string to be empty
+        chars == "" -> "0"
+        // returns just a string of numbers
+        else -> chars
     }
 }
 
