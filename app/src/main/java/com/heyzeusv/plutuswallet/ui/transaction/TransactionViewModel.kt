@@ -98,6 +98,16 @@ class TransactionViewModel @Inject constructor(
     private val _createEvent = MutableLiveData<Event<Pair<Int, String>>>()
     val createEvent: LiveData<Event<Pair<Int, String>>> = _createEvent
 
+    private val _title = MutableStateFlow("")
+    val title: StateFlow<String> get() = _title
+    fun updateTitle(newValue: String) { _title.value = newValue }
+    private val _memo = MutableStateFlow("")
+    val memo: StateFlow<String> get() = _memo
+    fun updateMemo(newValue: String) { _memo.value = newValue }
+    private val _frequency = MutableStateFlow("1")
+    val frequency: StateFlow<String> get() = _frequency
+    fun updateFrequency(newValue: String) { _frequency.value = newValue }
+
     // currently selected Spinner item
     private val _account = MutableStateFlow("")
     val account: StateFlow<String> get() = _account
@@ -114,6 +124,7 @@ class TransactionViewModel @Inject constructor(
      *  Uses [transaction] to pass values to LiveData to be displayed.
      */
     fun setTranData(transaction: Transaction) {
+        updateTitle(transaction.title)
         // Date to String
         _date.value =
             DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
@@ -136,6 +147,7 @@ class TransactionViewModel @Inject constructor(
             typeSelected.value = true
             updateIncomeCat(transaction.category)
         }
+        updateMemo(transaction.memo)
         repeat.value = transaction.repeating
         periodArray.value?.let {
             // gets translated period value using periodArray
@@ -146,6 +158,7 @@ class TransactionViewModel @Inject constructor(
                 else -> it[3]
             }
         }
+        updateFrequency(transaction.frequency.toString())
     }
 
     /**
@@ -160,7 +173,7 @@ class TransactionViewModel @Inject constructor(
             if (newTran) tran.id = maxId + 1
 
             // gives Transaction simple title if user doesn't enter any
-            if (tran.title.isBlank()) tran.title = emptyTitle + tran.id
+            tran.title = title.value.ifBlank { emptyTitle + tran.id }
 
             // is empty if account hasn't been changed so defaults to first account
             tran.account = if (account.value == "") accountList.value!![0] else account.value
@@ -194,11 +207,16 @@ class TransactionViewModel @Inject constructor(
                 }
             }
 
+            tran.memo = memo.value
+
             tran.repeating = repeat.value!!
             if (tran.repeating) tran.futureDate = createFutureDate()
             tran.period = periodArray.value!!.indexOf(period)
             // frequency must always be at least 1
-            if (tran.frequency < 1) tran.frequency = 1
+            tran.frequency = when {
+                frequency.value.isBlank() || frequency.value.toInt() < 1 -> 1
+                else -> frequency.value.toInt()
+            }
 
             // Coroutine that Save/Updates/warns user of FutureDate
             viewModelScope.launch {

@@ -80,11 +80,12 @@ class TransactionFragment : BaseFragment() {
             )
             setContent {
                 Column {
-                    TransactionTextInput("", "Title", "Helper Text", maxLength = 10)
+                    TransactionTextInput(TransactionTextFields.TITLE, tranVM)
                     TransactionDate(tranVM)
-                    TransactionDropDownMenu(Types.ACCOUNT, tranVM)
+                    TransactionDropDownMenu(TransactionTypes.ACCOUNT, tranVM)
                     TransactionCurrencyInput(sharedPref)
                     TransactionCategories(tranVM)
+                    TransactionTextInput(TransactionTextFields.MEMO, tranVM)
                 }
             }
         }

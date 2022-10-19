@@ -30,7 +30,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextButton
@@ -62,22 +61,44 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
+enum class TransactionTextFields(val labelId: Int,val helperId: Int,val length: Int) {
+    TITLE(R.string.transaction_title, R.string.transaction_title_hint, 32),
+    MEMO(R.string.transaction_memo, R.string.transaction_memo_hint, 512),
+    FREQUENCY(R.string.transaction_frequency, R.string.transaction_frequency_hint, 2)
+}
+
 @Composable
 fun TransactionTextInput(
-    initialText: String,
-    label: String,
-    helperText: String,
+    textField: TransactionTextFields,
+    tranVM: TransactionViewModel,
     modifier: Modifier = Modifier,
-    maxLength: Int = 0
 ) {
-    var text by remember { mutableStateOf(initialText) }
+
+    val value = when(textField) {
+        TransactionTextFields.TITLE -> tranVM.title.collectAsState()
+        TransactionTextFields.MEMO -> tranVM.memo.collectAsState()
+        TransactionTextFields.FREQUENCY -> tranVM.frequency.collectAsState()
+    }
 
     Column(modifier = modifier.padding(horizontal = 12.dp)) {
         OutlinedTextField(
-            value = text,
-            onValueChange = { if (it.length <= maxLength) text = it },
+            value = value.value,
+            onValueChange = {
+                if (it.length <= textField.length) {
+                    when(textField) {
+                        TransactionTextFields.TITLE -> tranVM.updateTitle(it)
+                        TransactionTextFields.MEMO -> tranVM.updateMemo(it)
+                        TransactionTextFields.FREQUENCY -> tranVM.updateFrequency(it)
+                    }
+                }
+            },
             modifier = modifier.fillMaxWidth(),
-            label = { Text(label) },
+            label = { Text(stringResource(textField.labelId)) },
+            keyboardOptions = if (textField == TransactionTextFields.FREQUENCY) {
+                KeyboardOptions(keyboardType = KeyboardType.Number)
+            } else {
+                KeyboardOptions.Default
+            },
             singleLine = true
         )
         Row(
@@ -87,15 +108,13 @@ fun TransactionTextInput(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = helperText,
+                text = stringResource(textField.helperId),
                 style = MaterialTheme.typography.caption
             )
-            if (maxLength > 0) {
-                Text(
-                    text = "${text.length}/$maxLength",
-                    style = MaterialTheme.typography.caption
-                )
-            }
+            Text(
+                text = "${value.value.length}/${textField.length}",
+                style = MaterialTheme.typography.caption
+            )
         }
     }
 }
@@ -116,7 +135,7 @@ fun TransactionDate(
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
             readOnly = true,
-            label = { Text(text = stringResource(id = R.string.transaction_date)) },
+            label = { Text(text = stringResource(R.string.transaction_date)) },
             interactionSource = source
         )
     }
@@ -124,15 +143,15 @@ fun TransactionDate(
     if (source.collectIsPressedAsState().value) tranVM.selectDateOC(tranVM.tranLD.value!!.date)
 }
 
-enum class Types(val stringId: Int) {
+enum class TransactionTypes(val stringId: Int) {
     ACCOUNT(R.string.transaction_account),
-    EXPENSE(R.string.type_expense),
-    INCOME(R.string.type_income)
+    EXPENSE(R.string.transaction_category),
+    INCOME(R.string.transaction_category)
 }
 
 @Composable
 fun TransactionDropDownMenu(
-    type: Types,
+    type: TransactionTypes,
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -144,16 +163,16 @@ fun TransactionDropDownMenu(
     val typeSelected by tranVM.typeSelected.observeAsState()
 
     val value = when {
-        type == Types.ACCOUNT -> tranVM.account.collectAsState()
+        type == TransactionTypes.ACCOUNT -> tranVM.account.collectAsState()
         typeSelected!! -> tranVM.incomeCat.collectAsState()
         else -> tranVM.expenseCat.collectAsState()
     }
     val list by when {
-        type == Types.ACCOUNT -> tranVM.accountList.observeAsState()
+        type == TransactionTypes.ACCOUNT -> tranVM.accountList.observeAsState()
         typeSelected!! -> tranVM.incomeCatList.observeAsState()
         else -> tranVM.expenseCatList.observeAsState()
     }
-    val label = stringResource(id = type.stringId)
+    val label = stringResource(type.stringId)
 
     Column(modifier = modifier.padding(horizontal = 12.dp)) {
         DisableSelection {
@@ -201,9 +220,9 @@ fun TransactionDropDownMenu(
                                 tranVM.updateShowDialog(true)
                             } else {
                                 when(type) {
-                                    Types.ACCOUNT -> tranVM.updateAccount(name)
-                                    Types.EXPENSE -> tranVM.updateExpenseCat(name)
-                                    Types.INCOME -> tranVM.updateIncomeCat(name)
+                                    TransactionTypes.ACCOUNT -> tranVM.updateAccount(name)
+                                    TransactionTypes.EXPENSE -> tranVM.updateExpenseCat(name)
+                                    TransactionTypes.INCOME -> tranVM.updateIncomeCat(name)
                                 }
                                 expanded = false
                             }
@@ -244,28 +263,28 @@ fun AlertDialogInput(
                         }
                     }
                 ) {
-                    Text(text = stringResource(id = R.string.alert_dialog_save))
+                    Text(text = stringResource(R.string.alert_dialog_save))
                 }
             },
             dismissButton = {
                 TextButton(onClick = onDismiss) {
-                    Text(text = stringResource(id = R.string.alert_dialog_cancel))
+                    Text(text = stringResource(R.string.alert_dialog_cancel))
                 }
             },
             modifier = modifier,
-            title = { Text(text = stringResource(id = R.string.alert_dialog_create_account)) },
+            title = { Text(text = stringResource(R.string.alert_dialog_create_account)) },
             text = {
                 Column() {
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
                         modifier = Modifier.padding(top = 4.dp),
-                        label = { Text(text = stringResource(id = R.string.alert_dialog_input_hint)) },
+                        label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
                         isError = isError
                     )
                     if (isError) {
                         Text(
-                            text = stringResource(id = R.string.alert_dialog_input_error),
+                            text = stringResource(R.string.alert_dialog_input_error),
                             style = MaterialTheme.typography.caption
                         )
                     }
@@ -320,6 +339,7 @@ fun TransactionCurrencyInput(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
+        label = { Text(stringResource(R.string.transaction_total)) },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
     )
 }
@@ -406,7 +426,7 @@ fun TransactionCategories(
                 ),
                 content = {
                     Text(
-                        text = stringResource(id = R.string.type_expense),
+                        text = stringResource(R.string.type_expense),
                         modifier = modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -436,7 +456,7 @@ fun TransactionCategories(
                 ),
                 content = {
                     Text(
-                        text = stringResource(id = R.string.type_income),
+                        text = stringResource(R.string.type_income),
                         modifier = modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -444,15 +464,9 @@ fun TransactionCategories(
             )
         }
         TransactionDropDownMenu(
-            type = if (tranVM.typeSelected.value!!) Types.INCOME else Types.EXPENSE,
+            type = if (tranVM.typeSelected.value!!) TransactionTypes.INCOME else TransactionTypes.EXPENSE,
             tranVM = tranVM,
             modifier = modifier
         )
     }
-}
-
-@Preview
-@Composable
-fun PreviewTransTextBox() {
-    TransactionTextInput("Testing", "Title", "Helper Text", maxLength = 10)
 }
