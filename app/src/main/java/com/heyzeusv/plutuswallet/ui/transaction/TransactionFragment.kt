@@ -86,6 +86,7 @@ class TransactionFragment : BaseFragment() {
                     TransactionCurrencyInput(sharedPref)
                     TransactionCategories(tranVM)
                     TransactionTextInput(TransactionTextFields.MEMO, tranVM)
+                    TransactionChip(TransactionChips.REPEAT, tranVM)
                 }
             }
         }
@@ -110,7 +111,7 @@ class TransactionFragment : BaseFragment() {
                 } else {
                     binding.tranIncomeCat.setText(transaction.category, false)
                 }
-                if (tranVM.repeat.value!!) binding.tranRepeatMotion.transitionToEnd()
+                if (tranVM.repeatLD.value!!) binding.tranRepeatMotion.transitionToEnd()
                 binding.tranPeriod.setText(tranVM.period, false)
             }
         })
@@ -170,8 +171,8 @@ class TransactionFragment : BaseFragment() {
         }
 
         binding.tranRepeat.setOnClickListener {
-            tranVM.repeat.value = !tranVM.repeat.value!!
-            if (tranVM.repeat.value!!) {
+            tranVM.repeatLD.value = !tranVM.repeatLD.value!!
+            if (tranVM.repeatLD.value!!) {
                 binding.tranRepeatMotion.transitionToEnd()
                 // after a short delay, scrolls to the bottom of ScrollView
                 binding.tranScrollView.postDelayed({

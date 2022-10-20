@@ -61,7 +61,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-enum class TransactionTextFields(val labelId: Int,val helperId: Int,val length: Int) {
+enum class TransactionTextFields(val labelId: Int, val helperId: Int, val length: Int) {
     TITLE(R.string.transaction_title, R.string.transaction_title_hint, 32),
     MEMO(R.string.transaction_memo, R.string.transaction_memo_hint, 512),
     FREQUENCY(R.string.transaction_frequency, R.string.transaction_frequency_hint, 2)
@@ -143,7 +143,7 @@ fun TransactionDate(
     if (source.collectIsPressedAsState().value) tranVM.selectDateOC(tranVM.tranLD.value!!.date)
 }
 
-enum class TransactionTypes(val stringId: Int) {
+enum class TransactionTypes(val labelId: Int) {
     ACCOUNT(R.string.transaction_account),
     EXPENSE(R.string.transaction_category),
     INCOME(R.string.transaction_category)
@@ -160,19 +160,19 @@ fun TransactionDropDownMenu(
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     val source = remember { MutableInteractionSource() }
     val showDialog by tranVM.showDialog.collectAsState()
-    val typeSelected by tranVM.typeSelected.observeAsState()
+    val typeSelected by tranVM.typeSelected.collectAsState()
 
     val value = when {
         type == TransactionTypes.ACCOUNT -> tranVM.account.collectAsState()
-        typeSelected!! -> tranVM.incomeCat.collectAsState()
+        typeSelected -> tranVM.incomeCat.collectAsState()
         else -> tranVM.expenseCat.collectAsState()
     }
     val list by when {
         type == TransactionTypes.ACCOUNT -> tranVM.accountList.observeAsState()
-        typeSelected!! -> tranVM.incomeCatList.observeAsState()
+        typeSelected -> tranVM.incomeCatList.observeAsState()
         else -> tranVM.expenseCatList.observeAsState()
     }
-    val label = stringResource(type.stringId)
+    val label = stringResource(type.labelId)
 
     Column(modifier = modifier.padding(horizontal = 12.dp)) {
         DisableSelection {
@@ -386,13 +386,13 @@ private fun removeSymbols(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TransactionCategories(
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier
 ) {
-    val typeSelected by tranVM.typeSelected.observeAsState()
+    val typeSelected by tranVM.typeSelected.collectAsState()
+
     Column(
         modifier = modifier
     ) {
@@ -400,73 +400,84 @@ fun TransactionCategories(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 8.dp,
+                alignment = Alignment.CenterHorizontally
+            ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            FilterChip(
-                selected = typeSelected == false,
-                onClick = {
-                    tranVM.updateTypeSelected(false)
-                },
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .weight(1f)
-                    .padding(end = 4.dp),
-                shape = RoundedCornerShape(4.dp),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = when {
-                        !typeSelected!! -> colorResource(R.color.colorButtonBackground)
-                        else -> colorResource(R.color.colorButtonUnselected)
-                    }
-                ),
-                colors = ChipDefaults.filterChipColors(
-                    backgroundColor = Color.White,
-                    selectedBackgroundColor = Color.White
-                ),
-                content = {
-                    Text(
-                        text = stringResource(R.string.type_expense),
-                        modifier = modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                }
+            TransactionChip(
+                TransactionChips.EXPENSE,
+                tranVM,
+                modifier.weight(1f)
             )
-            FilterChip(
-                selected = typeSelected == true,
-                onClick = {
-                    tranVM.updateTypeSelected(true)
-                },
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .weight(1f)
-                    .padding(start = 4.dp),
-                shape = RoundedCornerShape(4.dp),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = when {
-                        typeSelected!! -> colorResource(R.color.colorButtonBackground)
-                        else -> colorResource(R.color.colorButtonUnselected)
-                    }
-                ),
-                colors = ChipDefaults.filterChipColors(
-                    backgroundColor = Color.White,
-                    selectedBackgroundColor = Color.White
-                ),
-                content = {
-                    Text(
-                        text = stringResource(R.string.type_income),
-                        modifier = modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                }
+            TransactionChip(
+                TransactionChips.INCOME,
+                tranVM,
+                modifier.weight(1f)
             )
         }
         TransactionDropDownMenu(
-            type = if (tranVM.typeSelected.value!!) TransactionTypes.INCOME else TransactionTypes.EXPENSE,
+            type = if (typeSelected) TransactionTypes.INCOME else TransactionTypes.EXPENSE,
             tranVM = tranVM,
             modifier = modifier
         )
     }
+}
+
+enum class TransactionChips(val labelId: Int) {
+    EXPENSE(R.string.type_expense),
+    INCOME(R.string.type_income),
+    REPEAT(R.string.transaction_repeat)
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun TransactionChip(
+    chip: TransactionChips,
+    tranVM: TransactionViewModel,
+    modifier: Modifier = Modifier
+) {
+    val selected by when(chip) {
+        TransactionChips.EXPENSE, TransactionChips.INCOME -> tranVM.typeSelected.collectAsState()
+        TransactionChips.REPEAT -> tranVM.repeat.collectAsState()
+    }
+    FilterChip(
+        selected = when(chip) {
+            TransactionChips.EXPENSE -> !selected
+            TransactionChips.INCOME -> selected
+            TransactionChips.REPEAT -> selected
+        },
+        onClick = {
+            when(chip) {
+                TransactionChips.EXPENSE, TransactionChips.INCOME -> tranVM.updateTypeSelected(!selected)
+                TransactionChips.REPEAT -> tranVM.updateRepeat(!selected)
+            }
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .height(64.dp),
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = when {
+                (chip == TransactionChips.INCOME || chip == TransactionChips.REPEAT) && selected -> {
+                    colorResource(R.color.colorButtonBackground)
+                }
+                chip == TransactionChips.EXPENSE && !selected -> colorResource(R.color.colorButtonBackground)
+                else -> colorResource(R.color.colorButtonUnselected)
+            }
+        ),
+        colors = ChipDefaults.filterChipColors(
+            backgroundColor = Color.White,
+            selectedBackgroundColor = Color.White
+        ),
+        content = {
+            Text(
+                text = stringResource(chip.labelId),
+                modifier = modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        }
+    )
 }

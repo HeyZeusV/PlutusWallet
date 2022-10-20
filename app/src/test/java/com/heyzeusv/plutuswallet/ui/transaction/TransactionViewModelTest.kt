@@ -52,7 +52,7 @@ internal class TransactionViewModelTest {
         assertEquals("1 000 10", tranVM.total.value)
 //        assertEquals(R.id.tran_expense_chip, tranVM.checkedChip.value)
         assertEquals("Food", tranVM.expenseCat)
-        assertEquals(true, tranVM.repeat.value)
+        assertEquals(true, tranVM.repeatLD.value)
     }
 
     @Test
@@ -65,7 +65,7 @@ internal class TransactionViewModelTest {
         tranVM.total.value = "1000.99"
         tranVM.typeSelected.value = true
         tranVM.incomeCat = "Test Income Category"
-        tranVM.repeat.value = false
+        tranVM.repeatLD.value = false
         tranVM.period = "Days"
         val expectedTran = Transaction(
             1,
@@ -103,7 +103,7 @@ internal class TransactionViewModelTest {
         tranVM.total.value = "1000.99"
         tranVM.typeSelected.value = true
         tranVM.incomeCat = "Test Income Category"
-        tranVM.repeat.value = true
+        tranVM.repeatLD.value = true
         tranVM.period = "Days"
         val expectedTran = Transaction(
             1,

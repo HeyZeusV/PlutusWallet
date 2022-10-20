@@ -53,12 +53,16 @@ class TransactionViewModel @Inject constructor(
     val date: LiveData<String> = _date
     val total: MutableLiveData<String> = MutableLiveData("")
     // false = "Expense", true = "Income"
-    val typeSelected: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    private val _typeSelected = MutableStateFlow(false)
+    val typeSelected: StateFlow<Boolean> get() = _typeSelected
     fun updateTypeSelected(newValue: Boolean) {
-        typeSelected.value = newValue
+        _typeSelected.value = newValue
     }
-    val repeat: MutableLiveData<Boolean> = MutableLiveData(false)
+    val repeatLD: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    private val _repeat = MutableStateFlow(false)
+    val repeat: StateFlow<Boolean> get() = _repeat
+    fun updateRepeat(newValue: Boolean) { _repeat.value = newValue }
 
     val showDialog = MutableStateFlow(false)
 
@@ -141,14 +145,15 @@ class TransactionViewModel @Inject constructor(
             else -> "0"
         }
         if (transaction.type == "Expense") {
-            typeSelected.value = false
+            updateTypeSelected(false)
             updateExpenseCat(transaction.category)
         } else {
-            typeSelected.value = true
+            updateTypeSelected(true)
             updateIncomeCat(transaction.category)
         }
         updateMemo(transaction.memo)
-        repeat.value = transaction.repeating
+        updateRepeat(transaction.repeating)
+        repeatLD.value = transaction.repeating
         periodArray.value?.let {
             // gets translated period value using periodArray
             period = when (transaction.period) {
@@ -191,7 +196,7 @@ class TransactionViewModel @Inject constructor(
 
             // sets type depending on Chip selected
             // cat values are empty if they haven't been changed so defaults to first category
-            if (!typeSelected.value!!) {
+            if (!typeSelected.value) {
                 tran.type = "Expense"
                 tran.category = if (expenseCat.value == "") {
                     expenseCatList.value!![0]
@@ -209,7 +214,7 @@ class TransactionViewModel @Inject constructor(
 
             tran.memo = memo.value
 
-            tran.repeating = repeat.value!!
+            tran.repeating = repeat.value
             if (tran.repeating) tran.futureDate = createFutureDate()
             tran.period = periodArray.value!!.indexOf(period)
             // frequency must always be at least 1
@@ -340,7 +345,7 @@ class TransactionViewModel @Inject constructor(
     fun insertCategory(name: String, catCreate: String) {
 
         // checks which type is currently selected
-        if (!typeSelected.value!!) {
+        if (!typeSelected.value) {
             expenseCatList.value?.let {
                 // create if doesn't exist
                 if (!it.contains(name)) {
@@ -428,8 +433,7 @@ class TransactionViewModel @Inject constructor(
      *  onClick for type Button. Switches value of typeSelected Boolean.
      */
     fun typeButtonOC() {
-
-        typeSelected.value = !typeSelected.value!!
+        updateTypeSelected(!typeSelected.value)
     }
 
     // manually refresh on LiveData

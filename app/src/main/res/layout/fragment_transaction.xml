@@ -216,7 +216,7 @@
                                 android:layout_height="@dimen/tranButtonHeight"
                                 android:layout_marginTop="@dimen/tranButtonToLayoutMargin"
                                 android:text="@string/transaction_repeat"
-                                app:isActivated="@{tranVM.repeat}"
+                                app:isActivated="@{tranVM.repeatLD}"
                                 app:layout_constraintTop_toTopOf="parent" />
 
                             <View
@@ -245,7 +245,7 @@
                                     android:id="@+id/tran_period"
                                     style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
                                     android:hint="@string/transaction_period"
-                                    android:visibility="@{tranVM.repeat ? View.VISIBLE : View.INVISIBLE}"
+                                    android:visibility="@{tranVM.repeatLD ? View.VISIBLE : View.INVISIBLE}"
                                     app:entries="@{tranVM.periodArray}" />
                             </com.google.android.material.textfield.TextInputLayout>
 
@@ -270,7 +270,7 @@
                                     android:inputType="number"
                                     android:maxLength="@integer/maxLengthFrequency"
                                     android:text="@={`` + tranVM.tranLD.frequency}"
-                                    android:visibility="@{tranVM.repeat ? View.VISIBLE : View.INVISIBLE}" />
+                                    android:visibility="@{tranVM.repeatLD ? View.VISIBLE : View.INVISIBLE}" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </androidx.constraintlayout.motion.widget.MotionLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
