@@ -122,7 +122,9 @@ class TransactionViewModel @Inject constructor(
     private val _incomeCat = MutableStateFlow("")
     val incomeCat: StateFlow<String> get() = _incomeCat
     fun updateIncomeCat(newValue: String) { _incomeCat.value = newValue }
-    var period = ""
+    private val _period = MutableStateFlow("")
+    val period: StateFlow<String> get() = _period
+    fun updatePeriod(newValue: String) { _period.value = newValue }
 
     /**
      *  Uses [transaction] to pass values to LiveData to be displayed.
@@ -156,12 +158,12 @@ class TransactionViewModel @Inject constructor(
         repeatLD.value = transaction.repeating
         periodArray.value?.let {
             // gets translated period value using periodArray
-            period = when (transaction.period) {
+            updatePeriod(when (transaction.period) {
                 0 -> it[0]
                 1 -> it[1]
                 2 -> it[2]
                 else -> it[3]
-            }
+            })
         }
         updateFrequency(transaction.frequency.toString())
     }
@@ -216,7 +218,7 @@ class TransactionViewModel @Inject constructor(
 
             tran.repeating = repeat.value
             if (tran.repeating) tran.futureDate = createFutureDate()
-            tran.period = periodArray.value!!.indexOf(period)
+            tran.period = periodArray.value!!.indexOf(period.value)
             // frequency must always be at least 1
             tran.frequency = when {
                 frequency.value.isBlank() || frequency.value.toInt() < 1 -> 1

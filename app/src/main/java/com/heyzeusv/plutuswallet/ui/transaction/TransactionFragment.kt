@@ -11,7 +11,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AutoCompleteTextView
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
@@ -80,13 +83,13 @@ class TransactionFragment : BaseFragment() {
             )
             setContent {
                 Column {
-                    TransactionTextInput(TransactionTextFields.TITLE, tranVM)
+                    TransactionTextInput(TransactionTextFields.TITLE, tranVM, Modifier.padding(horizontal = 12.dp))
                     TransactionDate(tranVM)
-                    TransactionDropDownMenu(TransactionTypes.ACCOUNT, tranVM)
+                    TransactionDropDownMenu(TransactionDropMenus.ACCOUNT, tranVM, Modifier.padding(horizontal = 12.dp))
                     TransactionCurrencyInput(sharedPref)
                     TransactionCategories(tranVM)
-                    TransactionTextInput(TransactionTextFields.MEMO, tranVM)
-                    TransactionChip(TransactionChips.REPEAT, tranVM)
+                    TransactionTextInput(TransactionTextFields.MEMO, tranVM, Modifier.padding(horizontal = 12.dp))
+                    TransactionRepeating(tranVM)
                 }
             }
         }
@@ -98,7 +101,7 @@ class TransactionFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tranVM.tranLD.observe(viewLifecycleOwner, { transaction: Transaction? ->
+        tranVM.tranLD.observe(viewLifecycleOwner) { transaction: Transaction? ->
             // assigns new Transaction if null, which will cause observer to be called again
             // then assigns values from Transaction to LiveData used by XML
             if (transaction == null) {
@@ -112,9 +115,9 @@ class TransactionFragment : BaseFragment() {
                     binding.tranIncomeCat.setText(transaction.category, false)
                 }
                 if (tranVM.repeatLD.value!!) binding.tranRepeatMotion.transitionToEnd()
-                binding.tranPeriod.setText(tranVM.period, false)
+                binding.tranPeriod.setText(tranVM.period.value, false)
             }
-        })
+        }
 
         binding.tranDate.setOnFocusChangeListener { _, focused: Boolean ->
             if (focused) {
@@ -184,7 +187,7 @@ class TransactionFragment : BaseFragment() {
         }
 
         binding.tranPeriod.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
-            tranVM.period = adapterView.adapter.getItem(i).toString()
+            tranVM.updatePeriod(adapterView.adapter.getItem(i).toString())
         }
 
         tranVM.createEvent.observe(viewLifecycleOwner, EventObserver { info: Pair<Int, String> ->
