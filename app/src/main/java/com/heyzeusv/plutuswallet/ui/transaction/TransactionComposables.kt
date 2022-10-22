@@ -47,8 +47,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.ExperimentalUnitApi
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
 
@@ -368,7 +372,7 @@ enum class TransactionChips(val labelId: Int) {
     REPEAT(R.string.transaction_repeat)
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class)
 @Composable
 fun TransactionChip(
     chip: TransactionChips,
@@ -396,12 +400,12 @@ fun TransactionChip(
             .height(64.dp),
         shape = RoundedCornerShape(4.dp),
         border = BorderStroke(
-            width = 1.dp,
+            width = 2.dp,
             color = when {
                 (chip == TransactionChips.INCOME || chip == TransactionChips.REPEAT) && selected -> {
-                    colorResource(R.color.colorButtonBackground)
+                    MaterialTheme.colors.secondary
                 }
-                chip == TransactionChips.EXPENSE && !selected -> colorResource(R.color.colorButtonBackground)
+                chip == TransactionChips.EXPENSE && !selected -> MaterialTheme.colors.secondary
                 else -> colorResource(R.color.colorButtonUnselected)
             }
         ),
@@ -411,8 +415,18 @@ fun TransactionChip(
         ),
         content = {
             Text(
-                text = stringResource(chip.labelId),
+                text = stringResource(chip.labelId).uppercase(),
                 modifier = modifier.fillMaxWidth(),
+                color = when {
+                    (chip == TransactionChips.INCOME || chip == TransactionChips.REPEAT) && selected -> {
+                        MaterialTheme.colors.secondary
+                    }
+                    chip == TransactionChips.EXPENSE && !selected -> MaterialTheme.colors.secondary
+                    else -> colorResource(R.color.colorButtonUnselected)
+                },
+                fontSize = TextUnit(18f, TextUnitType.Sp),
+                fontWeight = FontWeight.Medium,
+                letterSpacing = TextUnit(1f, TextUnitType.Sp),
                 textAlign = TextAlign.Center
             )
         }
@@ -434,8 +448,14 @@ fun TransactionRepeating(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TransactionDropDownMenu(TransactionDropMenus.PERIOD, tranVM, Modifier.weight(1f).padding(start = 12.dp, end = 4.dp))
-                TransactionTextField(TransactionTextFields.FREQUENCY, tranVM, Modifier.weight(1f).padding(start = 4.dp, end = 12.dp))
+                TransactionDropDownMenu(TransactionDropMenus.PERIOD, tranVM,
+                    Modifier
+                        .weight(1f)
+                        .padding(start = 12.dp, end = 4.dp))
+                TransactionTextField(TransactionTextFields.FREQUENCY, tranVM,
+                    Modifier
+                        .weight(1f)
+                        .padding(start = 4.dp, end = 12.dp))
             }
         }
     }

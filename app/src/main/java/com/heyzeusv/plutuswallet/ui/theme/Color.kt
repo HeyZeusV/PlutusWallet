@@ -50,7 +50,7 @@ val LightColors = lightColors(
     primary = Purple900,
     primaryVariant = Purple900Dark,
     onPrimary = Color.Black,
-    secondary = GreenBase,
+    secondary = LightGreen900,
     background = Purple900Light,
     error = ErrorLight
 )
@@ -59,6 +59,6 @@ val DarkColors = darkColors(
     primary = PurpleBase,
     primaryVariant = PurpleDark,
     onPrimary = Color.White,
-    secondary = LightGreen900,
+    secondary = GreenBase,
     error = ErrorDark
 )
