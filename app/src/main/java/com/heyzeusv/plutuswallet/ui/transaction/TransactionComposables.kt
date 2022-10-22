@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -94,7 +95,11 @@ fun TransactionTextField(
             } else {
                 KeyboardOptions.Default
             },
-            singleLine = true
+            singleLine = true,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colors.secondary,
+                focusedLabelColor = MaterialTheme.colors.secondary
+            )
         )
         Row(
             modifier = Modifier
@@ -132,7 +137,11 @@ fun TransactionDate(
                 .padding(horizontal = 12.dp),
             readOnly = true,
             label = { Text(text = stringResource(R.string.transaction_date)) },
-            interactionSource = source
+            interactionSource = source,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colors.secondary,
+                focusedLabelColor = MaterialTheme.colors.secondary
+            )
         )
     }
 
@@ -203,7 +212,11 @@ fun TransactionDropDownMenu(
                         modifier = Modifier.clickable { expanded = !expanded }
                     )
                 },
-                interactionSource = source
+                interactionSource = source,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colors.secondary,
+                    focusedLabelColor = MaterialTheme.colors.secondary
+                )
             )
             DropdownMenu(
                 expanded = expanded,
@@ -274,13 +287,17 @@ fun AlertDialogInput(
             modifier = modifier,
             title = { Text(text = stringResource(R.string.alert_dialog_create_account)) },
             text = {
-                Column() {
+                Column {
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
                         modifier = Modifier.padding(top = 4.dp),
                         label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
-                        isError = isError
+                        isError = isError,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = MaterialTheme.colors.secondary,
+                            focusedLabelColor = MaterialTheme.colors.secondary
+                        )
                     )
                     if (isError) {
                         Text(
@@ -315,6 +332,10 @@ fun TransactionCurrencyInput(
                 .fillMaxWidth(),
             label = { Text(stringResource(R.string.transaction_total)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colors.secondary,
+                focusedLabelColor = MaterialTheme.colors.secondary
+            )
         )
         Text(
             text = "${textFieldValue.text.length}/$maxLength",
@@ -392,7 +413,8 @@ fun TransactionChip(
         },
         onClick = {
             when(chip) {
-                TransactionChips.EXPENSE, TransactionChips.INCOME -> tranVM.updateTypeSelected(!selected)
+                TransactionChips.EXPENSE -> tranVM.updateTypeSelected(false)
+                TransactionChips.INCOME -> tranVM.updateTypeSelected(true)
                 TransactionChips.REPEAT -> tranVM.updateRepeat(!selected)
             }
         },
@@ -452,7 +474,7 @@ fun TransactionRepeating(
 ) {
     val visible by tranVM.repeat.collectAsState()
 
-    Column() {
+    Column {
         TransactionChip(TransactionChips.REPEAT, tranVM, Modifier.padding(horizontal = 12.dp))
         AnimatedVisibility(
             visible = visible
