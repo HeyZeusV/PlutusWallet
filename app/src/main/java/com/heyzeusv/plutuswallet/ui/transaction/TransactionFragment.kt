@@ -24,6 +24,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionBinding
 import com.heyzeusv.plutuswallet.ui.base.BaseFragment
+import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.AlertDialogCreator
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.EventObserver
@@ -81,14 +82,16 @@ class TransactionFragment : BaseFragment() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
             setContent {
-                Column {
-                    TransactionTextField(TransactionTextFields.TITLE, tranVM, Modifier.padding(horizontal = 12.dp))
-                    TransactionDate(tranVM)
-                    TransactionDropDownMenu(TransactionDropMenus.ACCOUNT, tranVM, Modifier.padding(horizontal = 12.dp))
-                    TransactionCurrencyInput(tranVM)
-                    TransactionCategories(tranVM)
-                    TransactionTextField(TransactionTextFields.MEMO, tranVM, Modifier.padding(horizontal = 12.dp))
-                    TransactionRepeating(tranVM)
+                PlutusWalletTheme {
+                    Column {
+                        TransactionTextField(TransactionTextFields.TITLE, tranVM, Modifier.padding(horizontal = 12.dp))
+                        TransactionDate(tranVM)
+                        TransactionDropDownMenu(TransactionDropMenus.ACCOUNT, tranVM, Modifier.padding(horizontal = 12.dp))
+                        TransactionCurrencyInput(tranVM)
+                        TransactionCategories(tranVM)
+                        TransactionTextField(TransactionTextFields.MEMO, tranVM, Modifier.padding(horizontal = 12.dp))
+                        TransactionRepeating(tranVM)
+                    }
                 }
             }
         }
