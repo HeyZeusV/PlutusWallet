@@ -86,7 +86,7 @@ class TransactionFragment : BaseFragment() {
                     TransactionTextInput(TransactionTextFields.TITLE, tranVM, Modifier.padding(horizontal = 12.dp))
                     TransactionDate(tranVM)
                     TransactionDropDownMenu(TransactionDropMenus.ACCOUNT, tranVM, Modifier.padding(horizontal = 12.dp))
-                    TransactionCurrencyInput(sharedPref)
+                    TransactionCurrencyInput(tranVM, sharedPref)
                     TransactionCategories(tranVM)
                     TransactionTextInput(TransactionTextFields.MEMO, tranVM, Modifier.padding(horizontal = 12.dp))
                     TransactionRepeating(tranVM)

@@ -1,5 +1,7 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -52,6 +54,13 @@ class TransactionViewModel @Inject constructor(
     private val _date: MutableLiveData<String> = MutableLiveData("")
     val date: LiveData<String> = _date
     val total: MutableLiveData<String> = MutableLiveData("")
+
+    private val _totalFieldValue = MutableStateFlow(TextFieldValue())
+    val totalFieldValue: StateFlow<TextFieldValue> get() = _totalFieldValue
+    fun updateTotalFieldValue(newText: String, newSelection: TextRange) {
+        _totalFieldValue.value = TextFieldValue(newText, newSelection)
+    }
+
     // false = "Expense", true = "Income"
     private val _typeSelected = MutableStateFlow(false)
     val typeSelected: StateFlow<Boolean> get() = _typeSelected
@@ -146,6 +155,17 @@ class TransactionViewModel @Inject constructor(
             )
             else -> "0"
         }
+        val formattedTotal = when {
+            setVals.decimalPlaces && transaction.total > BigDecimal.ZERO -> formatDecimal(
+                transaction.total, setVals.thousandsSymbol, setVals.decimalSymbol
+            )
+            setVals.decimalPlaces -> "0${setVals.decimalSymbol}00"
+            transaction.total > BigDecimal.ZERO -> formatInteger(
+                transaction.total, setVals.thousandsSymbol
+            )
+            else -> "0"
+        }
+        updateTotalFieldValue(formattedTotal, TextRange(formattedTotal.length))
         if (transaction.type == "Expense") {
             updateTypeSelected(false)
             updateExpenseCat(transaction.category)
@@ -185,12 +205,12 @@ class TransactionViewModel @Inject constructor(
             // is empty if account hasn't been changed so defaults to first account
             tran.account = if (account.value == "") accountList.value!![0] else account.value
 
-            // converts the totalField from String into BigDecimal
+            val totalFromFieldValue = _totalFieldValue.value.text
             tran.total = when {
-                total.value!!.isEmpty() && setVals.decimalPlaces -> BigDecimal("0.00")
-                total.value!!.isEmpty() -> BigDecimal("0")
+                totalFromFieldValue.isEmpty() && setVals.decimalPlaces -> BigDecimal("0.00")
+                totalFromFieldValue.isEmpty() -> BigDecimal("0")
                 else -> BigDecimal(
-                    total.value!!
+                    totalFromFieldValue
                         .replace(setVals.thousandsSymbol.toString(), "")
                         .replace(setVals.decimalSymbol.toString(), ".")
                 )

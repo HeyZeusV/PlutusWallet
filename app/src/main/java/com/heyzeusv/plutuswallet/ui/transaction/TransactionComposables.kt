@@ -49,7 +49,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
@@ -75,7 +74,7 @@ fun TransactionTextInput(
     modifier: Modifier = Modifier,
 ) {
 
-    val value = when(textField) {
+    val value by when(textField) {
         TransactionTextFields.TITLE -> tranVM.title.collectAsState()
         TransactionTextFields.MEMO -> tranVM.memo.collectAsState()
         TransactionTextFields.FREQUENCY -> tranVM.frequency.collectAsState()
@@ -83,7 +82,7 @@ fun TransactionTextInput(
 
     Column(modifier = modifier) {
         OutlinedTextField(
-            value = value.value,
+            value = value,
             onValueChange = {
                 if (it.length <= textField.length) {
                     when(textField) {
@@ -114,7 +113,7 @@ fun TransactionTextInput(
                 style = MaterialTheme.typography.caption
             )
             Text(
-                text = "${value.value.length}/${textField.length}",
+                text = "${value.length}/${textField.length}",
                 style = MaterialTheme.typography.caption
             )
         }
@@ -302,6 +301,7 @@ fun AlertDialogInput(
 
 @Composable
 fun TransactionCurrencyInput(
+    tranVM: TransactionViewModel,
     sharedPref: SharedPreferences
 ) {
     // keys from separator symbols
@@ -324,23 +324,13 @@ fun TransactionCurrencyInput(
     decimalFormatter.roundingMode = RoundingMode.HALF_UP
     integerFormatter.roundingMode = RoundingMode.HALF_UP
 
-    var textFieldValue by remember {
-        mutableStateOf(
-            TextFieldValue(
-                text = "",
-                selection = TextRange.Zero
-            )
-        )
-    }
+    val textFieldValue by tranVM.totalFieldValue.collectAsState()
 
     OutlinedTextField(
         value = textFieldValue, // text,
         onValueChange = {
             val formattedAmount = formatAmount(it.text, decimalPlaces, decimalFormatter, integerFormatter)
-            textFieldValue = TextFieldValue(
-                text = formattedAmount,
-                selection = TextRange(formattedAmount.length)
-            )
+            tranVM.updateTotalFieldValue(formattedAmount, TextRange(formattedAmount.length))
         },
         modifier = Modifier
             .fillMaxWidth()
