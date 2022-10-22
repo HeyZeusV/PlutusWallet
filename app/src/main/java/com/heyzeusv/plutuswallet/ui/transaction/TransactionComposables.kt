@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
-import android.content.SharedPreferences
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -46,29 +45,21 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.util.Key
-import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
-import com.heyzeusv.plutuswallet.util.SettingsUtils
-import java.math.BigDecimal
-import java.math.RoundingMode
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
 enum class TransactionTextFields(val labelId: Int, val helperId: Int, val length: Int) {
     TITLE(R.string.transaction_title, R.string.transaction_title_hint, 32),
     MEMO(R.string.transaction_memo, R.string.transaction_memo_hint, 512),
-    FREQUENCY(R.string.transaction_frequency, R.string.transaction_frequency_hint, 2)
+    FREQUENCY(R.string.transaction_frequency, R.string.transaction_blank_hint, 2)
 }
 
 @Composable
-fun TransactionTextInput(
+fun TransactionTextField(
     textField: TransactionTextFields,
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier,
@@ -302,83 +293,33 @@ fun AlertDialogInput(
 @Composable
 fun TransactionCurrencyInput(
     tranVM: TransactionViewModel,
-    sharedPref: SharedPreferences
+    modifier: Modifier = Modifier
 ) {
-    // keys from separator symbols
-    val decimalKey: String = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
-    val thousandsKey: String = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
-    val decimalPlaces: Boolean = sharedPref[Key.KEY_DECIMAL_PLACES, true]
-
-    // symbols used
-    val decimalSymbol: Char = SettingsUtils.getSeparatorSymbol(decimalKey)
-    val thousandsSymbol: Char = SettingsUtils.getSeparatorSymbol(thousandsKey)
-
-    // set up decimal/thousands symbol
-    val customSymbols = DecimalFormatSymbols(Locale.US)
-    customSymbols.decimalSeparator = decimalSymbol
-    customSymbols.groupingSeparator = thousandsSymbol
-
-    // formatters using custom symbols
-    val decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
-    val integerFormatter = DecimalFormat("#,##0", customSymbols)
-    decimalFormatter.roundingMode = RoundingMode.HALF_UP
-    integerFormatter.roundingMode = RoundingMode.HALF_UP
-
     val textFieldValue by tranVM.totalFieldValue.collectAsState()
-
-    OutlinedTextField(
-        value = textFieldValue, // text,
-        onValueChange = {
-            val formattedAmount = formatAmount(it.text, decimalPlaces, decimalFormatter, integerFormatter)
-            tranVM.updateTotalFieldValue(formattedAmount, TextRange(formattedAmount.length))
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
-        label = { Text(stringResource(R.string.transaction_total)) },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-    )
-}
-
-private fun formatAmount(
-    amount: String,
-    decimalPlaces: Boolean,
-    decimalFormatter: DecimalFormat,
-    integerFormatter: DecimalFormat
-): String {
-
-    val result: String = removeSymbols(amount, decimalPlaces)
-    val amt: BigDecimal
-    if (result.isEmpty()) return "" else amt = BigDecimal(result)
-
-    // uses decimal formatter depending on number of decimal places entered
-    return when {
-        decimalPlaces -> decimalFormatter.format(amt)
-        else -> integerFormatter.format(amt)
-    }
-}
-
-private fun removeSymbols(
-    numString: String,
-    decimalPlaces: Boolean
-): String {
-
-    var chars = ""
-    // retrieves only numbers in numString
-    for (i: Char in numString) {
-        if (i.isDigit()) chars += i
+    val maxLength = when(tranVM.setVals.decimalPlaces) {
+        true -> integerResource(R.integer.maxLengthTotal)
+        false -> integerResource(R.integer.maxLengthTotalNoDecimal)
     }
 
-    return when {
-        // doesn't allow string to be empty
-        decimalPlaces && chars == "" -> "0.00"
-        // divides numbers by 100 in order to easily get decimal places
-        decimalPlaces -> BigDecimal(chars)
-            .divide(BigDecimal(100), 2, RoundingMode.HALF_UP).toString()
-        // doesn't allow string to be empty
-        chars == "" -> "0"
-        // returns just a string of numbers
-        else -> chars
+    Column(modifier = modifier.padding(horizontal = 12.dp)) {
+        OutlinedTextField(
+            value = textFieldValue,
+            onValueChange = {
+                tranVM.updateTotalFieldValue(it.text)
+            },
+            modifier = Modifier
+                .fillMaxWidth(),
+            label = { Text(stringResource(R.string.transaction_total)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
+        Text(
+            text = "${textFieldValue.text.length}/$maxLength",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 4.dp, end = 16.dp),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.caption
+        )
     }
 }
 
@@ -494,7 +435,7 @@ fun TransactionRepeating(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TransactionDropDownMenu(TransactionDropMenus.PERIOD, tranVM, Modifier.weight(1f).padding(start = 12.dp, end = 4.dp))
-                TransactionTextInput(TransactionTextFields.FREQUENCY, tranVM, Modifier.weight(1f).padding(start = 4.dp, end = 12.dp))
+                TransactionTextField(TransactionTextFields.FREQUENCY, tranVM, Modifier.weight(1f).padding(start = 4.dp, end = 12.dp))
             }
         }
     }

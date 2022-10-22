@@ -58,8 +58,14 @@ class TransactionViewModel @Inject constructor(
 
     private val _totalFieldValue = MutableStateFlow(TextFieldValue())
     val totalFieldValue: StateFlow<TextFieldValue> get() = _totalFieldValue
-    fun updateTotalFieldValue(newText: String, newSelection: TextRange) {
-        _totalFieldValue.value = TextFieldValue(newText, newSelection)
+    fun updateTotalFieldValue(newValue: String) {
+        
+        val removedSymbols = removeSymbols(newValue)
+        val formattedTotal = when (setVals.decimalPlaces) {
+            true -> formatDecimal(BigDecimal(removedSymbols))
+            false -> formatInteger(BigDecimal(removedSymbols))
+        }
+        _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
 
     // false = "Expense", true = "Income"
@@ -144,26 +150,13 @@ class TransactionViewModel @Inject constructor(
         updateAccount(transaction.account)
         // BigDecimal to String
         total.value = when {
-            setVals.decimalPlaces && transaction.total > BigDecimal.ZERO -> formatDecimal(
-                transaction.total, setVals.thousandsSymbol, setVals.decimalSymbol
-            )
+            setVals.decimalPlaces && transaction.total > BigDecimal.ZERO ->
+                formatDecimal(transaction.total)
             setVals.decimalPlaces -> "0${setVals.decimalSymbol}00"
-            transaction.total > BigDecimal.ZERO -> formatInteger(
-                transaction.total, setVals.thousandsSymbol
-            )
+            transaction.total > BigDecimal.ZERO -> formatInteger(transaction.total)
             else -> "0"
         }
-        val formattedTotal = when {
-            setVals.decimalPlaces && transaction.total > BigDecimal.ZERO -> formatDecimal(
-                transaction.total, setVals.thousandsSymbol, setVals.decimalSymbol
-            )
-            setVals.decimalPlaces -> "0${setVals.decimalSymbol}00"
-            transaction.total > BigDecimal.ZERO -> formatInteger(
-                transaction.total, setVals.thousandsSymbol
-            )
-            else -> "0"
-        }
-        updateTotalFieldValue(formattedTotal, TextRange(formattedTotal.length))
+        updateTotalFieldValue(transaction.total.toString())
         if (transaction.type == "Expense") {
             updateTypeSelected(false)
             updateExpenseCat(transaction.category)
@@ -310,13 +303,32 @@ class TransactionViewModel @Inject constructor(
         return calendar.time
     }
 
+    private fun removeSymbols(numString: String): String {
+
+        var chars = ""
+        // retrieves only numbers in numString
+        for (c: Char in numString) { if (c.isDigit()) chars += c }
+
+        return when {
+            // doesn't allow string to be empty
+            setVals.decimalPlaces && chars.isBlank() -> "0.00"
+            // divides numbers by 100 in order to easily get decimal places
+            setVals.decimalPlaces -> BigDecimal(chars)
+                .divide(BigDecimal(100), 2, RoundingMode.HALF_UP).toString()
+            // doesn't allow string to be empty
+            chars.isBlank() -> "0"
+            // returns just a string of numbers
+            else -> chars
+        }
+    }
+
     /**
-     *  Returns formatted [num] using [thousands] symbol.
+     *  Returns formatted [num] in integer form.
      */
-    private fun formatInteger(num: BigDecimal, thousands: Char): String {
+    private fun formatInteger(num: BigDecimal): String {
 
         val customSymbols = DecimalFormatSymbols(Locale.US)
-        customSymbols.groupingSeparator = thousands
+        customSymbols.groupingSeparator = setVals.thousandsSymbol
         // every three numbers, a thousands symbol will be added
         val formatter = DecimalFormat("#,###", customSymbols)
         formatter.roundingMode = RoundingMode.HALF_UP
@@ -324,13 +336,13 @@ class TransactionViewModel @Inject constructor(
     }
 
     /**
-     *  Returns formatted [num] using [thousands] and [decimal] symbols.
+     *  Returns formatted [num] in decimal form.
      */
-    private fun formatDecimal(num: BigDecimal, thousands: Char, decimal: Char): String {
+    private fun formatDecimal(num: BigDecimal): String {
 
         val customSymbols = DecimalFormatSymbols(Locale.US)
-        customSymbols.groupingSeparator = thousands
-        customSymbols.decimalSeparator = decimal
+        customSymbols.groupingSeparator = setVals.thousandsSymbol
+        customSymbols.decimalSeparator = setVals.decimalSymbol
         // every three numbers, a thousands symbol will be added
         val formatter = DecimalFormat("#,##0.00", customSymbols)
         formatter.roundingMode = RoundingMode.HALF_UP
