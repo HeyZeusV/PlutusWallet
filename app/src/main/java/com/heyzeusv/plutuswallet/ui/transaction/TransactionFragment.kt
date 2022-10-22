@@ -59,7 +59,6 @@ class TransactionFragment : BaseFragment() {
             getString(R.string.period_months), getString(R.string.period_years)
         )
 
-        tranVM.setVals = setVals
         tranVM.prepareLists(getString(R.string.account_create), getString(R.string.category_create))
     }
 

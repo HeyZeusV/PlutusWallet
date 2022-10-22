@@ -35,7 +35,8 @@ import kotlinx.coroutines.flow.StateFlow
  */
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val tranRepo: Repository
+    private val tranRepo: Repository,
+    val setVals: SettingsValues
 ) : ViewModel() {
 
     // stores ID of Transaction displayed.
@@ -94,9 +95,6 @@ class TransactionViewModel @Inject constructor(
 
     private val _selectDateEvent = MutableLiveData<Event<Date>>()
     val selectDateEvent: LiveData<Event<Date>> = _selectDateEvent
-
-    // SettingsValues will be retrieved from Fragment
-    var setVals: SettingsValues = SettingsValues()
 
     private var maxId: Int = 0
 

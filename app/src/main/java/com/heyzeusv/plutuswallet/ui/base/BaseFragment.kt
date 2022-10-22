@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
-import com.heyzeusv.plutuswallet.util.SettingsUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +30,7 @@ abstract class BaseFragment : Fragment(), CoroutineScope {
     // SharedPreferences
     @Inject protected lateinit var sharedPref: SharedPreferences
 
-    protected var setVals: SettingsValues = SettingsValues()
+    @Inject protected lateinit var setVals: SettingsValues
 
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
@@ -41,8 +40,6 @@ abstract class BaseFragment : Fragment(), CoroutineScope {
         super.onCreate(savedInstanceState)
 
         job = Job()
-
-        setVals = SettingsUtils.prepareSettingValues(sharedPref)
     }
 
     override fun onDestroy() {
