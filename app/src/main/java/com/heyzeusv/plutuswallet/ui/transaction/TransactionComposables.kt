@@ -366,10 +366,10 @@ fun TransactionCategories(
     }
 }
 
-enum class TransactionChips(val labelId: Int) {
-    EXPENSE(R.string.type_expense),
-    INCOME(R.string.type_income),
-    REPEAT(R.string.transaction_repeat)
+enum class TransactionChips(val labelId: Int, val icon: Boolean) {
+    EXPENSE(R.string.type_expense, false),
+    INCOME(R.string.type_income, false),
+    REPEAT(R.string.transaction_repeat, true)
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class)
@@ -383,6 +383,7 @@ fun TransactionChip(
         TransactionChips.EXPENSE, TransactionChips.INCOME -> tranVM.typeSelected.collectAsState()
         TransactionChips.REPEAT -> tranVM.repeat.collectAsState()
     }
+
     FilterChip(
         selected = when(chip) {
             TransactionChips.EXPENSE -> !selected
@@ -413,10 +414,22 @@ fun TransactionChip(
             backgroundColor = Color.White,
             selectedBackgroundColor = Color.White
         ),
+        trailingIcon = {
+            if (chip.icon) {
+                Icon(
+                    imageVector = if (selected) {
+                        Icons.Filled.KeyboardArrowUp
+                    } else {
+                        Icons.Filled.KeyboardArrowDown
+                    },
+                    contentDescription = "content"
+                )
+            }
+        },
         content = {
             Text(
                 text = stringResource(chip.labelId).uppercase(),
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1f),
                 color = when {
                     (chip == TransactionChips.INCOME || chip == TransactionChips.REPEAT) && selected -> {
                         MaterialTheme.colors.secondary
