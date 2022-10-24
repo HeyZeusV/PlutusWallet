@@ -12,7 +12,10 @@ import android.widget.AdapterView
 import android.widget.AutoCompleteTextView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -37,7 +40,7 @@ import java.util.Date
 class TransactionFragment : BaseFragment() {
 
     // DataBinding
-    private lateinit var binding: FragmentTransactionBinding
+//    private lateinit var binding: FragmentTransactionBinding
 
     // provides instance of ViewModel
     private val tranVM: TransactionViewModel by viewModels()
@@ -48,19 +51,23 @@ class TransactionFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // pass argument to ViewModel
-        tranVM.newTran = args.newTran
+        tranVM.apply {
+            // pass argument to ViewModel
+            newTran = args.newTran
 
-        // retrieves Transaction if exists
-        tranVM.loadTransaction(args.tranId)
+            // retrieves Transaction if exists
+            loadTransaction(args.tranId)
 
-        // array used by PeriodSpinner
-        tranVM.periodArray.value = listOf(
-            getString(R.string.period_days), getString(R.string.period_weeks),
-            getString(R.string.period_months), getString(R.string.period_years)
-        )
+            emptyTitle = getString((R.string.transaction_empty_title))
 
-        tranVM.prepareLists(getString(R.string.account_create), getString(R.string.category_create))
+            // array used by PeriodSpinner
+            periodArray.value = listOf(
+                getString(R.string.period_days), getString(R.string.period_weeks),
+                getString(R.string.period_months), getString(R.string.period_years)
+            )
+
+            prepareLists(getString(R.string.account_create), getString(R.string.category_create))
+        }
     }
 
     @SuppressLint("RtlHardcoded")
@@ -70,33 +77,51 @@ class TransactionFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        // setting up DataBinding
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction, container, false)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.tranVM = tranVM
-
-        binding.composeView.apply {
+        return ComposeView(requireContext()).apply {
             // Dispose the Composition when the view's LifecycleOwner
             // is destroyed
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
             setContent {
-                PlutusWalletTheme {
-                    Column {
-                        TransactionTextField(TransactionTextFields.TITLE, tranVM, Modifier.padding(horizontal = 12.dp))
-                        TransactionDate(tranVM)
-                        TransactionDropDownMenu(TransactionDropMenus.ACCOUNT, tranVM, Modifier.padding(horizontal = 12.dp))
-                        TransactionCurrencyInput(tranVM)
-                        TransactionCategories(tranVM)
-                        TransactionTextField(TransactionTextFields.MEMO, tranVM, Modifier.padding(horizontal = 12.dp))
-                        TransactionRepeating(tranVM)
-                    }
+                Surface(
+                    color = MaterialTheme.colors.background
+                ) {
+                    TransactionCompose(
+                        tranVM = tranVM,
+                        onBackPressed = { requireActivity().onBackPressed() }
+                    )
                 }
             }
         }
 
-        return binding.root
+//        // setting up DataBinding
+//        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction, container, false)
+//        binding.lifecycleOwner = viewLifecycleOwner
+//        binding.tranVM = tranVM
+//
+//        binding.composeView.apply {
+//            // Dispose the Composition when the view's LifecycleOwner
+//            // is destroyed
+//            setViewCompositionStrategy(
+//                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+//            )
+//            setContent {
+//                PlutusWalletTheme {
+//                    Column {
+//                        TransactionTextField(TransactionTextFields.TITLE, tranVM, Modifier.padding(horizontal = 12.dp))
+//                        TransactionDate(tranVM)
+//                        TransactionDropDownMenu(TransactionDropMenus.ACCOUNT, tranVM, Modifier.padding(horizontal = 12.dp))
+//                        TransactionCurrencyInput(tranVM)
+//                        TransactionCategories(tranVM)
+//                        TransactionTextField(TransactionTextFields.MEMO, tranVM, Modifier.padding(horizontal = 12.dp))
+//                        TransactionRepeating(tranVM)
+//                    }
+//                }
+//            }
+//        }
+//
+//        return binding.root
     }
 
     @ExperimentalStdlibApi
@@ -110,115 +135,115 @@ class TransactionFragment : BaseFragment() {
                 tranVM.tranLD.value = Transaction()
             } else {
                 tranVM.setTranData(transaction)
-                binding.tranAccount.setText(transaction.account, false)
-                if (transaction.type == "Expense") {
-                    binding.tranExpenseCat.setText(transaction.category, false)
-                } else {
-                    binding.tranIncomeCat.setText(transaction.category, false)
-                }
-                if (tranVM.repeatLD.value!!) binding.tranRepeatMotion.transitionToEnd()
-                binding.tranPeriod.setText(tranVM.period.value, false)
+//                binding.tranAccount.setText(transaction.account, false)
+//                if (transaction.type == "Expense") {
+//                    binding.tranExpenseCat.setText(transaction.category, false)
+//                } else {
+//                    binding.tranIncomeCat.setText(transaction.category, false)
+//                }
+//                if (tranVM.repeatLD.value!!) binding.tranRepeatMotion.transitionToEnd()
+//                binding.tranPeriod.setText(tranVM.period.value, false)
             }
         }
 
-        binding.tranDate.setOnFocusChangeListener { _, focused: Boolean ->
-            if (focused) {
-                tranVM.selectDateOC(tranVM.tranLD.value!!.date)
-            }
-        }
+//        binding.tranDate.setOnFocusChangeListener { _, focused: Boolean ->
+//            if (focused) {
+//                tranVM.selectDateOC(tranVM.tranLD.value!!.date)
+//            }
+//        }
 
-        binding.tranAccount.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
-            val selected: String = adapterView.adapter.getItem(i).toString()
-            if (selected == getString(R.string.account_create)) {
-                val alertDialogView: View = createAlertDialogView()
-                AlertDialogCreator.alertDialogInput(
-                    requireContext(), alertDialogView, selected,
-                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
-                    getString(R.string.account_create),
-                    createDialogListeners(binding.tranAccount, tranVM.account.value), tranVM::insertAccount,
-                    null, null, null, null, null
-                )
-            } else {
-                tranVM.updateAccount(selected)
-            }
-        }
+//        binding.tranAccount.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+//            val selected: String = adapterView.adapter.getItem(i).toString()
+//            if (selected == getString(R.string.account_create)) {
+//                val alertDialogView: View = createAlertDialogView()
+//                AlertDialogCreator.alertDialogInput(
+//                    requireContext(), alertDialogView, selected,
+//                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+//                    getString(R.string.account_create),
+//                    createDialogListeners(binding.tranAccount, tranVM.account.value), tranVM::insertAccount,
+//                    null, null, null, null, null
+//                )
+//            } else {
+//                tranVM.updateAccount(selected)
+//            }
+//        }
 
-        binding.tranExpenseCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
-            val selected: String = adapterView.adapter.getItem(i).toString()
-            if (selected == getString(R.string.category_create)) {
-                val alertDialogView: View = createAlertDialogView()
-                AlertDialogCreator.alertDialogInput(
-                    requireContext(), alertDialogView, selected,
-                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
-                    getString(R.string.category_create),
-                    createDialogListeners(binding.tranExpenseCat, tranVM.expenseCat.value),
-                    tranVM::insertCategory, null, null, null, null, null
-                )
-            } else {
-                tranVM.updateExpenseCat(selected)
-            }
-        }
+//        binding.tranExpenseCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+//            val selected: String = adapterView.adapter.getItem(i).toString()
+//            if (selected == getString(R.string.category_create)) {
+//                val alertDialogView: View = createAlertDialogView()
+//                AlertDialogCreator.alertDialogInput(
+//                    requireContext(), alertDialogView, selected,
+//                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+//                    getString(R.string.category_create),
+//                    createDialogListeners(binding.tranExpenseCat, tranVM.expenseCat.value),
+//                    tranVM::insertCategory, null, null, null, null, null
+//                )
+//            } else {
+//                tranVM.updateExpenseCat(selected)
+//            }
+//        }
 
-        binding.tranIncomeCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
-            val selected: String = adapterView.adapter.getItem(i).toString()
-            if (selected == getString(R.string.category_create)) {
-                val alertDialogView: View = createAlertDialogView()
-                AlertDialogCreator.alertDialogInput(
-                    requireContext(), alertDialogView, selected,
-                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
-                    getString(R.string.category_create),
-                    createDialogListeners(binding.tranIncomeCat, tranVM.incomeCat.value),
-                    tranVM::insertCategory, null, null, null, null, null
-                )
-            } else {
-                tranVM.updateIncomeCat(selected)
-            }
-        }
+//        binding.tranIncomeCat.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+//            val selected: String = adapterView.adapter.getItem(i).toString()
+//            if (selected == getString(R.string.category_create)) {
+//                val alertDialogView: View = createAlertDialogView()
+//                AlertDialogCreator.alertDialogInput(
+//                    requireContext(), alertDialogView, selected,
+//                    getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
+//                    getString(R.string.category_create),
+//                    createDialogListeners(binding.tranIncomeCat, tranVM.incomeCat.value),
+//                    tranVM::insertCategory, null, null, null, null, null
+//                )
+//            } else {
+//                tranVM.updateIncomeCat(selected)
+//            }
+//        }
 
-        binding.tranRepeat.setOnClickListener {
-            tranVM.repeatLD.value = !tranVM.repeatLD.value!!
-            if (tranVM.repeatLD.value!!) {
-                binding.tranRepeatMotion.transitionToEnd()
-                // after a short delay, scrolls to the bottom of ScrollView
-                binding.tranScrollView.postDelayed({
-                    binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
-                }, 450)
-            } else {
-                binding.tranRepeatMotion.transitionToStart()
-            }
-        }
+//        binding.tranRepeat.setOnClickListener {
+//            tranVM.repeatLD.value = !tranVM.repeatLD.value!!
+//            if (tranVM.repeatLD.value!!) {
+//                binding.tranRepeatMotion.transitionToEnd()
+//                // after a short delay, scrolls to the bottom of ScrollView
+//                binding.tranScrollView.postDelayed({
+//                    binding.tranScrollView.smoothScrollTo(0, binding.tranScrollView.bottom)
+//                }, 450)
+//            } else {
+//                binding.tranRepeatMotion.transitionToStart()
+//            }
+//        }
+//
+//        binding.tranPeriod.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
+//            tranVM.updatePeriod(adapterView.adapter.getItem(i).toString())
+//        }
 
-        binding.tranPeriod.setOnItemClickListener { adapterView: AdapterView<*>, _, i: Int, _ ->
-            tranVM.updatePeriod(adapterView.adapter.getItem(i).toString())
-        }
-
-        tranVM.createEvent.observe(viewLifecycleOwner, EventObserver { info: Pair<Int, String> ->
-            when (info.first) {
-                0 -> binding.tranAccount.setText(info.second, false)
-                1 -> binding.tranExpenseCat.setText(info.second, false)
-                2 -> binding.tranIncomeCat.setText(info.second, false)
-            }
-        })
+//        tranVM.createEvent.observe(viewLifecycleOwner, EventObserver { info: Pair<Int, String> ->
+//            when (info.first) {
+//                0 -> binding.tranAccount.setText(info.second, false)
+//                1 -> binding.tranExpenseCat.setText(info.second, false)
+//                2 -> binding.tranIncomeCat.setText(info.second, false)
+//            }
+//        })
 
         tranVM.futureTranEvent.observe(viewLifecycleOwner, EventObserver { tran: Transaction ->
             futureTranDialog(tran, tranVM::futureTranPosFun, tranVM::futureTranNegFun)
         })
 
-        tranVM.saveTranEvent.observe(viewLifecycleOwner, EventObserver {
-            // Snackbar alerting user that Transaction has been saved.
-            val savedBar: Snackbar = Snackbar.make(
-                binding.root, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT
-            )
-            savedBar.anchorView = binding.tranAnchor
-            savedBar.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSnackbarText))
-            savedBar.show()
-        })
+//        tranVM.saveTranEvent.observe(viewLifecycleOwner, EventObserver {
+//            // Snackbar alerting user that Transaction has been saved.
+//            val savedBar: Snackbar = Snackbar.make(
+//                binding.root, getString(R.string.snackbar_saved), Snackbar.LENGTH_SHORT
+//            )
+//            savedBar.anchorView = binding.tranAnchor
+//            savedBar.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSnackbarText))
+//            savedBar.show()
+//        })
 
-        tranVM.selectDateEvent.observe(viewLifecycleOwner, EventObserver { date: Date ->
-            val dateDialog: DatePickerDialog =
-                DateUtils.datePickerDialog(binding.root, date, tranVM::onDateSelected)
-            dateDialog.show()
-        })
+//        tranVM.selectDateEvent.observe(viewLifecycleOwner, EventObserver { date: Date ->
+//            val dateDialog: DatePickerDialog =
+//                DateUtils.datePickerDialog(binding.root, date, tranVM::onDateSelected)
+//            dateDialog.show()
+//        })
     }
 
     @SuppressLint("SetTextI18n")
@@ -226,17 +251,17 @@ class TransactionFragment : BaseFragment() {
     override fun onStart() {
         super.onStart()
 
-        // navigates user back to CFLFragment
-        binding.tranTopBar.setNavigationOnClickListener { requireActivity().onBackPressed() }
-
-        binding.tranTopBar.setOnMenuItemClickListener { item: MenuItem ->
-            if (item.itemId == R.id.transaction_save) {
-                tranVM.saveTransaction(getString(R.string.transaction_empty_title))
-                true
-            } else {
-                false
-            }
-        }
+//        // navigates user back to CFLFragment
+//        binding.tranTopBar.setNavigationOnClickListener { requireActivity().onBackPressed() }
+//
+//        binding.tranTopBar.setOnMenuItemClickListener { item: MenuItem ->
+//            if (item.itemId == R.id.transaction_save) {
+//                tranVM.saveTransaction()
+//                true
+//            } else {
+//                false
+//            }
+//        }
     }
 
     /**

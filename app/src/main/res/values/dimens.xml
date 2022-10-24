@@ -10,6 +10,8 @@
     <dimen name="buttonIconPadding">-24dp</dimen>
 
     <!-- CardView dimensions -->
+    <dimen name="cardFullPadding">8dp</dimen>
+    <dimen name="cardElevation">8dp</dimen>
     <dimen name="cardCornerRadius">4dp</dimen>
     <dimen name="cardFullMargin">4dp</dimen>
     <dimen name="cardSharedMargin">1dp</dimen>

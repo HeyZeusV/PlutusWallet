@@ -86,6 +86,8 @@ class TransactionViewModel @Inject constructor(
         showDialog.value = newValue
     }
 
+    var emptyTitle = ""
+
     // Lists used by Spinners
     val accountList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     val expenseCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
@@ -182,9 +184,8 @@ class TransactionViewModel @Inject constructor(
     /**
      *  Reassigns LiveData values that couldn't be assigned directly
      *  from Transaction using DataBinding back to Transaction and saves or updates it.
-     *  [emptyTitle] is translated string to be used when user does not enter a title.
      */
-    fun saveTransaction(emptyTitle: String) {
+    fun saveTransaction() {
 
         tranLD.value!!.let { tran: Transaction ->
             // assigns new id if new Transaction

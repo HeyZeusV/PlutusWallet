@@ -52,7 +52,8 @@ val LightColors = lightColors(
     onPrimary = Color.Black,
     secondary = LightGreen900,
     background = Purple900Light,
-    error = ErrorLight
+    error = ErrorLight,
+    onBackground = Color.White
 )
 
 val DarkColors = darkColors(
