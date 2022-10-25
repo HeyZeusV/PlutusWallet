@@ -63,6 +63,9 @@
     <dimen name="tranButtonToLayoutMargin">4dp</dimen>
     <dimen name="tranLayoutToButtonMargin">19dp</dimen>
     <dimen name="tranButtonHeight">70dp</dimen>
+    <dimen name="textFToTextFWHelperTopPadding">4dp</dimen>
+    <dimen name="textFToViewTopPadding">24dp</dimen>
+    <dimen name="chipToTextFWHelperTopPadding">12dp</dimen>
 
     <!-- TransactionListFragment -->
     <dimen name="tranListMarginOuterStartEndTop">8dp</dimen>

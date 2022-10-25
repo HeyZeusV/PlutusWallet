@@ -3,7 +3,6 @@ package com.heyzeusv.plutuswallet.ui.transaction
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -92,39 +91,64 @@ fun TransactionCompose(
                 color = MaterialTheme.colors.onBackground,
                 elevation = dimensionResource((R.dimen.cardElevation))
             ) {
-                LazyColumn {
+                LazyColumn(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                ) {
                     item {
                         TransactionTextField(
-                            TransactionTextFields.TITLE,
-                            tranVM,
-                            Modifier.padding(horizontal = 12.dp)
+                            textField = TransactionTextFields.TITLE,
+                            tranVM = tranVM
                         )
                     }
                     item {
-                        TransactionDate(tranVM)
+                        TransactionDate(
+                            tranVM = tranVM,
+                            modifier = Modifier.padding(
+                                top = dimensionResource(R.dimen.textFToTextFWHelperTopPadding)
+                            )
+                        )
                     }
                     item {
                         TransactionDropDownMenu(
-                            TransactionDropMenus.ACCOUNT,
-                            tranVM,
-                            Modifier.padding(horizontal = 12.dp)
+                            type = TransactionDropMenus.ACCOUNT,
+                            tranVM = tranVM,
+                            modifier = Modifier.padding(
+                                top = dimensionResource(R.dimen.textFToViewTopPadding)
+                            )
                         )
                     }
                     item {
-                        TransactionCurrencyInput(tranVM)
+                        TransactionCurrencyInput(
+                            tranVM = tranVM,
+                            modifier = Modifier.padding(
+                                top = dimensionResource(R.dimen.textFToViewTopPadding)
+                            )
+                        )
                     }
                     item {
-                        TransactionCategories(tranVM)
+                        TransactionCategories(
+                            tranVM = tranVM,
+                            modifier = Modifier.padding(
+                                top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                            )
+                        )
                     }
                     item {
                         TransactionTextField(
-                            TransactionTextFields.MEMO,
-                            tranVM,
-                            Modifier.padding(horizontal = 12.dp)
+                            textField = TransactionTextFields.MEMO,
+                            tranVM = tranVM,
+                            modifier = Modifier.padding(
+                                top = dimensionResource(R.dimen.textFToViewTopPadding)
+                            )
                         )
                     }
                     item {
-                        TransactionRepeating(tranVM)
+                        TransactionRepeating(
+                            tranVM = tranVM,
+                            modifier = Modifier.padding(
+                                top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                            )
+                        )
                     }
                 }
             }
@@ -189,7 +213,7 @@ fun TransactionTextField(
             value = value,
             onValueChange = {
                 if (it.length <= textField.length) {
-                    when(textField) {
+                    when (textField) {
                         TransactionTextFields.TITLE -> tranVM.updateTitle(it)
                         TransactionTextFields.MEMO -> tranVM.updateMemo(it)
                         TransactionTextFields.FREQUENCY -> tranVM.updateFrequency(it)
@@ -212,7 +236,8 @@ fun TransactionTextField(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 4.dp, end = 16.dp),
+                .padding(start = 16.dp, top = 4.dp, end = 16.dp)
+                .height(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
@@ -240,9 +265,7 @@ fun TransactionDate(
         OutlinedTextField(
             value = date!!,
             onValueChange = { },
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
+            modifier = modifier.fillMaxWidth(),
             readOnly = true,
             label = { Text(text = stringResource(R.string.transaction_date)) },
             interactionSource = source,
@@ -317,7 +340,11 @@ fun TransactionDropDownMenu(
                             Icons.Filled.KeyboardArrowDown
                         },
                         contentDescription = "content",
-                        modifier = Modifier.clickable { expanded = !expanded }
+                        tint = if (expanded) {
+                            MaterialTheme.colors.secondary
+                        } else {
+                            colorResource(R.color.colorButtonUnselected)
+                        }
                     )
                 },
                 interactionSource = source,
@@ -430,14 +457,13 @@ fun TransactionCurrencyInput(
         false -> integerResource(R.integer.maxLengthTotalNoDecimal)
     }
 
-    Column(modifier = modifier.padding(horizontal = 12.dp)) {
+    Column(modifier = modifier) {
         OutlinedTextField(
             value = textFieldValue,
             onValueChange = {
                 tranVM.updateTotalFieldValue(it.text)
             },
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.transaction_total)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -449,7 +475,8 @@ fun TransactionCurrencyInput(
             text = "${textFieldValue.text.length}/$maxLength",
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 4.dp, end = 16.dp),
+                .padding(start = 16.dp, top = 4.dp, end = 16.dp)
+                .height(16.dp),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.caption
         )
@@ -463,13 +490,9 @@ fun TransactionCategories(
 ) {
     val typeSelected by tranVM.typeSelected.collectAsState()
 
-    Column(
-        modifier = modifier
-    ) {
+    Column(modifier = modifier) {
         Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 8.dp,
                 alignment = Alignment.CenterHorizontally
@@ -477,20 +500,22 @@ fun TransactionCategories(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TransactionChip(
-                TransactionChips.EXPENSE,
-                tranVM,
-                modifier.weight(1f)
+                chip = TransactionChips.EXPENSE,
+                tranVM = tranVM,
+                modifier = Modifier.weight(1f)
             )
             TransactionChip(
-                TransactionChips.INCOME,
-                tranVM,
-                modifier.weight(1f)
+                chip = TransactionChips.INCOME,
+                tranVM = tranVM,
+                modifier = Modifier.weight(1f)
             )
         }
         TransactionDropDownMenu(
             type = if (typeSelected) TransactionDropMenus.INCOME else TransactionDropMenus.EXPENSE,
             tranVM = tranVM,
-            modifier = Modifier.padding(horizontal = 12.dp)
+            modifier = Modifier.padding(
+                top = dimensionResource(R.dimen.textFToViewTopPadding)
+            )
         )
     }
 }
@@ -528,7 +553,7 @@ fun TransactionChip(
         },
         modifier = modifier
             .fillMaxWidth()
-            .height(64.dp),
+            .height(56.dp),
         shape = RoundedCornerShape(4.dp),
         border = BorderStroke(
             width = 2.dp,
@@ -552,7 +577,12 @@ fun TransactionChip(
                     } else {
                         Icons.Filled.KeyboardArrowDown
                     },
-                    contentDescription = "content"
+                    contentDescription = "content",
+                    tint = if (selected) {
+                        MaterialTheme.colors.secondary
+                    } else {
+                         colorResource(R.color.colorButtonUnselected)
+                    }
                 )
             }
         },
@@ -580,27 +610,30 @@ fun TransactionChip(
 
 @Composable
 fun TransactionRepeating(
-    tranVM: TransactionViewModel
+    tranVM: TransactionViewModel,
+    modifier: Modifier = Modifier
 ) {
     val visible by tranVM.repeat.collectAsState()
 
-    Column {
-        TransactionChip(TransactionChips.REPEAT, tranVM, Modifier.padding(horizontal = 12.dp))
-        AnimatedVisibility(
-            visible = visible
-        ) {
+    Column(modifier = modifier) {
+        TransactionChip(TransactionChips.REPEAT, tranVM)
+        AnimatedVisibility(visible = visible) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = dimensionResource(R.dimen.textFToViewTopPadding)
+                    ),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TransactionDropDownMenu(TransactionDropMenus.PERIOD, tranVM,
                     Modifier
                         .weight(1f)
-                        .padding(start = 12.dp, end = 4.dp))
+                        .padding(end = 4.dp))
                 TransactionTextField(TransactionTextFields.FREQUENCY, tranVM,
                     Modifier
                         .weight(1f)
-                        .padding(start = 4.dp, end = 12.dp))
+                        .padding(start = 4.dp))
             }
         }
     }
