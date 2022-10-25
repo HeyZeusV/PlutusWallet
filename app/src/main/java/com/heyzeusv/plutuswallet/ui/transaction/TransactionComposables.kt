@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet.ui.transaction
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -13,10 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.DisableSelection
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.DropdownMenu
@@ -45,9 +49,14 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -66,6 +75,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -91,65 +101,56 @@ fun TransactionCompose(
                 color = MaterialTheme.colors.onBackground,
                 elevation = dimensionResource((R.dimen.cardElevation))
             ) {
-                LazyColumn(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    item {
-                        TransactionTextField(
-                            textField = TransactionTextFields.TITLE,
-                            tranVM = tranVM
+                    TransactionTextField(
+                        textField = TransactionTextFields.TITLE,
+                        tranVM = tranVM,
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.textFToParentTopPadding)
                         )
-                    }
-                    item {
-                        TransactionDate(
-                            tranVM = tranVM,
-                            modifier = Modifier.padding(
-                                top = dimensionResource(R.dimen.textFToTextFWHelperTopPadding)
-                            )
+                    )
+                    TransactionDate(
+                        tranVM = tranVM,
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.textFToTextFWHelperTopPadding)
                         )
-                    }
-                    item {
-                        TransactionDropDownMenu(
-                            type = TransactionDropMenus.ACCOUNT,
-                            tranVM = tranVM,
-                            modifier = Modifier.padding(
-                                top = dimensionResource(R.dimen.textFToViewTopPadding)
-                            )
+                    )
+                    TransactionDropDownMenu(
+                        type = TransactionDropMenus.ACCOUNT,
+                        tranVM = tranVM,
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.textFToViewTopPadding)
                         )
-                    }
-                    item {
-                        TransactionCurrencyInput(
-                            tranVM = tranVM,
-                            modifier = Modifier.padding(
-                                top = dimensionResource(R.dimen.textFToViewTopPadding)
-                            )
+                    )
+                    TransactionCurrencyInput(
+                        tranVM = tranVM,
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.textFToViewTopPadding)
                         )
-                    }
-                    item {
-                        TransactionCategories(
-                            tranVM = tranVM,
-                            modifier = Modifier.padding(
-                                top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
-                            )
+                    )
+                    TransactionCategories(
+                        tranVM = tranVM,
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
                         )
-                    }
-                    item {
-                        TransactionTextField(
-                            textField = TransactionTextFields.MEMO,
-                            tranVM = tranVM,
-                            modifier = Modifier.padding(
-                                top = dimensionResource(R.dimen.textFToViewTopPadding)
-                            )
+                    )
+                    TransactionTextField(
+                        textField = TransactionTextFields.MEMO,
+                        tranVM = tranVM,
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.textFToViewTopPadding)
                         )
-                    }
-                    item {
-                        TransactionRepeating(
-                            tranVM = tranVM,
-                            modifier = Modifier.padding(
-                                top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
-                            )
+                    )
+                    TransactionRepeating(
+                        tranVM = tranVM,
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
                         )
-                    }
+                    )
                 }
             }
         }
@@ -200,6 +201,7 @@ fun TransactionTextField(
     textField: TransactionTextFields,
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier,
+    textFieldModifier: Modifier = Modifier
 ) {
 
     val value by when(textField) {
@@ -220,7 +222,7 @@ fun TransactionTextField(
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = textFieldModifier.fillMaxWidth(),
             label = { Text(stringResource(textField.labelId)) },
             keyboardOptions = if (textField == TransactionTextFields.FREQUENCY) {
                 KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -608,32 +610,61 @@ fun TransactionChip(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionRepeating(
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier
 ) {
     val visible by tranVM.repeat.collectAsState()
+    val scope = rememberCoroutineScope()
+    val bringIntoView = remember { BringIntoViewRequester() }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(key1 = visible) { if (visible) focusRequester.requestFocus() }
+
 
     Column(modifier = modifier) {
-        TransactionChip(TransactionChips.REPEAT, tranVM)
+        TransactionChip(
+            chip = TransactionChips.REPEAT,
+            tranVM = tranVM
+        )
         AnimatedVisibility(visible = visible) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
                         top = dimensionResource(R.dimen.textFToViewTopPadding)
-                    ),
+                    )
+                    .bringIntoViewRequester(bringIntoView),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TransactionDropDownMenu(TransactionDropMenus.PERIOD, tranVM,
-                    Modifier
+                TransactionDropDownMenu(
+                    type = TransactionDropMenus.PERIOD,
+                    tranVM = tranVM,
+                    modifier = Modifier
                         .weight(1f)
-                        .padding(end = 4.dp))
-                TransactionTextField(TransactionTextFields.FREQUENCY, tranVM,
-                    Modifier
+                        .padding(end = 4.dp)
+                )
+                TransactionTextField(
+                    textField = TransactionTextFields.FREQUENCY,
+                    tranVM = tranVM,
+                    modifier = Modifier
                         .weight(1f)
-                        .padding(start = 4.dp))
+                        .padding(
+                            start = 4.dp,
+                            bottom = dimensionResource(R.dimen.textFWHelperToParentBottomPadding)
+                        ),
+                    textFieldModifier = Modifier
+                        .focusRequester(focusRequester)
+                        .onFocusEvent { focusState ->
+                            if (focusState.isFocused) {
+                                scope.launch {
+                                    bringIntoView.bringIntoView()
+                                }
+                            }
+                        }
+                )
             }
         }
     }

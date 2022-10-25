@@ -66,6 +66,8 @@
     <dimen name="textFToTextFWHelperTopPadding">4dp</dimen>
     <dimen name="textFToViewTopPadding">24dp</dimen>
     <dimen name="chipToTextFWHelperTopPadding">12dp</dimen>
+    <dimen name="textFToParentTopPadding">10dp</dimen>
+    <dimen name="textFWHelperToParentBottomPadding">14dp</dimen>
 
     <!-- TransactionListFragment -->
     <dimen name="tranListMarginOuterStartEndTop">8dp</dimen>
