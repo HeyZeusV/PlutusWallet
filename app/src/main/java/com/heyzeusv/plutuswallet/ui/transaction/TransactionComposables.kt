@@ -58,11 +58,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
@@ -76,6 +78,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.util.DateUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -284,14 +287,24 @@ fun TransactionDate(
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier
 ) {
-    val date by tranVM.date.observeAsState()
+    val dateString by tranVM.date.observeAsState()
     val source = remember { MutableInteractionSource() }
+    val selectDate by tranVM.selectDate.collectAsState()
 
     DisableSelection {
+        if (selectDate) {
+            val date = tranVM.tranLD.value!!.date
+            DateUtils.datePickerDialog(LocalView.current, date, tranVM::onDateSelected).show()
+            tranVM.updateSelectDate(false)
+        }
         OutlinedTextField(
-            value = date!!,
+            value = dateString!!,
             onValueChange = { },
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    if (it.isFocused) tranVM.updateSelectDate(true)
+                },
             readOnly = true,
             label = { Text(text = stringResource(R.string.transaction_date)) },
             interactionSource = source,
@@ -302,7 +315,7 @@ fun TransactionDate(
         )
     }
 
-    if (source.collectIsPressedAsState().value) tranVM.selectDateOC(tranVM.tranLD.value!!.date)
+    if (source.collectIsPressedAsState().value) tranVM.updateSelectDate(true)
 }
 
 enum class TransactionDropMenus(val labelId: Int, val createNewId: Int, val alertTitleId: Int) {

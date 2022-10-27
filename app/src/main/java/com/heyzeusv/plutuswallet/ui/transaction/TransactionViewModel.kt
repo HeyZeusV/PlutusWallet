@@ -119,12 +119,13 @@ class TransactionViewModel @Inject constructor(
 
     private val _saveSuccess = MutableStateFlow(false)
     val saveSuccess: StateFlow<Boolean> get() = _saveSuccess
-    fun updateSaveSuccess(newValue: Boolean) {
-        _saveSuccess.value = newValue
-    }
+    fun updateSaveSuccess(newValue: Boolean) { _saveSuccess.value = newValue }
 
-    private val _selectDateEvent = MutableLiveData<Event<Date>>()
-    val selectDateEvent: LiveData<Event<Date>> = _selectDateEvent
+    private val _selectDate = MutableStateFlow(false)
+    val selectDate: StateFlow<Boolean> get() = _selectDate
+    fun updateSelectDate(newValue: Boolean) {
+        _selectDate.value = newValue
+    }
 
     private var maxId: Int = 0
 
@@ -437,14 +438,6 @@ class TransactionViewModel @Inject constructor(
         list.sort()
         list.add(create)
         return list
-    }
-
-    /**
-     *  Event to show DatePickerDialog starting at [date].
-     */
-    fun selectDateOC(date: Date) {
-
-        _selectDateEvent.value = Event(date)
     }
 
     /**

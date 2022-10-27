@@ -89,7 +89,6 @@
                                 android:id="@+id/tran_date"
                                 style="@style/Transaction.TextInputLayout.AutoCompleteTextView"
                                 android:hint="@string/transaction_date"
-                                android:onClick="@{() -> tranVM.selectDateOC(tranVM.tranLD.date)}"
                                 android:text="@{tranVM.date}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
