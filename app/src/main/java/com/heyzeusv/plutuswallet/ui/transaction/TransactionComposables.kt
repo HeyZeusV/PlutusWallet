@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.Surface
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
@@ -49,6 +50,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
@@ -75,6 +77,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -83,12 +86,25 @@ fun TransactionCompose(
     tranVM: TransactionViewModel,
     onBackPressed: () -> Unit
 ) {
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+    val saved = stringResource(R.string.snackbar_saved)
+
     PlutusWalletTheme {
         Scaffold(
+            scaffoldState = scaffoldState,
             topBar = {
                 AppBar(
                     tranVM = tranVM,
-                    onBackPressed = onBackPressed
+                    onBackPressed = onBackPressed,
+                    onSavePressed = {
+                        scope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = saved,
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    }
                 )
             },
             backgroundColor = MaterialTheme.colors.background
@@ -152,6 +168,7 @@ fun TransactionCompose(
                     )
                     TransactionRepeating(
                         tranVM = tranVM,
+                        scope = scope,
                         modifier = Modifier.padding(
                             top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
                         )
@@ -165,7 +182,8 @@ fun TransactionCompose(
 @Composable
 fun AppBar(
     tranVM: TransactionViewModel,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onSavePressed: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -184,7 +202,12 @@ fun AppBar(
             }
         },
         actions = {
-            IconButton(onClick = { tranVM.saveTransaction() }) {
+            IconButton(
+                onClick = {
+                    tranVM.saveTransaction()
+                    onSavePressed()
+                }
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Save,
                     contentDescription = "Save Icon",
@@ -625,10 +648,10 @@ fun TransactionChip(
 @Composable
 fun TransactionRepeating(
     tranVM: TransactionViewModel,
+    scope: CoroutineScope,
     modifier: Modifier = Modifier
 ) {
     val visible by tranVM.repeat.collectAsState()
-    val scope = rememberCoroutineScope()
     val bringIntoView = remember { BringIntoViewRequester() }
     val focusRequester = remember { FocusRequester() }
 
