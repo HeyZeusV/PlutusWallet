@@ -1,7 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +14,6 @@ import androidx.navigation.fragment.navArgs
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.base.BaseFragment
-import com.heyzeusv.plutuswallet.util.AlertDialogCreator
-import com.heyzeusv.plutuswallet.util.EventObserver
 
 /**
  *  Shows all the information in database of one Transaction and allows users to
@@ -91,35 +88,5 @@ class TransactionFragment : BaseFragment() {
                 tranVM.setTranData(transaction)
             }
         }
-
-        tranVM.futureTranEvent.observe(viewLifecycleOwner, EventObserver { tran: Transaction ->
-            futureTranDialog(tran, tranVM::futureTranPosFun, tranVM::futureTranNegFun)
-        })
-    }
-
-    /**
-     *  Creates AlertDialog if user changes [tran] date and [tran] has been repeated before.
-     *  [posFun]/[negFun] are used as the positive and negative button functions.
-     */
-    private fun futureTranDialog(
-        tran: Transaction,
-        posFun: (Transaction) -> Unit,
-        negFun: (Transaction) -> Unit
-    ) {
-
-        val posListener = DialogInterface.OnClickListener { _, _ ->
-            posFun(tran)
-        }
-        val negListener = DialogInterface.OnClickListener { _, _ ->
-            negFun(tran)
-        }
-
-        AlertDialogCreator.alertDialog(
-            requireContext(),
-            getString(R.string.alert_dialog_future_transaction),
-            getString(R.string.alert_dialog_future_transaction_warning),
-            getString(R.string.alert_dialog_yes), posListener,
-            getString(R.string.alert_dialog_no), negListener
-        )
     }
 }

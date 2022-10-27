@@ -88,27 +88,37 @@ fun TransactionCompose(
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
+    val saveSuccess by tranVM.saveSuccess.collectAsState()
     val saved = stringResource(R.string.snackbar_saved)
+    val showFutureDialog by tranVM.showFutureDialog.collectAsState()
+
+    LaunchedEffect(key1 = saveSuccess) {
+        if (saveSuccess) {
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = saved,
+                duration = SnackbarDuration.Short
+            )
+            tranVM.updateSaveSuccess(false)
+        }
+    }
 
     PlutusWalletTheme {
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
                 AppBar(
-                    tranVM = tranVM,
                     onBackPressed = onBackPressed,
-                    onSavePressed = {
-                        scope.launch {
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = saved,
-                                duration = SnackbarDuration.Short
-                            )
-                        }
-                    }
+                    onSavePressed = { tranVM.saveTransaction() }
                 )
             },
             backgroundColor = MaterialTheme.colors.background
         ) {
+            if (showFutureDialog) {
+                FutureAlertDialog(
+                    onConfirm = { tranVM.futureDialogConfirm() },
+                    onDismiss = { tranVM.futureDialogDismiss() }
+                )
+            }
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
@@ -181,7 +191,6 @@ fun TransactionCompose(
 
 @Composable
 fun AppBar(
-    tranVM: TransactionViewModel,
     onBackPressed: () -> Unit,
     onSavePressed: () -> Unit
 ) {
@@ -193,7 +202,7 @@ fun AppBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onBackPressed() }) {
+            IconButton(onClick = onBackPressed) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Go Back",
@@ -202,12 +211,7 @@ fun AppBar(
             }
         },
         actions = {
-            IconButton(
-                onClick = {
-                    tranVM.saveTransaction()
-                    onSavePressed()
-                }
-            ) {
+            IconButton(onClick = onSavePressed) {
                 Icon(
                     imageVector = Icons.Filled.Save,
                     contentDescription = "Save Icon",
@@ -319,7 +323,7 @@ fun TransactionDropDownMenu(
     // used to make sure DropdownMenuItems are the same size as OutlinedTextField
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     val source = remember { MutableInteractionSource() }
-    val showDialog by tranVM.showDialog.collectAsState()
+    val showDialog by tranVM.showInputDialog.collectAsState()
     val typeSelected by tranVM.typeSelected.collectAsState()
 
     val value = when {
@@ -342,7 +346,7 @@ fun TransactionDropDownMenu(
                 expanded = false
                 AlertDialogInput(
                     tranVM = tranVM,
-                    onDismiss = { tranVM.updateShowDialog(false) }
+                    onDismiss = { tranVM.updateInputDialog(false) }
                 )
             }
             OutlinedTextField(
@@ -387,7 +391,7 @@ fun TransactionDropDownMenu(
                     DropdownMenuItem(
                         onClick = {
                             if (index == list!!.size - 1) {
-                                tranVM.updateShowDialog(true)
+                                tranVM.updateInputDialog(true)
                             } else {
                                 when(type) {
                                     TransactionDropMenus.ACCOUNT -> tranVM.updateAccount(name)
@@ -416,7 +420,7 @@ fun AlertDialogInput(
 ) {
     val context = LocalContext.current
     var text by remember { mutableStateOf("") }
-    val showDialog by tranVM.showDialog.collectAsState()
+    val showDialog by tranVM.showInputDialog.collectAsState()
     var isError by remember { mutableStateOf(false) }
 
     if (showDialog) {
@@ -428,7 +432,7 @@ fun AlertDialogInput(
                         if (text.isNotBlank()) {
                             isError = false
                             tranVM.insertAccount(text, context.getString(R.string.account_create))
-                            tranVM.updateShowDialog(false)
+                            tranVM.updateInputDialog(false)
                         } else {
                             isError = true
                         }
@@ -701,4 +705,33 @@ fun TransactionRepeating(
             }
         }
     }
+}
+
+@Composable
+fun FutureAlertDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(text = stringResource(R.string.alert_dialog_yes))
+            }
+        },
+        modifier = modifier,
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.alert_dialog_no))
+            }
+        },
+        title = { Text(text = stringResource(R.string.alert_dialog_future_transaction)) },
+        text = {
+            Text(
+                text = stringResource(R.string.alert_dialog_future_transaction_warning),
+                color = MaterialTheme.colors.onSurface
+            )
+        }
+    )
 }

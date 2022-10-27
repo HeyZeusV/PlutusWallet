@@ -90,10 +90,16 @@ class TransactionViewModel @Inject constructor(
     val repeat: StateFlow<Boolean> get() = _repeat
     fun updateRepeat(newValue: Boolean) { _repeat.value = newValue }
 
-    val showDialog = MutableStateFlow(false)
+    private val _showInputDialog = MutableStateFlow(false)
+    val showInputDialog: StateFlow<Boolean> get() = _showInputDialog
+    fun updateInputDialog(newValue: Boolean) {
+        _showInputDialog.value = newValue
+    }
 
-    fun updateShowDialog(newValue: Boolean) {
-        showDialog.value = newValue
+    private val _showFutureDialog = MutableStateFlow(false)
+    val showFutureDialog: StateFlow<Boolean> get() = _showFutureDialog
+    private fun updateFutureDialog(newValue: Boolean) {
+        _showFutureDialog.value = newValue
     }
 
     var emptyTitle = ""
@@ -111,6 +117,12 @@ class TransactionViewModel @Inject constructor(
     private val _saveTranEvent: MutableLiveData<Event<Boolean>> = MutableLiveData<Event<Boolean>>()
     val saveTranEvent: LiveData<Event<Boolean>> = _saveTranEvent
 
+    private val _saveSuccess = MutableStateFlow(false)
+    val saveSuccess: StateFlow<Boolean> get() = _saveSuccess
+    fun updateSaveSuccess(newValue: Boolean) {
+        _saveSuccess.value = newValue
+    }
+
     private val _selectDateEvent = MutableLiveData<Event<Date>>()
     val selectDateEvent: LiveData<Event<Date>> = _selectDateEvent
 
@@ -125,7 +137,6 @@ class TransactionViewModel @Inject constructor(
     // Int is type: 0 = Account, 1 = Expense, 2 = Income
     // String is name of newly created entity
     private val _createEvent = MutableLiveData<Event<Pair<Int, String>>>()
-    val createEvent: LiveData<Event<Pair<Int, String>>> = _createEvent
 
     private val _title = MutableStateFlow("")
     val title: StateFlow<String> get() = _title
@@ -249,42 +260,47 @@ class TransactionViewModel @Inject constructor(
             // Coroutine that Save/Updates/warns user of FutureDate
             viewModelScope.launch {
                 if (tran.futureTCreated && dateChanged && tran.repeating) {
-                    _futureTranEvent.value = Event(tran)
+                    updateFutureDialog(true)
                 } else {
                     // upsert Transaction
                     tranRepo.upsertTransaction(tran)
                     loadTransaction(tran.id)
-                    _saveTranEvent.value = Event(true)
+                    updateSaveSuccess(true)
                 }
             }
         }
     }
 
     /**
-     *  Positive button function for futureTranDialog.
-     *  Changes [tran] to recreate its future date and updates it in database.
+     *  Confirm button function for futureAlertDialog.
+     *  Transaction will be able to repeat again.
      */
-    fun futureTranPosFun(tran: Transaction) {
-
-        tran.futureTCreated = false
-        viewModelScope.launch {
-            tranRepo.upsertTransaction(tran)
+    fun futureDialogConfirm() {
+        val tran = tranLD.value
+        tran?.let {
+            it.futureTCreated = false
+            viewModelScope.launch {
+                tranRepo.upsertTransaction(it)
+            }
         }
-        _saveTranEvent.value = Event(true)
+        updateSaveSuccess(true)
+        updateFutureDialog(false)
     }
 
     /**
-     *  Negative button function for futureTranDialog.
+     *  Dismiss button function for futureAlertDialog.
+     *  Transaction will no longer repeat in the future.
      *  Stops warning from appearing again, unless user changes Date again.
-     *  Updates [tran] in database.
      */
-    fun futureTranNegFun(tran: Transaction) {
-
+    fun futureDialogDismiss() {
         dateChanged = false
-        viewModelScope.launch {
-            tranRepo.upsertTransaction(tran)
+        tranLD.value?.let {
+            viewModelScope.launch {
+                tranRepo.upsertTransaction(it)
+            }
         }
-        _saveTranEvent.value = Event(true)
+        updateSaveSuccess(true)
+        updateFutureDialog(false)
     }
 
     /**
