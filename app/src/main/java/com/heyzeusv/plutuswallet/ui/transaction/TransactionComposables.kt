@@ -126,7 +126,12 @@ fun TransactionCompose(
                             top = dimensionResource(R.dimen.textFToViewTopPadding)
                         )
                     )
-                    TransactionCurrencyInput(
+                    TransactionNumberInput(
+                        numberField = if (tranVM.setVals.decimalPlaces) {
+                            TransactionNumberFields.TOTAL_DECIMAL
+                        } else {
+                            TransactionNumberFields.TOTAL_INTEGER
+                        },
                         tranVM = tranVM,
                         modifier = Modifier.padding(
                             top = dimensionResource(R.dimen.textFToViewTopPadding)
@@ -191,9 +196,8 @@ fun AppBar(
 }
 
 enum class TransactionTextFields(val labelId: Int, val helperId: Int, val length: Int) {
-    TITLE(R.string.transaction_title, R.string.transaction_title_hint, 32),
-    MEMO(R.string.transaction_memo, R.string.transaction_memo_hint, 512),
-    FREQUENCY(R.string.transaction_frequency, R.string.transaction_blank_hint, 2)
+    TITLE(R.string.transaction_title, R.string.transaction_title_hint, R.integer.maxLengthTitle),
+    MEMO(R.string.transaction_memo, R.string.transaction_memo_hint, R.integer.maxLengthMemo),
 }
 
 @Composable
@@ -207,28 +211,22 @@ fun TransactionTextField(
     val value by when(textField) {
         TransactionTextFields.TITLE -> tranVM.title.collectAsState()
         TransactionTextFields.MEMO -> tranVM.memo.collectAsState()
-        TransactionTextFields.FREQUENCY -> tranVM.frequency.collectAsState()
     }
+    val maxLength = integerResource(textField.length)
 
     Column(modifier = modifier) {
         OutlinedTextField(
             value = value,
             onValueChange = {
-                if (it.length <= textField.length) {
+                if (it.length <= maxLength) {
                     when (textField) {
                         TransactionTextFields.TITLE -> tranVM.updateTitle(it)
                         TransactionTextFields.MEMO -> tranVM.updateMemo(it)
-                        TransactionTextFields.FREQUENCY -> tranVM.updateFrequency(it)
                     }
                 }
             },
             modifier = textFieldModifier.fillMaxWidth(),
             label = { Text(stringResource(textField.labelId)) },
-            keyboardOptions = if (textField == TransactionTextFields.FREQUENCY) {
-                KeyboardOptions(keyboardType = KeyboardType.Number)
-            } else {
-                KeyboardOptions.Default
-            },
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.secondary,
@@ -248,7 +246,7 @@ fun TransactionTextField(
                 style = MaterialTheme.typography.caption
             )
             Text(
-                text = "${value.length}/${textField.length}",
+                text = "${value.length}/$maxLength",
                 style = MaterialTheme.typography.caption
             )
         }
@@ -448,25 +446,38 @@ fun AlertDialogInput(
     }
 }
 
+enum class TransactionNumberFields(val labelId: Int, val length: Int) {
+    TOTAL_DECIMAL(R.string.transaction_total, R.integer.maxLengthTotalDecimal),
+    TOTAL_INTEGER(R.string.transaction_total, R.integer.maxLengthTotalInteger),
+    FREQUENCY(R.string.transaction_frequency, R.integer.maxLengthFrequency)
+}
+
 @Composable
-fun TransactionCurrencyInput(
+fun TransactionNumberInput(
+    numberField: TransactionNumberFields,
     tranVM: TransactionViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    numberFieldModifier: Modifier = Modifier
 ) {
-    val textFieldValue by tranVM.totalFieldValue.collectAsState()
-    val maxLength = when(tranVM.setVals.decimalPlaces) {
-        true -> integerResource(R.integer.maxLengthTotal)
-        false -> integerResource(R.integer.maxLengthTotalNoDecimal)
+    val textFieldValue by when (numberField) {
+        TransactionNumberFields.FREQUENCY -> tranVM.frequencyFieldValue.collectAsState()
+        else -> tranVM.totalFieldValue.collectAsState()
     }
+    val maxLength = integerResource(numberField.length)
 
     Column(modifier = modifier) {
         OutlinedTextField(
             value = textFieldValue,
             onValueChange = {
-                tranVM.updateTotalFieldValue(it.text)
+                if (it.text.length <= maxLength) {
+                    when (numberField) {
+                        TransactionNumberFields.FREQUENCY -> tranVM.updateFrequencyFieldValue(it.text)
+                        else -> tranVM.updateTotalFieldValue(it.text)
+                    }
+                }
             },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.transaction_total)) },
+            modifier = numberFieldModifier.fillMaxWidth(),
+            label = { Text(stringResource(numberField.labelId)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.secondary,
@@ -621,8 +632,7 @@ fun TransactionRepeating(
     val bringIntoView = remember { BringIntoViewRequester() }
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(key1 = visible) { if (visible) focusRequester.requestFocus() }
-
+    LaunchedEffect(key1 = visible) { if (visible && tranVM.newTran) focusRequester.requestFocus() }
 
     Column(modifier = modifier) {
         TransactionChip(
@@ -646,8 +656,8 @@ fun TransactionRepeating(
                         .weight(1f)
                         .padding(end = 4.dp)
                 )
-                TransactionTextField(
-                    textField = TransactionTextFields.FREQUENCY,
+                TransactionNumberInput(
+                    numberField = TransactionNumberFields.FREQUENCY,
                     tranVM = tranVM,
                     modifier = Modifier
                         .weight(1f)
@@ -655,7 +665,7 @@ fun TransactionRepeating(
                             start = 4.dp,
                             bottom = dimensionResource(R.dimen.textFWHelperToParentBottomPadding)
                         ),
-                    textFieldModifier = Modifier
+                    numberFieldModifier = Modifier
                         .focusRequester(focusRequester)
                         .onFocusEvent { focusState ->
                             if (focusState.isFocused) {

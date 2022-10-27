@@ -65,7 +65,7 @@
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/tran_title_layout"
                             style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
-                            app:counterMaxLength="@integer/maxLengthName"
+                            app:counterMaxLength="@integer/maxLengthTitle"
                             app:helperText="@string/transaction_title_hint"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/compose_view">
@@ -74,7 +74,7 @@
                                 android:id="@+id/tran_title"
                                 style="@style/Transaction.EditText.SingleLine"
                                 android:hint="@string/transaction_title"
-                                android:maxLength="@integer/maxLengthName"
+                                android:maxLength="@integer/maxLengthTitle"
                                 android:text="@={tranVM.tranLD.title}" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -111,7 +111,7 @@
                             android:id="@+id/tran_total_layout"
                             style="@style/Transaction.TextInputLayout.OutlinedBox.Counter"
                             android:layout_marginTop="@dimen/tranLayoutToLayoutMargin"
-                            app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
+                            app:counterMaxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotalDecimal : @integer/maxLengthTotalInteger}"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/tran_account_layout"
                             app:prefixText="@{tranVM.setVals.symbolSide ? tranVM.setVals.currencySymbol : ``}"
@@ -122,7 +122,7 @@
                                 style="@style/Transaction.EditText.Base"
                                 android:hint="@string/transaction_total"
                                 android:inputType="number"
-                                android:maxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotal : @integer/maxLengthTotalNoDecimal}"
+                                android:maxLength="@{tranVM.setVals.decimalPlaces ? @integer/maxLengthTotalDecimal : @integer/maxLengthTotalInteger}"
                                 android:text="@={tranVM.total}" />
                         </com.google.android.material.textfield.TextInputLayout>
 

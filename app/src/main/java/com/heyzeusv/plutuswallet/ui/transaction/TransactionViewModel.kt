@@ -68,6 +68,12 @@ class TransactionViewModel @Inject constructor(
         _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
 
+    private val _frequencyFieldValue = MutableStateFlow(TextFieldValue())
+    val frequencyFieldValue: StateFlow<TextFieldValue> get() = _frequencyFieldValue
+    fun updateFrequencyFieldValue(newValue: String) {
+        _frequencyFieldValue.value = TextFieldValue(newValue, TextRange(newValue.length))
+    }
+
     // false = "Expense", true = "Income"
     private val _typeSelected = MutableStateFlow(false)
     val typeSelected: StateFlow<Boolean> get() = _typeSelected
@@ -123,9 +129,6 @@ class TransactionViewModel @Inject constructor(
     private val _memo = MutableStateFlow("")
     val memo: StateFlow<String> get() = _memo
     fun updateMemo(newValue: String) { _memo.value = newValue }
-    private val _frequency = MutableStateFlow("1")
-    val frequency: StateFlow<String> get() = _frequency
-    fun updateFrequency(newValue: String) { _frequency.value = newValue }
 
     // currently selected Spinner item
     private val _account = MutableStateFlow("")
@@ -178,7 +181,7 @@ class TransactionViewModel @Inject constructor(
                 else -> it[3]
             })
         }
-        updateFrequency(transaction.frequency.toString())
+        updateFrequencyFieldValue(transaction.frequency.toString())
     }
 
     /**
@@ -231,10 +234,11 @@ class TransactionViewModel @Inject constructor(
             tran.repeating = repeat.value
             if (tran.repeating) tran.futureDate = createFutureDate()
             tran.period = periodArray.value!!.indexOf(period.value)
+            val frequencyFromFieldValue = _frequencyFieldValue.value.text
             // frequency must always be at least 1
             tran.frequency = when {
-                frequency.value.isBlank() || frequency.value.toInt() < 1 -> 1
-                else -> frequency.value.toInt()
+                frequencyFromFieldValue.isBlank() || frequencyFromFieldValue.toInt() < 1 -> 1
+                else -> frequencyFromFieldValue.toInt()
             }
 
             // Coroutine that Save/Updates/warns user of FutureDate
