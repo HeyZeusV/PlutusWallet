@@ -134,10 +134,6 @@ class TransactionViewModel @Inject constructor(
     // used to tell if date has been edited for re-repeating Transactions
     private var dateChanged = false
 
-    // Int is type: 0 = Account, 1 = Expense, 2 = Income
-    // String is name of newly created entity
-    private val _createEvent = MutableLiveData<Event<Pair<Int, String>>>()
-
     private val _title = MutableStateFlow("")
     val title: StateFlow<String> get() = _title
     fun updateTitle(newValue: String) { _title.value = newValue }
@@ -380,7 +376,6 @@ class TransactionViewModel @Inject constructor(
      *  [accCreate] ("Create New..." translated) is added after resorting list.
      */
     fun insertAccount(name: String, accCreate: String) {
-
         accountList.value?.let {
             // create if doesn't exist
             if (!it.contains(name)) {
@@ -392,7 +387,6 @@ class TransactionViewModel @Inject constructor(
                 accountList.value = addNewToList(it, name, accCreate)
             }
             updateAccount(name)
-            _createEvent.value = Event(Pair(0, name))
         }
     }
 
@@ -401,7 +395,6 @@ class TransactionViewModel @Inject constructor(
      *  [catCreate] ("Create New..." translated) is added after resorting list.
      */
     fun insertCategory(name: String, catCreate: String) {
-
         // checks which type is currently selected
         if (!typeSelected.value) {
             expenseCatList.value?.let {
@@ -416,7 +409,6 @@ class TransactionViewModel @Inject constructor(
                 }
             }
             updateExpenseCat(name)
-            _createEvent.value = Event(Pair(1, name))
         } else {
             incomeCatList.value?.let {
                 // create if doesn't exist
@@ -430,7 +422,6 @@ class TransactionViewModel @Inject constructor(
                 }
             }
             updateIncomeCat(name)
-            _createEvent.value = Event(Pair(2, name))
         }
     }
 

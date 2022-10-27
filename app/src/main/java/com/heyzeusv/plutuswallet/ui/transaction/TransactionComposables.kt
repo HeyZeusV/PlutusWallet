@@ -62,7 +62,6 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -306,11 +305,11 @@ fun TransactionDate(
     if (source.collectIsPressedAsState().value) tranVM.selectDateOC(tranVM.tranLD.value!!.date)
 }
 
-enum class TransactionDropMenus(val labelId: Int) {
-    ACCOUNT(R.string.transaction_account),
-    EXPENSE(R.string.transaction_category),
-    INCOME(R.string.transaction_category),
-    PERIOD(R.string.transaction_period)
+enum class TransactionDropMenus(val labelId: Int, val createNewId: Int, val alertTitleId: Int) {
+    ACCOUNT(R.string.transaction_account, R.string.account_create, R.string.alert_dialog_create_account),
+    EXPENSE(R.string.transaction_category, R.string.category_create, R.string.alert_dialog_create_category),
+    INCOME(R.string.transaction_category, R.string.category_create, R.string.alert_dialog_create_category),
+    PERIOD(R.string.transaction_period, 0, 0)
 }
 
 @Composable
@@ -344,8 +343,9 @@ fun TransactionDropDownMenu(
         DisableSelection {
             if (showDialog) {
                 expanded = false
-                AlertDialogInput(
+                InputAlertDialog(
                     tranVM = tranVM,
+                    type = type,
                     onDismiss = { tranVM.updateInputDialog(false) }
                 )
             }
@@ -413,15 +413,16 @@ fun TransactionDropDownMenu(
 }
 
 @Composable
-fun AlertDialogInput(
+fun InputAlertDialog(
     tranVM: TransactionViewModel,
+    type: TransactionDropMenus,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     var text by remember { mutableStateOf("") }
     val showDialog by tranVM.showInputDialog.collectAsState()
     var isError by remember { mutableStateOf(false) }
+    val createNew = stringResource(type.createNewId)
 
     if (showDialog) {
         AlertDialog(
@@ -431,7 +432,10 @@ fun AlertDialogInput(
                     onClick = {
                         if (text.isNotBlank()) {
                             isError = false
-                            tranVM.insertAccount(text, context.getString(R.string.account_create))
+                            when (type) {
+                                TransactionDropMenus.ACCOUNT -> tranVM.insertAccount(text, createNew)
+                                else  -> tranVM.insertCategory(text, createNew)
+                            }
                             tranVM.updateInputDialog(false)
                         } else {
                             isError = true
@@ -447,7 +451,7 @@ fun AlertDialogInput(
                 }
             },
             modifier = modifier,
-            title = { Text(text = stringResource(R.string.alert_dialog_create_account)) },
+            title = { Text(text = stringResource(type.alertTitleId)) },
             text = {
                 Column {
                     OutlinedTextField(
@@ -457,6 +461,7 @@ fun AlertDialogInput(
                         label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
                         isError = isError,
                         colors = TextFieldDefaults.outlinedTextFieldColors(
+                            textColor = MaterialTheme.colors.onSurface,
                             focusedBorderColor = MaterialTheme.colors.secondary,
                             focusedLabelColor = MaterialTheme.colors.secondary
                         )
