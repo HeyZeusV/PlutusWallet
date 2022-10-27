@@ -61,9 +61,13 @@ class TransactionViewModel @Inject constructor(
     fun updateTotalFieldValue(newValue: String) {
         
         val removedSymbols = removeSymbols(newValue)
-        val formattedTotal = when (setVals.decimalPlaces) {
+        var formattedTotal = when (setVals.decimalPlaces) {
             true -> formatDecimal(BigDecimal(removedSymbols))
             false -> formatInteger(BigDecimal(removedSymbols))
+        }
+        formattedTotal = when (setVals.symbolSide) {
+            true -> "${setVals.currencySymbol}$formattedTotal"
+            false -> "$formattedTotal${setVals.currencySymbol}"
         }
         _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
@@ -206,8 +210,9 @@ class TransactionViewModel @Inject constructor(
                 totalFromFieldValue.isEmpty() -> BigDecimal("0")
                 else -> BigDecimal(
                     totalFromFieldValue
-                        .replace(setVals.thousandsSymbol.toString(), "")
-                        .replace(setVals.decimalSymbol.toString(), ".")
+                        .replace(setVals.currencySymbol, "")
+                        .replace("${setVals.thousandsSymbol}", "")
+                        .replace("${setVals.decimalPlaces}", ".")
                 )
             }
 

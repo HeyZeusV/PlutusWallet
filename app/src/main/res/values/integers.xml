@@ -2,7 +2,7 @@
 <resources>
     <integer name="maxLengthTitle">32</integer>
     <integer name="maxLengthMemo">512</integer>
-    <integer name="maxLengthTotalInteger">18</integer>
-    <integer name="maxLengthTotalDecimal">21</integer>
+    <integer name="maxLengthTotalInteger">19</integer>
+    <integer name="maxLengthTotalDecimal">22</integer>
     <integer name="maxLengthFrequency">2</integer>
 </resources>
