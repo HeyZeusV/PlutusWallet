@@ -287,13 +287,14 @@ fun TransactionDate(
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier
 ) {
+    val tran = tranVM.tran.collectAsState()
     val dateString by tranVM.date.observeAsState()
     val source = remember { MutableInteractionSource() }
     val selectDate by tranVM.selectDate.collectAsState()
 
     DisableSelection {
         if (selectDate) {
-            val date = tranVM.tranLD.value!!.date
+            val date = tran.value.date
             DateUtils.datePickerDialog(LocalView.current, date, tranVM::onDateSelected).show()
             tranVM.updateSelectDate(false)
         }

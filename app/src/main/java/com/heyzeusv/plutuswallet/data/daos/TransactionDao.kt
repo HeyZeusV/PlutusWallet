@@ -56,7 +56,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT *
               FROM `transaction`
               WHERE id=(:id)""")
-    abstract suspend fun getTransaction(id: Int): Transaction
+    abstract suspend fun getTransaction(id: Int): Transaction?
 
     /**
      *  Returns LD of Transaction with given [id].

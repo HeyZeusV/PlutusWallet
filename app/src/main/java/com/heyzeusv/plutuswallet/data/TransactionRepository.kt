@@ -81,7 +81,7 @@ class TransactionRepository @Inject constructor(
     override suspend fun getMaxIdAsync(): Int? =
         withContext(Dispatchers.IO) { transactionDao.getMaxId() }
 
-    override suspend fun getTransactionAsync(id: Int): Transaction =
+    override suspend fun getTransactionAsync(id: Int): Transaction? =
         withContext(Dispatchers.IO) { transactionDao.getTransaction(id) }
 
     override suspend fun deleteTransaction(transaction: Transaction): Unit =

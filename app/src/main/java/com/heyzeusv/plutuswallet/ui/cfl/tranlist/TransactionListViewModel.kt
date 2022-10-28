@@ -77,7 +77,9 @@ class TransactionListViewModel @Inject constructor(
      */
     suspend fun deleteTranPosFun(ivt: ItemViewTransaction) {
 
-        tranRepo.deleteTransaction(tranRepo.getTransactionAsync(ivt.id))
+        tranRepo.getTransactionAsync(ivt.id)?.let {
+            tranRepo.deleteTransaction(it)
+        }
     }
 
     /**

@@ -75,7 +75,7 @@
                                 style="@style/Transaction.EditText.SingleLine"
                                 android:hint="@string/transaction_title"
                                 android:maxLength="@integer/maxLengthTitle"
-                                android:text="@={tranVM.tranLD.title}" />
+                                />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -198,7 +198,7 @@
                                 style="@style/Transaction.EditText.MultiLine"
                                 android:hint="@string/transaction_memo"
                                 android:maxLength="@integer/maxLengthMemo"
-                                android:text="@={tranVM.tranLD.memo}" />
+                                />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <androidx.constraintlayout.motion.widget.MotionLayout
@@ -268,7 +268,7 @@
                                     android:hint="@string/transaction_frequency"
                                     android:inputType="number"
                                     android:maxLength="@integer/maxLengthFrequency"
-                                    android:text="@={`` + tranVM.tranLD.frequency}"
+
                                     android:visibility="@{tranVM.repeatLD ? View.VISIBLE : View.INVISIBLE}" />
                             </com.google.android.material.textfield.TextInputLayout>
                         </androidx.constraintlayout.motion.widget.MotionLayout>

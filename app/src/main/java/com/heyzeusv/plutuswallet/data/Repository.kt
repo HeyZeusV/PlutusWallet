@@ -52,7 +52,7 @@ interface Repository {
 
     suspend fun getMaxIdAsync(): Int?
 
-    suspend fun getTransactionAsync(id: Int): Transaction
+    suspend fun getTransactionAsync(id: Int): Transaction?
 
     suspend fun deleteTransaction(transaction: Transaction)
 

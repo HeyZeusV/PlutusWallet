@@ -4,7 +4,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
@@ -14,7 +14,6 @@ import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DateFormat
@@ -26,6 +25,8 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  *  Data manager for TransactionFragments.
@@ -35,21 +36,17 @@ import kotlinx.coroutines.flow.StateFlow
  */
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
+    state: SavedStateHandle,
     private val tranRepo: Repository,
     val setVals: SettingsValues
 ) : ViewModel() {
 
-    // stores ID of Transaction displayed.
-    private val tranIdLD = MutableLiveData<Int>()
+    // arguments from Navigation
+    var newTran: Boolean = state["newTran"]!!
+    private var tranId: Int = state["tranId"]!!
 
-    /**
-     * Returns LiveData of a Transaction that gets updated every time a
-     * new value gets set on the trigger LiveData instance.
-     */
-    var tranLD: MutableLiveData<Transaction?> =
-        Transformations.switchMap(tranIdLD) { transactionId: Int ->
-            tranRepo.getLdTransaction(transactionId)
-        } as MutableLiveData<Transaction?>
+    private val _tran = MutableStateFlow(Transaction())
+    val tran: StateFlow<Transaction> get() = _tran
 
     // used for various Transaction Fields since property changes don't cause LiveDate updates
     private val _date: MutableLiveData<String> = MutableLiveData("")
@@ -129,9 +126,6 @@ class TransactionViewModel @Inject constructor(
 
     private var maxId: Int = 0
 
-    // argument from Navigation
-    var newTran = false
-
     // used to tell if date has been edited for re-repeating Transactions
     private var dateChanged = false
 
@@ -155,6 +149,13 @@ class TransactionViewModel @Inject constructor(
     private val _period = MutableStateFlow("")
     val period: StateFlow<String> get() = _period
     fun updatePeriod(newValue: String) { _period.value = newValue }
+
+    fun retrieveTransaction() {
+        viewModelScope.launch {
+            tranRepo.getTransactionAsync(tranId)?.let { _tran.value = it }
+            setTranData(tran.value)
+        }
+    }
 
     /**
      *  Uses [transaction] to pass values to LiveData to be displayed.
@@ -201,10 +202,10 @@ class TransactionViewModel @Inject constructor(
      *  from Transaction using DataBinding back to Transaction and saves or updates it.
      */
     fun saveTransaction() {
-
-        tranLD.value!!.let { tran: Transaction ->
+        _tran.value.let { tran: Transaction ->
             // assigns new id if new Transaction
             if (newTran) tran.id = maxId + 1
+            tranId = tran.id
 
             // gives Transaction simple title if user doesn't enter any
             tran.title = title.value.ifBlank { emptyTitle + tran.id }
@@ -256,14 +257,16 @@ class TransactionViewModel @Inject constructor(
 
             // Coroutine that Save/Updates/warns user of FutureDate
             viewModelScope.launch {
-                if (tran.futureTCreated && dateChanged && tran.repeating) {
-                    updateFutureDialog(true)
-                } else {
-                    // upsert Transaction
-                    tranRepo.upsertTransaction(tran)
-                    loadTransaction(tran.id)
-                    updateSaveSuccess(true)
+                withContext(viewModelScope.coroutineContext) {
+                    if (tran.futureTCreated && dateChanged && tran.repeating) {
+                        updateFutureDialog(true)
+                    } else {
+                        // upsert Transaction
+                        tranRepo.upsertTransaction(tran)
+                        updateSaveSuccess(true)
+                    }
                 }
+                setTranData(_tran.value)
             }
         }
     }
@@ -273,8 +276,7 @@ class TransactionViewModel @Inject constructor(
      *  Transaction will be able to repeat again.
      */
     fun futureDialogConfirm() {
-        val tran = tranLD.value
-        tran?.let {
+        _tran.value.let {
             it.futureTCreated = false
             viewModelScope.launch {
                 tranRepo.upsertTransaction(it)
@@ -291,7 +293,7 @@ class TransactionViewModel @Inject constructor(
      */
     fun futureDialogDismiss() {
         dateChanged = false
-        tranLD.value?.let {
+        _tran.value.let {
             viewModelScope.launch {
                 tranRepo.upsertTransaction(it)
             }
@@ -306,7 +308,7 @@ class TransactionViewModel @Inject constructor(
     private fun createFutureDate(): Date {
 
         val calendar: Calendar = Calendar.getInstance()
-        tranLD.value?.let {
+        _tran.value.let {
             // set to Transaction date rather than current time due to Users being able
             // to select a Date in the past or future
             calendar.time = it.date
@@ -446,8 +448,8 @@ class TransactionViewModel @Inject constructor(
     fun onDateSelected(newDate: Date) {
 
         // true if newDate is different from previous date
-        dateChanged = tranLD.value!!.date != newDate
-        tranLD.value!!.date = newDate
+        dateChanged = _tran.value.date != newDate
+        _tran.value.date = newDate
         // turns date selected into Date type
         _date.value = DateFormat.getDateInstance(setVals.dateFormat).format(newDate)
     }
@@ -467,7 +469,6 @@ class TransactionViewModel @Inject constructor(
             incomeCatList.value = tranRepo.getCategoryNamesByTypeAsync("Income")
             incomeCatList.value!!.add(catCreate)
             maxId = tranRepo.getMaxIdAsync() ?: 0
-            refresh()
         }
     }
 
@@ -477,20 +478,20 @@ class TransactionViewModel @Inject constructor(
     fun typeButtonOC() {
         updateTypeSelected(!typeSelected.value)
     }
-
-    // manually refresh on LiveData
-    private fun refresh() {
-
-        tranIdLD.postValue(tranIdLD.value)
-    }
-
-    /**
-     *  Doesn't load Transaction directly from Database, but rather by updating the
-     *  LiveData object holding ID with [transactionId] which in turn triggers
-     *  mapping function above.
-     */
-    fun loadTransaction(transactionId: Int) {
-
-        tranIdLD.value = transactionId
-    }
+//
+//    init {
+//        Timber.v(tranId.toString())
+//        Timber.v("_tran ${_tran.value}")
+//
+////            _tran.value = viewModelScope.launch {
+////                tranRepo.getTransactionAsync(tranId)
+////            }
+////        }
+////         viewModelScope.launch {
+////            val test = withContext(Dispatchers.IO) {
+////                tranRepo.getTransactionAsync(tranId)
+////            }
+////            Timber.v(test.toString())
+////        }
+//    }
 }
