@@ -80,10 +80,9 @@ class TransactionViewModel @Inject constructor(
         _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
 
-    // false = "Expense", true = "Income"
-    private val _typeSelected = MutableStateFlow(false)
-    val typeSelected: StateFlow<Boolean> get() = _typeSelected
-    fun updateTypeSelected(newValue: Boolean) { _typeSelected.value = newValue }
+    private val _typeSelected = MutableStateFlow(TransactionType.EXPENSE)
+    val typeSelected: StateFlow<TransactionType> get() = _typeSelected
+    fun updateTypeSelected(newValue: TransactionType) { _typeSelected.value = newValue }
 
     private val _expenseCat = MutableStateFlow("")
     val expenseCat: StateFlow<String> get() = _expenseCat
@@ -170,10 +169,10 @@ class TransactionViewModel @Inject constructor(
         updateAccount(transaction.account)
         updateTotalFieldValue(transaction.total.toString())
         if (transaction.type == "Expense") {
-            updateTypeSelected(false)
+            updateTypeSelected(TransactionType.EXPENSE)
             updateExpenseCat(transaction.category)
         } else {
-            updateTypeSelected(true)
+            updateTypeSelected(TransactionType.INCOME)
             updateIncomeCat(transaction.category)
         }
         updateMemo(transaction.memo)
@@ -218,14 +217,11 @@ class TransactionViewModel @Inject constructor(
                 )
             }
 
-            // sets type depending on Chip selected
+            tran.type = typeSelected.value.type
             // cat values are empty if they haven't been changed so defaults to first category
-            if (!typeSelected.value) {
-                tran.type = "Expense"
-                tran.category = expenseCat.value.ifBlank { expenseCatList.value[0] }
-            } else {
-                tran.type = "Income"
-                tran.category = incomeCat.value.ifBlank { incomeCatList.value[0] }
+            tran.category = when (typeSelected.value) {
+                TransactionType.EXPENSE -> expenseCat.value.ifBlank { expenseCatList.value[0] }
+                TransactionType.INCOME -> incomeCat.value.ifBlank { incomeCatList.value[0] }
             }
 
             tran.memo = memo.value
@@ -380,32 +376,35 @@ class TransactionViewModel @Inject constructor(
      */
     fun insertCategory(name: String, catCreate: String) {
         // checks which type is currently selected
-        if (!typeSelected.value) {
-            expenseCatList.value.let {
-                // create if doesn't exist
-                if (!it.contains(name)) {
-                    viewModelScope.launch {
-                        // creates and inserts new Category with name
-                        val category = Category(0, name, "Expense")
-                        tranRepo.insertCategory(category)
+        when (typeSelected.value) {
+            TransactionType.EXPENSE -> {
+                expenseCatList.value.let {
+                    // create if doesn't exist
+                    if (!it.contains(name)) {
+                        viewModelScope.launch {
+                            // creates and inserts new Category with name
+                            val category = Category(0, name, typeSelected.value.type)
+                            tranRepo.insertCategory(category)
+                        }
+                        updateExpenseCatList(addNewToList(it, name, catCreate))
                     }
-                    updateExpenseCatList(addNewToList(it, name, catCreate))
                 }
+                updateExpenseCat(name)
             }
-            updateExpenseCat(name)
-        } else {
-            incomeCatList.value.let {
-                // create if doesn't exist
-                if (!it.contains(name)) {
-                    viewModelScope.launch {
-                        // creates and inserts new Category with name
-                        val category = Category(0, name, "Income")
-                        tranRepo.insertCategory(category)
+            TransactionType.INCOME -> {
+                incomeCatList.value.let {
+                    // create if doesn't exist
+                    if (!it.contains(name)) {
+                        viewModelScope.launch {
+                            // creates and inserts new Category with name
+                            val category = Category(0, name, typeSelected.value.type)
+                            tranRepo.insertCategory(category)
+                        }
+                        updateIncomeCatList(addNewToList(it, name, catCreate))
                     }
-                    updateIncomeCatList(addNewToList(it, name, catCreate))
                 }
+                updateIncomeCat(name)
             }
-            updateIncomeCat(name)
         }
     }
 

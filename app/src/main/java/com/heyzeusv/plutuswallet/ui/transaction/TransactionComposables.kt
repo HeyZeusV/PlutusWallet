@@ -223,11 +223,6 @@ fun AppBar(
     )
 }
 
-enum class TransactionTextFields(val labelId: Int, val helperId: Int, val length: Int) {
-    TITLE(R.string.transaction_title, R.string.transaction_title_hint, R.integer.maxLengthTitle),
-    MEMO(R.string.transaction_memo, R.string.transaction_memo_hint, R.integer.maxLengthMemo),
-}
-
 @Composable
 fun TransactionTextField(
     textField: TransactionTextFields,
@@ -318,13 +313,6 @@ fun TransactionDate(
     if (source.collectIsPressedAsState().value) tranVM.updateSelectDate(true)
 }
 
-enum class TransactionDropMenus(val labelId: Int, val createNewId: Int, val alertTitleId: Int) {
-    ACCOUNT(R.string.transaction_account, R.string.account_create, R.string.alert_dialog_create_account),
-    EXPENSE(R.string.transaction_category, R.string.category_create, R.string.alert_dialog_create_category),
-    INCOME(R.string.transaction_category, R.string.category_create, R.string.alert_dialog_create_category),
-    PERIOD(R.string.transaction_period, 0, 0)
-}
-
 @Composable
 fun TransactionDropDownMenu(
     type: TransactionDropMenus,
@@ -341,13 +329,13 @@ fun TransactionDropDownMenu(
     val value = when {
         type == TransactionDropMenus.ACCOUNT -> tranVM.account.collectAsState()
         type == TransactionDropMenus.PERIOD -> tranVM.period.collectAsState()
-        typeSelected -> tranVM.incomeCat.collectAsState()
+        typeSelected == TransactionType.INCOME -> tranVM.incomeCat.collectAsState()
         else -> tranVM.expenseCat.collectAsState()
     }
     val list by when {
         type == TransactionDropMenus.ACCOUNT -> tranVM.accountList.collectAsState()
         type == TransactionDropMenus.PERIOD -> tranVM.periodArray.collectAsState()
-        typeSelected -> tranVM.incomeCatList.collectAsState()
+        typeSelected == TransactionType.INCOME -> tranVM.incomeCatList.collectAsState()
         else -> tranVM.expenseCatList.collectAsState()
     }
     val label = stringResource(type.labelId)
@@ -491,12 +479,6 @@ fun InputAlertDialog(
     }
 }
 
-enum class TransactionNumberFields(val labelId: Int, val length: Int) {
-    TOTAL_DECIMAL(R.string.transaction_total, R.integer.maxLengthTotalDecimal),
-    TOTAL_INTEGER(R.string.transaction_total, R.integer.maxLengthTotalInteger),
-    FREQUENCY(R.string.transaction_frequency, R.integer.maxLengthFrequency)
-}
-
 @Composable
 fun TransactionNumberInput(
     numberField: TransactionNumberFields,
@@ -569,19 +551,16 @@ fun TransactionCategories(
             )
         }
         TransactionDropDownMenu(
-            type = if (typeSelected) TransactionDropMenus.INCOME else TransactionDropMenus.EXPENSE,
+            type = when (typeSelected) {
+                TransactionType.EXPENSE -> TransactionDropMenus.EXPENSE
+                TransactionType.INCOME -> TransactionDropMenus.INCOME
+            },
             tranVM = tranVM,
             modifier = Modifier.padding(
                 top = dimensionResource(R.dimen.textFToViewTopPadding)
             )
         )
     }
-}
-
-enum class TransactionChips(val labelId: Int, val icon: Boolean) {
-    EXPENSE(R.string.type_expense, false),
-    INCOME(R.string.type_income, false),
-    REPEAT(R.string.transaction_repeat, true)
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class)
@@ -591,8 +570,9 @@ fun TransactionChip(
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier
 ) {
+    val typeSelected by tranVM.typeSelected.collectAsState()
     val selected by when(chip) {
-        TransactionChips.EXPENSE, TransactionChips.INCOME -> tranVM.typeSelected.collectAsState()
+        TransactionChips.EXPENSE, TransactionChips.INCOME -> typeSelected.boolValue.collectAsState()
         TransactionChips.REPEAT -> tranVM.repeat.collectAsState()
     }
 
@@ -603,9 +583,9 @@ fun TransactionChip(
             TransactionChips.REPEAT -> selected
         },
         onClick = {
-            when(chip) {
-                TransactionChips.EXPENSE -> tranVM.updateTypeSelected(false)
-                TransactionChips.INCOME -> tranVM.updateTypeSelected(true)
+            when (chip) {
+                TransactionChips.EXPENSE -> tranVM.updateTypeSelected(TransactionType.EXPENSE)
+                TransactionChips.INCOME -> tranVM.updateTypeSelected(TransactionType.INCOME)
                 TransactionChips.REPEAT -> tranVM.updateRepeat(!selected)
             }
         },
