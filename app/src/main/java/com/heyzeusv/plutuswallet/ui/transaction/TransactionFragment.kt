@@ -27,9 +27,11 @@ class TransactionFragment : BaseFragment() {
         tranVM.apply {
             emptyTitle = getString((R.string.transaction_empty_title))
             // array used by PeriodSpinner
-            periodArray.value = listOf(
-                getString(R.string.period_days), getString(R.string.period_weeks),
-                getString(R.string.period_months), getString(R.string.period_years)
+            updatePeriodArray(
+                mutableListOf(
+                    getString(R.string.period_days), getString(R.string.period_weeks),
+                    getString(R.string.period_months), getString(R.string.period_years)
+                )
             )
             prepareLists(getString(R.string.account_create), getString(R.string.category_create))
             retrieveTransaction()

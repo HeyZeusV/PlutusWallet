@@ -53,7 +53,6 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusRequester
@@ -287,8 +286,8 @@ fun TransactionDate(
     tranVM: TransactionViewModel,
     modifier: Modifier = Modifier
 ) {
-    val tran = tranVM.tran.collectAsState()
-    val dateString by tranVM.date.observeAsState()
+    val tran = tranVM.transaction.collectAsState()
+    val dateString by tranVM.date.collectAsState()
     val source = remember { MutableInteractionSource() }
     val selectDate by tranVM.selectDate.collectAsState()
 
@@ -299,7 +298,7 @@ fun TransactionDate(
             tranVM.updateSelectDate(false)
         }
         OutlinedTextField(
-            value = dateString!!,
+            value = dateString,
             onValueChange = { },
             modifier = modifier
                 .fillMaxWidth()
@@ -346,10 +345,10 @@ fun TransactionDropDownMenu(
         else -> tranVM.expenseCat.collectAsState()
     }
     val list by when {
-        type == TransactionDropMenus.ACCOUNT -> tranVM.accountList.observeAsState()
-        type == TransactionDropMenus.PERIOD -> tranVM.periodArray.observeAsState()
-        typeSelected -> tranVM.incomeCatList.observeAsState()
-        else -> tranVM.expenseCatList.observeAsState()
+        type == TransactionDropMenus.ACCOUNT -> tranVM.accountList.collectAsState()
+        type == TransactionDropMenus.PERIOD -> tranVM.periodArray.collectAsState()
+        typeSelected -> tranVM.incomeCatList.collectAsState()
+        else -> tranVM.expenseCatList.collectAsState()
     }
     val label = stringResource(type.labelId)
 
@@ -401,10 +400,10 @@ fun TransactionDropDownMenu(
                     .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                     .padding(start = 12.dp)
             ) {
-                list!!.forEachIndexed { index, name ->
+                list.forEachIndexed { index, name ->
                     DropdownMenuItem(
                         onClick = {
-                            if (index == list!!.size - 1) {
+                            if (index == list.size - 1) {
                                 tranVM.updateInputDialog(true)
                             } else {
                                 when(type) {

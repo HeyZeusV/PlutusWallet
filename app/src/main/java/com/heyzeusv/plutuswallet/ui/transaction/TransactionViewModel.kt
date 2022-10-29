@@ -2,8 +2,6 @@ package com.heyzeusv.plutuswallet.ui.transaction
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +10,6 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import com.heyzeusv.plutuswallet.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -42,21 +39,35 @@ class TransactionViewModel @Inject constructor(
 ) : ViewModel() {
 
     // arguments from Navigation
-    var newTran: Boolean = state["newTran"]!!
-    private var tranId: Int = state["tranId"]!!
+    var newTran: Boolean = state["newTran"] ?: false
+    private var tranId: Int = state["tranId"] ?: 0
 
-    private val _tran = MutableStateFlow(Transaction())
-    val tran: StateFlow<Transaction> get() = _tran
+    // string resource received from Fragment
+    var emptyTitle = ""
+    // highest Transaction.id in DB
+    private var maxId: Int = 0
+    // used to tell if date has been edited for re-repeating Transactions
+    private var dateChanged = false
 
-    // used for various Transaction Fields since property changes don't cause LiveDate updates
-    private val _date: MutableLiveData<String> = MutableLiveData("")
-    val date: LiveData<String> = _date
-    val total: MutableLiveData<String> = MutableLiveData("")
+    private val _transaction = MutableStateFlow(Transaction())
+    val transaction: StateFlow<Transaction> get() = _transaction
+
+    // variables for fields appear in same order as they do on screen
+    private val _title = MutableStateFlow("")
+    val title: StateFlow<String> get() = _title
+    fun updateTitle(newValue: String) { _title.value = newValue }
+
+    private val _date = MutableStateFlow("")
+    val date: StateFlow<String> get() = _date
+    fun updateDate(newValue: String) { _date.value = newValue }
+
+    private val _account = MutableStateFlow("")
+    val account: StateFlow<String> get() = _account
+    fun updateAccount(newValue: String) { _account.value = newValue }
 
     private val _totalFieldValue = MutableStateFlow(TextFieldValue())
     val totalFieldValue: StateFlow<TextFieldValue> get() = _totalFieldValue
     fun updateTotalFieldValue(newValue: String) {
-        
         val removedSymbols = removeSymbols(newValue)
         var formattedTotal = when (setVals.decimalPlaces) {
             true -> formatDecimal(BigDecimal(removedSymbols))
@@ -69,111 +80,94 @@ class TransactionViewModel @Inject constructor(
         _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
 
+    // false = "Expense", true = "Income"
+    private val _typeSelected = MutableStateFlow(false)
+    val typeSelected: StateFlow<Boolean> get() = _typeSelected
+    fun updateTypeSelected(newValue: Boolean) { _typeSelected.value = newValue }
+
+    private val _expenseCat = MutableStateFlow("")
+    val expenseCat: StateFlow<String> get() = _expenseCat
+    fun updateExpenseCat(newValue: String) { _expenseCat.value = newValue }
+
+    private val _incomeCat = MutableStateFlow("")
+    val incomeCat: StateFlow<String> get() = _incomeCat
+    fun updateIncomeCat(newValue: String) { _incomeCat.value = newValue }
+
+    private val _memo = MutableStateFlow("")
+    val memo: StateFlow<String> get() = _memo
+    fun updateMemo(newValue: String) { _memo.value = newValue }
+
+    private val _repeat = MutableStateFlow(false)
+    val repeat: StateFlow<Boolean> get() = _repeat
+    fun updateRepeat(newValue: Boolean) { _repeat.value = newValue }
+
+    private val _period = MutableStateFlow("")
+    val period: StateFlow<String> get() = _period
+    fun updatePeriod(newValue: String) { _period.value = newValue }
+
     private val _frequencyFieldValue = MutableStateFlow(TextFieldValue())
     val frequencyFieldValue: StateFlow<TextFieldValue> get() = _frequencyFieldValue
     fun updateFrequencyFieldValue(newValue: String) {
         _frequencyFieldValue.value = TextFieldValue(newValue, TextRange(newValue.length))
     }
 
-    // false = "Expense", true = "Income"
-    private val _typeSelected = MutableStateFlow(false)
-    val typeSelected: StateFlow<Boolean> get() = _typeSelected
-    fun updateTypeSelected(newValue: Boolean) {
-        _typeSelected.value = newValue
-    }
-    val repeatLD: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    private val _repeat = MutableStateFlow(false)
-    val repeat: StateFlow<Boolean> get() = _repeat
-    fun updateRepeat(newValue: Boolean) { _repeat.value = newValue }
+    // Lists used by Spinners
+    private val _accountList = MutableStateFlow(mutableListOf(""))
+    val accountList: StateFlow<MutableList<String>> get() = _accountList
+    fun updateAccountList(newList: MutableList<String>) { _accountList.value = newList }
 
+    private val _expenseCatList = MutableStateFlow(mutableListOf(""))
+    val expenseCatList: StateFlow<MutableList<String>> get() = _expenseCatList
+    fun updateExpenseCatList(newList: MutableList<String>) { _expenseCatList.value = newList }
+
+    private val _incomeCatList = MutableStateFlow(mutableListOf(""))
+    val incomeCatList: StateFlow<MutableList<String>> get() = _incomeCatList
+    fun updateIncomeCatList(newList: MutableList<String>) { _incomeCatList.value = newList }
+
+    private val _periodArray = MutableStateFlow(mutableListOf(""))
+    val periodArray: StateFlow<MutableList<String>> get() = _periodArray
+    fun updatePeriodArray(newList: MutableList<String>) { _periodArray.value = newList }
+
+
+    // determines when to show DatePicker
+    private val _selectDate = MutableStateFlow(false)
+    val selectDate: StateFlow<Boolean> get() = _selectDate
+    fun updateSelectDate(newValue: Boolean) { _selectDate.value = newValue }
+
+    // determines when to show AlertDialogs
     private val _showInputDialog = MutableStateFlow(false)
     val showInputDialog: StateFlow<Boolean> get() = _showInputDialog
-    fun updateInputDialog(newValue: Boolean) {
-        _showInputDialog.value = newValue
-    }
+    fun updateInputDialog(newValue: Boolean) { _showInputDialog.value = newValue }
 
     private val _showFutureDialog = MutableStateFlow(false)
     val showFutureDialog: StateFlow<Boolean> get() = _showFutureDialog
-    private fun updateFutureDialog(newValue: Boolean) {
-        _showFutureDialog.value = newValue
-    }
+    fun updateFutureDialog(newValue: Boolean) { _showFutureDialog.value = newValue }
 
-    var emptyTitle = ""
-
-    // Lists used by Spinners
-    val accountList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
-    val expenseCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
-    val incomeCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
-    val periodArray: MutableLiveData<List<String>> = MutableLiveData(emptyList())
-
-    private val _futureTranEvent: MutableLiveData<Event<Transaction>> =
-        MutableLiveData<Event<Transaction>>()
-    val futureTranEvent: LiveData<Event<Transaction>> = _futureTranEvent
-
-    private val _saveTranEvent: MutableLiveData<Event<Boolean>> = MutableLiveData<Event<Boolean>>()
-    val saveTranEvent: LiveData<Event<Boolean>> = _saveTranEvent
-
+    // determines when to show save SnackBar
     private val _saveSuccess = MutableStateFlow(false)
     val saveSuccess: StateFlow<Boolean> get() = _saveSuccess
     fun updateSaveSuccess(newValue: Boolean) { _saveSuccess.value = newValue }
 
-    private val _selectDate = MutableStateFlow(false)
-    val selectDate: StateFlow<Boolean> get() = _selectDate
-    fun updateSelectDate(newValue: Boolean) {
-        _selectDate.value = newValue
-    }
-
-    private var maxId: Int = 0
-
-    // used to tell if date has been edited for re-repeating Transactions
-    private var dateChanged = false
-
-    private val _title = MutableStateFlow("")
-    val title: StateFlow<String> get() = _title
-    fun updateTitle(newValue: String) { _title.value = newValue }
-    private val _memo = MutableStateFlow("")
-    val memo: StateFlow<String> get() = _memo
-    fun updateMemo(newValue: String) { _memo.value = newValue }
-
-    // currently selected Spinner item
-    private val _account = MutableStateFlow("")
-    val account: StateFlow<String> get() = _account
-    fun updateAccount(newValue: String) { _account.value = newValue }
-    private val _expenseCat = MutableStateFlow("")
-    val expenseCat: StateFlow<String> get() = _expenseCat
-    fun updateExpenseCat(newValue: String) { _expenseCat.value = newValue }
-    private val _incomeCat = MutableStateFlow("")
-    val incomeCat: StateFlow<String> get() = _incomeCat
-    fun updateIncomeCat(newValue: String) { _incomeCat.value = newValue }
-    private val _period = MutableStateFlow("")
-    val period: StateFlow<String> get() = _period
-    fun updatePeriod(newValue: String) { _period.value = newValue }
-
+    /**
+     *  Checks to see if a Transaction with tranId exists, if it does then it retrieves that data
+     *  and places it in _tran to populate fields.
+     *  If it doesn't exist, a new Transaction is used.
+     */
     fun retrieveTransaction() {
         viewModelScope.launch {
-            tranRepo.getTransactionAsync(tranId)?.let { _tran.value = it }
-            setTranData(tran.value)
+            tranRepo.getTransactionAsync(tranId)?.let { _transaction.value = it }
+            setTranData(transaction.value)
         }
     }
 
     /**
-     *  Uses [transaction] to pass values to LiveData to be displayed.
+     *  Uses [transaction] to pass values to StateFlow to be displayed.
      */
     fun setTranData(transaction: Transaction) {
         updateTitle(transaction.title)
-        // Date to String
-        _date.value =
-            DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date)
+        updateDate(DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date))
         updateAccount(transaction.account)
-        // BigDecimal to String
-        total.value = when {
-            setVals.decimalPlaces && transaction.total > BigDecimal.ZERO ->
-                formatDecimal(transaction.total)
-            setVals.decimalPlaces -> "0${setVals.decimalSymbol}00"
-            transaction.total > BigDecimal.ZERO -> formatInteger(transaction.total)
-            else -> "0"
-        }
         updateTotalFieldValue(transaction.total.toString())
         if (transaction.type == "Expense") {
             updateTypeSelected(false)
@@ -184,8 +178,7 @@ class TransactionViewModel @Inject constructor(
         }
         updateMemo(transaction.memo)
         updateRepeat(transaction.repeating)
-        repeatLD.value = transaction.repeating
-        periodArray.value?.let {
+        periodArray.value.let {
             // gets translated period value using periodArray
             updatePeriod(when (transaction.period) {
                 0 -> it[0]
@@ -202,7 +195,7 @@ class TransactionViewModel @Inject constructor(
      *  from Transaction using DataBinding back to Transaction and saves or updates it.
      */
     fun saveTransaction() {
-        _tran.value.let { tran: Transaction ->
+        transaction.value.let { tran: Transaction ->
             // assigns new id if new Transaction
             if (newTran) tran.id = maxId + 1
             tranId = tran.id
@@ -211,9 +204,9 @@ class TransactionViewModel @Inject constructor(
             tran.title = title.value.ifBlank { emptyTitle + tran.id }
 
             // is empty if account hasn't been changed so defaults to first account
-            tran.account = if (account.value == "") accountList.value!![0] else account.value
+            tran.account = account.value.ifBlank { accountList.value[0] }
 
-            val totalFromFieldValue = _totalFieldValue.value.text
+            val totalFromFieldValue = totalFieldValue.value.text
             tran.total = when {
                 totalFromFieldValue.isEmpty() && setVals.decimalPlaces -> BigDecimal("0.00")
                 totalFromFieldValue.isEmpty() -> BigDecimal("0")
@@ -221,7 +214,7 @@ class TransactionViewModel @Inject constructor(
                     totalFromFieldValue
                         .replace(setVals.currencySymbol, "")
                         .replace("${setVals.thousandsSymbol}", "")
-                        .replace("${setVals.decimalPlaces}", ".")
+                        .replace("${setVals.decimalSymbol}", ".")
                 )
             }
 
@@ -229,26 +222,18 @@ class TransactionViewModel @Inject constructor(
             // cat values are empty if they haven't been changed so defaults to first category
             if (!typeSelected.value) {
                 tran.type = "Expense"
-                tran.category = if (expenseCat.value == "") {
-                    expenseCatList.value!![0]
-                } else {
-                    expenseCat.value
-                }
+                tran.category = expenseCat.value.ifBlank { expenseCatList.value[0] }
             } else {
                 tran.type = "Income"
-                tran.category = if (incomeCat.value == "") {
-                    incomeCatList.value!![0]
-                } else {
-                    incomeCat.value
-                }
+                tran.category = incomeCat.value.ifBlank { incomeCatList.value[0] }
             }
 
             tran.memo = memo.value
 
             tran.repeating = repeat.value
             if (tran.repeating) tran.futureDate = createFutureDate()
-            tran.period = periodArray.value!!.indexOf(period.value)
-            val frequencyFromFieldValue = _frequencyFieldValue.value.text
+            tran.period = periodArray.value.indexOf(period.value)
+            val frequencyFromFieldValue = frequencyFieldValue.value.text
             // frequency must always be at least 1
             tran.frequency = when {
                 frequencyFromFieldValue.isBlank() || frequencyFromFieldValue.toInt() < 1 -> 1
@@ -266,7 +251,7 @@ class TransactionViewModel @Inject constructor(
                         updateSaveSuccess(true)
                     }
                 }
-                setTranData(_tran.value)
+                setTranData(transaction.value)
             }
         }
     }
@@ -276,7 +261,7 @@ class TransactionViewModel @Inject constructor(
      *  Transaction will be able to repeat again.
      */
     fun futureDialogConfirm() {
-        _tran.value.let {
+        transaction.value.let {
             it.futureTCreated = false
             viewModelScope.launch {
                 tranRepo.upsertTransaction(it)
@@ -293,7 +278,7 @@ class TransactionViewModel @Inject constructor(
      */
     fun futureDialogDismiss() {
         dateChanged = false
-        _tran.value.let {
+        transaction.value.let {
             viewModelScope.launch {
                 tranRepo.upsertTransaction(it)
             }
@@ -306,9 +291,8 @@ class TransactionViewModel @Inject constructor(
      *  Returns date from Transaction after adding frequency * period.
      */
     private fun createFutureDate(): Date {
-
         val calendar: Calendar = Calendar.getInstance()
-        _tran.value.let {
+        transaction.value.let {
             // set to Transaction date rather than current time due to Users being able
             // to select a Date in the past or future
             calendar.time = it.date
@@ -329,7 +313,6 @@ class TransactionViewModel @Inject constructor(
     }
 
     private fun removeSymbols(numString: String): String {
-
         var chars = ""
         // retrieves only numbers in numString
         for (c: Char in numString) { if (c.isDigit()) chars += c }
@@ -351,7 +334,6 @@ class TransactionViewModel @Inject constructor(
      *  Returns formatted [num] in integer form.
      */
     private fun formatInteger(num: BigDecimal): String {
-
         val customSymbols = DecimalFormatSymbols(Locale.US)
         customSymbols.groupingSeparator = setVals.thousandsSymbol
         // every three numbers, a thousands symbol will be added
@@ -364,7 +346,6 @@ class TransactionViewModel @Inject constructor(
      *  Returns formatted [num] in decimal form.
      */
     private fun formatDecimal(num: BigDecimal): String {
-
         val customSymbols = DecimalFormatSymbols(Locale.US)
         customSymbols.groupingSeparator = setVals.thousandsSymbol
         customSymbols.decimalSeparator = setVals.decimalSymbol
@@ -379,7 +360,7 @@ class TransactionViewModel @Inject constructor(
      *  [accCreate] ("Create New..." translated) is added after resorting list.
      */
     fun insertAccount(name: String, accCreate: String) {
-        accountList.value?.let {
+        accountList.value.let {
             // create if doesn't exist
             if (!it.contains(name)) {
                 viewModelScope.launch {
@@ -387,7 +368,7 @@ class TransactionViewModel @Inject constructor(
                     val account = Account(0, name)
                     tranRepo.insertAccount(account)
                 }
-                accountList.value = addNewToList(it, name, accCreate)
+                updateAccountList(addNewToList(it, name, accCreate))
             }
             updateAccount(name)
         }
@@ -400,7 +381,7 @@ class TransactionViewModel @Inject constructor(
     fun insertCategory(name: String, catCreate: String) {
         // checks which type is currently selected
         if (!typeSelected.value) {
-            expenseCatList.value?.let {
+            expenseCatList.value.let {
                 // create if doesn't exist
                 if (!it.contains(name)) {
                     viewModelScope.launch {
@@ -408,12 +389,12 @@ class TransactionViewModel @Inject constructor(
                         val category = Category(0, name, "Expense")
                         tranRepo.insertCategory(category)
                     }
-                    expenseCatList.value = addNewToList(it, name, catCreate)
+                    updateExpenseCatList(addNewToList(it, name, catCreate))
                 }
             }
             updateExpenseCat(name)
         } else {
-            incomeCatList.value?.let {
+            incomeCatList.value.let {
                 // create if doesn't exist
                 if (!it.contains(name)) {
                     viewModelScope.launch {
@@ -421,7 +402,7 @@ class TransactionViewModel @Inject constructor(
                         val category = Category(0, name, "Income")
                         tranRepo.insertCategory(category)
                     }
-                    incomeCatList.value = addNewToList(it, name, catCreate)
+                    updateIncomeCatList(addNewToList(it, name, catCreate))
                 }
             }
             updateIncomeCat(name)
@@ -432,9 +413,11 @@ class TransactionViewModel @Inject constructor(
      *  Takes given [list], removes "Create New..", adds new entry with [name], sorts list, re-adds
      *  [create] ("Create New.." translated), and returns list.
      */
-    private fun addNewToList(list: MutableList<String>, name: String, create: String)
-            : MutableList<String> {
-
+    private fun addNewToList(
+        list: MutableList<String>,
+        name: String,
+        create: String
+    ): MutableList<String> {
         list.remove(create)
         list.add(name)
         list.sort()
@@ -446,12 +429,11 @@ class TransactionViewModel @Inject constructor(
      *  Takes [newDate] user selects, changes Transaction date, and formats it to be displayed.
      */
     fun onDateSelected(newDate: Date) {
-
         // true if newDate is different from previous date
-        dateChanged = _tran.value.date != newDate
-        _tran.value.date = newDate
+        dateChanged = _transaction.value.date != newDate
+        _transaction.value.date = newDate
         // turns date selected into Date type
-        _date.value = DateFormat.getDateInstance(setVals.dateFormat).format(newDate)
+        updateDate(DateFormat.getDateInstance(setVals.dateFormat).format(newDate))
     }
 
     /**
@@ -460,38 +442,14 @@ class TransactionViewModel @Inject constructor(
      *  and retrieves highest ID from database, then refreshes tranIdLd
      */
     fun prepareLists(accCreate: String, catCreate: String) {
-
         viewModelScope.launch {
-            accountList.value = tranRepo.getAccountNamesAsync()
-            accountList.value!!.add(accCreate)
-            expenseCatList.value = tranRepo.getCategoryNamesByTypeAsync("Expense")
-            expenseCatList.value!!.add(catCreate)
-            incomeCatList.value = tranRepo.getCategoryNamesByTypeAsync("Income")
-            incomeCatList.value!!.add(catCreate)
+            updateAccountList(tranRepo.getAccountNamesAsync())
+            accountList.value.add(accCreate)
+            updateExpenseCatList(tranRepo.getCategoryNamesByTypeAsync("Expense"))
+            expenseCatList.value.add(catCreate)
+            updateIncomeCatList(tranRepo.getCategoryNamesByTypeAsync("Income"))
+            incomeCatList.value.add(catCreate)
             maxId = tranRepo.getMaxIdAsync() ?: 0
         }
     }
-
-    /**
-     *  onClick for type Button. Switches value of typeSelected Boolean.
-     */
-    fun typeButtonOC() {
-        updateTypeSelected(!typeSelected.value)
-    }
-//
-//    init {
-//        Timber.v(tranId.toString())
-//        Timber.v("_tran ${_tran.value}")
-//
-////            _tran.value = viewModelScope.launch {
-////                tranRepo.getTransactionAsync(tranId)
-////            }
-////        }
-////         viewModelScope.launch {
-////            val test = withContext(Dispatchers.IO) {
-////                tranRepo.getTransactionAsync(tranId)
-////            }
-////            Timber.v(test.toString())
-////        }
-//    }
 }
