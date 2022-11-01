@@ -15,6 +15,7 @@
     <dimen name="cardCornerRadius">4dp</dimen>
     <dimen name="cardFullMargin">4dp</dimen>
     <dimen name="cardSharedMargin">1dp</dimen>
+    <dimen name="card_content_pad">12dp</dimen>
 
     <dimen name="circleIndicatorBig">8dp</dimen>
     <dimen name="circleIndicatorSmall">6dp</dimen>
@@ -68,9 +69,28 @@
     <dimen name="chipToTextFWHelperTopPadding">12dp</dimen>
     <dimen name="textFToParentTopPadding">10dp</dimen>
     <dimen name="textFWHelperToParentBottomPadding">14dp</dimen>
+    <dimen name="tran_view_spacedBy">8dp</dimen>
+
+    <!-- OutlinedTextField Helper Texts (tfh) -->
+    <dimen name="tfh_horiPad">16dp</dimen>
+    <dimen name="tfh_topPad">4dp</dimen>
+    <dimen name="tfh_height">16dp</dimen>
 
     <!-- TransactionListFragment -->
     <dimen name="tranListMarginOuterStartEndTop">8dp</dimen>
     <dimen name="tranListMarginInnerStartEnd">4dp</dimen>
     <dimen name="tranListMarginOuterBottomInnerTopBottom">2dp</dimen>
+
+    <!-- InputDialog (id) -->
+    <dimen name="id_topPad">16dp</dimen>
+    <dimen name="id_botPad">4dp</dimen>
+    <dimen name="id_content_horiPad">24dp</dimen>
+    <dimen name="id_tf_topPad">4dp</dimen>
+    <dimen name="id_button_horiPad">8dp</dimen>
+    <dimen name="id_button_topPad">4dp</dimen>
+    <dimen name="id_button_spacedBy">2dp</dimen>
+
+    <!-- Chip -->
+    <dimen name="chip_height">56dp</dimen>
+    <dimen name="chip_border_width">2dp</dimen>
 </resources>

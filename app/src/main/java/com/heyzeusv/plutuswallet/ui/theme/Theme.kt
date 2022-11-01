@@ -12,6 +12,7 @@ fun PlutusWalletTheme(
 
     MaterialTheme(
         colors = if (darkTheme) DarkColors else LightColors,
+        typography = PlutusWalletTypography,
         content = content
     )
 }

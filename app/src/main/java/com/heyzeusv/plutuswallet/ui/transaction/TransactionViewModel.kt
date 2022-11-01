@@ -129,11 +129,6 @@ class TransactionViewModel @Inject constructor(
     fun updatePeriodList(newList: MutableList<String>) { _periodList.value = newList }
 
 
-    // determines when to show DatePicker
-    private val _showDateDialog = MutableStateFlow(false)
-    val showDateDialog: StateFlow<Boolean> get() = _showDateDialog
-    fun updateDateDialog(newValue: Boolean) { _showDateDialog.value = newValue }
-
     // determines when to show AlertDialogs
     private val _showAccountDialog = MutableStateFlow(false)
     val showAccountDialog: StateFlow<Boolean> get() = _showAccountDialog
@@ -316,6 +311,10 @@ class TransactionViewModel @Inject constructor(
         return calendar.time
     }
 
+    /**
+     *  Removes thousands symbols and replaces decimal symbol with '.'
+     *  if decimalPlaces is true from [numString]
+     */
     private fun removeSymbols(numString: String): String {
         var chars = ""
         // retrieves only numbers in numString
