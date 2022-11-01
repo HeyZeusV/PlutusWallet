@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Card
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -57,7 +59,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -70,11 +71,13 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.window.Dialog
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.DateUtils
@@ -91,7 +94,30 @@ fun TransactionCompose(
     val scope = rememberCoroutineScope()
     val saveSuccess by tranVM.saveSuccess.collectAsState()
     val saved = stringResource(R.string.snackbar_saved)
+
+    val transaction by tranVM.transaction.collectAsState()
+    val title by tranVM.title.collectAsState()
+    val date by tranVM.date.collectAsState()
+    val account by tranVM.account.collectAsState()
+    val total by tranVM.totalFieldValue.collectAsState()
+    val typeSelected by tranVM.typeSelected.collectAsState()
+    val expenseCat by tranVM.expenseCat.collectAsState()
+    val incomeCat by tranVM.incomeCat.collectAsState()
+    val memo by tranVM.memo.collectAsState()
+    val repeat by tranVM.repeat.collectAsState()
+    val period by tranVM.period.collectAsState()
+    val frequency by tranVM.frequencyFieldValue.collectAsState()
+
+    val accountList by tranVM.accountList.collectAsState()
+    val expenseCatList by tranVM.expenseCatList.collectAsState()
+    val incomeCatList by tranVM.incomeCatList.collectAsState()
+    val periodList by tranVM.periodList.collectAsState()
+
+    val showAccountDialog by tranVM.showAccountDialog.collectAsState()
+    val showExpenseDialog by tranVM.showExpenseDialog.collectAsState()
+    val showIncomeDialog by tranVM.showIncomeDialog.collectAsState()
     val showFutureDialog by tranVM.showFutureDialog.collectAsState()
+    val showDateDialog by tranVM.showDateDialog.collectAsState()
 
     LaunchedEffect(key1 = saveSuccess) {
         if (saveSuccess) {
@@ -114,6 +140,11 @@ fun TransactionCompose(
             },
             backgroundColor = MaterialTheme.colors.background
         ) {
+            if (showDateDialog) {
+                val dateObj = transaction.date
+                DateUtils.datePickerDialog(LocalView.current, dateObj, tranVM::onDateSelected).show()
+                tranVM.updateDateDialog(false)
+            }
             if (showFutureDialog) {
                 FutureAlertDialog(
                     onConfirm = { tranVM.futureDialogConfirm() },
@@ -134,51 +165,104 @@ fun TransactionCompose(
                         .verticalScroll(rememberScrollState())
                 ) {
                     TransactionTextField(
-                        textField = TransactionTextFields.TITLE,
-                        tranVM = tranVM,
+                        value = title,
+                        onValueChanged = { tranVM.updateTitle(it) },
+                        label = stringResource(R.string.transaction_title),
+                        helper = stringResource(R.string.transaction_title_hint),
+                        maxLength = integerResource(R.integer.maxLengthTitle),
                         modifier = Modifier.padding(
                             top = dimensionResource(R.dimen.textFToParentTopPadding)
                         )
                     )
                     TransactionDate(
-                        tranVM = tranVM,
+                        date = date,
+                        label = stringResource(R.string.transaction_date),
+                        onPressed = { tranVM.updateDateDialog(true) },
                         modifier = Modifier.padding(
                             top = dimensionResource(R.dimen.textFToTextFWHelperTopPadding)
                         )
                     )
                     TransactionDropDownMenu(
-                        type = TransactionDropMenus.ACCOUNT,
-                        tranVM = tranVM,
+                        value = account,
+                        list = accountList,
+                        onClick = tranVM::updateAccount,
+                        label = stringResource(R.string.transaction_account),
+                        createNew = stringResource(R.string.account_create),
+                        showInputDialog = showAccountDialog,
+                        updateInputDialog = { tranVM.updateAccountDialog(true) },
+                        dialogTitle = stringResource(R.string.alert_dialog_create_account),
+                        dialogOnConfirm = tranVM::insertAccount,
+                        dialogOnDismiss = { tranVM.updateAccountDialog(false) },
                         modifier = Modifier.padding(
                             top = dimensionResource(R.dimen.textFToViewTopPadding)
                         )
                     )
                     TransactionNumberInput(
-                        numberField = if (tranVM.setVals.decimalPlaces) {
-                            TransactionNumberFields.TOTAL_DECIMAL
+                        textFieldValue = total,
+                        onValueChanged = tranVM::updateTotalFieldValue,
+                        label = stringResource(R.string.transaction_total),
+                        maxLength = integerResource(if (tranVM.setVals.decimalPlaces) {
+                            R.integer.maxLengthTotalDecimal
                         } else {
-                            TransactionNumberFields.TOTAL_INTEGER
-                        },
-                        tranVM = tranVM,
+                            R.integer.maxLengthTotalInteger
+                        }),
                         modifier = Modifier.padding(
                             top = dimensionResource(R.dimen.textFToViewTopPadding)
                         )
                     )
-                    TransactionCategories(
-                        tranVM = tranVM,
-                        modifier = Modifier.padding(
-                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
-                        )
-                    )
+                    when (typeSelected) {
+                        TransactionType.EXPENSE -> {
+                            TransactionCategories(
+                                typeSelected = typeSelected,
+                                chipExpenseOnClick = { tranVM.updateTypeSelected(TransactionType.EXPENSE) },
+                                chipIncomeOnClick = { tranVM.updateTypeSelected(TransactionType.INCOME) },
+                                category = expenseCat,
+                                categoryList = expenseCatList,
+                                dropDownOnClick = tranVM::updateExpenseCat,
+                                showInputDialog = showExpenseDialog,
+                                updateInputDialog = { tranVM.updateExpenseDialog(true) },
+                                dialogOnConfirm = tranVM::insertCategory,
+                                dialogOnDismiss = { tranVM.updateExpenseDialog(false) },
+                                modifier = Modifier.padding(
+                                    top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                                )
+                            )
+                        }
+                        TransactionType.INCOME -> {
+                            TransactionCategories(
+                                typeSelected = typeSelected,
+                                chipExpenseOnClick = { tranVM.updateTypeSelected(TransactionType.EXPENSE) },
+                                chipIncomeOnClick = { tranVM.updateTypeSelected(TransactionType.INCOME) },
+                                category = incomeCat,
+                                categoryList = incomeCatList,
+                                dropDownOnClick = tranVM::updateIncomeCat,
+                                showInputDialog = showIncomeDialog,
+                                updateInputDialog = { tranVM.updateIncomeDialog(true) },
+                                dialogOnConfirm = tranVM::insertCategory,
+                                dialogOnDismiss = { tranVM.updateIncomeDialog(false) },
+                                modifier = Modifier.padding(
+                                    top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                                )
+                            )
+                        }
+                    }
                     TransactionTextField(
-                        textField = TransactionTextFields.MEMO,
-                        tranVM = tranVM,
-                        modifier = Modifier.padding(
-                            top = dimensionResource(R.dimen.textFToViewTopPadding)
-                        )
+                        value = memo,
+                        onValueChanged = { tranVM.updateMemo(it) },
+                        label = stringResource(R.string.transaction_memo),
+                        helper = stringResource(R.string.transaction_memo_hint),
+                        maxLength = integerResource(R.integer.maxLengthMemo),
+                        modifier = Modifier.padding(top = dimensionResource(R.dimen.textFToViewTopPadding))
                     )
                     TransactionRepeating(
-                        tranVM = tranVM,
+                        newTransaction = tranVM.newTran,
+                        chipSelected = repeat,
+                        chipOnClick = { tranVM.updateRepeat(!repeat) },
+                        dropDownValue = period,
+                        dropDownList = periodList,
+                        dropDownOnClick = tranVM::updatePeriod,
+                        inputValue = frequency,
+                        inputOnValueChanged = tranVM::updateFrequencyFieldValue,
                         scope = scope,
                         modifier = Modifier.padding(
                             top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
@@ -225,31 +309,19 @@ fun AppBar(
 
 @Composable
 fun TransactionTextField(
-    textField: TransactionTextFields,
-    tranVM: TransactionViewModel,
+    value: String,
+    onValueChanged: (String) -> Unit,
+    label: String,
+    helper: String,
+    maxLength: Int,
     modifier: Modifier = Modifier,
-    textFieldModifier: Modifier = Modifier
 ) {
-
-    val value by when(textField) {
-        TransactionTextFields.TITLE -> tranVM.title.collectAsState()
-        TransactionTextFields.MEMO -> tranVM.memo.collectAsState()
-    }
-    val maxLength = integerResource(textField.length)
-
     Column(modifier = modifier) {
         OutlinedTextField(
             value = value,
-            onValueChange = {
-                if (it.length <= maxLength) {
-                    when (textField) {
-                        TransactionTextFields.TITLE -> tranVM.updateTitle(it)
-                        TransactionTextFields.MEMO -> tranVM.updateMemo(it)
-                    }
-                }
-            },
-            modifier = textFieldModifier.fillMaxWidth(),
-            label = { Text(stringResource(textField.labelId)) },
+            onValueChange = { if (it.length <= maxLength) onValueChanged(it) },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(text = label) },
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.secondary,
@@ -264,7 +336,7 @@ fun TransactionTextField(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(textField.helperId),
+                text = helper,
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.caption
             )
@@ -278,30 +350,21 @@ fun TransactionTextField(
 
 @Composable
 fun TransactionDate(
-    tranVM: TransactionViewModel,
+    date: String,
+    label: String,
+    onPressed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tran = tranVM.transaction.collectAsState()
-    val dateString by tranVM.date.collectAsState()
     val source = remember { MutableInteractionSource() }
-    val selectDate by tranVM.selectDate.collectAsState()
+    if (source.collectIsPressedAsState().value) onPressed()
 
     DisableSelection {
-        if (selectDate) {
-            val date = tran.value.date
-            DateUtils.datePickerDialog(LocalView.current, date, tranVM::onDateSelected).show()
-            tranVM.updateSelectDate(false)
-        }
         OutlinedTextField(
-            value = dateString,
+            value = date,
             onValueChange = { },
-            modifier = modifier
-                .fillMaxWidth()
-                .onFocusChanged {
-                    if (it.isFocused) tranVM.updateSelectDate(true)
-                },
+            modifier = modifier.fillMaxWidth(),
             readOnly = true,
-            label = { Text(text = stringResource(R.string.transaction_date)) },
+            label = { Text(text = label) },
             interactionSource = source,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.secondary,
@@ -309,49 +372,41 @@ fun TransactionDate(
             )
         )
     }
-
-    if (source.collectIsPressedAsState().value) tranVM.updateSelectDate(true)
 }
 
 @Composable
 fun TransactionDropDownMenu(
-    type: TransactionDropMenus,
-    tranVM: TransactionViewModel,
+    value: String,
+    list: MutableList<String>,
+    onClick: (String) -> Unit,
+    label: String,
+    createNew: String,
+    showInputDialog: Boolean,
+    updateInputDialog: () -> Unit,
+    dialogTitle: String,
+    dialogOnConfirm: (String, String) -> Unit,
+    dialogOnDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
     // used to make sure DropdownMenuItems are the same size as OutlinedTextField
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     val source = remember { MutableInteractionSource() }
-    val showDialog by tranVM.showInputDialog.collectAsState()
-    val typeSelected by tranVM.typeSelected.collectAsState()
-
-    val value = when {
-        type == TransactionDropMenus.ACCOUNT -> tranVM.account.collectAsState()
-        type == TransactionDropMenus.PERIOD -> tranVM.period.collectAsState()
-        typeSelected == TransactionType.INCOME -> tranVM.incomeCat.collectAsState()
-        else -> tranVM.expenseCat.collectAsState()
-    }
-    val list by when {
-        type == TransactionDropMenus.ACCOUNT -> tranVM.accountList.collectAsState()
-        type == TransactionDropMenus.PERIOD -> tranVM.periodArray.collectAsState()
-        typeSelected == TransactionType.INCOME -> tranVM.incomeCatList.collectAsState()
-        else -> tranVM.expenseCatList.collectAsState()
-    }
-    val label = stringResource(type.labelId)
+    if (source.collectIsPressedAsState().value) expanded = true
 
     Column(modifier = modifier) {
         DisableSelection {
-            if (showDialog) {
+            if (showInputDialog) {
                 expanded = false
                 InputAlertDialog(
-                    tranVM = tranVM,
-                    type = type,
-                    onDismiss = { tranVM.updateInputDialog(false) }
+                    createNew = createNew,
+                    title = dialogTitle,
+                    onConfirm = dialogOnConfirm,
+                    onDismiss = dialogOnDismiss
                 )
             }
             OutlinedTextField(
-                value = value.value,
+                value = value,
                 onValueChange = { },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -388,18 +443,13 @@ fun TransactionDropDownMenu(
                     .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                     .padding(start = 12.dp)
             ) {
-                list.forEachIndexed { index, name ->
+                list.forEach { name ->
                     DropdownMenuItem(
                         onClick = {
-                            if (index == list.size - 1) {
-                                tranVM.updateInputDialog(true)
+                            if (name == createNew) {
+                                updateInputDialog()
                             } else {
-                                when(type) {
-                                    TransactionDropMenus.ACCOUNT -> tranVM.updateAccount(name)
-                                    TransactionDropMenus.EXPENSE -> tranVM.updateExpenseCat(name)
-                                    TransactionDropMenus.INCOME -> tranVM.updateIncomeCat(name)
-                                    TransactionDropMenus.PERIOD -> tranVM.updatePeriod(name)
-                                }
+                                onClick(name)
                                 expanded = false
                             }
                         }
@@ -410,55 +460,33 @@ fun TransactionDropDownMenu(
             }
         }
     }
-    if (source.collectIsPressedAsState().value) expanded = true
 }
 
 @Composable
 fun InputAlertDialog(
-    tranVM: TransactionViewModel,
-    type: TransactionDropMenus,
+    createNew: String,
+    title: String,
+    onConfirm: (String, String) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var text by remember { mutableStateOf("") }
-    val showDialog by tranVM.showInputDialog.collectAsState()
     var isError by remember { mutableStateOf(false) }
-    val createNew = stringResource(type.createNewId)
 
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        if (text.isNotBlank()) {
-                            isError = false
-                            when (type) {
-                                TransactionDropMenus.ACCOUNT -> tranVM.insertAccount(text, createNew)
-                                else  -> tranVM.insertCategory(text, createNew)
-                            }
-                            tranVM.updateInputDialog(false)
-                        } else {
-                            isError = true
-                        }
-                    }
-                ) {
-                    Text(text = stringResource(R.string.alert_dialog_save))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(text = stringResource(R.string.alert_dialog_cancel))
-                }
-            },
-            modifier = modifier,
-            title = { Text(text = stringResource(type.alertTitleId)) },
-            text = {
-                Column {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = MaterialTheme.shapes.medium,
+            elevation = 8.dp
+        ) {
+            Column(modifier = modifier.padding(top = 16.dp, bottom = 4.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                    Text(text = title)
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
-                        modifier = Modifier.padding(top = 4.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
                         label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
                         isError = isError,
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -470,41 +498,66 @@ fun InputAlertDialog(
                     if (isError) {
                         Text(
                             text = stringResource(R.string.alert_dialog_input_error),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, top = 4.dp, end = 16.dp)
+                                .height(16.dp),
+                            color = MaterialTheme.colors.error,
                             style = MaterialTheme.typography.caption
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                        .padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.End)
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(
+                            text = stringResource(R.string.alert_dialog_cancel).uppercase(),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                    TextButton(
+                        onClick = {
+                            if (text.isNotBlank()) {
+                                isError = false
+                                onConfirm(text, createNew)
+                            } else {
+                                isError = true
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.alert_dialog_save).uppercase(),
+                            fontWeight = FontWeight.Medium
                         )
                     }
                 }
             }
-        )
+        }
     }
 }
 
 @Composable
 fun TransactionNumberInput(
-    numberField: TransactionNumberFields,
-    tranVM: TransactionViewModel,
+    textFieldValue: TextFieldValue,
+    onValueChanged: (String) -> Unit,
+    label: String,
+    maxLength: Int,
     modifier: Modifier = Modifier,
     numberFieldModifier: Modifier = Modifier
 ) {
-    val textFieldValue by when (numberField) {
-        TransactionNumberFields.FREQUENCY -> tranVM.frequencyFieldValue.collectAsState()
-        else -> tranVM.totalFieldValue.collectAsState()
-    }
-    val maxLength = integerResource(numberField.length)
-
     Column(modifier = modifier) {
         OutlinedTextField(
             value = textFieldValue,
-            onValueChange = {
-                if (it.text.length <= maxLength) {
-                    when (numberField) {
-                        TransactionNumberFields.FREQUENCY -> tranVM.updateFrequencyFieldValue(it.text)
-                        else -> tranVM.updateTotalFieldValue(it.text)
-                    }
-                }
-            },
+            onValueChange = { if (it.text.length <= maxLength) onValueChanged(it.text) },
             modifier = numberFieldModifier.fillMaxWidth(),
-            label = { Text(stringResource(numberField.labelId)) },
+            label = { Text(label) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.secondary,
@@ -512,7 +565,7 @@ fun TransactionNumberInput(
             )
         )
         Text(
-            text = "${textFieldValue.text.length}/$maxLength",
+            text = "${textFieldValue.text.length}/$maxLength}",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, top = 4.dp, end = 16.dp)
@@ -525,11 +578,18 @@ fun TransactionNumberInput(
 
 @Composable
 fun TransactionCategories(
-    tranVM: TransactionViewModel,
+    typeSelected: TransactionType,
+    chipExpenseOnClick: () -> Unit,
+    chipIncomeOnClick: () -> Unit,
+    category: String,
+    categoryList: MutableList<String>,
+    dropDownOnClick: (String) -> Unit,
+    showInputDialog: Boolean,
+    updateInputDialog: () -> Unit,
+    dialogOnConfirm: (String, String) -> Unit,
+    dialogOnDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val typeSelected by tranVM.typeSelected.collectAsState()
-
     Column(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -540,22 +600,31 @@ fun TransactionCategories(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TransactionChip(
-                chip = TransactionChips.EXPENSE,
-                tranVM = tranVM,
+                selected = typeSelected == TransactionType.EXPENSE,
+                onClick = chipExpenseOnClick,
+                label = stringResource(R.string.type_expense),
+                showIcon = false,
                 modifier = Modifier.weight(1f)
             )
             TransactionChip(
-                chip = TransactionChips.INCOME,
-                tranVM = tranVM,
+                selected = typeSelected == TransactionType.INCOME,
+                onClick = chipIncomeOnClick,
+                label = stringResource(R.string.type_income),
+                showIcon = false,
                 modifier = Modifier.weight(1f)
             )
         }
         TransactionDropDownMenu(
-            type = when (typeSelected) {
-                TransactionType.EXPENSE -> TransactionDropMenus.EXPENSE
-                TransactionType.INCOME -> TransactionDropMenus.INCOME
-            },
-            tranVM = tranVM,
+            value = category,
+            list = categoryList,
+            onClick = dropDownOnClick,
+            label = stringResource(R.string.transaction_category),
+            createNew = stringResource(R.string.category_create),
+            showInputDialog = showInputDialog,
+            updateInputDialog = updateInputDialog,
+            dialogTitle = stringResource(R.string.alert_dialog_create_category),
+            dialogOnConfirm = dialogOnConfirm,
+            dialogOnDismiss = dialogOnDismiss,
             modifier = Modifier.padding(
                 top = dimensionResource(R.dimen.textFToViewTopPadding)
             )
@@ -566,41 +635,25 @@ fun TransactionCategories(
 @OptIn(ExperimentalMaterialApi::class, ExperimentalUnitApi::class)
 @Composable
 fun TransactionChip(
-    chip: TransactionChips,
-    tranVM: TransactionViewModel,
+    selected: Boolean,
+    onClick: () -> Unit,
+    label: String,
+    showIcon: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val typeSelected by tranVM.typeSelected.collectAsState()
-    val selected by when(chip) {
-        TransactionChips.EXPENSE, TransactionChips.INCOME -> typeSelected.boolValue.collectAsState()
-        TransactionChips.REPEAT -> tranVM.repeat.collectAsState()
-    }
-
     FilterChip(
-        selected = when(chip) {
-            TransactionChips.EXPENSE -> !selected
-            TransactionChips.INCOME -> selected
-            TransactionChips.REPEAT -> selected
-        },
-        onClick = {
-            when (chip) {
-                TransactionChips.EXPENSE -> tranVM.updateTypeSelected(TransactionType.EXPENSE)
-                TransactionChips.INCOME -> tranVM.updateTypeSelected(TransactionType.INCOME)
-                TransactionChips.REPEAT -> tranVM.updateRepeat(!selected)
-            }
-        },
+        selected = selected,
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(4.dp),
         border = BorderStroke(
             width = 2.dp,
-            color = when {
-                (chip == TransactionChips.INCOME || chip == TransactionChips.REPEAT) && selected -> {
-                    MaterialTheme.colors.secondary
-                }
-                chip == TransactionChips.EXPENSE && !selected -> MaterialTheme.colors.secondary
-                else -> colorResource(R.color.colorButtonUnselected)
+            color = if (selected) {
+                MaterialTheme.colors.secondary
+            } else {
+                colorResource(R.color.colorButtonUnselected)
             }
         ),
         colors = ChipDefaults.filterChipColors(
@@ -608,7 +661,7 @@ fun TransactionChip(
             selectedBackgroundColor = Color.White
         ),
         trailingIcon = {
-            if (chip.icon) {
+            if (showIcon) {
                 Icon(
                     imageVector = if (selected) {
                         Icons.Filled.KeyboardArrowUp
@@ -626,16 +679,14 @@ fun TransactionChip(
         },
         content = {
             Text(
-                text = stringResource(chip.labelId).uppercase(),
+                text = label.uppercase(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                color = when {
-                    (chip == TransactionChips.INCOME || chip == TransactionChips.REPEAT) && selected -> {
-                        MaterialTheme.colors.secondary
-                    }
-                    chip == TransactionChips.EXPENSE && !selected -> MaterialTheme.colors.secondary
-                    else -> colorResource(R.color.colorButtonUnselected)
+                color = if (selected) {
+                    MaterialTheme.colors.secondary
+                } else {
+                    colorResource(R.color.colorButtonUnselected)
                 },
                 fontSize = TextUnit(18f, TextUnitType.Sp),
                 fontWeight = FontWeight.Medium,
@@ -649,22 +700,32 @@ fun TransactionChip(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionRepeating(
-    tranVM: TransactionViewModel,
+    newTransaction: Boolean,
+    chipSelected: Boolean,
+    chipOnClick: () -> Unit,
+    dropDownValue: String,
+    dropDownList: MutableList<String>,
+    dropDownOnClick: (String) -> Unit,
+    inputValue: TextFieldValue,
+    inputOnValueChanged: (String) -> Unit,
     scope: CoroutineScope,
     modifier: Modifier = Modifier
 ) {
-    val visible by tranVM.repeat.collectAsState()
     val bringIntoView = remember { BringIntoViewRequester() }
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(key1 = visible) { if (visible && tranVM.newTran) focusRequester.requestFocus() }
+    LaunchedEffect(key1 = chipSelected) {
+        if (chipSelected && newTransaction) focusRequester.requestFocus()
+    }
 
     Column(modifier = modifier) {
         TransactionChip(
-            chip = TransactionChips.REPEAT,
-            tranVM = tranVM
+            selected = chipSelected,
+            onClick = chipOnClick,
+            label = stringResource(R.string.transaction_repeat),
+            showIcon = false
         )
-        AnimatedVisibility(visible = visible) {
+        AnimatedVisibility(visible = chipSelected) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -675,15 +736,25 @@ fun TransactionRepeating(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TransactionDropDownMenu(
-                    type = TransactionDropMenus.PERIOD,
-                    tranVM = tranVM,
+                    value = dropDownValue,
+                    list = dropDownList,
+                    onClick = dropDownOnClick,
+                    label = stringResource(R.string.transaction_period),
+                    createNew = stringResource(R.string.blank_string),
+                    updateInputDialog = {},
+                    showInputDialog = false,
+                    dialogTitle = stringResource(R.string.blank_string),
+                    dialogOnConfirm = { _, _ -> },
+                    dialogOnDismiss = {},
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 4.dp)
                 )
                 TransactionNumberInput(
-                    numberField = TransactionNumberFields.FREQUENCY,
-                    tranVM = tranVM,
+                    textFieldValue = inputValue,
+                    onValueChanged = inputOnValueChanged,
+                    label = stringResource(R.string.transaction_frequency),
+                    maxLength = integerResource(R.integer.maxLengthFrequency),
                     modifier = Modifier
                         .weight(1f)
                         .padding(

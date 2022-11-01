@@ -23,6 +23,7 @@
     <string name="alert_dialog_yes">Yes</string>
     <string name="app_icon">App Icon</string>
     <string name="app_name" translatable="false">Plutus\' Wallet</string>
+    <string name="blank_string" translatable="false"> </string>
     <string name="category_all">All</string>
     <string name="category_create">Create New Category</string>
     <string name="cfl_no_transactions">No transactions fulfill the filters being applied!</string>

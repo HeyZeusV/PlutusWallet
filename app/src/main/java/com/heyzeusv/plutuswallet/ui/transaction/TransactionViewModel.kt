@@ -124,20 +124,28 @@ class TransactionViewModel @Inject constructor(
     val incomeCatList: StateFlow<MutableList<String>> get() = _incomeCatList
     fun updateIncomeCatList(newList: MutableList<String>) { _incomeCatList.value = newList }
 
-    private val _periodArray = MutableStateFlow(mutableListOf(""))
-    val periodArray: StateFlow<MutableList<String>> get() = _periodArray
-    fun updatePeriodArray(newList: MutableList<String>) { _periodArray.value = newList }
+    private val _periodList = MutableStateFlow(mutableListOf(""))
+    val periodList: StateFlow<MutableList<String>> get() = _periodList
+    fun updatePeriodList(newList: MutableList<String>) { _periodList.value = newList }
 
 
     // determines when to show DatePicker
-    private val _selectDate = MutableStateFlow(false)
-    val selectDate: StateFlow<Boolean> get() = _selectDate
-    fun updateSelectDate(newValue: Boolean) { _selectDate.value = newValue }
+    private val _showDateDialog = MutableStateFlow(false)
+    val showDateDialog: StateFlow<Boolean> get() = _showDateDialog
+    fun updateDateDialog(newValue: Boolean) { _showDateDialog.value = newValue }
 
     // determines when to show AlertDialogs
-    private val _showInputDialog = MutableStateFlow(false)
-    val showInputDialog: StateFlow<Boolean> get() = _showInputDialog
-    fun updateInputDialog(newValue: Boolean) { _showInputDialog.value = newValue }
+    private val _showAccountDialog = MutableStateFlow(false)
+    val showAccountDialog: StateFlow<Boolean> get() = _showAccountDialog
+    fun updateAccountDialog(newValue: Boolean) { _showAccountDialog.value = newValue }
+
+    private val _showExpenseDialog = MutableStateFlow(false)
+    val showExpenseDialog: StateFlow<Boolean> get() = _showExpenseDialog
+    fun updateExpenseDialog(newValue: Boolean) { _showExpenseDialog.value = newValue }
+
+    private val _showIncomeDialog = MutableStateFlow(false)
+    val showIncomeDialog: StateFlow<Boolean> get() = _showIncomeDialog
+    fun updateIncomeDialog(newValue: Boolean) { _showIncomeDialog.value = newValue }
 
     private val _showFutureDialog = MutableStateFlow(false)
     val showFutureDialog: StateFlow<Boolean> get() = _showFutureDialog
@@ -177,7 +185,7 @@ class TransactionViewModel @Inject constructor(
         }
         updateMemo(transaction.memo)
         updateRepeat(transaction.repeating)
-        periodArray.value.let {
+        periodList.value.let {
             // gets translated period value using periodArray
             updatePeriod(when (transaction.period) {
                 0 -> it[0]
@@ -228,7 +236,7 @@ class TransactionViewModel @Inject constructor(
 
             tran.repeating = repeat.value
             if (tran.repeating) tran.futureDate = createFutureDate()
-            tran.period = periodArray.value.indexOf(period.value)
+            tran.period = periodList.value.indexOf(period.value)
             val frequencyFromFieldValue = frequencyFieldValue.value.text
             // frequency must always be at least 1
             tran.frequency = when {
@@ -368,6 +376,7 @@ class TransactionViewModel @Inject constructor(
             }
             updateAccount(name)
         }
+        updateAccountDialog(false)
     }
 
     /**
@@ -390,6 +399,7 @@ class TransactionViewModel @Inject constructor(
                     }
                 }
                 updateExpenseCat(name)
+                updateExpenseDialog(false)
             }
             TransactionType.INCOME -> {
                 incomeCatList.value.let {
@@ -404,6 +414,7 @@ class TransactionViewModel @Inject constructor(
                     }
                 }
                 updateIncomeCat(name)
+                updateIncomeDialog(false)
             }
         }
     }

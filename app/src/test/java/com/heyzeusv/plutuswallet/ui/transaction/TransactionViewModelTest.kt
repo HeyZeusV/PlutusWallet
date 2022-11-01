@@ -43,7 +43,7 @@ internal class TransactionViewModelTest {
     @DisplayName("Should take Transaction given and pass its values to LiveData")
     fun setTranData() {
 
-        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
+        tranVM.periodList.value = listOf("Days", "Weeks", "Months", "Years")
 
         tranVM.setTranData(dd.tran1)
 
@@ -60,7 +60,7 @@ internal class TransactionViewModelTest {
     fun saveTransaction() {
 
         tranVM.tranLD = MutableLiveData(dd.tran1)
-        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
+        tranVM.periodList.value = listOf("Days", "Weeks", "Months", "Years")
         tranVM.account = "Test Account"
         tranVM.total.value = "1000.99"
         tranVM.typeSelected.value = true
@@ -96,7 +96,7 @@ internal class TransactionViewModelTest {
     fun saveTransactionRepeatWarning() {
 
         tranVM.tranLD = MutableLiveData(dd.tran1)
-        tranVM.periodArray.value = listOf("Days", "Weeks", "Months", "Years")
+        tranVM.periodList.value = listOf("Days", "Weeks", "Months", "Years")
         // in order to get dateChanged == true
         tranVM.onDateSelected(Date(86400000 * 3))
         tranVM.account = "Test Account"
