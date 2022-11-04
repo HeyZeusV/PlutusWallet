@@ -3,9 +3,16 @@ package com.heyzeusv.plutuswallet.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -14,17 +21,27 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PermDeviceInformation
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -39,6 +56,7 @@ import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 /**
  *  Handles the loading and replacement of fragments into their containers, as well as
@@ -105,12 +123,20 @@ class MainActivity : BaseActivity() {
 fun MainComposable(
     tranListVM: TransactionListViewModel
 ) {
+    val scaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope()
+
     PlutusWalletTheme {
         Scaffold(
+            scaffoldState = scaffoldState,
             topBar = {
                 PWAppBar(
                     title = stringResource(R.string.cfl_overview),
-                    onNavPressed = { /*TODO*/ },
+                    onNavPressed = {
+                        coroutineScope.launch {
+                            scaffoldState.drawerState.open()
+                        }
+                    },
                     navIcon = Icons.Filled.Menu,
                     navDescription = stringResource(R.string.cfl_drawer_description),
                     onActionLeftPressed = { /*TODO*/ },
@@ -120,6 +146,9 @@ fun MainComposable(
                     actionRightIcon = Icons.Filled.Add,
                     actionRightDescription = stringResource(R.string.cfl_menu_transaction)
                 )
+            },
+            drawerContent = {
+                PWDrawer()
             },
             backgroundColor = MaterialTheme.colors.background
         ) {
@@ -194,7 +223,7 @@ fun PWAppBar(
 
 @Preview
 @Composable
-fun AppBarPreview() {
+fun PWAppBarPreview() {
     PlutusWalletTheme {
         PWAppBar(
             title = "Preview",
@@ -209,4 +238,106 @@ fun AppBarPreview() {
             actionRightDescription = "New"
         )
     }
+}
+
+/**
+ *  Might have to remove later, depending on Navigation
+ */
+enum class PWDrawerItems(val icon: ImageVector, val labelId: Int) {
+    ACCOUNTS(Icons.Filled.AccountBalance, R.string.accounts),
+    CATEGORIES(Icons.Filled.Category, R.string.categories),
+    SETTINGS(Icons.Filled.Settings, R.string.settings),
+    ABOUT(Icons.Filled.PermDeviceInformation, R.string.about)
+}
+
+@Composable
+fun PWDrawer() {
+    Icons.Filled.AccountBalance
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.onBackground)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.primary)
+                .padding(vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                painter = painterResource(R.mipmap.ic_launcher_foreground),
+                contentDescription = stringResource(R.string.app_icon),
+                modifier = Modifier
+                    .scale(1.5f)
+                    .padding(bottom = 8.dp),
+                tint = Color.Unspecified
+            )
+            Text(
+                text = stringResource(R.string.app_name),
+                color = MaterialTheme.colors.onBackground,
+                style = MaterialTheme.typography.h4
+            )
+        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+        ) {
+            items(PWDrawerItems.values()) { item ->
+                PWDrawerItem(
+                    onClick = { /*TODO*/ },
+                    icon = item.icon,
+                    label = stringResource(item.labelId)
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PWDrawerPreview() {
+    PlutusWalletTheme {
+        PWDrawer()
+    }
+}
+
+@Composable
+fun PWDrawerItem(
+    onClick: () -> Unit,
+    icon: ImageVector,
+    label: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 16.dp
+            ),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = 8.dp
+        )
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label
+        )
+        Text(
+            text = label,
+            modifier = Modifier.align(Alignment.CenterVertically),
+            style = MaterialTheme.typography.body2
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PWDrawerItemPreview() {
+    PWDrawerItem(
+        onClick = { /*TODO*/ },
+        icon = Icons.Filled.AccountBalance,
+        label = stringResource(R.string.accounts)
+    )
 }
