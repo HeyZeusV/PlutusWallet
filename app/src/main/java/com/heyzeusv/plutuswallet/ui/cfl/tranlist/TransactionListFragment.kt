@@ -52,7 +52,7 @@ class TransactionListFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        listVM.setVals = setVals
+//        listVM.setVals = setVals
         tranListAdapter = TranListAdapter(listVM)
 
         // setting up LayoutManager
@@ -145,7 +145,7 @@ class TransactionListFragment : BaseFragment() {
         // checks if there has been a change in settings, updates changes, and updates list
         if (sharedPref[Key.KEY_TRAN_LIST_CHANGED, false]) {
             setVals = SettingsUtils.prepareSettingValues(sharedPref)
-            listVM.setVals = setVals
+//            listVM.setVals = setVals
             tranListAdapter.notifyDataSetChanged()
             sharedPref[Key.KEY_TRAN_LIST_CHANGED] = false
         }

@@ -34,7 +34,8 @@ private const val INCOME = "Income"
  */
 @HiltViewModel
 class TransactionListViewModel @Inject constructor(
-    private val tranRepo: Repository
+    private val tranRepo: Repository,
+    val setVals: SettingsValues
 ) : ViewModel() {
 
     // true if there are more Transactions that repeat with futureDate before Date()
@@ -58,8 +59,9 @@ class TransactionListViewModel @Inject constructor(
     private val _deleteTranEvent = MutableLiveData<Event<ItemViewTransaction>>()
     val deleteTranEvent: LiveData<Event<ItemViewTransaction>> = _deleteTranEvent
 
-    var setVals: SettingsValues = SettingsValues()
-
+    init {
+        updateTranList(FilterInfo())
+    }
     /**
      *  Event that navigates user to Transaction with selected [tranId].
      */

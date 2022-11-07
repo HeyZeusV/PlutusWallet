@@ -2,6 +2,8 @@ package com.heyzeusv.plutuswallet.ui
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
@@ -18,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -85,24 +88,38 @@ import kotlinx.coroutines.launch
 class MainActivity : BaseActivity() {
 
     // DataBinding
-    lateinit var binding: ActivityMainBinding
+//    lateinit var binding: ActivityMainBinding
+
+    // provides instance of TransactionListViewModel
+    private val tranListVM: TransactionListViewModel by viewModels()
+
+    // shared ViewModels
+    private val cflVM: CFLViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         AppCompatDelegate.setDefaultNightMode(sharedPref[Key.KEY_THEME, "-1"].toInt())
 
-        // setting up DataBinding
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        // disables swipe to open drawer
-        binding.activityDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+//        // setting up DataBinding
+//        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+//        // disables swipe to open drawer
+//        binding.activityDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        setContent {
+            PlutusWalletTheme {
+                MainComposable(
+                    tranListVM = tranListVM,
+                    cflVM = cflVM
+                )
+            }
+        }
     }
 
     override fun onStart() {
         super.onStart()
 
-        // uses nav_graph to determine where each button goes from NavigationView
-        binding.activityNavView.setupWithNavController(findNavController(R.id.fragment_container))
+//        // uses nav_graph to determine where each button goes from NavigationView
+//        binding.activityNavView.setupWithNavController(findNavController(R.id.fragment_container))
     }
 
     override fun onResume() {
@@ -125,16 +142,16 @@ class MainActivity : BaseActivity() {
             recreate()
         }
     }
-
-    override fun onBackPressed() {
-
-        if (binding.activityDrawer.isDrawerOpen(GravityCompat.START)) {
-            // close drawer if it is open
-            binding.activityDrawer.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
+//
+//    override fun onBackPressed() {
+//
+//        if (binding.activityDrawer.isDrawerOpen(GravityCompat.START)) {
+//            // close drawer if it is open
+//            binding.activityDrawer.closeDrawer(GravityCompat.START)
+//        } else {
+//            super.onBackPressed()
+//        }
+//    }
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -184,14 +201,31 @@ fun MainComposable(
                     .fillMaxSize()
                     .padding(dimensionResource(R.dimen.cardFullPadding))
             ) {
-                Box(
-                    contentAlignment = Alignment.Center
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    reverseLayout = true,
+                    verticalArrangement = Arrangement.Top
                 ) {
-                    Text(
-                        text = stringResource(R.string.cfl_no_transactions),
-                        textAlign = TextAlign.Center
-
-                    )
+                    items(tranList) { transaction ->
+                        Divider(
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                            thickness = 1.dp
+                        )
+                        TransactionListItem(
+                            ivt = transaction,
+                            setVals = tranListVM.setVals
+                        )
+                    }
+                }
+                if (tranList.isEmpty()) {
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.cfl_no_transactions),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
