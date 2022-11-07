@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.data.model.TransactionInfo
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -71,11 +71,11 @@ class FilterViewModel @Inject constructor(
     private val _resetEvent = MutableLiveData<Event<Boolean>>()
     val resetEvent: LiveData<Event<Boolean>> = _resetEvent
 
-    // used to pass TransactionInfo to CFLViewModel
+    // used to pass FilterInfo to CFLViewModel
     private val _cflChange = MutableLiveData<Event<Boolean>>()
     val cflChange: LiveData<Event<Boolean>> = _cflChange
 
-    var cflTInfo: TransactionInfo = TransactionInfo()
+    var cflTInfo: FilterInfo = FilterInfo()
 
     /**
      *  Retrieves data that will be displayed in Spinners from Repository.
@@ -161,7 +161,7 @@ class FilterViewModel @Inject constructor(
                 if (cats.contains(all)) cats[cats.indexOf(all)] = "All"
 
                 // updating MutableLiveData value in ViewModel
-                cflTInfo = TransactionInfo(
+                cflTInfo = FilterInfo(
                     accFilter.value!!, catFilter.value!!, dateFilter.value!!,
                     type, accSelectedChips, cats,
                     startDate, endDate

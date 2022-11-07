@@ -534,7 +534,209 @@ class FakeRepository @Inject constructor() : Repository {
         }
 
         ivtListLD.value = ivtList
-        return ivtListLD
+        return ivtListLD    
+    }
+
+    override fun getIvt(): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtA(accounts: List<String>): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtAD(
+        accounts: List<String>,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            accounts.contains(it.account) && it.date >= start && it.date <= end
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtAT(
+        accounts: List<String>,
+        type: String
+    ): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { accounts.contains(it.account) && it.type == type }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtATC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>
+    ): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            accounts.contains(it.account) && it.type == type && categories.contains(it.category)
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtATD(
+        accounts: List<String>,
+        type: String,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            accounts.contains(it.account) && it.type == type && it.date >= start && it.date <= end
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtATCD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            accounts.contains(it.account) && it.type == type && categories.contains(it.category) &&
+                    it.date >= start && it.date <= end
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtD(start: Date, end: Date): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.date in start..end }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtT(type: String): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.type == type }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtTC(
+        type: String,
+        categories: List<String>
+    ): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.type == type && categories.contains(it.category) }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtTCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            it.type == type && categories.contains(it.category) && it.date >= start && it.date <= end
+        }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
+    }
+
+    override fun getIvtTD(
+        type: String,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction> {
+
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+        for (tran: Transaction in tranList.filter {
+            it.type == type  && it.date >= start && it.date <= end }) {
+            val ivt = ItemViewTransaction(
+                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
+            )
+            ivtList.add(ivt)
+        }
+
+        return ivtList
     }
 
     fun resetLists() {

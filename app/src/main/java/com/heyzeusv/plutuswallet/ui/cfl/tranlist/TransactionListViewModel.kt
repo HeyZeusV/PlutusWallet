@@ -10,6 +10,7 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
@@ -19,6 +20,8 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 private const val EXPENSE = "Expense"
 private const val INCOME = "Income"
@@ -42,6 +45,9 @@ class TransactionListViewModel @Inject constructor(
 
     // ItemViewTransaction list to be displayed by RecyclerView
     var ivtList: LiveData<List<ItemViewTransaction>> = MutableLiveData(emptyList())
+    private val _tranList = MutableStateFlow(emptyList<ItemViewTransaction>())
+    val tranList: StateFlow<List<ItemViewTransaction>> get() = _tranList
+    fun updateTranList(filter: FilterInfo) { _tranList.value = filteredTransactionList(filter) }
 
     // tried using ivtList.empty in XML, but could not get it to work.. displays empty message
     val ivtEmpty: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -263,6 +269,28 @@ class TransactionListViewModel @Inject constructor(
             category -> tranRepo.getLdIvtTC(type, categoryNames)
             date -> tranRepo.getLdIvtD(start, end)
             else -> tranRepo.getLdIvt()
+        }
+    }
+
+    fun filteredTransactionList(
+        ti: FilterInfo
+    ): List<ItemViewTransaction> {
+
+        return when {
+            ti.account && ti.category && ti.date && ti.categoryNames.contains("All") ->
+                tranRepo.getIvtATD(ti.accountNames, ti.type, ti.start, ti.end)
+            ti.account && ti.category && ti.date ->
+                tranRepo.getIvtATCD(ti.accountNames, ti.type, ti.categoryNames, ti.start, ti.end)
+            ti.account && ti.category && ti.categoryNames.contains("All") -> tranRepo.getIvtAT(ti.accountNames, ti.type)
+            ti.account && ti.category -> tranRepo.getIvtATC(ti.accountNames, ti.type, ti.categoryNames)
+            ti.account && ti.date -> tranRepo.getIvtAD(ti.accountNames, ti.start, ti.end)
+            ti.account -> tranRepo.getIvtA(ti.accountNames)
+            ti.category && ti.date && ti.categoryNames.contains("All") -> tranRepo.getIvtTD(ti.type, ti.start, ti.end)
+            ti.category && ti.date -> tranRepo.getIvtTCD(ti.type, ti.categoryNames, ti.start, ti.end)
+            ti.category && ti.categoryNames.contains("All") -> tranRepo.getIvtT(ti.type)
+            ti.category -> tranRepo.getIvtTC(ti.type, ti.categoryNames)
+            ti.date -> tranRepo.getIvtD(ti.start, ti.end)
+            else -> tranRepo.getIvt()
         }
     }
 }

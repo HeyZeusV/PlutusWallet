@@ -12,7 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.TransactionInfo
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentChartBinding
 import com.heyzeusv.plutuswallet.ui.base.BaseFragment
 import com.heyzeusv.plutuswallet.util.Key
@@ -65,7 +65,7 @@ class ChartFragment : BaseFragment() {
             ContextCompat.getColor(requireContext(), R.color.colorIncomeFour)
         )
 
-        cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: TransactionInfo ->
+        cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: FilterInfo ->
             // LiveData of list of CategoryTotals
             val ctLiveData: LiveData<List<CategoryTotals>> =
                 chartVM.filteredCategoryTotals(

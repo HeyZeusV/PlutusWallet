@@ -3,7 +3,7 @@ package com.heyzeusv.plutuswallet.ui.cfl.filter
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.FakeRepository
-import com.heyzeusv.plutuswallet.data.model.TransactionInfo
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -105,7 +105,7 @@ internal class FilterViewModelTest {
         filterVM.exCatSelectedChips.add("Food")
         filterVM.startDate = Date(0)
         filterVM.endDate = Date(1000)
-        val expectedCFLtInfo = TransactionInfo(
+        val expectedCFLtInfo = FilterInfo(
             account = false, category = true, date = false,
             "Expense", listOf("Cash"), listOf("Food"), Date(0), Date(1000)
         )
@@ -126,7 +126,7 @@ internal class FilterViewModelTest {
         filterVM.inCatSelectedChips.addAll(listOf("Test1", "Test2", "Test3"))
         val expectedStartDate: Date = DateUtils.startOfDay(Date())
         val expectedEndDate = Date(expectedStartDate.time + 86399999)
-        val expectedCFLtInfo = TransactionInfo(
+        val expectedCFLtInfo = FilterInfo(
             account = false, category = false, date = false, "Expense",
             listOf(), listOf(), expectedStartDate, Date(expectedStartDate.time + 86399999)
         )

@@ -2,7 +2,7 @@ package com.heyzeusv.plutuswallet.ui.cfl
 
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
-import com.heyzeusv.plutuswallet.data.model.TransactionInfo
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -25,10 +25,10 @@ internal class CFLViewModelTest {
     }
 
     @Test
-    @DisplayName("Should update tInfoLiveDate with given TransactionInfo")
+    @DisplayName("Should update tInfoLiveDate with given FilterInfo")
     fun updateTInfo() {
 
-        val tInfo = TransactionInfo(
+        val tInfo = FilterInfo(
             account = true, category = true, date = true,
             "Test", listOf("Test"), listOf("Test"), Date(), Date()
         )

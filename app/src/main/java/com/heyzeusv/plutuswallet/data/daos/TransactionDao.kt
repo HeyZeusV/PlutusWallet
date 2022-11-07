@@ -129,6 +129,140 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdCtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<CategoryTotals>>
 
     /**
+     *  Returns list of IVT.
+     */
+    @Query("""SELECT id, title, date, total, account, type, category 
+              FROM `transaction`
+              ORDER BY date ASC""")
+    abstract fun getIvt(): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [accounts].
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE account IN (:accounts)
+              ORDER BY date ASC""")
+    abstract fun getIvtA(accounts: List<String>): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [accounts] and between given [start]/[end] dates.
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND date BETWEEN :start AND :end
+              ORDER BY date ASC""")
+    abstract fun getIvtAD(
+        accounts: List<String>,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [accounts] and [type].
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND type=(:type)
+              ORDER BY date ASC""")
+    abstract fun getIvtAT(accounts: List<String>, type: String): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [accounts], [type], and [categories].
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND type=(:type) AND category IN (:categories)
+              ORDER BY date ASC""")
+    abstract fun getIvtATC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>
+    ): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [accounts], [type], and between given [start]/[end] dates.
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND type=(:type) AND date BETWEEN :start AND :end
+              ORDER BY date ASC""")
+    abstract fun getIvtATD(
+        accounts: List<String>,
+        type: String,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [accounts], [type], [categories],
+     *  and between given [start]/[end] dates.
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND type=(:type) 
+                AND category IN (:categories) AND date BETWEEN :start AND :end
+              ORDER BY date ASC""")
+    abstract fun getIvtATCD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT between given [start]/[end] dates.
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE date BETWEEN :start AND :end
+              ORDER BY date ASC""")
+    abstract fun getIvtD(start: Date, end: Date): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [type].
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE type=(:type)
+              ORDER BY date ASC""")
+    abstract fun getIvtT(type: String): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [type] and [categories].
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE type=(:type) AND category IN (:categories)
+              ORDER BY date ASC""")
+    abstract fun getIvtTC(type: String, categories: List<String>): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [type], [categories],
+     *  and between given [start]/[end] dates.
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE type=(:type) AND category IN (:categories) AND date BETWEEN :start AND :end
+              ORDER BY date ASC""")
+    abstract fun getIvtTCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction>
+
+    /**
+     *  Returns list of IVT of given [type] and between given [start]/[end] dates.
+     */
+    @Query("""SELECT id, title, date, total, account, type, category  
+              FROM `transaction` 
+              WHERE type=(:type) AND date BETWEEN :start AND :end
+              ORDER BY date ASC""")
+    abstract fun getIvtTD(type: String, start: Date, end: Date): List<ItemViewTransaction>
+
+    /**
      *  Returns LD of list of IVT.
      */
     @Query("""SELECT id, title, date, total, account, type, category 

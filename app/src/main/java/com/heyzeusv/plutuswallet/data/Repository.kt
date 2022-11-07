@@ -79,6 +79,50 @@ interface Repository {
 
     fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
 
+    fun getIvt(): List<ItemViewTransaction>
+
+    fun getIvtA(accounts: List<String>): List<ItemViewTransaction>
+
+    fun getIvtAD(accounts: List<String>, start: Date, end: Date): List<ItemViewTransaction>
+
+    fun getIvtAT(accounts: List<String>, type: String): List<ItemViewTransaction>
+
+    fun getIvtATC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>
+    ): List<ItemViewTransaction>
+
+    fun getIvtATD(
+        accounts: List<String>,
+        type: String,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction>
+
+    fun getIvtATCD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction>
+
+    fun getIvtD(start: Date, end: Date): List<ItemViewTransaction>
+
+    fun getIvtT(type: String): List<ItemViewTransaction>
+
+    fun getIvtTC(type: String, categories: List<String>): List<ItemViewTransaction>
+
+    fun getIvtTCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): List<ItemViewTransaction>
+
+    fun getIvtTD(type: String, start: Date, end: Date): List<ItemViewTransaction>
+
     fun getLdIvt(): LiveData<List<ItemViewTransaction>>
 
     fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>

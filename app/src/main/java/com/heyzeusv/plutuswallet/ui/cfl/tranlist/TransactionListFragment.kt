@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
-import com.heyzeusv.plutuswallet.data.model.TransactionInfo
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
 import com.heyzeusv.plutuswallet.ui.base.BaseFragment
 import com.heyzeusv.plutuswallet.ui.cfl.CFLFragmentDirections
@@ -80,7 +80,7 @@ class TransactionListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: TransactionInfo ->
+        cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: FilterInfo ->
             listVM.ivtList = listVM.filteredTransactionList(
                 tInfo.account, tInfo.category, tInfo.date,
                 tInfo.type, tInfo.accountNames, tInfo.categoryNames, tInfo.start, tInfo.end

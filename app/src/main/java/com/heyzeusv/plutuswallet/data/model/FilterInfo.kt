@@ -14,7 +14,7 @@ import java.util.Date
  *  @param  start         starting Date for date filter.
  *  @param  end           ending Date for date filter.
  */
-data class TransactionInfo(
+data class FilterInfo(
     val account: Boolean = false,
     val category: Boolean = false,
     val date: Boolean = false,

@@ -30,6 +30,8 @@ import androidx.compose.material.icons.filled.PermDeviceInformation
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -125,6 +127,12 @@ fun MainComposable(
 ) {
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
+
+    /**
+     *  TODO: Convert tInfoLiveData from CFLViewModel to StateFlow, whenever the filter is updated
+     *  TODO: tInfoLiveData will get updated as well causing tranList to be updated.
+     */
+    val tranList by tranListVM.tranList.collectAsState()
 
     PlutusWalletTheme {
         Scaffold(

@@ -2,7 +2,7 @@ package com.heyzeusv.plutuswallet.ui.cfl
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.heyzeusv.plutuswallet.data.model.TransactionInfo
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 
 /**
  *  Data manager for shared data between Filter/Graph/TransactionList Fragments.
@@ -12,8 +12,8 @@ import com.heyzeusv.plutuswallet.data.model.TransactionInfo
  */
 class CFLViewModel : ViewModel() {
 
-    // stores TransactionInfo object
-    var tInfoLiveData = MutableLiveData<TransactionInfo>()
+    // stores FilterInfo object
+    var tInfoLiveData = MutableLiveData<FilterInfo>()
 
     // will be used by TransactionListFragment to tell when a new filter is applied/reset in order
     // to scroll back to top of the list
@@ -21,13 +21,13 @@ class CFLViewModel : ViewModel() {
 
     init {
         // will only be used at app start up which will show all Transactions
-        tInfoLiveData.value = TransactionInfo()
+        tInfoLiveData.value = FilterInfo()
     }
 
     /**
      *  Updates tInfoLiveData with [newValue] which in turn will set off any Observers attached.
      */
-    fun updateTInfo(newValue: TransactionInfo) {
+    fun updateTInfo(newValue: FilterInfo) {
 
         tInfoLiveData.value = newValue
     }
