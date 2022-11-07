@@ -3,6 +3,8 @@ package com.heyzeusv.plutuswallet.ui.cfl
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  *  Data manager for shared data between Filter/Graph/TransactionList Fragments.
@@ -11,6 +13,10 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
  *  Data can survive configuration changes.
  */
 class CFLViewModel : ViewModel() {
+
+    private val _filterInfo = MutableStateFlow(FilterInfo())
+    val filterInfo: StateFlow<FilterInfo> get() = _filterInfo
+    fun updateFilterInfo(newFilter: FilterInfo) { _filterInfo.value = newFilter }
 
     // stores FilterInfo object
     var tInfoLiveData = MutableLiveData<FilterInfo>()

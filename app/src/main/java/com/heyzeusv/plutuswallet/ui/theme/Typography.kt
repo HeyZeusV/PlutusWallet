@@ -10,6 +10,10 @@ val PlutusWalletTypography = Typography(
     subtitle1 = TextStyle(
         fontSize = 18.sp
     ),
+    subtitle2 = TextStyle(
+        fontSize = 14.sp,
+        letterSpacing = 0.1.sp
+    ),
     body1 = TextStyle(
         fontSize = 18.sp
     )
