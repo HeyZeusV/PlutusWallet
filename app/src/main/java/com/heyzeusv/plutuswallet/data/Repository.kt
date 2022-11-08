@@ -79,28 +79,28 @@ interface Repository {
 
     fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
 
-    fun getIvt(): List<ItemViewTransaction>
+    suspend fun getIvt(): List<ItemViewTransaction>
 
-    fun getIvtA(accounts: List<String>): List<ItemViewTransaction>
+    suspend fun getIvtA(accounts: List<String>): List<ItemViewTransaction>
 
-    fun getIvtAD(accounts: List<String>, start: Date, end: Date): List<ItemViewTransaction>
+    suspend fun getIvtAD(accounts: List<String>, start: Date, end: Date): List<ItemViewTransaction>
 
-    fun getIvtAT(accounts: List<String>, type: String): List<ItemViewTransaction>
+    suspend fun getIvtAT(accounts: List<String>, type: String): List<ItemViewTransaction>
 
-    fun getIvtATC(
+    suspend fun getIvtATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
     ): List<ItemViewTransaction>
 
-    fun getIvtATD(
+    suspend fun getIvtATD(
         accounts: List<String>,
         type: String,
         start: Date,
         end: Date
     ): List<ItemViewTransaction>
 
-    fun getIvtATCD(
+    suspend fun getIvtATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
@@ -108,20 +108,20 @@ interface Repository {
         end: Date
     ): List<ItemViewTransaction>
 
-    fun getIvtD(start: Date, end: Date): List<ItemViewTransaction>
+    suspend fun getIvtD(start: Date, end: Date): List<ItemViewTransaction>
 
-    fun getIvtT(type: String): List<ItemViewTransaction>
+    suspend fun getIvtT(type: String): List<ItemViewTransaction>
 
-    fun getIvtTC(type: String, categories: List<String>): List<ItemViewTransaction>
+    suspend fun getIvtTC(type: String, categories: List<String>): List<ItemViewTransaction>
 
-    fun getIvtTCD(
+    suspend fun getIvtTCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
     ): List<ItemViewTransaction>
 
-    fun getIvtTD(type: String, start: Date, end: Date): List<ItemViewTransaction>
+    suspend fun getIvtTD(type: String, start: Date, end: Date): List<ItemViewTransaction>
 
     fun getLdIvt(): LiveData<List<ItemViewTransaction>>
 

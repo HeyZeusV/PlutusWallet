@@ -119,36 +119,36 @@ class TransactionRepository @Inject constructor(
     override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> =
         transactionDao.getLdCtD(start, end)
 
-    override fun getIvt(): List<ItemViewTransaction> = transactionDao.getIvt()
+    override suspend fun getIvt(): List<ItemViewTransaction> = transactionDao.getIvt()
 
-    override fun getIvtA(accounts: List<String>): List<ItemViewTransaction> =
+    override suspend fun getIvtA(accounts: List<String>): List<ItemViewTransaction> =
         transactionDao.getIvtA(accounts)
 
-    override fun getIvtAD(
+    override suspend fun getIvtAD(
         accounts: List<String>,
         start: Date,
         end: Date
     ): List<ItemViewTransaction> = transactionDao.getIvtAD(accounts, start, end)
 
-    override fun getIvtAT(
+    override suspend fun getIvtAT(
         accounts: List<String>,
         type: String
     ): List<ItemViewTransaction> = transactionDao.getIvtAT(accounts, type)
 
-    override fun getIvtATC(
+    override suspend fun getIvtATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
     ): List<ItemViewTransaction> = transactionDao.getIvtATC(accounts, type, categories)
 
-    override fun getIvtATD(
+    override suspend fun getIvtATD(
         accounts: List<String>,
         type: String,
         start: Date,
         end: Date
     ): List<ItemViewTransaction> = transactionDao.getIvtATD(accounts, type, start, end)
 
-    override fun getIvtATCD(
+    override suspend fun getIvtATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
@@ -157,25 +157,25 @@ class TransactionRepository @Inject constructor(
     ): List<ItemViewTransaction> =
         transactionDao.getIvtATCD(accounts, type, categories, start, end)
 
-    override fun getIvtD(start: Date, end: Date): List<ItemViewTransaction> =
+    override suspend fun getIvtD(start: Date, end: Date): List<ItemViewTransaction> =
         transactionDao.getIvtD(start, end)
 
-    override fun getIvtT(type: String): List<ItemViewTransaction> =
+    override suspend fun getIvtT(type: String): List<ItemViewTransaction> =
         transactionDao.getIvtT(type)
 
-    override fun getIvtTC(
+    override suspend fun getIvtTC(
         type: String,
         categories: List<String>
     ): List<ItemViewTransaction> = transactionDao.getIvtTC(type, categories)
 
-    override fun getIvtTCD(
+    override suspend fun getIvtTCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
     ): List<ItemViewTransaction> = transactionDao.getIvtTCD(type, categories, start, end)
 
-    override fun getIvtTD(
+    override suspend fun getIvtTD(
         type: String,
         start: Date,
         end: Date

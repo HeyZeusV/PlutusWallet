@@ -9,6 +9,7 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.material.icons.filled.PermDeviceInformation
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -69,6 +71,9 @@ import com.heyzeusv.plutuswallet.databinding.ActivityMainBinding
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
 import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
+import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
+import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
+import com.heyzeusv.plutuswallet.ui.theme.PWLightColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
@@ -106,11 +111,14 @@ class MainActivity : BaseActivity() {
 //        // disables swipe to open drawer
 //        binding.activityDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         setContent {
-            PlutusWalletTheme {
-                MainComposable(
-                    tranListVM = tranListVM,
-                    cflVM = cflVM
-                )
+            val pwColors = if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
+            CompositionLocalProvider(LocalPWColors provides pwColors) {
+                PlutusWalletTheme {
+                    MainComposable(
+                        tranListVM = tranListVM,
+                        cflVM = cflVM
+                    )
+                }
             }
         }
     }
@@ -208,7 +216,7 @@ fun MainComposable(
                 ) {
                     items(tranList) { transaction ->
                         Divider(
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
                             thickness = 1.dp
                         )
                         TransactionListItem(
@@ -408,6 +416,7 @@ fun PWDrawerItemPreview() {
 @Composable
 fun MarqueeText(
     text: String,
+    color: Color = MaterialTheme.colors.onSurface,
     textAlign: TextAlign? = null,
     style: TextStyle
 ) {
@@ -433,6 +442,7 @@ fun MarqueeText(
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState, false),
+        color = color,
         textAlign = textAlign,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
@@ -468,7 +478,7 @@ fun TransactionListItem(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 2.dp),
+                .padding(start = 8.dp, top = 4.dp, end = 4.dp, bottom = 2.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             MarqueeText(
@@ -500,6 +510,10 @@ fun TransactionListItem(
         ) {
             MarqueeText(
                 text = total,
+                color = when (ivt.type) {
+                    "Expense" -> LocalPWColors.current.expense
+                    else -> LocalPWColors.current.income
+                },
                 textAlign = TextAlign.End,
                 style = MaterialTheme.typography.subtitle1
             )

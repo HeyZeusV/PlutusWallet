@@ -537,7 +537,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtListLD    
     }
 
-    override fun getIvt(): List<ItemViewTransaction> {
+    override suspend fun getIvt(): List<ItemViewTransaction> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList) {
@@ -550,7 +550,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtA(accounts: List<String>): List<ItemViewTransaction> {
+    override suspend fun getIvtA(accounts: List<String>): List<ItemViewTransaction> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
@@ -563,7 +563,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtAD(
+    override suspend fun getIvtAD(
         accounts: List<String>,
         start: Date,
         end: Date
@@ -582,7 +582,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtAT(
+    override suspend fun getIvtAT(
         accounts: List<String>,
         type: String
     ): List<ItemViewTransaction> {
@@ -598,7 +598,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtATC(
+    override suspend fun getIvtATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
@@ -617,7 +617,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtATD(
+    override suspend fun getIvtATD(
         accounts: List<String>,
         type: String,
         start: Date,
@@ -637,7 +637,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtATCD(
+    override suspend fun getIvtATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
@@ -659,7 +659,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtD(start: Date, end: Date): List<ItemViewTransaction> {
+    override suspend fun getIvtD(start: Date, end: Date): List<ItemViewTransaction> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.date in start..end }) {
@@ -672,7 +672,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtT(type: String): List<ItemViewTransaction> {
+    override suspend fun getIvtT(type: String): List<ItemViewTransaction> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type }) {
@@ -685,7 +685,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtTC(
+    override suspend fun getIvtTC(
         type: String,
         categories: List<String>
     ): List<ItemViewTransaction> {
@@ -701,7 +701,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtTCD(
+    override suspend fun getIvtTCD(
         type: String,
         categories: List<String>,
         start: Date,
@@ -721,7 +721,7 @@ class FakeRepository @Inject constructor() : Repository {
         return ivtList
     }
 
-    override fun getIvtTD(
+    override suspend fun getIvtTD(
         type: String,
         start: Date,
         end: Date

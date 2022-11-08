@@ -2,6 +2,12 @@ package com.heyzeusv.plutuswallet.ui.theme
 
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.graphics.Color
 
 // Light colors
@@ -63,3 +69,71 @@ val DarkColors = darkColors(
     secondary = GreenBase,
     error = ErrorDark
 )
+
+val PWLightColors = PlutusWalletColors(
+    expense = ExpenseTextLight,
+    expenseChartPrimary = Red600,
+    expenseChartSecondary = Yellow500,
+    expenseChartTertiary = Pink400,
+    expenseChartQuaternary = Orange500,
+    income = IncomeTextLight,
+    incomeChartPrimary = Green600,
+    incomeChartSecondary = Teal600,
+    incomeChartTertiary = Blue500,
+    incomeChartQuaternary = DeepPurple300,
+    isLight = true
+)
+
+val PWDarkColors = PlutusWalletColors(
+    expense = ExpenseTextDark,
+    expenseChartPrimary = Red900,
+    expenseChartSecondary = Lime900,
+    expenseChartTertiary = Pink800,
+    expenseChartQuaternary = Brown400,
+    income = IncomeTextDark,
+    incomeChartPrimary = Green800,
+    incomeChartSecondary = Teal800,
+    incomeChartTertiary = Blue800,
+    incomeChartQuaternary = DeepPurple600,
+    isLight = false
+)
+
+@Stable
+class PlutusWalletColors(
+    expense: Color,
+    expenseChartPrimary: Color,
+    expenseChartSecondary: Color,
+    expenseChartTertiary: Color,
+    expenseChartQuaternary: Color,
+    income: Color,
+    incomeChartPrimary: Color,
+    incomeChartSecondary: Color,
+    incomeChartTertiary: Color,
+    incomeChartQuaternary: Color,
+    isLight: Boolean
+) {
+    var expense by mutableStateOf(expense, structuralEqualityPolicy())
+        internal set
+    var expenseChartPrimary by mutableStateOf(expenseChartPrimary, structuralEqualityPolicy())
+        internal set
+    var expenseChartSecondary by mutableStateOf(expenseChartSecondary, structuralEqualityPolicy())
+        internal set
+    var expenseChartTertiary by mutableStateOf(expenseChartTertiary, structuralEqualityPolicy())
+        internal set
+    var expenseChartQuaternary by mutableStateOf(expenseChartQuaternary, structuralEqualityPolicy())
+        internal set
+    var income by mutableStateOf(income, structuralEqualityPolicy())
+        internal set
+    var incomeChartPrimary by mutableStateOf(incomeChartPrimary, structuralEqualityPolicy())
+        internal set
+    var incomeChartSecondary by mutableStateOf(incomeChartSecondary, structuralEqualityPolicy())
+        internal set
+    var incomeChartTertiary by mutableStateOf(incomeChartTertiary, structuralEqualityPolicy())
+        internal set
+    var incomeChartQuaternary by mutableStateOf(incomeChartQuaternary, structuralEqualityPolicy())
+        internal set
+    var isLight by mutableStateOf(isLight, structuralEqualityPolicy())
+        internal set
+}
+
+val LocalPWColors = compositionLocalOf { PWLightColors }

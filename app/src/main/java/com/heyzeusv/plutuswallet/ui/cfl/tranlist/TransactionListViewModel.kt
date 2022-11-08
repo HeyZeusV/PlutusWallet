@@ -48,7 +48,11 @@ class TransactionListViewModel @Inject constructor(
     var ivtList: LiveData<List<ItemViewTransaction>> = MutableLiveData(emptyList())
     private val _tranList = MutableStateFlow(emptyList<ItemViewTransaction>())
     val tranList: StateFlow<List<ItemViewTransaction>> get() = _tranList
-    fun updateTranList(filter: FilterInfo) { _tranList.value = filteredTransactionList(filter) }
+    fun updateTranList(filter: FilterInfo) {
+        viewModelScope.launch {
+            _tranList.value = filteredTransactionList(filter)
+        }
+    }
 
     // tried using ivtList.empty in XML, but could not get it to work.. displays empty message
     val ivtEmpty: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -274,7 +278,7 @@ class TransactionListViewModel @Inject constructor(
         }
     }
 
-    fun filteredTransactionList(
+    suspend fun filteredTransactionList(
         ti: FilterInfo
     ): List<ItemViewTransaction> {
 
