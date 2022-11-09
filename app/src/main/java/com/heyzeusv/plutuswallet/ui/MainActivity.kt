@@ -59,15 +59,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.GravityCompat
-import androidx.databinding.DataBindingUtil
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.findNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
-import com.heyzeusv.plutuswallet.databinding.ActivityMainBinding
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
 import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
@@ -114,7 +114,7 @@ class MainActivity : BaseActivity() {
             val pwColors = if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
             CompositionLocalProvider(LocalPWColors provides pwColors) {
                 PlutusWalletTheme {
-                    MainComposable(
+                    PlutusWalletApp(
                         tranListVM = tranListVM,
                         cflVM = cflVM
                     )
@@ -164,10 +164,15 @@ class MainActivity : BaseActivity() {
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainComposable(
+fun PlutusWalletApp(
     tranListVM: TransactionListViewModel,
     cflVM: CFLViewModel
 ) {
+    val navController = rememberNavController()
+    val currentBackStack by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStack?.destination
+    val currentScreen = PWScreens.find { it.route == currentDestination?.route } ?: Overview
+
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -204,17 +209,26 @@ fun MainComposable(
             },
             backgroundColor = MaterialTheme.colors.background
         ) {
+            NavHost(
+                navController = navController,
+                startDestination = Overview.route
+            ) {
+                composable(Overview.route) { }
+                composable(Transaction.route) { }
+                composable(Accounts.route){ }
+                composable(Categories.route) { }
+                composable(Settings.route) { }
+                composable(About.route) { }
+            }
             Card(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(R.dimen.cardFullPadding))
             ) {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    reverseLayout = true,
-                    verticalArrangement = Arrangement.Top
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    items(tranList) { transaction ->
+                    items(tranList.reversed()) { transaction ->
                         Divider(
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
                             thickness = 1.dp
@@ -544,3 +558,13 @@ fun TransactionListItemPreview() {
         )
     }
 }
+
+fun NavHostController.navigateSingleTopTo(route: String) =
+    this.navigate(route) {
+        // pressing back from any screen would pop back stack to Overview
+        popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) { saveState = true }
+        // only 1 copy of a destination is ever created
+        launchSingleTop = true
+        // previous data and state is saved
+        restoreState = true
+    }
