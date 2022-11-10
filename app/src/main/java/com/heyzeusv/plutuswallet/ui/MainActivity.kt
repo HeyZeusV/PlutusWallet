@@ -205,8 +205,9 @@ fun PlutusWalletApp(
                 composable(Overview.route) {
                     OverviewScreen(
                         tranListVM = tranListVM,
-                        tranList = tranList
-                    )
+                        tranList = tranList,
+                        tranListItemOnClick = navController::navigateToTransactionWithId
+                        )
                 }
                 composable(
                     route = Transaction.route,

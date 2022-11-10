@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +50,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun OverviewScreen(
     tranListVM: TransactionListViewModel,
-    tranList: List<ItemViewTransaction>
+    tranList: List<ItemViewTransaction>,
+    tranListItemOnClick: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -58,13 +61,14 @@ fun OverviewScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            items(tranList.reversed()) { transaction ->
+            items(tranList.reversed()) { ivTransaction ->
                 Divider(
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
                     thickness = 1.dp
                 )
                 TransactionListItem(
-                    ivt = transaction,
+                    onClick = { tranListItemOnClick(ivTransaction.id) },
+                    ivTransaction = ivTransaction,
                     setVals = tranListVM.setVals
                 )
             }
@@ -119,82 +123,86 @@ fun MarqueeText(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TransactionListItem(
-    ivt: ItemViewTransaction,
+    onClick: () -> Unit,
+    ivTransaction: ItemViewTransaction,
     setVals: SettingsValues
 ) {
-    val formattedDate = DateFormat.getDateInstance(setVals.dateFormat).format(ivt.date)
+    val formattedDate = DateFormat.getDateInstance(setVals.dateFormat).format(ivTransaction.date)
     val total = when {
         // currency symbol on left with decimal places
         setVals.decimalPlaces && setVals.symbolSide ->
-            "${setVals.currencySymbol}${setVals.decimalFormatter.format(ivt.total)}"
+            "${setVals.currencySymbol}${setVals.decimalFormatter.format(ivTransaction.total)}"
         // currency symbol on right with decimal places
         setVals.decimalPlaces ->
-            "${setVals.decimalFormatter.format(ivt.total)}${setVals.currencySymbol}"
+            "${setVals.decimalFormatter.format(ivTransaction.total)}${setVals.currencySymbol}"
         // currency symbol on left without decimal places
         setVals.symbolSide ->
-            "${setVals.currencySymbol}${setVals.integerFormatter.format(ivt.total)}"
+            "${setVals.currencySymbol}${setVals.integerFormatter.format(ivTransaction.total)}"
         // currency symbol on right without decimal places
-        else -> "${setVals.integerFormatter.format(ivt.total)}${setVals.currencySymbol}"
+        else -> "${setVals.integerFormatter.format(ivTransaction.total)}${setVals.currencySymbol}"
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colors.surface)
-    ) {
-        Column(
+    Surface(onClick = { onClick() }) {
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .padding(start = 8.dp, top = 4.dp, end = 4.dp, bottom = 2.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.surface)
         ) {
-            MarqueeText(
-                text = ivt.title,
-                style = MaterialTheme.typography.subtitle1
-            )
-            Text(
-                text = ivt.account,
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                style = MaterialTheme.typography.subtitle2
-            )
-            Text(
-                text = formattedDate,
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                style = MaterialTheme.typography.subtitle2
-            )
-        }
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 4.dp, top = 8.dp, end = 8.dp, bottom = 2.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            MarqueeText(
-                text = total,
-                color = when (ivt.type) {
-                    "Expense" -> LocalPWColors.current.expense
-                    else -> LocalPWColors.current.income
-                },
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.subtitle1
-            )
-            Text(
-                text = ivt.category,
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                textAlign = TextAlign.End,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                style = MaterialTheme.typography.subtitle2
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp, top = 4.dp, end = 4.dp, bottom = 2.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                MarqueeText(
+                    text = ivTransaction.title,
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    text = ivTransaction.account,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle2
+                )
+                Text(
+                    text = formattedDate,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle2
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 4.dp, top = 8.dp, end = 8.dp, bottom = 2.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                MarqueeText(
+                    text = total,
+                    color = when (ivTransaction.type) {
+                        "Expense" -> LocalPWColors.current.expense
+                        else -> LocalPWColors.current.income
+                    },
+                    textAlign = TextAlign.End,
+                    style = MaterialTheme.typography.subtitle1
+                )
+                Text(
+                    text = ivTransaction.category,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    textAlign = TextAlign.End,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle2
+                )
+            }
         }
     }
 }
@@ -202,13 +210,14 @@ fun TransactionListItem(
 @Preview
 @Composable
 fun TransactionListItemPreview() {
-    val ivt = ItemViewTransaction(
+    val ivTransaction = ItemViewTransaction(
         0, "This is a very long title to test marquee text", Date(),
         BigDecimal(1000000000000000000), "Account", "Expense", "Category"
     )
     PlutusWalletTheme {
         TransactionListItem(
-            ivt = ivt,
+            onClick = { },
+            ivTransaction = ivTransaction,
             setVals = SettingsValues()
         )
     }

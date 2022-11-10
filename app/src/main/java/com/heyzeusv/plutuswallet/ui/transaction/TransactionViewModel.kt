@@ -155,9 +155,9 @@ class TransactionViewModel @Inject constructor(
      */
     fun retrieveTransaction(tranId: Int) {
         viewModelScope.launch {
-            tranRepo.getTransactionAsync(tranId)?.let {
-                _transaction.value = it
-                _tranId = tranId
+            tranRepo.getTransactionAsync(tranId).let {
+                _transaction.value = it ?: Transaction()
+                _tranId = if (it == null) 0 else tranId
             }
             setTranData(transaction.value)
         }
