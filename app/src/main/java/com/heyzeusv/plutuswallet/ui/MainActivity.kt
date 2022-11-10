@@ -23,10 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PermDeviceInformation
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
@@ -74,9 +71,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    // DataBinding
-//    lateinit var binding: ActivityMainBinding
-
     private val tranListVM: TransactionListViewModel by viewModels()
     private val tranVM: TransactionViewModel by viewModels()
 
@@ -100,10 +94,6 @@ class MainActivity : BaseActivity() {
 
         AppCompatDelegate.setDefaultNightMode(sharedPref[Key.KEY_THEME, "-1"].toInt())
 
-//        // setting up DataBinding
-//        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-//        // disables swipe to open drawer
-//        binding.activityDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         setContent {
             val pwColors = if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
             CompositionLocalProvider(LocalPWColors provides pwColors) {
@@ -116,13 +106,6 @@ class MainActivity : BaseActivity() {
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-//        // uses nav_graph to determine where each button goes from NavigationView
-//        binding.activityNavView.setupWithNavController(findNavController(R.id.fragment_container))
     }
 
     override fun onResume() {
@@ -145,16 +128,6 @@ class MainActivity : BaseActivity() {
             recreate()
         }
     }
-//
-//    override fun onBackPressed() {
-//
-//        if (binding.activityDrawer.isDrawerOpen(GravityCompat.START)) {
-//            // close drawer if it is open
-//            binding.activityDrawer.closeDrawer(GravityCompat.START)
-//        } else {
-//            super.onBackPressed()
-//        }
-//    }
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -184,22 +157,20 @@ fun PlutusWalletApp(
             scaffoldState = scaffoldState,
             topBar = {
                 PWAppBar(
-                    title = stringResource(R.string.cfl_overview),
+                    currentScreen = currentScreen,
                     onNavPressed = {
-                        coroutineScope.launch {
-                            scaffoldState.drawerState.open()
+                        if (currentScreen == Overview) {
+                            coroutineScope.launch {
+                                scaffoldState.drawerState.open()
+                            }
+                        } else {
+                            navController.navigateUp()
                         }
                     },
-                    navIcon = Icons.Filled.Menu,
-                    navDescription = stringResource(R.string.cfl_drawer_description),
                     onActionLeftPressed = { /*TODO*/ },
-                    actionLeftIcon = Icons.Filled.FilterAlt,
-                    actionLeftDescription = stringResource(R.string.cfl_menu_filter),
                     onActionRightPressed = {
                         navController.navigateToTransactionWithId(0)
-                    },
-                    actionRightIcon = Icons.Filled.Add,
-                    actionRightDescription = stringResource(R.string.cfl_menu_transaction)
+                    }
                 )
             },
             drawerContent = {
@@ -215,9 +186,10 @@ fun PlutusWalletApp(
                     OverviewScreen(
                         tranListVM = tranListVM,
                         tranList = tranList
-                    )                }
+                    )
+                }
                 composable(
-                    route = Transaction.routeWithArgs,
+                    route = Transaction.route,
                     arguments = Transaction.arguments
                 ) { navBackStackEntry ->
                     val tranId = navBackStackEntry.arguments?.getInt(Transaction.tranIdArg) ?: 0
@@ -237,29 +209,26 @@ fun PlutusWalletApp(
 
 @Composable
 fun PWAppBar(
-    title: String,
+    currentScreen: PWDestination,
     onNavPressed: () -> Unit,
-    navIcon: ImageVector,
-    navDescription: String,
     onActionLeftPressed: () -> Unit,
-    actionLeftIcon: ImageVector,
-    actionLeftDescription: String,
     onActionRightPressed: () -> Unit,
-    actionRightIcon: ImageVector,
-    actionRightDescription: String
 ) {
+    val actionLeftDescription = stringResource(currentScreen.actionLeftDescription)
+    val actionRightDescription = stringResource(currentScreen.actionRightDescription)
+
     TopAppBar(
         title = {
             Text(
-                text = title,
+                text = stringResource(currentScreen.title),
                 color = MaterialTheme.colors.onBackground
             )
         },
         navigationIcon = {
             IconButton(onClick = { onNavPressed() }) {
                 Icon(
-                    imageVector = navIcon,
-                    contentDescription = navDescription,
+                    imageVector = currentScreen.navIcon,
+                    contentDescription = stringResource(currentScreen.navDescription),
                     tint = MaterialTheme.colors.onBackground
                 )
             }
@@ -268,18 +237,20 @@ fun PWAppBar(
             if (actionLeftDescription.isNotBlank()) {
                 IconButton(onClick = { onActionLeftPressed() }) {
                     Icon(
-                        imageVector = actionLeftIcon,
+                        imageVector = currentScreen.actionLeftIcon,
                         contentDescription = actionLeftDescription,
                         tint = MaterialTheme.colors.onBackground
                     )
                 }
             }
-            IconButton(onClick = { onActionRightPressed() }) {
-                Icon(
-                    imageVector = actionRightIcon,
-                    contentDescription = actionRightDescription,
-                    tint = MaterialTheme.colors.onBackground
-                )
+            if (actionRightDescription.isNotBlank()) {
+                IconButton(onClick = { onActionRightPressed() }) {
+                    Icon(
+                        imageVector = currentScreen.actionRightIcon,
+                        contentDescription = actionRightDescription,
+                        tint = MaterialTheme.colors.onBackground
+                    )
+                }
             }
         }
     )
@@ -290,16 +261,10 @@ fun PWAppBar(
 fun PWAppBarPreview() {
     PlutusWalletTheme {
         PWAppBar(
-            title = "Preview",
+            currentScreen = Overview,
             onNavPressed = { },
-            navIcon = Icons.Filled.Menu,
-            navDescription = "Menu",
             onActionLeftPressed = { },
-            actionLeftIcon = Icons.Filled.FilterAlt,
-            actionLeftDescription = "Filter",
             onActionRightPressed = { },
-            actionRightIcon = Icons.Filled.Add,
-            actionRightDescription = "New"
         )
     }
 }
@@ -419,5 +384,5 @@ fun NavHostController.navigateSingleTopTo(route: String) =
     }
 
 private fun NavHostController.navigateToTransactionWithId(tranId: Int) {
-    this.navigateSingleTopTo("${Transaction.route}/$tranId")
+    this.navigateSingleTopTo("${Transaction.routePrefix}/$tranId")
 }

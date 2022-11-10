@@ -3,7 +3,7 @@
 buildscript {
     ext.hiltVersion = '2.42'
     ext.kotlinVersion = '1.7.20'
-    ext.navigationVersion = '2.5.2'
+    ext.navigationVersion = '2.5.3'
     repositories {
         google()
         mavenCentral()
