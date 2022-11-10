@@ -82,6 +82,206 @@ import kotlinx.coroutines.launch
 /**
  *  Composable that displays the entire Transaction screen.
  *  Data that is displayed is retrieved from [tranVM].
+ */
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
+fun TransactionScreen(
+    tranVM: TransactionViewModel,
+    tranId: Int
+) {
+    // TODO move to PlutusWalletApp
+    // used for SnackBar
+//    val saveSuccess by tranVM.saveSuccess.collectAsState()
+//    val saved = stringResource(R.string.snackbar_saved)
+    tranVM.retrieveTransaction(tranId)
+
+    // data to be displayed
+    val transaction by tranVM.transaction.collectAsState()
+    val title by tranVM.title.collectAsState()
+    val date by tranVM.date.collectAsState()
+    val account by tranVM.account.collectAsState()
+    val total by tranVM.totalFieldValue.collectAsState()
+    val typeSelected by tranVM.typeSelected.collectAsState()
+    val expenseCat by tranVM.expenseCat.collectAsState()
+    val incomeCat by tranVM.incomeCat.collectAsState()
+    val memo by tranVM.memo.collectAsState()
+    val repeat by tranVM.repeat.collectAsState()
+    val period by tranVM.period.collectAsState()
+    val frequency by tranVM.frequencyFieldValue.collectAsState()
+
+    // drop down menu lists
+    val accountList by tranVM.accountList.collectAsState()
+    val expenseCatList by tranVM.expenseCatList.collectAsState()
+    val incomeCatList by tranVM.incomeCatList.collectAsState()
+    val periodList by tranVM.periodList.collectAsState()
+
+    // determine which dialog to display
+    val showAccountDialog by tranVM.showAccountDialog.collectAsState()
+    val showExpenseDialog by tranVM.showExpenseDialog.collectAsState()
+    val showIncomeDialog by tranVM.showIncomeDialog.collectAsState()
+    val showFutureDialog by tranVM.showFutureDialog.collectAsState()
+
+    // used by DatePicker
+    val dateObj = transaction.date
+    val view = LocalView.current
+
+    // TODO move this to PlutusWalletApp
+    // displays SnackBar when saveSuccess is true
+//    LaunchedEffect(key1 = saveSuccess) {
+//        if (saveSuccess) {
+//            scaffoldState.snackbarHostState.showSnackbar(
+//                message = saved,
+//                duration = SnackbarDuration.Short
+//            )
+//            tranVM.updateSaveSuccess(false)
+//        }
+//    }
+
+    if (showFutureDialog) {
+        FutureAlertDialog(
+            onConfirm = { tranVM.futureDialogConfirm() },
+            onDismiss = { tranVM.futureDialogDismiss() }
+        )
+    }
+    // CardView
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = dimensionResource(R.dimen.cardFullPadding)),
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colors.onBackground,
+        elevation = dimensionResource(R.dimen.cardElevation)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(R.dimen.card_content_pad))
+                .verticalScroll(rememberScrollState())
+        ) {
+            TransactionTextInput(
+                value = title,
+                onValueChanged = tranVM::updateTitle,
+                label = stringResource(R.string.transaction_title),
+                helper = stringResource(R.string.transaction_title_hint),
+                maxLength = integerResource(R.integer.maxLengthTitle),
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.textFToParentTopPadding)
+                )
+            )
+            TransactionDate(
+                value = date,
+                label = stringResource(R.string.transaction_date),
+                onPressed = {
+                    DateUtils.datePickerDialog(view, dateObj, tranVM::onDateSelected).show()
+                },
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.textFToTextFWHelperTopPadding)
+                )
+            )
+            TransactionDropDownMenu(
+                value = account,
+                list = accountList,
+                onClick = tranVM::updateAccount,
+                label = stringResource(R.string.transaction_account),
+                createNew = stringResource(R.string.account_create),
+                showInputDialog = showAccountDialog,
+                updateInputDialog = { tranVM.updateAccountDialog(true) },
+                dialogTitle = stringResource(R.string.alert_dialog_create_account),
+                dialogOnConfirm = tranVM::insertAccount,
+                dialogOnDismiss = { tranVM.updateAccountDialog(false) },
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.textFToViewTopPadding)
+                )
+            )
+            TransactionNumberInput(
+                value = total,
+                onValueChanged = tranVM::updateTotalFieldValue,
+                label = stringResource(R.string.transaction_total),
+                maxLength = integerResource(
+                    if (tranVM.setVals.decimalPlaces) {
+                        R.integer.maxLengthTotalDecimal
+                    } else {
+                        R.integer.maxLengthTotalInteger
+                    }
+                ),
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.textFToViewTopPadding)
+                )
+            )
+            when (typeSelected) {
+                TransactionType.EXPENSE -> {
+                    TransactionCategories(
+                        typeSelected = typeSelected,
+                        chipExpenseOnClick = {
+                            tranVM.updateTypeSelected(TransactionType.EXPENSE)
+                        },
+                        chipIncomeOnClick = {
+                            tranVM.updateTypeSelected(TransactionType.INCOME)
+                        },
+                        dropDownValue = expenseCat,
+                        dropDownList = expenseCatList,
+                        dropDownOnClick = tranVM::updateExpenseCat,
+                        showInputDialog = showExpenseDialog,
+                        updateInputDialog = { tranVM.updateExpenseDialog(true) },
+                        dialogOnConfirm = tranVM::insertCategory,
+                        dialogOnDismiss = { tranVM.updateExpenseDialog(false) },
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                        )
+                    )
+                }
+
+                TransactionType.INCOME -> {
+                    TransactionCategories(
+                        typeSelected = typeSelected,
+                        chipExpenseOnClick = {
+                            tranVM.updateTypeSelected(TransactionType.EXPENSE)
+                        },
+                        chipIncomeOnClick = {
+                            tranVM.updateTypeSelected(TransactionType.INCOME)
+                        },
+                        dropDownValue = incomeCat,
+                        dropDownList = incomeCatList,
+                        dropDownOnClick = tranVM::updateIncomeCat,
+                        showInputDialog = showIncomeDialog,
+                        updateInputDialog = { tranVM.updateIncomeDialog(true) },
+                        dialogOnConfirm = tranVM::insertCategory,
+                        dialogOnDismiss = { tranVM.updateIncomeDialog(false) },
+                        modifier = Modifier.padding(
+                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                        )
+                    )
+                }
+            }
+            TransactionTextInput(
+                value = memo,
+                onValueChanged = { tranVM.updateMemo(it) },
+                label = stringResource(R.string.transaction_memo),
+                helper = stringResource(R.string.transaction_memo_hint),
+                maxLength = integerResource(R.integer.maxLengthMemo),
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.textFToViewTopPadding)
+                )
+            )
+            TransactionRepeating(
+                newTransaction = tranVM.tranId == 0,
+                chipSelected = repeat,
+                chipOnClick = { tranVM.updateRepeat(!repeat) },
+                dropDownValue = period,
+                dropDownList = periodList,
+                dropDownOnClick = tranVM::updatePeriod,
+                inputValue = frequency,
+                inputOnValueChanged = tranVM::updateFrequencyFieldValue,
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                )
+            )
+        }
+    }
+}
+
+/**
+ *  Composable that displays the entire Transaction screen.
+ *  Data that is displayed is retrieved from [tranVM].
  *  [onBackPressed] is used to determine TopAppBar navigation action.
  */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -270,7 +470,7 @@ fun TransactionCompose(
                         )
                     )
                     TransactionRepeating(
-                        newTransaction = tranVM.newTran,
+                        newTransaction = tranVM.tranId == 0,
                         chipSelected = repeat,
                         chipOnClick = { tranVM.updateRepeat(!repeat) },
                         dropDownValue = period,

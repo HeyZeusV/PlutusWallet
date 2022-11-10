@@ -1,5 +1,8 @@
 package com.heyzeusv.plutuswallet.ui
 
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
 /**
  *  Contract for information needed on every navigation destination.
  */
@@ -16,6 +19,11 @@ object Overview: PWDestination {
 
 object Transaction: PWDestination {
     override val route = "transaction"
+    const val tranIdArg = "tranId"
+    val routeWithArgs = "${route}/{${tranIdArg}}"
+    val arguments = listOf(
+        navArgument(tranIdArg) { type = NavType.IntType }
+    )
 }
 
 object Accounts: PWDestination {

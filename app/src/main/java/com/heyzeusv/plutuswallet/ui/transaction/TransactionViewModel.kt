@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.ui.transaction
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
@@ -33,14 +32,12 @@ import kotlinx.coroutines.withContext
  */
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    state: SavedStateHandle,
     private val tranRepo: Repository,
     val setVals: SettingsValues
 ) : ViewModel() {
 
-    // arguments from Navigation
-    var newTran: Boolean = state["newTran"] ?: false
-    private var tranId: Int = state["tranId"] ?: 0
+    private var _tranId: Int = 0
+    val tranId: Int get() = _tranId
 
     // string resource received from Fragment
     var emptyTitle = ""
@@ -156,9 +153,12 @@ class TransactionViewModel @Inject constructor(
      *  and places it in _tran to populate fields.
      *  If it doesn't exist, a new Transaction is used.
      */
-    fun retrieveTransaction() {
+    fun retrieveTransaction(tranId: Int) {
         viewModelScope.launch {
-            tranRepo.getTransactionAsync(tranId)?.let { _transaction.value = it }
+            tranRepo.getTransactionAsync(tranId)?.let {
+                _transaction.value = it
+                _tranId = tranId
+            }
             setTranData(transaction.value)
         }
     }
@@ -199,8 +199,10 @@ class TransactionViewModel @Inject constructor(
     fun saveTransaction() {
         transaction.value.let { tran: Transaction ->
             // assigns new id if new Transaction
-            if (newTran) tran.id = maxId + 1
-            tranId = tran.id
+            if (_tranId == 0) {
+                tran.id = maxId + 1
+                _tranId = tran.id
+            }
 
             // gives Transaction simple title if user doesn't enter any
             tran.title = title.value.ifBlank { emptyTitle + tran.id }
