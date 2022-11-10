@@ -1,7 +1,11 @@
 package com.heyzeusv.plutuswallet.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
@@ -19,6 +23,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -29,14 +34,17 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +70,7 @@ import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -141,6 +150,7 @@ fun PlutusWalletApp(
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen = PWScreens.find { it.route == currentDestination?.route } ?: Overview
+    val activity = LocalContext.current as Activity
 
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
@@ -153,6 +163,12 @@ fun PlutusWalletApp(
     val tranList by tranListVM.tranList.collectAsState()
 
     PlutusWalletTheme {
+        BackPressHandler(
+            scaffoldState = scaffoldState,
+            coroutineScope = coroutineScope,
+            navController = navController,
+            closeApp = { activity.finish() }
+        )
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
@@ -167,15 +183,19 @@ fun PlutusWalletApp(
                             navController.navigateUp()
                         }
                     },
-                    onActionLeftPressed = { /*TODO*/ },
+                    onActionLeftPressed = {},
                     onActionRightPressed = {
-                        navController.navigateToTransactionWithId(0)
+                        when (currentScreen) {
+                            Overview -> { navController.navigateToTransactionWithId(0) }
+                            Transaction -> {}
+                            Accounts -> {}
+                            Categories -> {}
+                        }
                     }
                 )
             },
-            drawerContent = {
-                PWDrawer()
-            },
+            drawerContent = { PWDrawer() },
+            drawerGesturesEnabled = false,
             backgroundColor = MaterialTheme.colors.background
         ) {
             NavHost(
@@ -370,6 +390,42 @@ fun PWDrawerItemPreview() {
             icon = Icons.Filled.AccountBalance,
             label = stringResource(R.string.accounts)
         )
+    }
+}
+
+/**
+ *  Used to handle back presses. [scaffoldState] is used to determine the state of drawer and
+ *  used together with [coroutineScope] to close it. [navController] is used to determine if a
+ *  backstack exists, if not then [closeApp] is ran to fully close the app.
+ *  Found here: [https://www.valueof.io/blog/intercept-back-press-button-in-jetpack-compose]
+ */
+@Composable
+fun BackPressHandler(
+    backPressedDispatcher: OnBackPressedDispatcher? =
+        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
+    scaffoldState: ScaffoldState,
+    coroutineScope: CoroutineScope,
+    navController: NavHostController,
+    closeApp: () -> Unit
+) {
+    val backCallback = remember {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (scaffoldState.drawerState.isOpen) {
+                    coroutineScope.launch {
+                        scaffoldState.drawerState.close()
+                    }
+                } else if (!navController.navigateUp()) {
+                    closeApp()
+                }
+            }
+        }
+    }
+
+    // add the callback on any back press and remove on dispose.
+    DisposableEffect(key1 = backPressedDispatcher) {
+        backPressedDispatcher?.addCallback(backCallback)
+        onDispose { backCallback.remove() }
     }
 }
 

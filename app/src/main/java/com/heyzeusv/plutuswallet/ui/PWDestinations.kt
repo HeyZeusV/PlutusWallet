@@ -42,8 +42,8 @@ object Overview: PWDestination {
 }
 
 object Transaction: PWDestination {
-    const val tranIdArg = "tranId"
     const val routePrefix = "transaction"
+    const val tranIdArg = "tranId"
     override val route = "${routePrefix}/{${tranIdArg}}"
     override val title = R.string.transaction_title
     override val actionRightIcon = Icons.Filled.Save
