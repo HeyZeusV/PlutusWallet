@@ -25,3 +25,9 @@ val chipTextStyle = TextStyle(
     letterSpacing = 1.sp,
     textAlign = TextAlign.Center
 )
+
+val alertDialogButton = TextStyle(
+    fontSize = 14.sp,
+    fontWeight = FontWeight.Medium,
+    letterSpacing = 1.sp,
+)

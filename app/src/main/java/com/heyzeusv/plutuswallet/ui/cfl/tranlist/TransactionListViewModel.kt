@@ -68,6 +68,10 @@ class TransactionListViewModel @Inject constructor(
     private val _deleteTranEvent = MutableLiveData<Event<ItemViewTransaction>>()
     val deleteTranEvent: LiveData<Event<ItemViewTransaction>> = _deleteTranEvent
 
+    private val _showDeleteDialog = MutableStateFlow(-1)
+    val showDeleteDialog: StateFlow<Int> get() = _showDeleteDialog
+    fun updateDeleteDialog(newValue: Int) { _showDeleteDialog.value = newValue }
+
     init {
         updateTranList(FilterInfo())
     }
@@ -96,6 +100,14 @@ class TransactionListViewModel @Inject constructor(
 
         tranRepo.getTransactionAsync(ivt.id)?.let {
             tranRepo.deleteTransaction(it)
+        }
+    }
+
+    fun deleteTransaction(id: Int) {
+        viewModelScope.launch {
+            tranRepo.getTransactionAsync(id)?.let {
+                tranRepo.deleteTransaction(it)
+            }
         }
     }
 

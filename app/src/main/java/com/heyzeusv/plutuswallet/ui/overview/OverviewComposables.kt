@@ -2,7 +2,9 @@ package com.heyzeusv.plutuswallet.ui.overview
 
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +19,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -43,6 +44,7 @@ import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
@@ -52,7 +54,11 @@ import kotlinx.coroutines.delay
 fun OverviewScreen(
     tranListVM: TransactionListViewModel,
     tranList: List<ItemViewTransaction>,
-    tranListItemOnClick: (Int) -> Unit
+    tranListItemOnLongClick: (Int) -> Unit,
+    tranListItemOnClick: (Int) -> Unit,
+    tranListShowDeleteDialog: Int,
+    tranListDialogOnConfirm: (Int) -> Unit,
+    tranListDialogOnDismiss: () -> Unit
 ) {
     val tranListState = rememberLazyListState()
 
@@ -62,7 +68,6 @@ fun OverviewScreen(
             tranListVM.previousListSize = tranList.size
         }
     }
-
     Card(
         modifier = Modifier
             .fillMaxSize()
@@ -78,10 +83,21 @@ fun OverviewScreen(
                     thickness = 1.dp
                 )
                 TransactionListItem(
+                    onLongClick = { tranListItemOnLongClick(ivTransaction.id) },
                     onClick = { tranListItemOnClick(ivTransaction.id) },
                     ivTransaction = ivTransaction,
                     setVals = tranListVM.setVals
                 )
+                if (tranListShowDeleteDialog == ivTransaction.id) {
+                    PWAlertDialog(
+                        onConfirmText = stringResource(R.string.alert_dialog_yes),
+                        onConfirm = { tranListDialogOnConfirm(ivTransaction.id) },
+                        onDismissText = stringResource(R.string.alert_dialog_no),
+                        onDismiss = tranListDialogOnDismiss,
+                        title = stringResource(R.string.alert_dialog_delete_transaction),
+                        message = stringResource(R.string.alert_dialog_delete_warning, ivTransaction.title)
+                    )
+                }
             }
         }
         if (tranList.isEmpty()) {
@@ -134,9 +150,10 @@ fun MarqueeText(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionListItem(
+    onLongClick: () -> Unit,
     onClick: () -> Unit,
     ivTransaction: ItemViewTransaction,
     setVals: SettingsValues
@@ -156,7 +173,12 @@ fun TransactionListItem(
         else -> "${setVals.integerFormatter.format(ivTransaction.total)}${setVals.currencySymbol}"
     }
 
-    Surface(onClick = { onClick() }) {
+    Surface(
+        modifier = Modifier.combinedClickable(
+            onLongClick = onLongClick,
+            onClick = onClick
+        )
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -227,6 +249,7 @@ fun TransactionListItemPreview() {
     )
     PlutusWalletTheme {
         TransactionListItem(
+            onLongClick = { },
             onClick = { },
             ivTransaction = ivTransaction,
             setVals = SettingsValues()

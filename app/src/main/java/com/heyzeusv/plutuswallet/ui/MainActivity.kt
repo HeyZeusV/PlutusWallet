@@ -159,6 +159,7 @@ fun PlutusWalletApp(
      */
     val filterInfo by cflVM.filterInfo.collectAsState()
     val tranList by tranListVM.tranList.collectAsState()
+    val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
 
     PlutusWalletTheme {
         BackPressHandler(
@@ -212,10 +213,17 @@ fun PlutusWalletApp(
                     OverviewScreen(
                         tranListVM = tranListVM,
                         tranList = tranList,
+                        tranListItemOnLongClick = tranListVM::updateDeleteDialog,
                         tranListItemOnClick = { tranId ->
                             tranVM.retrieveTransaction(tranId)
                             navController.navigateSingleTopTo(Transaction.route)
-                        }
+                        },
+                        tranListShowDeleteDialog = tranListShowDeleteDialog,
+                        tranListDialogOnConfirm = { tranId ->
+                            tranListVM.deleteTransaction(tranId)
+                            tranListVM.updateDeleteDialog(-1)
+                        },
+                        tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
                     )
                 }
                 composable(route = Transaction.route) {

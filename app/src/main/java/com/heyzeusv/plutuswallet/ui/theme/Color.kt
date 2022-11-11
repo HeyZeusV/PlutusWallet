@@ -38,7 +38,7 @@ val ErrorDark = Color(0xffffbaba) // error
 val ButtonTextDark = Color(0xff2f1c39) // chart hole color, date picker header
 val ButtonUnselectedDark = Color(0x60ffffff)
 val FilterBackgroundDark = Color(0xff362340)
-val AlertDialogButtonText = Color(0xffffb3ff)
+val AlertDialogButtonTextDark = Color(0xffffb3ff)
 val ExpenseTextDark = Color(0xffff9494)
 val IncomeTextDark = Color(0xff85c700)
 // Expense Chart Colors
@@ -71,6 +71,7 @@ val DarkColors = darkColors(
 )
 
 val PWLightColors = PlutusWalletColors(
+    alertDialogButtonText = Purple900,
     expense = ExpenseTextLight,
     expenseChartPrimary = Red600,
     expenseChartSecondary = Yellow500,
@@ -85,6 +86,7 @@ val PWLightColors = PlutusWalletColors(
 )
 
 val PWDarkColors = PlutusWalletColors(
+    alertDialogButtonText = AlertDialogButtonTextDark,
     expense = ExpenseTextDark,
     expenseChartPrimary = Red900,
     expenseChartSecondary = Lime900,
@@ -100,6 +102,7 @@ val PWDarkColors = PlutusWalletColors(
 
 @Stable
 class PlutusWalletColors(
+    alertDialogButtonText: Color,
     expense: Color,
     expenseChartPrimary: Color,
     expenseChartSecondary: Color,
@@ -112,6 +115,8 @@ class PlutusWalletColors(
     incomeChartQuaternary: Color,
     isLight: Boolean
 ) {
+    var alertDialogButtonText by mutableStateOf(alertDialogButtonText, structuralEqualityPolicy())
+        internal set
     var expense by mutableStateOf(expense, structuralEqualityPolicy())
         internal set
     var expenseChartPrimary by mutableStateOf(expenseChartPrimary, structuralEqualityPolicy())

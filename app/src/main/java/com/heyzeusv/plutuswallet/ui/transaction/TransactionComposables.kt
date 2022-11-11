@@ -21,7 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.DropdownMenu
@@ -71,8 +70,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.BackPressHandler
+import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
+import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
 import com.heyzeusv.plutuswallet.ui.theme.chipTextStyle
 import com.heyzeusv.plutuswallet.util.DateUtils
+import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import kotlinx.coroutines.launch
 
 /**
@@ -130,9 +132,13 @@ fun TransactionScreen(
         }
     }
     if (showFutureDialog) {
-        FutureAlertDialog(
+        PWAlertDialog(
+            onConfirmText = stringResource(R.string.alert_dialog_yes),
             onConfirm = { tranVM.futureDialogConfirm() },
-            onDismiss = { tranVM.futureDialogDismiss() }
+            onDismissText = stringResource(R.string.alert_dialog_no),
+            onDismiss = { tranVM.futureDialogDismiss() },
+            title = stringResource(R.string.alert_dialog_future_transaction),
+            message = stringResource(R.string.alert_dialog_future_transaction_warning)
         )
     }
     BackPressHandler(
@@ -484,7 +490,10 @@ fun InputAlertDialog(
                         horizontal = dimensionResource(R.dimen.id_content_horiPad)
                     )
                 ) {
-                    Text(text = title)
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.subtitle1
+                    )
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
@@ -530,7 +539,8 @@ fun InputAlertDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = stringResource(R.string.alert_dialog_cancel).uppercase(),
-                            fontWeight = FontWeight.Medium
+                            color = LocalPWColors.current.alertDialogButtonText,
+                            style = alertDialogButton
                         )
                     }
                     TextButton(
@@ -545,7 +555,8 @@ fun InputAlertDialog(
                     ) {
                         Text(
                             text = stringResource(R.string.alert_dialog_save).uppercase(),
-                            fontWeight = FontWeight.Medium
+                            color = LocalPWColors.current.alertDialogButtonText,
+                            style = alertDialogButton
                         )
                     }
                 }
@@ -819,37 +830,4 @@ fun TransactionRepeating(
             }
         }
     }
-}
-
-/**
- *  Composable that displays a standard AlertDialog for future Transactions. [onConfirm] runs
- *  when confirm button is pressed. [onDismiss] runs when dismiss button is pressed.
- */
-@Composable
-fun FutureAlertDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(text = stringResource(R.string.alert_dialog_yes))
-            }
-        },
-        modifier = modifier,
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.alert_dialog_no))
-            }
-        },
-        title = { Text(text = stringResource(R.string.alert_dialog_future_transaction)) },
-        text = {
-            Text(
-                text = stringResource(R.string.alert_dialog_future_transaction_warning),
-                color = MaterialTheme.colors.onSurface
-            )
-        }
-    )
 }
