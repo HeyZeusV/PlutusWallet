@@ -186,8 +186,11 @@ fun PlutusWalletApp(
                     onActionLeftPressed = {},
                     onActionRightPressed = {
                         when (currentScreen) {
-                            Overview -> { navController.navigateToTransactionWithId(0) }
-                            Transaction -> {}
+                            Overview -> {
+                                tranVM.retrieveTransaction(0)
+                                navController.navigateSingleTopTo(Transaction.route)
+                            }
+                            Transaction -> { tranVM.saveTransaction() }
                             Accounts -> {}
                             Categories -> {}
                         }
@@ -206,17 +209,16 @@ fun PlutusWalletApp(
                     OverviewScreen(
                         tranListVM = tranListVM,
                         tranList = tranList,
-                        tranListItemOnClick = navController::navigateToTransactionWithId
-                        )
+                        tranListItemOnClick = { tranId ->
+                            tranVM.retrieveTransaction(tranId)
+                            navController.navigateSingleTopTo(Transaction.route)
+                        }
+                    )
                 }
-                composable(
-                    route = Transaction.route,
-                    arguments = Transaction.arguments
-                ) { navBackStackEntry ->
-                    val tranId = navBackStackEntry.arguments?.getInt(Transaction.tranIdArg) ?: 0
+                composable(route = Transaction.route) {
                     TransactionScreen(
                         tranVM = tranVM,
-                        tranId = tranId
+                        snackbarHostState = scaffoldState.snackbarHostState
                     )
                 }
                 composable(Accounts.route){ }
@@ -439,7 +441,3 @@ fun NavHostController.navigateSingleTopTo(route: String) =
         // previous data and state is saved
         restoreState = true
     }
-
-private fun NavHostController.navigateToTransactionWithId(tranId: Int) {
-    this.navigateSingleTopTo("${Transaction.routePrefix}/$tranId")
-}

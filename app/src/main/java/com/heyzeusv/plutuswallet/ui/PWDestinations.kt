@@ -42,16 +42,10 @@ object Overview: PWDestination {
 }
 
 object Transaction: PWDestination {
-    const val routePrefix = "transaction"
-    const val tranIdArg = "tranId"
-    override val route = "${routePrefix}/{${tranIdArg}}"
+    override val route = "transaction"
     override val title = R.string.transaction_title
     override val actionRightIcon = Icons.Filled.Save
     override val actionRightDescription = R.string.transaction_save
-
-    val arguments = listOf(
-        navArgument(tranIdArg) { type = NavType.IntType }
-    )
 }
 
 object Accounts: PWDestination {

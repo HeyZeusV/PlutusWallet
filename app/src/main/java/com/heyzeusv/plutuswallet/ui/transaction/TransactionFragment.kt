@@ -34,7 +34,6 @@ class TransactionFragment : BaseFragment() {
                 )
             )
             prepareLists(getString(R.string.account_create), getString(R.string.category_create))
-            retrieveTransaction(0)
         }
     }
 
@@ -53,10 +52,7 @@ class TransactionFragment : BaseFragment() {
                 Surface(
                     color = MaterialTheme.colors.background
                 ) {
-                    TransactionCompose(
-                        tranVM = tranVM,
-                        onBackPressed = { requireActivity().onBackPressed() }
-                    )
+
                 }
             }
         }
