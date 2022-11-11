@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -44,13 +45,17 @@ class TransactionListViewModel @Inject constructor(
     // saves position of RecyclerView, MAX_VALUE so that list starts at top
     var rvPosition: Int = Int.MAX_VALUE
 
+    var previousListSize = 0
+
     // ItemViewTransaction list to be displayed by RecyclerView
     var ivtList: LiveData<List<ItemViewTransaction>> = MutableLiveData(emptyList())
     private val _tranList = MutableStateFlow(emptyList<ItemViewTransaction>())
     val tranList: StateFlow<List<ItemViewTransaction>> get() = _tranList
     fun updateTranList(filter: FilterInfo) {
         viewModelScope.launch {
-            _tranList.value = filteredTransactionList(filter)
+            filteredTransactionList(filter).collect { list ->
+                _tranList.value = list
+            }
         }
     }
 
@@ -280,7 +285,7 @@ class TransactionListViewModel @Inject constructor(
 
     suspend fun filteredTransactionList(
         ti: FilterInfo
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         return when {
             ti.account && ti.category && ti.date && ti.categoryNames.contains("All") ->

@@ -68,7 +68,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.ui.BackPressHandler
 import com.heyzeusv.plutuswallet.ui.theme.chipTextStyle
 import com.heyzeusv.plutuswallet.util.DateUtils
 import kotlinx.coroutines.launch
@@ -81,7 +83,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun TransactionScreen(
     tranVM: TransactionViewModel,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    navController: NavController
 ) {
     // used for SnackBar
     val saveSuccess by tranVM.saveSuccess.collectAsState()
@@ -124,17 +127,20 @@ fun TransactionScreen(
                 message = saved,
                 duration = SnackbarDuration.Short
             )
-            tranVM.updateSaveSuccess(false)
         }
     }
-
     if (showFutureDialog) {
         FutureAlertDialog(
             onConfirm = { tranVM.futureDialogConfirm() },
             onDismiss = { tranVM.futureDialogDismiss() }
         )
     }
-    // CardView
+    BackPressHandler(
+        onBackPressed = {
+            tranVM.updateSaveSuccess(false)
+            navController.navigateUp()
+        }
+    )
     Surface(
         modifier = Modifier
             .fillMaxSize()

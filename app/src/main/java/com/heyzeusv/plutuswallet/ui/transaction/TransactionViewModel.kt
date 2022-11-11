@@ -148,6 +148,13 @@ class TransactionViewModel @Inject constructor(
     val saveSuccess: StateFlow<Boolean> get() = _saveSuccess
     fun updateSaveSuccess(newValue: Boolean) { _saveSuccess.value = newValue }
 
+    init {
+        viewModelScope.launch {
+            tranRepo.getMaxId().collect { response ->
+                maxId = response ?: 0
+            }
+        }
+    }
     /**
      *  Checks to see if a Transaction with tranId exists, if it does then it retrieves that data
      *  and places it in _tran to populate fields.
@@ -460,7 +467,6 @@ class TransactionViewModel @Inject constructor(
             expenseCatList.value.add(catCreate)
             updateIncomeCatList(tranRepo.getCategoryNamesByTypeAsync("Income"))
             incomeCatList.value.add(catCreate)
-            maxId = tranRepo.getMaxIdAsync() ?: 0
         }
     }
 }

@@ -7,6 +7,7 @@ import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import java.util.Date
+import kotlinx.coroutines.flow.Flow
 
 interface Repository {
     /**
@@ -50,7 +51,7 @@ interface Repository {
 
     suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction>
 
-    suspend fun getMaxIdAsync(): Int?
+    suspend fun getMaxId(): Flow<Int?>
 
     suspend fun getTransactionAsync(id: Int): Transaction?
 
@@ -79,26 +80,26 @@ interface Repository {
 
     fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
 
-    suspend fun getIvt(): List<ItemViewTransaction>
+    suspend fun getIvt(): Flow<List<ItemViewTransaction>>
 
-    suspend fun getIvtA(accounts: List<String>): List<ItemViewTransaction>
+    suspend fun getIvtA(accounts: List<String>): Flow<List<ItemViewTransaction>>
 
-    suspend fun getIvtAD(accounts: List<String>, start: Date, end: Date): List<ItemViewTransaction>
+    suspend fun getIvtAD(accounts: List<String>, start: Date, end: Date): Flow<List<ItemViewTransaction>>
 
-    suspend fun getIvtAT(accounts: List<String>, type: String): List<ItemViewTransaction>
+    suspend fun getIvtAT(accounts: List<String>, type: String): Flow<List<ItemViewTransaction>>
 
     suspend fun getIvtATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): List<ItemViewTransaction>
+    ): Flow<List<ItemViewTransaction>>
 
     suspend fun getIvtATD(
         accounts: List<String>,
         type: String,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction>
+    ): Flow<List<ItemViewTransaction>>
 
     suspend fun getIvtATCD(
         accounts: List<String>,
@@ -106,22 +107,22 @@ interface Repository {
         categories: List<String>,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction>
+    ): Flow<List<ItemViewTransaction>>
 
-    suspend fun getIvtD(start: Date, end: Date): List<ItemViewTransaction>
+    suspend fun getIvtD(start: Date, end: Date): Flow<List<ItemViewTransaction>>
 
-    suspend fun getIvtT(type: String): List<ItemViewTransaction>
+    suspend fun getIvtT(type: String): Flow<List<ItemViewTransaction>>
 
-    suspend fun getIvtTC(type: String, categories: List<String>): List<ItemViewTransaction>
+    suspend fun getIvtTC(type: String, categories: List<String>): Flow<List<ItemViewTransaction>>
 
     suspend fun getIvtTCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction>
+    ): Flow<List<ItemViewTransaction>>
 
-    suspend fun getIvtTD(type: String, start: Date, end: Date): List<ItemViewTransaction>
+    suspend fun getIvtTD(type: String, start: Date, end: Date): Flow<List<ItemViewTransaction>>
 
     fun getLdIvt(): LiveData<List<ItemViewTransaction>>
 

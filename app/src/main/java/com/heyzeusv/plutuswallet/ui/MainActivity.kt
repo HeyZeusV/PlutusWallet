@@ -23,7 +23,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -70,7 +69,6 @@ import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -164,10 +162,13 @@ fun PlutusWalletApp(
 
     PlutusWalletTheme {
         BackPressHandler(
-            scaffoldState = scaffoldState,
-            coroutineScope = coroutineScope,
-            navController = navController,
-            closeApp = { activity.finish() }
+            onBackPressed =  {
+                if (scaffoldState.drawerState.isOpen) {
+                    coroutineScope.launch { scaffoldState.drawerState.close() }
+                } else if (!navController.navigateUp()) {
+                    activity.finish()
+                }
+            }
         )
         Scaffold(
             scaffoldState = scaffoldState,
@@ -181,6 +182,8 @@ fun PlutusWalletApp(
                             }
                         } else {
                             navController.navigateUp()
+                            // TODO make this universal for all Snackbars
+                            tranVM.updateSaveSuccess(false)
                         }
                     },
                     onActionLeftPressed = {},
@@ -218,7 +221,8 @@ fun PlutusWalletApp(
                 composable(route = Transaction.route) {
                     TransactionScreen(
                         tranVM = tranVM,
-                        snackbarHostState = scaffoldState.snackbarHostState
+                        snackbarHostState = scaffoldState.snackbarHostState,
+                        navController = navController
                     )
                 }
                 composable(Accounts.route){ }
@@ -397,30 +401,19 @@ fun PWDrawerItemPreview() {
 }
 
 /**
- *  Used to handle back presses. [scaffoldState] is used to determine the state of drawer and
- *  used together with [coroutineScope] to close it. [navController] is used to determine if a
- *  backstack exists, if not then [closeApp] is ran to fully close the app.
+ *  Executes [onBackPressed] whenever bottom navigation back button is pressed
  *  Found here: [https://www.valueof.io/blog/intercept-back-press-button-in-jetpack-compose]
  */
 @Composable
 fun BackPressHandler(
     backPressedDispatcher: OnBackPressedDispatcher? =
         LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
-    scaffoldState: ScaffoldState,
-    coroutineScope: CoroutineScope,
-    navController: NavHostController,
-    closeApp: () -> Unit
+    onBackPressed: () -> Unit
 ) {
     val backCallback = remember {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (scaffoldState.drawerState.isOpen) {
-                    coroutineScope.launch {
-                        scaffoldState.drawerState.close()
-                    }
-                } else if (!navController.navigateUp()) {
-                    closeApp()
-                }
+                onBackPressed()
             }
         }
     }

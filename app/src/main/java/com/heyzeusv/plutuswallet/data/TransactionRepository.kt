@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 /**
  *  Interacts with Room database on behalf of the ViewModels
@@ -78,8 +79,7 @@ class TransactionRepository @Inject constructor(
     override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> =
         withContext(Dispatchers.IO) { transactionDao.getFutureTransactions(currentDate) }
 
-    override suspend fun getMaxIdAsync(): Int? =
-        withContext(Dispatchers.IO) { transactionDao.getMaxId() }
+    override suspend fun getMaxId(): Flow<Int?> = transactionDao.getMaxId()
 
     override suspend fun getTransactionAsync(id: Int): Transaction? =
         withContext(Dispatchers.IO) { transactionDao.getTransaction(id) }
@@ -119,34 +119,34 @@ class TransactionRepository @Inject constructor(
     override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> =
         transactionDao.getLdCtD(start, end)
 
-    override suspend fun getIvt(): List<ItemViewTransaction> = transactionDao.getIvt()
+    override suspend fun getIvt(): Flow<List<ItemViewTransaction>> = transactionDao.getIvt()
 
-    override suspend fun getIvtA(accounts: List<String>): List<ItemViewTransaction> =
+    override suspend fun getIvtA(accounts: List<String>): Flow<List<ItemViewTransaction>> =
         transactionDao.getIvtA(accounts)
 
     override suspend fun getIvtAD(
         accounts: List<String>,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> = transactionDao.getIvtAD(accounts, start, end)
+    ): Flow<List<ItemViewTransaction>> = transactionDao.getIvtAD(accounts, start, end)
 
     override suspend fun getIvtAT(
         accounts: List<String>,
         type: String
-    ): List<ItemViewTransaction> = transactionDao.getIvtAT(accounts, type)
+    ): Flow<List<ItemViewTransaction>> = transactionDao.getIvtAT(accounts, type)
 
     override suspend fun getIvtATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): List<ItemViewTransaction> = transactionDao.getIvtATC(accounts, type, categories)
+    ): Flow<List<ItemViewTransaction>> = transactionDao.getIvtATC(accounts, type, categories)
 
     override suspend fun getIvtATD(
         accounts: List<String>,
         type: String,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> = transactionDao.getIvtATD(accounts, type, start, end)
+    ): Flow<List<ItemViewTransaction>> = transactionDao.getIvtATD(accounts, type, start, end)
 
     override suspend fun getIvtATCD(
         accounts: List<String>,
@@ -154,32 +154,32 @@ class TransactionRepository @Inject constructor(
         categories: List<String>,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> =
+    ): Flow<List<ItemViewTransaction>> =
         transactionDao.getIvtATCD(accounts, type, categories, start, end)
 
-    override suspend fun getIvtD(start: Date, end: Date): List<ItemViewTransaction> =
+    override suspend fun getIvtD(start: Date, end: Date): Flow<List<ItemViewTransaction>> =
         transactionDao.getIvtD(start, end)
 
-    override suspend fun getIvtT(type: String): List<ItemViewTransaction> =
+    override suspend fun getIvtT(type: String): Flow<List<ItemViewTransaction>> =
         transactionDao.getIvtT(type)
 
     override suspend fun getIvtTC(
         type: String,
         categories: List<String>
-    ): List<ItemViewTransaction> = transactionDao.getIvtTC(type, categories)
+    ): Flow<List<ItemViewTransaction>> = transactionDao.getIvtTC(type, categories)
 
     override suspend fun getIvtTCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> = transactionDao.getIvtTCD(type, categories, start, end)
+    ): Flow<List<ItemViewTransaction>> = transactionDao.getIvtTCD(type, categories, start, end)
 
     override suspend fun getIvtTD(
         type: String,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> = transactionDao.getIvtTD(type, start, end)
+    ): Flow<List<ItemViewTransaction>> = transactionDao.getIvtTD(type, start, end)
 
     override fun getLdIvt(): LiveData<List<ItemViewTransaction>> = transactionDao.getLdIvt()
 

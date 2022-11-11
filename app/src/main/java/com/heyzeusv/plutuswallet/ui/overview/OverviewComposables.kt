@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
@@ -53,13 +54,23 @@ fun OverviewScreen(
     tranList: List<ItemViewTransaction>,
     tranListItemOnClick: (Int) -> Unit
 ) {
+    val tranListState = rememberLazyListState()
+
+    LaunchedEffect(key1 = tranList) {
+        if (tranList.size > tranListVM.previousListSize) {
+            tranListState.animateScrollToItem(0)
+            tranListVM.previousListSize = tranList.size
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(dimensionResource(R.dimen.cardFullPadding))
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            state = tranListState
         ) {
             items(tranList.reversed()) { ivTransaction ->
                 Divider(
