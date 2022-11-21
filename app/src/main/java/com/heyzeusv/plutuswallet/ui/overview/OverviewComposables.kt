@@ -194,20 +194,14 @@ fun TransactionListItem(
                     text = ivTransaction.title,
                     style = MaterialTheme.typography.subtitle1
                 )
-                Text(
+                MarqueeText(
                     text = ivTransaction.account,
-                    modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
                     style = MaterialTheme.typography.subtitle2
                 )
-                Text(
+                MarqueeText(
                     text = formattedDate,
-                    modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
                     style = MaterialTheme.typography.subtitle2
                 )
             }
@@ -226,13 +220,10 @@ fun TransactionListItem(
                     textAlign = TextAlign.End,
                     style = MaterialTheme.typography.subtitle1
                 )
-                Text(
+                MarqueeText(
                     text = ivTransaction.category,
-                    modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
                     textAlign = TextAlign.End,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
                     style = MaterialTheme.typography.subtitle2
                 )
             }

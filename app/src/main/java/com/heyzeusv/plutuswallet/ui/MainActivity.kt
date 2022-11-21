@@ -210,6 +210,7 @@ fun PlutusWalletApp(
                 startDestination = Overview.route
             ) {
                 composable(Overview.route) {
+                    tranListVM.futureTransactions()
                     OverviewScreen(
                         tranListVM = tranListVM,
                         tranList = tranList,

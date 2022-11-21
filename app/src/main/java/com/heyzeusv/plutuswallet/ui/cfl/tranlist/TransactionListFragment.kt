@@ -80,13 +80,13 @@ class TransactionListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: FilterInfo ->
+        cflVM.tInfoLiveData.observe(viewLifecycleOwner) { tInfo: FilterInfo ->
             listVM.ivtList = listVM.filteredTransactionList(
                 tInfo.account, tInfo.category, tInfo.date,
                 tInfo.type, tInfo.accountNames, tInfo.categoryNames, tInfo.start, tInfo.end
             )
 
-            listVM.ivtList.observe(viewLifecycleOwner, { transactions: List<ItemViewTransaction> ->
+            listVM.ivtList.observe(viewLifecycleOwner) { transactions: List<ItemViewTransaction> ->
                 // update adapter with new list to check for any changes
                 // and waits to be fully updated before running Runnable
                 tranListAdapter.submitList(transactions) {
@@ -99,8 +99,8 @@ class TransactionListFragment : BaseFragment() {
                 binding.tranlistRv.scrollToPosition(listVM.rvPosition)
                 // will display empty string
                 listVM.ivtEmpty.value = transactions.isEmpty()
-            })
-        })
+            }
+        }
 
         listVM.openTranEvent.observe(viewLifecycleOwner, EventObserver { tranId: Int ->
             // the position that the user clicked on
@@ -136,7 +136,6 @@ class TransactionListFragment : BaseFragment() {
                 listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
             })
 
-        listVM.initializeTables()
     }
 
     override fun onResume() {

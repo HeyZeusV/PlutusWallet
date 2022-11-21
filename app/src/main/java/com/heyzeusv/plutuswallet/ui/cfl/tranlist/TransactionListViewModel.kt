@@ -73,6 +73,7 @@ class TransactionListViewModel @Inject constructor(
     fun updateDeleteDialog(newValue: Int) { _showDeleteDialog.value = newValue }
 
     init {
+        initializeTables()
         updateTranList(FilterInfo())
     }
     /**
@@ -115,7 +116,7 @@ class TransactionListViewModel @Inject constructor(
      *  Runs when user first starts app or wipes data, adds Categories of both types in table and
      *  creates "None" account.
      */
-    fun initializeTables() {
+    private fun initializeTables() {
 
         viewModelScope.launch {
             val catSize: Int = tranRepo.getCategorySizeAsync()
