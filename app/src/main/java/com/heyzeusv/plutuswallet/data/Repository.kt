@@ -10,6 +10,8 @@ import java.util.Date
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
+    fun resetLists()
+
     /**
      *  Account Queries
      */

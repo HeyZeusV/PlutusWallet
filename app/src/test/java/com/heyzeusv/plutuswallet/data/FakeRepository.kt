@@ -11,6 +11,8 @@ import com.heyzeusv.plutuswallet.util.replace
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class FakeRepository @Inject constructor() : Repository {
 
@@ -25,6 +27,13 @@ class FakeRepository @Inject constructor() : Repository {
     private val catInListLD =
         MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.name })
     private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
+
+    override fun resetLists() {
+
+        accList = dd.accList
+        catList = dd.catList
+        tranList = dd.tranList
+    }
 
     override suspend fun getAccountNamesAsync(): MutableList<String> {
 
@@ -146,9 +155,13 @@ class FakeRepository @Inject constructor() : Repository {
         return futureList
     }
 
-    override suspend fun getMaxIdAsync(): Int? {
+    override suspend fun getMaxId(): Flow<Int?> {
 
-        return if (tranList.isEmpty()) null else tranList[tranList.size - 1].id
+        return if (tranList.isEmpty()) {
+            flow { emit(null) }
+        } else {
+            flow { emit(tranList[tranList.size - 1].id) }
+        }
     }
 
     override suspend fun getTransactionAsync(id: Int): Transaction {
@@ -534,10 +547,10 @@ class FakeRepository @Inject constructor() : Repository {
         }
 
         ivtListLD.value = ivtList
-        return ivtListLD    
+        return ivtListLD
     }
 
-    override suspend fun getIvt(): List<ItemViewTransaction> {
+    override suspend fun getIvt(): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList) {
@@ -547,10 +560,10 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
-    override suspend fun getIvtA(accounts: List<String>): List<ItemViewTransaction> {
+    override suspend fun getIvtA(accounts: List<String>): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
@@ -560,14 +573,14 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
     override suspend fun getIvtAD(
         accounts: List<String>,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
@@ -579,13 +592,13 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
     override suspend fun getIvtAT(
         accounts: List<String>,
         type: String
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) && it.type == type }) {
@@ -595,14 +608,14 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
     override suspend fun getIvtATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
@@ -614,7 +627,7 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
     override suspend fun getIvtATD(
@@ -622,7 +635,7 @@ class FakeRepository @Inject constructor() : Repository {
         type: String,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
@@ -634,7 +647,7 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
     override suspend fun getIvtATCD(
@@ -643,7 +656,7 @@ class FakeRepository @Inject constructor() : Repository {
         categories: List<String>,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
@@ -656,10 +669,10 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
-    override suspend fun getIvtD(start: Date, end: Date): List<ItemViewTransaction> {
+    override suspend fun getIvtD(start: Date, end: Date): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.date in start..end }) {
@@ -669,10 +682,10 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
-    override suspend fun getIvtT(type: String): List<ItemViewTransaction> {
+    override suspend fun getIvtT(type: String): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type }) {
@@ -682,13 +695,13 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
     override suspend fun getIvtTC(
         type: String,
         categories: List<String>
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type && categories.contains(it.category) }) {
@@ -698,7 +711,7 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
     override suspend fun getIvtTCD(
@@ -706,7 +719,7 @@ class FakeRepository @Inject constructor() : Repository {
         categories: List<String>,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
@@ -718,14 +731,14 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
+        return flow { emit(ivtList) }
     }
 
     override suspend fun getIvtTD(
         type: String,
         start: Date,
         end: Date
-    ): List<ItemViewTransaction> {
+    ): Flow<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
@@ -736,13 +749,6 @@ class FakeRepository @Inject constructor() : Repository {
             ivtList.add(ivt)
         }
 
-        return ivtList
-    }
-
-    fun resetLists() {
-
-        accList = dd.accList
-        catList = dd.catList
-        tranList = dd.tranList
+        return flow { emit(ivtList) }
     }
 }
