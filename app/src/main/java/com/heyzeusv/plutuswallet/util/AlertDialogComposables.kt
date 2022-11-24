@@ -6,6 +6,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
 
@@ -30,16 +31,18 @@ fun PWAlertDialog(
             TextButton(onClick = onConfirm) {
                 Text(
                     text = onConfirmText.uppercase(),
+                    modifier = Modifier.testTag("AlertDialog confirm"),
                     color = LocalPWColors.current.alertDialogButtonText,
                     style = alertDialogButton
                 )
             }
         },
-        modifier = modifier,
+        modifier = modifier.testTag("AlertDialog"),
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
                     text = onDismissText.uppercase(),
+                    modifier = Modifier.testTag("AlertDialog dismiss"),
                     color = LocalPWColors.current.alertDialogButtonText,
                     style = alertDialogButton
                 )

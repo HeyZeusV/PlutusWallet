@@ -30,7 +30,7 @@ class DummyDataUtil {
     )
     val tran2 = Transaction(
         2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-        "Cash", "Expense", "Food", "",
+        "Unused", "Expense", "Unused Expense", "",
         false, 1, 0, Date(86400000 * 3), false
     )
     val tran3 = Transaction(

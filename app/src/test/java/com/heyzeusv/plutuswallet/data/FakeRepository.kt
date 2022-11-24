@@ -28,7 +28,7 @@ class FakeRepository @Inject constructor() : Repository {
         MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.name })
     private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
 
-    override fun resetLists() {
+    fun resetLists() {
 
         accList = dd.accList
         catList = dd.catList

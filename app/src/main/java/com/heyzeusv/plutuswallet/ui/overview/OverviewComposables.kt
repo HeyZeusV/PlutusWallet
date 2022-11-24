@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -174,10 +175,12 @@ fun TransactionListItem(
     }
 
     Surface(
-        modifier = Modifier.combinedClickable(
-            onLongClick = onLongClick,
-            onClick = onClick
-        )
+        modifier = Modifier
+            .combinedClickable(
+                onLongClick = onLongClick,
+                onClick = onClick
+            )
+            .testTag("${ivTransaction.id}")
     ) {
         Row(
             modifier = Modifier

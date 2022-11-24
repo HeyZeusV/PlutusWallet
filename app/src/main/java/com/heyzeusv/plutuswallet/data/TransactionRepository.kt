@@ -22,9 +22,6 @@ class TransactionRepository @Inject constructor(
     private val categoryDao: CategoryDao,
     private val transactionDao: TransactionDao
 ) : Repository {
-
-    override fun resetLists() { }
-
     /**
      *  Account Queries
      */
