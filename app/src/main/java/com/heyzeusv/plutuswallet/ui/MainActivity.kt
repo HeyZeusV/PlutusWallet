@@ -147,7 +147,7 @@ fun PlutusWalletApp(
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
-    val currentScreen = PWScreens.find { it.route == currentDestination?.route } ?: Overview
+    val currentScreen = PWScreens.find { it.route == currentDestination?.route } ?: OverviewDestination
     val activity = LocalContext.current as Activity
 
     val scaffoldState = rememberScaffoldState()
@@ -177,7 +177,7 @@ fun PlutusWalletApp(
                 PWAppBar(
                     currentScreen = currentScreen,
                     onNavPressed = {
-                        if (currentScreen == Overview) {
+                        if (currentScreen == OverviewDestination) {
                             coroutineScope.launch {
                                 scaffoldState.drawerState.open()
                             }
@@ -190,13 +190,13 @@ fun PlutusWalletApp(
                     onActionLeftPressed = {},
                     onActionRightPressed = {
                         when (currentScreen) {
-                            Overview -> {
+                            OverviewDestination -> {
                                 tranVM.retrieveTransaction(0)
-                                navController.navigateSingleTopTo(Transaction.route)
+                                navController.navigateSingleTopTo(TransactionDestination.route)
                             }
-                            Transaction -> { tranVM.saveTransaction() }
-                            Accounts -> {}
-                            Categories -> {}
+                            TransactionDestination -> { tranVM.saveTransaction() }
+                            AccountsDestination -> {}
+                            CategoriesDestination -> {}
                         }
                     }
                 )
@@ -207,9 +207,9 @@ fun PlutusWalletApp(
         ) {
             NavHost(
                 navController = navController,
-                startDestination = Overview.route
+                startDestination = OverviewDestination.route
             ) {
-                composable(Overview.route) {
+                composable(OverviewDestination.route) {
                     tranListVM.futureTransactions()
                     OverviewScreen(
                         tranListVM = tranListVM,
@@ -217,7 +217,7 @@ fun PlutusWalletApp(
                         tranListItemOnLongClick = tranListVM::updateDeleteDialog,
                         tranListItemOnClick = { tranId ->
                             tranVM.retrieveTransaction(tranId)
-                            navController.navigateSingleTopTo(Transaction.route)
+                            navController.navigateSingleTopTo(TransactionDestination.route)
                         },
                         tranListShowDeleteDialog = tranListShowDeleteDialog,
                         tranListDialogOnConfirm = { tranId ->
@@ -227,17 +227,17 @@ fun PlutusWalletApp(
                         tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
                     )
                 }
-                composable(route = Transaction.route) {
+                composable(route = TransactionDestination.route) {
                     TransactionScreen(
                         tranVM = tranVM,
                         snackbarHostState = scaffoldState.snackbarHostState,
                         navController = navController
                     )
                 }
-                composable(Accounts.route){ }
-                composable(Categories.route) { }
-                composable(Settings.route) { }
-                composable(About.route) { }
+                composable(AccountsDestination.route){ }
+                composable(CategoriesDestination.route) { }
+                composable(SettingsDestination.route) { }
+                composable(AboutDestination.route) { }
             }
         }
     }
@@ -297,7 +297,7 @@ fun PWAppBar(
 fun PWAppBarPreview() {
     PlutusWalletTheme {
         PWAppBar(
-            currentScreen = Overview,
+            currentScreen = OverviewDestination,
             onNavPressed = { },
             onActionLeftPressed = { },
             onActionRightPressed = { },

@@ -9,12 +9,15 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import com.heyzeusv.plutuswallet.R
 
 /**
  *  Contract for information needed on every navigation destination.
+ *  [route] is used by Navigation to determine which screen to display. The rest of the parameters
+ *  are used to determine TopAppBar content. [title] is the string resource id to be displayed.
+ *  [navIcon] and [navDescription] are used for the navigate action to the left of the title.
+ *  The TopAppBar will at most have 2 actions to the right of the title which [actionLeftIcon],
+ *  [actionLeftDescription], [actionRightIcon], and [actionRightDescription] correspond to.
  */
 interface PWDestination {
     val route: String
@@ -30,7 +33,7 @@ interface PWDestination {
 /**
  *  Navigation destinations.
  */
-object Overview: PWDestination {
+object OverviewDestination: PWDestination {
     override val route = "overview"
     override val title = R.string.cfl_overview
     override val navIcon = Icons.Filled.Menu
@@ -41,37 +44,40 @@ object Overview: PWDestination {
     override val actionRightDescription = R.string.cfl_menu_transaction
 }
 
-object Transaction: PWDestination {
+object TransactionDestination: PWDestination {
     override val route = "transaction"
     override val title = R.string.transaction
     override val actionRightIcon = Icons.Filled.Save
     override val actionRightDescription = R.string.transaction_save
 }
 
-object Accounts: PWDestination {
+object AccountsDestination: PWDestination {
     override val route = "accounts"
     override val title = R.string.accounts
     override val actionRightIcon = Icons.Filled.Add
     override val actionRightDescription = R.string.account_new
 }
 
-object Categories: PWDestination {
+object CategoriesDestination: PWDestination {
     override val route = "categories"
     override val title = R.string.categories
     override val actionRightIcon = Icons.Filled.Add
     override val actionRightDescription = R.string.category_new
 }
 
-object Settings: PWDestination {
+object SettingsDestination: PWDestination {
     override val route = "settings"
     override val title = R.string.settings
 }
 
-object About: PWDestination {
+object AboutDestination: PWDestination {
     override val route = "about"
     override val title = R.string.about
 }
 
-val PWScreens = listOf(Overview, Transaction, Accounts, Categories, Settings, Accounts)
+val PWScreens = listOf(
+    OverviewDestination, TransactionDestination, AccountsDestination,
+    CategoriesDestination, SettingsDestination, AccountsDestination
+)
 
 val Blank: ImageVector get() = materialIcon(name = "Filled.Blank") { materialPath { } }
