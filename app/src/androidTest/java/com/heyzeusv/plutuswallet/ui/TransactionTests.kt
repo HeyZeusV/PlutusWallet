@@ -1,11 +1,6 @@
 package com.heyzeusv.plutuswallet.ui
 
-import android.content.res.Resources
 import android.widget.DatePicker
-import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
@@ -16,7 +11,6 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -26,70 +20,14 @@ import androidx.test.espresso.contrib.PickerActions.setDate
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.DummyDataUtil
-import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
-import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
-import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
-import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
-import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
-import com.heyzeusv.plutuswallet.ui.theme.PWLightColors
-import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletColors
-import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
-import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import java.math.RoundingMode
-import java.text.DateFormat
-import java.text.DecimalFormat
 import java.util.Date
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 
 @HiltAndroidTest
-class TransactionTests {
-
-    @get:Rule(order = 1)
-    var hiltRule = HiltAndroidRule(this)
-
-    @get:Rule(order = 2)
-    var composeRule = createAndroidComposeRule<MainActivity>()
-
-    @Inject
-    lateinit var fakeRepo: Repository
-    lateinit var repo: FakeAndroidRepository
-    lateinit var pwColors: PlutusWalletColors
-    lateinit var res: Resources
-
-
-    val dd = DummyDataUtil()
-    val dateFormatter: DateFormat = DateFormat.getDateInstance(0)
-    val totalFormatter = DecimalFormat("#,##0.00").apply { roundingMode = RoundingMode.HALF_UP }
-
-    @Before
-    fun setUp() {
-        hiltRule.inject()
-        composeRule.activity.apply {
-            res = resources
-            setContent {
-                pwColors = if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
-                CompositionLocalProvider(LocalPWColors provides pwColors) {
-                    PlutusWalletTheme {
-                        PlutusWalletApp(
-                            tranListVM = viewModels<TransactionListViewModel>().value,
-                            cflVM = viewModels<CFLViewModel>().value,
-                            tranVM = viewModels<TransactionViewModel>().value
-                        )
-                    }
-                }
-            }
-        }
-        repo = (fakeRepo as FakeAndroidRepository)
-    }
+class TransactionTests : BaseTest() {
 
     @Test
     fun transaction_displayNewTransaction() {
