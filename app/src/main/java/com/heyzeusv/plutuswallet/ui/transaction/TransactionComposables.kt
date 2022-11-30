@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
@@ -300,7 +301,10 @@ fun TransactionTextInput(
         OutlinedTextField(
             value = value,
             onValueChange = { if (it.length <= maxLength) onValueChanged(it) },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(label)
+            ,
             label = { Text(text = label) },
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -348,7 +352,10 @@ fun TransactionDate(
         OutlinedTextField(
             value = value,
             onValueChange = { },
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                .fillMaxWidth()
+                .testTag(label)
+            ,
             readOnly = true,
             label = { Text(text = label) },
             interactionSource = source,
@@ -406,7 +413,8 @@ fun TransactionDropDownMenu(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    },
+                    }
+                    .testTag(label),
                 readOnly = true,
                 label = { Text(label)},
                 trailingIcon = {
@@ -444,7 +452,8 @@ fun TransactionDropDownMenu(
                                 onClick(name)
                                 expanded = false
                             }
-                        }
+                        },
+                        modifier = Modifier.testTag(name)
                     ) {
                         Text(text = name)
                     }
@@ -476,6 +485,7 @@ fun InputAlertDialog(
      */
     Dialog(onDismissRequest = onDismiss) {
         Card(
+            modifier = Modifier.testTag("AlertDialog"),
             shape = MaterialTheme.shapes.medium,
             elevation = dimensionResource(R.dimen.cardElevation)
         ) {
@@ -499,7 +509,8 @@ fun InputAlertDialog(
                         onValueChange = { text = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = dimensionResource(R.dimen.id_tf_topPad)),
+                            .padding(top = dimensionResource(R.dimen.id_tf_topPad))
+                            .testTag("AlertDialog input"),
                         label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
                         isError = isError,
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -539,6 +550,7 @@ fun InputAlertDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = stringResource(R.string.alert_dialog_cancel).uppercase(),
+                            modifier = Modifier.testTag("AlertDialog dismiss"),
                             color = LocalPWColors.current.alertDialogButtonText,
                             style = alertDialogButton
                         )
@@ -555,6 +567,7 @@ fun InputAlertDialog(
                     ) {
                         Text(
                             text = stringResource(R.string.alert_dialog_save).uppercase(),
+                            modifier = Modifier.testTag("AlertDialog confirm"),
                             color = LocalPWColors.current.alertDialogButtonText,
                             style = alertDialogButton
                         )
@@ -583,7 +596,10 @@ fun TransactionNumberInput(
         OutlinedTextField(
             value = value,
             onValueChange = { if (it.text.length <= maxLength) onValueChanged(it.text) },
-            modifier = numberFieldModifier.fillMaxWidth(),
+            modifier = numberFieldModifier
+                .fillMaxWidth()
+                .testTag(label)
+            ,
             label = { Text(label) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -623,7 +639,8 @@ fun TransactionChip(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(dimensionResource(R.dimen.chip_height)),
+            .height(dimensionResource(R.dimen.chip_height))
+            .testTag(label),
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(
             width = dimensionResource(R.dimen.chip_border_width),

@@ -31,12 +31,12 @@ class DummyDataUtil {
     val tran2 = Transaction(
         2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
         "Unused", "Expense", "Unused Expense", "",
-        false, 1, 0, Date(86400000 * 3), false
+        false, 1, 0, Date(86400000 * 3), true
     )
     val tran3 = Transaction(
         3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
         "Debit Card", "Income", "Salary", "Best day of the month!",
-        true, 1, 2, Date(86400000 * 11), false
+        true, 1, 2, Date(86400000 * 11), true
     )
     val tran4 = Transaction(
         4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),

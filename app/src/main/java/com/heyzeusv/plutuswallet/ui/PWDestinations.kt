@@ -43,7 +43,7 @@ object Overview: PWDestination {
 
 object Transaction: PWDestination {
     override val route = "transaction"
-    override val title = R.string.transaction_title
+    override val title = R.string.transaction
     override val actionRightIcon = Icons.Filled.Save
     override val actionRightDescription = R.string.transaction_save
 }

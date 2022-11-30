@@ -19,9 +19,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
+import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
@@ -66,19 +66,21 @@ class OverviewTests {
     @Before
     fun setUp() {
         hiltRule.inject()
-        composeRule.activity.setContent {
-            pwColors = if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
-            CompositionLocalProvider(LocalPWColors provides pwColors) {
-                PlutusWalletTheme {
-                    PlutusWalletApp(
-                        tranListVM = composeRule.activity.viewModels<TransactionListViewModel>().value,
-                        cflVM = composeRule.activity.viewModels<CFLViewModel>().value,
-                        tranVM = composeRule.activity.viewModels<TransactionViewModel>().value
-                    )
+        composeRule.activity.apply {
+            res = resources
+            setContent {
+                pwColors = if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
+                CompositionLocalProvider(LocalPWColors provides pwColors) {
+                    PlutusWalletTheme {
+                        PlutusWalletApp(
+                            tranListVM = viewModels<TransactionListViewModel>().value,
+                            cflVM = viewModels<CFLViewModel>().value,
+                            tranVM = viewModels<TransactionViewModel>().value
+                        )
+                    }
                 }
             }
         }
-        res = composeRule.activity.resources
         repo = (fakeRepo as FakeAndroidRepository)
     }
 
@@ -90,7 +92,7 @@ class OverviewTests {
     @Test
     fun overview_displayList() {
         // check that we are on Overview screen
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview))
+        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
 
         dd.tranList.forEach { item ->
             // checks that all required information is being displayed
@@ -112,7 +114,7 @@ class OverviewTests {
     @Test
     fun overview_deleteTransaction() = runTest {
         // check that we are on Overview screen
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview))
+        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
 
         composeRule.onNode(hasTestTag("${dd.tran2.id}")).performTouchInput { longClick() }
         // checks that AlertDialog is being displayed and press confirm button
