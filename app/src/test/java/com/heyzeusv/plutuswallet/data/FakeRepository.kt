@@ -28,8 +28,12 @@ class FakeRepository @Inject constructor() : Repository {
         MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.name })
     private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
 
-    fun resetLists() {
+    fun clearAccCatLists() {
+        accList.clear()
+        catList.clear()
+    }
 
+    fun resetLists() {
         accList = dd.accList
         catList = dd.catList
         tranList = dd.tranList
@@ -179,14 +183,12 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override suspend fun upsertTransaction(transaction: Transaction) {
-
         tranList.find { it.id == transaction.id }.let {
             if (it == null) tranList.add(transaction) else tranList.replace(it, transaction)
         }
     }
 
     override suspend fun upsertTransactions(transactions: List<Transaction>) {
-
         for (tran: Transaction in transactions) {
             tranList.find { it.id == tran.id }.let {
                 if (it == null) tranList.add(tran) else tranList.replace(it, tran)

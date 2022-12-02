@@ -43,7 +43,6 @@ class TransactionListFragment : BaseFragment() {
     private val cflVM: CFLViewModel by activityViewModels()
 
     // RecyclerView Adapter/LayoutManager
-    private lateinit var tranListAdapter: TranListAdapter
     private lateinit var layoutManager: LinearLayoutManager
 
     override fun onCreateView(
@@ -53,7 +52,6 @@ class TransactionListFragment : BaseFragment() {
     ): View {
 
 //        listVM.setVals = setVals
-        tranListAdapter = TranListAdapter(listVM)
 
         // setting up LayoutManager
         layoutManager = LinearLayoutManager(context)
@@ -67,7 +65,6 @@ class TransactionListFragment : BaseFragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_list, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.listVM = listVM
-        binding.tranlistRv.adapter = tranListAdapter
         binding.tranlistRv.addItemDecoration(
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         )
@@ -76,67 +73,7 @@ class TransactionListFragment : BaseFragment() {
         return binding.root
     }
 
-    @SuppressLint("StringFormatInvalid")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        cflVM.tInfoLiveData.observe(viewLifecycleOwner) { tInfo: FilterInfo ->
-            listVM.ivtList = listVM.filteredTransactionList(
-                tInfo.account, tInfo.category, tInfo.date,
-                tInfo.type, tInfo.accountNames, tInfo.categoryNames, tInfo.start, tInfo.end
-            )
-
-            listVM.ivtList.observe(viewLifecycleOwner) { transactions: List<ItemViewTransaction> ->
-                // update adapter with new list to check for any changes
-                // and waits to be fully updated before running Runnable
-                tranListAdapter.submitList(transactions) {
-                    if (cflVM.filterChanged) {
-                        binding.tranlistRv.smoothScrollToPosition(transactions.size)
-                        cflVM.filterChanged = false
-                    }
-                }
-                // scrolls to saved position
-                binding.tranlistRv.scrollToPosition(listVM.rvPosition)
-                // will display empty string
-                listVM.ivtEmpty.value = transactions.isEmpty()
-            }
-        }
-
-        listVM.openTranEvent.observe(viewLifecycleOwner, EventObserver { tranId: Int ->
-            // the position that the user clicked on
-            listVM.rvPosition = layoutManager.findLastCompletelyVisibleItemPosition()
-            // creates action with parameters
-            val action: NavDirections =
-                CFLFragmentDirections.actionTransaction(tranId, false)
-            // retrieves correct controller to send action to
-            Navigation
-                .findNavController(requireActivity(), R.id.fragment_container)
-                .navigate(action)
-
-        })
-
-        listVM.deleteTranEvent.observe(
-            viewLifecycleOwner,
-            EventObserver { ivt: ItemViewTransaction ->
-                val posFun = DialogInterface.OnClickListener { _, _ ->
-                    launch {
-                        listVM.deleteTranPosFun(ivt)
-                    }
-                }
-
-                AlertDialogCreator.alertDialog(
-                    requireContext(),
-                    requireContext().getString(R.string.alert_dialog_delete_transaction),
-                    requireContext().getString(R.string.alert_dialog_delete_warning, ivt.title),
-                    requireContext().getString(R.string.alert_dialog_yes), posFun,
-                    requireContext().getString(R.string.alert_dialog_no),
-                    AlertDialogCreator.doNothing
-                )
-                // the position that the user clicked on
-                listVM.rvPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-            })
-
-    }
 
     override fun onResume() {
         super.onResume()
@@ -145,7 +82,6 @@ class TransactionListFragment : BaseFragment() {
         if (sharedPref[Key.KEY_TRAN_LIST_CHANGED, false]) {
             setVals = SettingsUtils.prepareSettingValues(sharedPref)
 //            listVM.setVals = setVals
-            tranListAdapter.notifyDataSetChanged()
             sharedPref[Key.KEY_TRAN_LIST_CHANGED] = false
         }
         listVM.futureTransactions()

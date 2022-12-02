@@ -6,17 +6,17 @@ import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
-import com.heyzeusv.plutuswallet.util.Event
+import com.heyzeusv.plutuswallet.data.model.Transaction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.math.BigDecimal
 import java.util.Date
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -34,61 +34,56 @@ internal class TransactionListViewModelTest {
 
     @BeforeEach
     fun setUpViewModel() {
-
         // reset fake repo with dummy data and pass it to ViewModel
-        repo.resetLists()
+        repo.clearAccCatLists()
         tlVM = TransactionListViewModel(repo, SettingsValues())
     }
 
     @Test
-    @DisplayName("Should create openTran Event containing id of Transaction selected")
-    fun openTranOC() {
-
-        tlVM.openTranOC(100)
-        val openTranEvent: Event<Int> = tlVM.openTranEvent.value!!
-
-        assertEquals(100, openTranEvent.getContentIfNotHandled())
-    }
-
-    @Test
-    @DisplayName("Should create deleteTran Event containing ItemViewTransaction to be deleted")
-    fun deleteTranOC() {
-
-        val expectedIVT = ItemViewTransaction(
-            0, "", Date(), BigDecimal("0"), "", "", ""
-        )
-
-        tlVM.deleteTranOC(expectedIVT)
-        val deleteTranEvent: Event<ItemViewTransaction> = tlVM.deleteTranEvent.value!!
-
-        assertEquals(expectedIVT, deleteTranEvent.getContentIfNotHandled())
-    }
-
-    @Test
-    @DisplayName("Should take given ItemViewTransaction and delete Transaction associated with it from Database")
-    fun deleteTranPosFun() {
-
-        // deletes using ID so only need correct ID to test deletion
-        val deletedIVT = ItemViewTransaction(
-            1, "", Date(), BigDecimal("0"), "", "", ""
-        )
-
-        runBlockingTest {
-            tlVM.deleteTranPosFun(deletedIVT)
-        }
+    @DisplayName("Should take given id and delete Transaction associated with it from Database")
+    fun deleteTranPosFun() = runTest {
+        tlVM.deleteTransaction(dd.tran1.id)
 
         assert(!repo.tranList.contains(dd.tran1))
     }
 
     @Test
-    @DisplayName("Should predetermined Categories and Account if Database is empty")
-    fun initializeTables() {
+    @DisplayName("Should create Transactions for repeating Transactions whose dates have" +
+            "passed its futureDate")
+    fun futureTransactions() = runTest {
+        val expectedTranList = repo.tranList
+        val repeatingTransaction = Transaction(
+            title = "Title",
+            date = Date(System.currentTimeMillis() - 259200000),
+            repeating = true,
+            futureDate = Date(System.currentTimeMillis() - 172800000)
+        )
+        val repeatingTransaction2nd = Transaction(
+            title = "Title x2",
+            date = Date(System.currentTimeMillis() - 172800000),
+            repeating = true,
+            futureDate = Date(System.currentTimeMillis() - 86400000)
+        )
+        val repeatingTransaction3rd = Transaction(
+            title = "Title x3",
+            date = Date(System.currentTimeMillis() - 86400000),
+            repeating = true,
+            futureDate = Date(System.currentTimeMillis())
+        )
+        expectedTranList.addAll(listOf(repeatingTransaction2nd, repeatingTransaction3rd))
 
+        repo.tranList.add(repeatingTransaction)
+        tlVM.futureTransactions()
+
+        assertEquals(repo.tranList, expectedTranList)
+    }
+
+    @Test
+    @DisplayName("Should create predetermined Categories and Account if Database is empty")
+    fun initializeTables() {
         val expense = "Expense"
         val income = "Income"
 
-        repo.catList.clear()
-        repo.accList.clear()
         val education = Category(0, "Education", expense)
         val entertainment = Category(0, "Entertainment", expense)
         val food = Category(0, "Food", expense)
@@ -107,153 +102,121 @@ internal class TransactionListViewModelTest {
         )
         val none = Account(0, "None")
 
-
         assertEquals(initialCategories, repo.catList)
         assertEquals(mutableListOf(none), repo.accList)
     }
 
     @Test
-    @DisplayName("Returns LiveData containing list of ItemViewTransactions depending on filters applied")
-    fun filteredTransactionList() {
+    @DisplayName("Returns StateFlow containing list of ItemViewTransactions depending on filters applied")
+    fun filteredTransactionList() = runTest {
+        var collectedList = listOf<ItemViewTransaction>()
 
-        val expectedATD: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("1000.10"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food")
-        )
-        assertEquals(expectedATD,
-            tlVM.filteredTransactionList(
+        val expectedATD: List<ItemViewTransaction> = listOf(dd.ivt1, dd.ivt2)
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = true, category = true, date = true, "Expense",
                 listOf("Cash"), listOf("All"), Date(0), Date(86400001 * 2)
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedATD, collectedList)
 
-        val expectedATCD: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
-                "Debit Card", "Income", "Salary")
-        )
-        assertEquals(expectedATCD,
-            tlVM.filteredTransactionList(
+        val expectedATCD: List<ItemViewTransaction> = listOf(dd.ivt3)
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = true, category = true, date = true, "Income",
                 listOf("Debit Card"), listOf("Salary"), Date(0), Date(86400001 * 6)
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedATCD, collectedList)
 
-        val expectedAT: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-            "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedAT,
-            tlVM.filteredTransactionList(
-                account = true, category = true, date = false, "Expense",
+        val expectedAT: List<ItemViewTransaction> = listOf(dd.ivt4)
+        tlVM.filteredTransactionList(
+            FilterInfo(
+                 account = true, category = true, date = false, "Expense",
                 listOf("Credit Card"), listOf("All"), Date(), Date()
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedAT, collectedList)
 
-        val expectedATC: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedATC,
-            tlVM.filteredTransactionList(
+        val expectedATC: List<ItemViewTransaction> = listOf(dd.ivt4)
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = true, category = true, date = false, "Expense",
                 listOf("Credit Card"), listOf("Entertainment"), Date(0), Date()
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedATC, collectedList)
 
         val expectedAD: List<ItemViewTransaction> = listOf()
-        assertEquals(expectedAD,
-            tlVM.filteredTransactionList(
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = true, category = false, date = true, "",
                 listOf("None"), listOf(), Date(0), Date(86400001 * 6)
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedAD, collectedList)
 
-        val expectedA: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedA,
-            tlVM.filteredTransactionList(
+        val expectedA: List<ItemViewTransaction> = listOf(dd.ivt4)
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = true, category = false, date = false, "",
                 listOf("Credit Card"), listOf(), Date(), Date()
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedA, collectedList)
 
         val expectedTD: List<ItemViewTransaction> = listOf()
-        assertEquals(expectedTD,
-            tlVM.filteredTransactionList(
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = false, category = true, date = true, "Income",
                 listOf(), listOf("All"), Date(86400001 * 15), Date()
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedTD, collectedList)
 
-        val expectedTCD: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food")
-        )
-        assertEquals(expectedTCD,
-            tlVM.filteredTransactionList(
+        val expectedTCD: List<ItemViewTransaction> = listOf(dd.ivt2)
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = false, category = true, date = true, "Expense",
                 listOf(), listOf("Food"), Date(86400000 * 2), Date()
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedTCD, collectedList)
 
-        val expectedT: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("1000.10"),
-            "Cash", "Expense", "Food"),
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedT,
-            tlVM.filteredTransactionList(
+        val expectedT: List<ItemViewTransaction> = listOf(dd.ivt1, dd.ivt2, dd.ivt4)
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = false, category = true, date = false, "Expense",
                 listOf(), listOf("All"), Date(), Date()
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedT, collectedList)
 
-        val expectedTC: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expectedTC,
-            tlVM.filteredTransactionList(
+        val expectedTC: List<ItemViewTransaction> = listOf(dd.ivt4)
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = false, category = true, date = false, "Expense",
                 listOf(), listOf("Entertainment"), Date(), Date()
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedTC, collectedList)
 
-        val expectedD: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
-                "Debit Card", "Income", "Salary")
-        )
-        assertEquals(expectedD,
-            tlVM.filteredTransactionList(
+        val expectedD: List<ItemViewTransaction> = listOf(dd.ivt2, dd.ivt3)
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = false, category = false, date = true, "",
                 listOf(), listOf(), Date(86400000 * 2), Date(86400000 * 4)
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expectedD, collectedList)
 
-        val expected: List<ItemViewTransaction> = listOf(
-            ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("1000.10"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-                "Cash", "Expense", "Food"),
-            ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
-                "Debit Card", "Income", "Salary"),
-            ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
-                "Credit Card", "Expense", "Entertainment")
-        )
-        assertEquals(expected,
-            tlVM.filteredTransactionList(
+        val expected: List<ItemViewTransaction> = dd.ivtList
+        tlVM.filteredTransactionList(
+            FilterInfo(
                 account = false, category = false, date = false, "",
                 listOf(), listOf(), Date(), Date()
-            ).value
-        )
+            )
+        ).collect { collectedList = it }
+        assertEquals(expected, collectedList)
     }
 }

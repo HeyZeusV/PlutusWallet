@@ -39,16 +39,7 @@ class TransactionListViewModel @Inject constructor(
     val setVals: SettingsValues
 ) : ViewModel() {
 
-    // true if there are more Transactions that repeat with futureDate before Date()
-    private var moreToCreate: Boolean = false
-
-    // saves position of RecyclerView, MAX_VALUE so that list starts at top
-    var rvPosition: Int = Int.MAX_VALUE
-
-    var previousListSize = 0
-
     // ItemViewTransaction list to be displayed by RecyclerView
-    var ivtList: LiveData<List<ItemViewTransaction>> = MutableLiveData(emptyList())
     private val _tranList = MutableStateFlow(emptyList<ItemViewTransaction>())
     val tranList: StateFlow<List<ItemViewTransaction>> get() = _tranList
     fun updateTranList(filter: FilterInfo) {
@@ -59,51 +50,22 @@ class TransactionListViewModel @Inject constructor(
         }
     }
 
-    // tried using ivtList.empty in XML, but could not get it to work.. displays empty message
-    val ivtEmpty: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private val _openTranEvent = MutableLiveData<Event<Int>>()
-    val openTranEvent: LiveData<Event<Int>> = _openTranEvent
-
-    private val _deleteTranEvent = MutableLiveData<Event<ItemViewTransaction>>()
-    val deleteTranEvent: LiveData<Event<ItemViewTransaction>> = _deleteTranEvent
-
     private val _showDeleteDialog = MutableStateFlow(-1)
     val showDeleteDialog: StateFlow<Int> get() = _showDeleteDialog
     fun updateDeleteDialog(newValue: Int) { _showDeleteDialog.value = newValue }
+
+    // true if there are more Transactions that repeat with futureDate before Date()
+    private var moreToCreate: Boolean = false
+    var previousListSize = 0
 
     init {
         initializeTables()
         updateTranList(FilterInfo())
     }
-    /**
-     *  Event that navigates user to Transaction with selected [tranId].
-     */
-    fun openTranOC(tranId: Int) {
-
-        _openTranEvent.value = Event(tranId)
-    }
 
     /**
-     *  Event that deletes selected [ivt]. Must return Boolean.
+     *  Removes Transaction with [id] from database.
      */
-    fun deleteTranOC(ivt: ItemViewTransaction): Boolean {
-
-        _deleteTranEvent.value = Event(ivt)
-        return true
-    }
-
-    /**
-     *  Positive button for deleteTranDialog.
-     *  Removes Transaction with [ivt].id from database.
-     */
-    suspend fun deleteTranPosFun(ivt: ItemViewTransaction) {
-
-        tranRepo.getTransactionAsync(ivt.id)?.let {
-            tranRepo.deleteTransaction(it)
-        }
-    }
-
     fun deleteTransaction(id: Int) {
         viewModelScope.launch {
             tranRepo.getTransactionAsync(id)?.let {
@@ -117,7 +79,6 @@ class TransactionListViewModel @Inject constructor(
      *  creates "None" account.
      */
     private fun initializeTables() {
-
         viewModelScope.launch {
             val catSize: Int = tranRepo.getCategorySizeAsync()
 
@@ -157,7 +118,6 @@ class TransactionListViewModel @Inject constructor(
      *  ([frequency] * [period]) + [date].
      */
     private fun createFutureDate(date: Date, period: Int, frequency: Int): Date {
-
         val calendar: Calendar = Calendar.getInstance()
         // set to Transaction date
         calendar.time = date
@@ -177,17 +137,14 @@ class TransactionListViewModel @Inject constructor(
      *  Adds new Transactions depending on existing Transactions futureDate.
      */
     fun futureTransactions() {
-
         viewModelScope.launch(Dispatchers.IO) {
             // used to tell if newly created Transaction's futureDate is before Date()
             moreToCreate = false
             // returns list of all Transactions whose futureDate is before current date
             val futureTranList: MutableList<Transaction> =
                 tranRepo.getFutureTransactionsAsync(Date()).toMutableList()
-
             // return if empty
             if (futureTranList.isNotEmpty()) {
-
                 val ready: MutableList<Transaction> = tranUpsertAsync(futureTranList).await()
                 tranRepo.upsertTransactions(ready)
                 // recursive call in order to create Transactions until all futureDates are past Date()
@@ -203,7 +160,6 @@ class TransactionListViewModel @Inject constructor(
      */
     private fun tranUpsertAsync(futureTranList: MutableList<Transaction>)
             : Deferred<MutableList<Transaction>> = viewModelScope.async(Dispatchers.IO) {
-
         // list that will be upserted into database
         val readyToUpsert: MutableList<Transaction> = mutableListOf()
 
@@ -238,7 +194,6 @@ class TransactionListViewModel @Inject constructor(
      *  Appends " x####" to the end of Transaction [title] that has been repeated.
      */
     private fun incrementString(title: String): String {
-
         // pattern: x######
         val regex = Regex("(x)\\d+")
         // will search for regex in title
@@ -264,56 +219,25 @@ class TransactionListViewModel @Inject constructor(
     }
 
     /**
-     *  Returns LiveData of list of Transactions depending on [account]/[category]/[date] filters,
-     *  [type] selected, [accountNames]/[categoryNames] selected, and [start]/[end] dates selected.
+     *  Returns StateFlow of list of Transactions depending on [fi] arguments.
      */
-    fun filteredTransactionList(
-        account: Boolean,
-        category: Boolean,
-        date: Boolean,
-        type: String,
-        accountNames: List<String>,
-        categoryNames: List<String>,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>> {
-
-        return when {
-            account && category && date && categoryNames.contains("All") ->
-                tranRepo.getLdIvtATD(accountNames, type, start, end)
-            account && category && date ->
-                tranRepo.getLdIvtATCD(accountNames, type, categoryNames, start, end)
-            account && category && categoryNames.contains("All") -> tranRepo.getLdIvtAT(accountNames, type)
-            account && category -> tranRepo.getLdIvtATC(accountNames, type, categoryNames)
-            account && date -> tranRepo.getLdIvtAD(accountNames, start, end)
-            account -> tranRepo.getLdIvtA(accountNames)
-            category && date && categoryNames.contains("All") -> tranRepo.getLdIvtTD(type, start, end)
-            category && date -> tranRepo.getLdIvtTCD(type, categoryNames, start, end)
-            category && categoryNames.contains("All") -> tranRepo.getLdIvtT(type)
-            category -> tranRepo.getLdIvtTC(type, categoryNames)
-            date -> tranRepo.getLdIvtD(start, end)
-            else -> tranRepo.getLdIvt()
-        }
-    }
-
     suspend fun filteredTransactionList(
-        ti: FilterInfo
+        fi: FilterInfo
     ): Flow<List<ItemViewTransaction>> {
-
         return when {
-            ti.account && ti.category && ti.date && ti.categoryNames.contains("All") ->
-                tranRepo.getIvtATD(ti.accountNames, ti.type, ti.start, ti.end)
-            ti.account && ti.category && ti.date ->
-                tranRepo.getIvtATCD(ti.accountNames, ti.type, ti.categoryNames, ti.start, ti.end)
-            ti.account && ti.category && ti.categoryNames.contains("All") -> tranRepo.getIvtAT(ti.accountNames, ti.type)
-            ti.account && ti.category -> tranRepo.getIvtATC(ti.accountNames, ti.type, ti.categoryNames)
-            ti.account && ti.date -> tranRepo.getIvtAD(ti.accountNames, ti.start, ti.end)
-            ti.account -> tranRepo.getIvtA(ti.accountNames)
-            ti.category && ti.date && ti.categoryNames.contains("All") -> tranRepo.getIvtTD(ti.type, ti.start, ti.end)
-            ti.category && ti.date -> tranRepo.getIvtTCD(ti.type, ti.categoryNames, ti.start, ti.end)
-            ti.category && ti.categoryNames.contains("All") -> tranRepo.getIvtT(ti.type)
-            ti.category -> tranRepo.getIvtTC(ti.type, ti.categoryNames)
-            ti.date -> tranRepo.getIvtD(ti.start, ti.end)
+            fi.account && fi.category && fi.date && fi.categoryNames.contains("All") ->
+                tranRepo.getIvtATD(fi.accountNames, fi.type, fi.start, fi.end)
+            fi.account && fi.category && fi.date ->
+                tranRepo.getIvtATCD(fi.accountNames, fi.type, fi.categoryNames, fi.start, fi.end)
+            fi.account && fi.category && fi.categoryNames.contains("All") -> tranRepo.getIvtAT(fi.accountNames, fi.type)
+            fi.account && fi.category -> tranRepo.getIvtATC(fi.accountNames, fi.type, fi.categoryNames)
+            fi.account && fi.date -> tranRepo.getIvtAD(fi.accountNames, fi.start, fi.end)
+            fi.account -> tranRepo.getIvtA(fi.accountNames)
+            fi.category && fi.date && fi.categoryNames.contains("All") -> tranRepo.getIvtTD(fi.type, fi.start, fi.end)
+            fi.category && fi.date -> tranRepo.getIvtTCD(fi.type, fi.categoryNames, fi.start, fi.end)
+            fi.category && fi.categoryNames.contains("All") -> tranRepo.getIvtT(fi.type)
+            fi.category -> tranRepo.getIvtTC(fi.type, fi.categoryNames)
+            fi.date -> tranRepo.getIvtD(fi.start, fi.end)
             else -> tranRepo.getIvt()
         }
     }
