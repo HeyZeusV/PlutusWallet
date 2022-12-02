@@ -1,22 +1,21 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
-import androidx.lifecycle.MutableLiveData
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
+import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.util.Date
+import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
 @ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
@@ -36,37 +35,26 @@ internal class TransactionViewModelTest {
 
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
-        tranVM = TransactionViewModel(repo)
+        tranVM = TransactionViewModel(repo, SettingsValues())
+        tranVM.updatePeriodList(mutableListOf("Days", "Weeks", "Months", "Years"))
     }
 
     @Test
-    @DisplayName("Should take Transaction given and pass its values to LiveData")
+    @DisplayName("Should take Transaction given and pass its values to StateFlow")
     fun setTranData() {
-
-        tranVM.periodList.value = listOf("Days", "Weeks", "Months", "Years")
-
         tranVM.setTranData(dd.tran1)
 
         assertEquals("Thursday, January 1, 1970", tranVM.date.value)
-        assertEquals("Cash", tranVM.account)
-        assertEquals("1 000 10", tranVM.total.value)
-//        assertEquals(R.id.tran_expense_chip, tranVM.checkedChip.value)
-        assertEquals("Food", tranVM.expenseCat)
-        assertEquals(true, tranVM.repeatLD.value)
+        assertEquals("Cash", tranVM.account.value)
+        assertEquals("$1,000.10", tranVM.totalFieldValue.value.text)
+        assertEquals(TransactionType.EXPENSE, tranVM.typeSelected.value)
+        assertEquals("Food", tranVM.expenseCat.value)
+        assertEquals(true, tranVM.repeat.value)
     }
 
     @Test
-    @DisplayName("Should take LiveData values and pass them to Transaction, save it to Database, and cause saveEvent")
+    @DisplayName("Should take StateFlow values and pass them to Transaction and save to Database")
     fun saveTransaction() {
-
-        tranVM.tranLD = MutableLiveData(dd.tran1)
-        tranVM.periodList.value = listOf("Days", "Weeks", "Months", "Years")
-        tranVM.account = "Test Account"
-        tranVM.total.value = "1000.99"
-        tranVM.typeSelected.value = true
-        tranVM.incomeCat = "Test Income Category"
-        tranVM.repeatLD.value = false
-        tranVM.period = "Days"
         val expectedTran = Transaction(
             1,
             "Party",
@@ -83,28 +71,24 @@ internal class TransactionViewModelTest {
             true
         )
 
-        tranVM.saveTransaction("")
-        val saveEvent: Event<Boolean> = tranVM.saveTranEvent.value!!
+        tranVM.retrieveTransaction(dd.tran1.id)
+        tranVM.updateAccount(expectedTran.account)
+        tranVM.updateTotalFieldValue(expectedTran.total.toString())
+        tranVM.updateTypeSelected(TransactionType.INCOME)
+        tranVM.updateIncomeCat(expectedTran.category)
+        tranVM.updateRepeat(expectedTran.repeating)
+        tranVM.updatePeriod("Days")
 
-        assertEquals(expectedTran, tranVM.tranLD.value)
+        tranVM.saveTransaction()
+
+        assertEquals(expectedTran, tranVM.transaction.value)
         assertEquals(expectedTran, repo.tranList[0])
-        assertEquals(true, saveEvent.getContentIfNotHandled())
     }
 
     @Test
-    @DisplayName("Should cause futureTranEvent when user tries saving a Transaction that has been repeated and date has been changed ")
+    @DisplayName("Should show future dialog when user tries saving a Transaction that has" +
+            " been repeated and date has been changed ")
     fun saveTransactionRepeatWarning() {
-
-        tranVM.tranLD = MutableLiveData(dd.tran1)
-        tranVM.periodList.value = listOf("Days", "Weeks", "Months", "Years")
-        // in order to get dateChanged == true
-        tranVM.onDateSelected(Date(86400000 * 3))
-        tranVM.account = "Test Account"
-        tranVM.total.value = "1000.99"
-        tranVM.typeSelected.value = true
-        tranVM.incomeCat = "Test Income Category"
-        tranVM.repeatLD.value = true
-        tranVM.period = "Days"
         val expectedTran = Transaction(
             1,
             "Party",
@@ -121,146 +105,145 @@ internal class TransactionViewModelTest {
             true
         )
 
-        tranVM.saveTransaction("")
-        val futureEvent: Event<Transaction> = tranVM.futureTranEvent.value!!
+        tranVM.retrieveTransaction(dd.tran1.id)
 
-        assertEquals(expectedTran, futureEvent.getContentIfNotHandled())
+        // in order to get dateChanged == true
+        tranVM.onDateSelected(expectedTran.date)
+        tranVM.updateAccount(expectedTran.account)
+        tranVM.updateTotalFieldValue(expectedTran.total.toString())
+        tranVM.updateTypeSelected(TransactionType.INCOME)
+        tranVM.updateIncomeCat(expectedTran.category)
+        tranVM.updateRepeat(expectedTran.repeating)
+        tranVM.updatePeriod("Days")
+
+        tranVM.saveTransaction()
+
+        assertEquals(true, tranVM.showFutureDialog.value)
     }
 
     @Test
-    @DisplayName("Should cause Transaction to recreate its future date, update it in Database, and cause saveEvent")
-    fun futureTranPosFun() {
-
+    @DisplayName("Should cause Transaction to recreate its future date and update it in Database" +
+            "when confirming future dialog")
+    fun futureDialogConfirm() {
         val expectedTran: Transaction = dd.tran1
         expectedTran.futureTCreated = false
 
-        tranVM.futureTranPosFun(dd.tran1)
-        val saveEvent: Event<Boolean> = tranVM.saveTranEvent.value!!
+        tranVM.retrieveTransaction(dd.tran1.id)
+        tranVM.futureDialogConfirm()
 
         assertEquals(expectedTran, repo.tranList[0])
-        assertEquals(true, saveEvent.getContentIfNotHandled())
+        assertEquals(true, tranVM.saveSuccess.value)
+        assertEquals(false, tranVM.showFutureDialog.value)
     }
 
     @Test
-    @DisplayName("Should update Transaction in Database, and cause saveEvent")
-    fun futureTranNegFun() {
-
-        tranVM.futureTranNegFun(dd.tran1)
-        val saveEvent: Event<Boolean> = tranVM.saveTranEvent.value!!
+    @DisplayName("Should update Transaction in Database when dismissing future dialog")
+    fun futureDialogDismiss() {
+        tranVM.retrieveTransaction(dd.tran1.id)
+        tranVM.futureDialogDismiss()
 
         assertEquals(dd.tran1, repo.tranList[0])
-        assertEquals(true, saveEvent.getContentIfNotHandled())
+        assertEquals(true, tranVM.saveSuccess.value)
+        assertEquals(false, tranVM.showFutureDialog.value)
     }
 
     @Test
     @DisplayName("Should create new Account and add it to database")
     fun insertAccount() {
-
-        tranVM.accountList.value = mutableListOf("Test1", "Test3", "")
-        val expectedList: MutableList<String> = mutableListOf("Test1", "Test2", "Test3", "")
+        val expectedList: MutableList<String> = mutableListOf("Test1", "Test2", "Test3", "Create")
         val expectedAcc = Account(0, "Test2")
 
-        tranVM.insertAccount("Test2", "")
+        tranVM.updateAccountList(mutableListOf("Test1", "Test3", "Create"))
+
+        tranVM.insertAccount("Test2", "Create")
 
         assertEquals(expectedList, tranVM.accountList.value)
         assertEquals(expectedAcc, repo.accList[repo.accList.size - 1])
-        assertEquals("Test2", tranVM.account)
-
+        assertEquals("Test2", tranVM.account.value)
     }
 
     @Test
     @DisplayName("Should set account value to existing Account from list")
     fun insertAccountExists() {
+        val expectedList: MutableList<String> = mutableListOf("Test1", "Test2", "Test3", "Create")
+        val expectedListSize: Int = repo.accList.size
 
-        tranVM.accountList.value = mutableListOf("Test1", "Test2", "Test3", "")
-        val expectedList: MutableList<String> = mutableListOf("Test1", "Test2", "Test3", "")
-        val expectedAccRepoSize: Int = repo.accList.size
+        tranVM.updateAccountList(mutableListOf("Test1", "Test2", "Test3", "Create"))
 
-        tranVM.insertAccount("Test3", "")
+        tranVM.insertAccount("Test3", "Create")
 
         assertEquals(expectedList, tranVM.accountList.value)
-        assertEquals("Test3", tranVM.account)
-        assertEquals(expectedAccRepoSize, repo.accList.size)
+        assertEquals(expectedListSize, repo.accList.size)
+        assertEquals("Test3", tranVM.account.value)
     }
 
     @Test
     @DisplayName("Should create new Category and add it to database")
     fun insertCategory() {
-
-        tranVM.expenseCatList.value = mutableListOf("ETest1", "ETest3", "")
-        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest2", "ETest3", "")
+        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest2", "ETest3", "Create")
         val expectedExCat = Category(0, "ETest2", "Expense")
-        tranVM.incomeCatList.value = mutableListOf("ITest1", "ITest3", "")
-        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "")
+        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "Create")
         val expectedInCat = Category(0, "ITest2", "Income")
 
-        tranVM.typeSelected.value = false
-        tranVM.insertCategory("ETest2", "")
-        tranVM.typeSelected.value = true
-        tranVM.insertCategory("ITest2", "")
+        tranVM.updateExpenseCatList(mutableListOf("ETest1", "ETest3", "Create"))
+        tranVM.updateIncomeCatList(mutableListOf("ITest1", "ITest3", "Create"))
+
+        tranVM.updateTypeSelected(TransactionType.EXPENSE)
+        tranVM.insertCategory("ETest2", "Create")
+        tranVM.updateTypeSelected(TransactionType.INCOME)
+        tranVM.insertCategory("ITest2", "Create")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
         assertEquals(expectedExCat, repo.catList[repo.catList.size - 2])
-        assertEquals("ETest2", tranVM.expenseCat)
+        assertEquals("ETest2", tranVM.expenseCat.value)
         assertEquals(expectedInList, tranVM.incomeCatList.value)
         assertEquals(expectedInCat, repo.catList[repo.catList.size - 1])
-        assertEquals("ITest2", tranVM.incomeCat)
+        assertEquals("ITest2", tranVM.incomeCat.value)
     }
 
     @Test
     @DisplayName("Should set category value to existing Category from list")
     fun insertCategoryExists() {
-
-        tranVM.expenseCatList.value = mutableListOf("ETest1", "ETest2", "ETest3", "")
-        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest2", "ETest3", "")
-        tranVM.incomeCatList.value = mutableListOf("ITest1", "ITest2", "ITest3", "")
-        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "")
+        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest2", "ETest3", "Create")
+        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "Create")
         val expectedCatRepoSize: Int = repo.catList.size
 
-        tranVM.typeSelected.value = false
-        tranVM.insertCategory("ETest2", "")
-        tranVM.typeSelected.value = true
-        tranVM.insertCategory("ITest2", "")
+        tranVM.updateExpenseCatList(mutableListOf("ETest1", "ETest2", "ETest3", "Create"))
+        tranVM.updateIncomeCatList(mutableListOf("ITest1", "ITest2", "ITest3", "Create"))
+
+        tranVM.updateTypeSelected(TransactionType.EXPENSE)
+        tranVM.insertCategory("ETest2", "Create")
+        tranVM.updateTypeSelected(TransactionType.INCOME)
+        tranVM.insertCategory("ITest2", "Create")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
-        assertEquals("ETest2", tranVM.expenseCat)
+        assertEquals("ETest2", tranVM.expenseCat.value)
         assertEquals(expectedInList, tranVM.incomeCatList.value)
-        assertEquals("ITest2", tranVM.incomeCat)
+        assertEquals("ITest2", tranVM.incomeCat.value)
         assertEquals(expectedCatRepoSize, repo.catList.size)
-    }
-
-    @Test
-    @DisplayName("Should create selectDateEvent containing Date when dateButton is pressed")
-    fun selectDateOC() {
-
-        tranVM.selectDateOC(Date(86400000))
-        val selectDateEvent: Event<Date> = tranVM.selectDateEvent.value!!
-
-        assertEquals(Date(86400000), selectDateEvent.getContentIfNotHandled())
     }
 
     @Test
     @DisplayName("Should set Transaction date to newly selected Date and format it to be displayed")
     fun onDateSelected() {
-
-        tranVM.tranLD.value = dd.tran2
         val expectedFormattedDate = "Saturday, January 3, 1970"
 
+        tranVM.retrieveTransaction(dd.tran2.id)
         tranVM.onDateSelected(Date(86400000*3))
 
-        assertEquals(Date(86400000*3), tranVM.tranLD.value!!.date)
+        assertEquals(Date(86400000*3), tranVM.transaction.value.date)
         assertEquals(expectedFormattedDate, tranVM.date.value)
     }
 
     @Test
-    @DisplayName("Should retrieve lists of Accounts and Categories by type, add 'Create New...', and retrieve highest ID from Database")
+    @DisplayName("Should retrieve lists of Accounts and Categories by type, add 'Create'," +
+            " and retrieve highest ID from Database")
     fun prepareLists() {
+        val expectedAccList = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create")
+        val expectedExCatList = mutableListOf("Entertainment", "Food", "Unused Expense", "Create")
+        val expectedInCatList = mutableListOf("Salary", "Unused Income", "Zelle", "Create")
 
-        val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create New...")
-        val expectedExCatList: MutableList<String> = mutableListOf("Entertainment", "Food", "Unused Expense", "Create New...")
-        val expectedInCatList: MutableList<String> = mutableListOf("Salary", "Unused Income", "Zelle", "Create New...")
-
-        tranVM.prepareLists("Create New...", "Create New...")
+        tranVM.prepareLists("Create", "Create")
 
         assertEquals(expectedAccList, tranVM.accountList.value)
         assertEquals(expectedExCatList, tranVM.expenseCatList.value)

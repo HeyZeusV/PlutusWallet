@@ -200,8 +200,7 @@ class TransactionViewModel @Inject constructor(
     }
 
     /**
-     *  Reassigns LiveData values that couldn't be assigned directly
-     *  from Transaction using DataBinding back to Transaction and saves or updates it.
+     *  Save values from composables to Transaction object.
      */
     fun saveTransaction() {
         transaction.value.let { tran: Transaction ->

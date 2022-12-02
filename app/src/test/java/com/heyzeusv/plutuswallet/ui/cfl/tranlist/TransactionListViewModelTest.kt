@@ -7,16 +7,17 @@ import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.util.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.util.Date
+import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
 @ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
@@ -36,7 +37,7 @@ internal class TransactionListViewModelTest {
 
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
-        tlVM = TransactionListViewModel(repo)
+        tlVM = TransactionListViewModel(repo, SettingsValues())
     }
 
     @Test
@@ -106,7 +107,6 @@ internal class TransactionListViewModelTest {
         )
         val none = Account(0, "None")
 
-        tlVM.initializeTables()
 
         assertEquals(initialCategories, repo.catList)
         assertEquals(mutableListOf(none), repo.accList)
