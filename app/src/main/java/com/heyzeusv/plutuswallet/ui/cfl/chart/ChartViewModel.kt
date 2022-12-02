@@ -4,11 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.ItemViewChart
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 /**
  *  Data manager for GraphFragments.
@@ -167,6 +169,18 @@ class ChartViewModel @Inject constructor(
             fAccount -> tranRepo.getLdCtA(fAccountNames)
             fDate -> tranRepo.getLdCtD(fStart, fEnd)
             else -> tranRepo.getLdCt()
+        }
+    }
+
+    /**
+     *  Returns StateFlow of list of CategoryTotals depending on [fi] arguments.
+     */
+    suspend fun filteredCategoryTotals(fi: FilterInfo): Flow<List<CategoryTotals>> {
+        return when {
+            fi.account && fi.date -> tranRepo.getCtAD(fi.accountNames, fi.start, fi.end)
+            fi.account -> tranRepo.getCtA(fi.accountNames)
+            fi.date -> tranRepo.getCtD(fi.start, fi.end)
+            else -> tranRepo.getCt()
         }
     }
 }

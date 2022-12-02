@@ -342,6 +342,108 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         return MutableLiveData(createCatTotals(listOfTranLists))
     }
 
+    override suspend fun getCt(): Flow<List<CategoryTotals>> {
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter { it.category == cat && it.type == "Expense" }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter { it.category == cat && it.type == "Income" }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return flow { emit(createCatTotals(listOfTranLists)) }
+    }
+
+    override suspend fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>> {
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && accounts.contains(it.account)
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && accounts.contains(it.account)
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return flow { emit(createCatTotals(listOfTranLists)) }
+    }
+
+    override suspend fun getCtAD(
+        accounts: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>> {
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && accounts.contains(it.account) &&
+                        it.date >= start && it.date <= end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
+                        it.date >= start && it.date <= end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return flow { emit(createCatTotals(listOfTranLists)) }
+    }
+
+    override suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>> {
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && it.date >= start && it.date <= end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && it.date >= start && it.date <= end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return flow { emit(createCatTotals(listOfTranLists)) }
+    }
+
     override fun getLdIvt(): LiveData<List<ItemViewTransaction>> {
 
         val ivtList: MutableList<ItemViewTransaction> = mutableListOf()

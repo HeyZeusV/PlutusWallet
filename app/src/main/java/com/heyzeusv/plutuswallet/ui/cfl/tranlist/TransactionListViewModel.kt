@@ -221,9 +221,7 @@ class TransactionListViewModel @Inject constructor(
     /**
      *  Returns StateFlow of list of Transactions depending on [fi] arguments.
      */
-    suspend fun filteredTransactionList(
-        fi: FilterInfo
-    ): Flow<List<ItemViewTransaction>> {
+    suspend fun filteredTransactionList(fi: FilterInfo): Flow<List<ItemViewTransaction>> {
         return when {
             fi.account && fi.category && fi.date && fi.categoryNames.contains("All") ->
                 tranRepo.getIvtATD(fi.accountNames, fi.type, fi.start, fi.end)

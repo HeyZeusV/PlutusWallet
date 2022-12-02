@@ -39,9 +39,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.PercentFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
+import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
@@ -51,6 +64,7 @@ import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun OverviewScreen(
     tranListVM: TransactionListViewModel,
@@ -59,9 +73,13 @@ fun OverviewScreen(
     tranListItemOnClick: (Int) -> Unit,
     tranListShowDeleteDialog: Int,
     tranListDialogOnConfirm: (Int) -> Unit,
-    tranListDialogOnDismiss: () -> Unit
+    tranListDialogOnDismiss: () -> Unit,
+    chartVM: ChartViewModel
 ) {
     val tranListState = rememberLazyListState()
+    val pagerState = rememberPagerState()
+    val fullPad = dimensionResource(R.dimen.cardFullPadding)
+    val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
 
     LaunchedEffect(key1 = tranList) {
         if (tranList.size > tranListVM.previousListSize) {
@@ -69,46 +87,149 @@ fun OverviewScreen(
             tranListVM.previousListSize = tranList.size
         }
     }
-    Card(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(dimensionResource(R.dimen.cardFullPadding))
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            state = tranListState
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.4f)
+                .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
         ) {
-            items(tranList.reversed()) { ivTransaction ->
-                Divider(
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
-                    thickness = 1.dp
-                )
-                TransactionListItem(
-                    onLongClick = { tranListItemOnLongClick(ivTransaction.id) },
-                    onClick = { tranListItemOnClick(ivTransaction.id) },
-                    ivTransaction = ivTransaction,
-                    setVals = tranListVM.setVals
-                )
-                if (tranListShowDeleteDialog == ivTransaction.id) {
-                    PWAlertDialog(
-                        onConfirmText = stringResource(R.string.alert_dialog_yes),
-                        onConfirm = { tranListDialogOnConfirm(ivTransaction.id) },
-                        onDismissText = stringResource(R.string.alert_dialog_no),
-                        onDismiss = tranListDialogOnDismiss,
-                        title = stringResource(R.string.alert_dialog_delete_transaction),
-                        message = stringResource(R.string.alert_dialog_delete_warning, ivTransaction.title)
+            HorizontalPager(
+                count = 2,
+                modifier = Modifier.fillMaxSize(),
+                state = pagerState
+            ) { page ->
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    AndroidView(factory = { context ->
+                        PieChart(context).apply {
+                            val ivc = chartVM.ivcList[page]
+                            // no chart to create if ctList is empty
+                            if (ivc.ctList.isNotEmpty()) {
+                                // either "Expense" or "Income"
+                                val type: String = ivc.ctList[0].type
+
+                                // list of values to be displayed in PieChart
+                                val pieEntries: List<PieEntry> = ivc.ctList.map { PieEntry(it.total.toFloat(), it.category) }
+
+                                // PieDataSet set up
+                                val dataSet = PieDataSet(pieEntries, "Transactions")
+                                // distance between slices
+                                dataSet.sliceSpace = 2.5f
+                                // size of percent value
+                                dataSet.valueTextSize = 13f
+                                // color of percent value
+                                dataSet.valueTextColor = ContextCompat.getColor(context, R.color.colorChartText)
+                                // colors used for slices
+                                dataSet.colors = ivc.colorArray
+                                // size of highlighted area
+                                if (ivc.fCategory && ivc.fType == type && !ivc.fCatName.contains("All")) {
+                                    dataSet.selectionShift = 10f
+                                } else {
+                                    dataSet.selectionShift = 0.0f
+                                }
+
+                                // PieData set up
+                                val pData = PieData(dataSet)
+                                // makes values in form of percentages
+                                pData.setValueFormatter(PercentFormatter(this))
+                                // PieChart set up
+                                data = pData
+                                // displays translated type in center of chart
+                                centerText = ivc.typeTrans
+                                // don't want a description so make it blank
+                                description.text = ""
+                                // don't want legend so disable it
+                                legend.isEnabled = false
+                                // true = doughnut chart
+                                isDrawHoleEnabled = true
+                                // color of labels
+                                setEntryLabelColor(ContextCompat.getColor(this.context, R.color.colorChartText))
+                                // size of Category labels
+                                setEntryLabelTextSize(14.5f)
+                                // color of center hole
+                                setHoleColor(ContextCompat.getColor(this.context, R.color.colorChartHole))
+                                // size of center text
+                                setCenterTextSize(15f)
+                                // color of center text
+                                setCenterTextColor(ContextCompat.getColor(this.context, R.color.textColorPrimary))
+                                // true = display center text
+                                setDrawCenterText(true)
+                                // true = use percent values
+                                setUsePercentValues(true)
+                                val highlights: MutableList<Highlight> = mutableListOf()
+                                // highlights Category selected if it exists with current filters applied
+                                if (ivc.fCategory && ivc.fType == type && !ivc.fCatName.contains("All")) {
+                                    for (cat: String in ivc.fCatName) {
+                                        // finds position of Category selected in FilterFragment in ctList
+                                        val position: Int = ivc.ctList.indexOfFirst { it.category == cat }
+                                        // -1 = doesn't exist
+                                        if (position != -1) highlights.add(Highlight(position.toFloat(), 0, 0))
+                                    }
+                                }
+                                highlightValues(highlights.toTypedArray())
+                                invalidate()
+                            }
+                        }
+                    },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    Text(
+                        text = "$page",
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
+            HorizontalPagerIndicator(pagerState = pagerState)
         }
-        if (tranList.isEmpty()) {
-            Box(
-                contentAlignment = Alignment.Center
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.6f)
+                .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad)
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = tranListState
             ) {
-                Text(
-                    text = stringResource(R.string.cfl_no_transactions),
-                    textAlign = TextAlign.Center
-                )
+                items(tranList.reversed()) { ivTransaction ->
+                    Divider(
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
+                        thickness = 1.dp
+                    )
+                    TransactionListItem(
+                        onLongClick = { tranListItemOnLongClick(ivTransaction.id) },
+                        onClick = { tranListItemOnClick(ivTransaction.id) },
+                        ivTransaction = ivTransaction,
+                        setVals = tranListVM.setVals
+                    )
+                    if (tranListShowDeleteDialog == ivTransaction.id) {
+                        PWAlertDialog(
+                            onConfirmText = stringResource(R.string.alert_dialog_yes),
+                            onConfirm = { tranListDialogOnConfirm(ivTransaction.id) },
+                            onDismissText = stringResource(R.string.alert_dialog_no),
+                            onDismiss = tranListDialogOnDismiss,
+                            title = stringResource(R.string.alert_dialog_delete_transaction),
+                            message = stringResource(
+                                R.string.alert_dialog_delete_warning,
+                                ivTransaction.title
+                            )
+                        )
+                    }
+                }
+            }
+            if (tranList.isEmpty()) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.cfl_no_transactions),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }

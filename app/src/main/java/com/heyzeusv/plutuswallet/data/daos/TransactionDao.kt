@@ -130,6 +130,45 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getLdCtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<CategoryTotals>>
 
     /**
+     *  Returns list of CT w/ non-zero total.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCt(): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [accounts] w/ non-zero total.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE account IN (:accounts)
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT between given [start]/[end] dates.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE date BETWEEN :start AND :end
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [accounts] and between given [start]/[end] dates.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND date BETWEEN :start AND :end
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtAD(accounts: List<String>, start: Date, end: Date): Flow<List<CategoryTotals>>
+
+    /**
      *  Returns list of IVT.
      */
     @Query("""SELECT id, title, date, total, account, type, category 

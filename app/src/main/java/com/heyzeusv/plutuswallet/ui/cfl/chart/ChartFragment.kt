@@ -65,14 +65,14 @@ class ChartFragment : BaseFragment() {
             ContextCompat.getColor(requireContext(), R.color.colorIncomeFour)
         )
 
-        cflVM.tInfoLiveData.observe(viewLifecycleOwner, { tInfo: FilterInfo ->
+        cflVM.tInfoLiveData.observe(viewLifecycleOwner) { tInfo: FilterInfo ->
             // LiveData of list of CategoryTotals
             val ctLiveData: LiveData<List<CategoryTotals>> =
                 chartVM.filteredCategoryTotals(
                     tInfo.account, tInfo.date, tInfo.accountNames, tInfo.start, tInfo.end
                 )
 
-            ctLiveData.observe(viewLifecycleOwner, { ctList: List<CategoryTotals> ->
+            ctLiveData.observe(viewLifecycleOwner) { ctList: List<CategoryTotals> ->
                 // prepares list of ItemViewCharts that will be used to create PieCharts
                 chartVM.prepareLists(ctList, tInfo.category, tInfo.type)
                 chartVM.prepareTotals(tInfo.category, tInfo.categoryNames, tInfo.type)
@@ -85,8 +85,8 @@ class ChartFragment : BaseFragment() {
 
                 // sets up Dots Indicator with ViewPager2
                 binding.chartCi.setViewPager(binding.chartVp)
-            })
-        })
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

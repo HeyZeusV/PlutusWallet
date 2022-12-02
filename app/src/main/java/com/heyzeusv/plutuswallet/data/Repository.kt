@@ -80,6 +80,14 @@ interface Repository {
 
     fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
 
+    suspend fun getCt(): Flow<List<CategoryTotals>>
+
+    suspend fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>>
+
+    suspend fun getCtAD(accounts: List<String>, start: Date, end: Date): Flow<List<CategoryTotals>>
+
+    suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
+
     suspend fun getIvt(): Flow<List<ItemViewTransaction>>
 
     suspend fun getIvtA(accounts: List<String>): Flow<List<ItemViewTransaction>>

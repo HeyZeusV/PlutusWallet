@@ -118,6 +118,20 @@ class TransactionRepository @Inject constructor(
     override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> =
         transactionDao.getLdCtD(start, end)
 
+    override suspend fun getCt(): Flow<List<CategoryTotals>> = transactionDao.getCt()
+
+    override suspend fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>> =
+        transactionDao.getCtA(accounts)
+
+    override suspend fun getCtAD(
+        accounts: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>> = transactionDao.getCtAD(accounts, start, end)
+
+    override suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>> =
+        transactionDao.getCtD(start, end)
+
     override suspend fun getIvt(): Flow<List<ItemViewTransaction>> = transactionDao.getIvt()
 
     override suspend fun getIvtA(accounts: List<String>): Flow<List<ItemViewTransaction>> =
