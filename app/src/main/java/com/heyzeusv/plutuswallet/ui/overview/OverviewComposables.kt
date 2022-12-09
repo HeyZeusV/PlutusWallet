@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.overview
 
+import android.view.View
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -52,6 +54,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
@@ -74,12 +77,28 @@ fun OverviewScreen(
     tranListShowDeleteDialog: Int,
     tranListDialogOnConfirm: (Int) -> Unit,
     tranListDialogOnDismiss: () -> Unit,
-    chartVM: ChartViewModel
+    chartVM: ChartViewModel,
+    chartInfoList: List<ChartInformation>
 ) {
     val tranListState = rememberLazyListState()
     val pagerState = rememberPagerState()
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
+
+    val chartColorLists: List<List<Int>> = listOf(
+        listOf(
+            LocalPWColors.current.expenseChartPrimary.toArgb(),
+            LocalPWColors.current.expenseChartSecondary.toArgb(),
+            LocalPWColors.current.expenseChartTertiary.toArgb(),
+            LocalPWColors.current.expenseChartQuaternary.toArgb()
+        ),
+        listOf(
+            LocalPWColors.current.incomeChartPrimary.toArgb(),
+            LocalPWColors.current.incomeChartSecondary.toArgb(),
+            LocalPWColors.current.incomeChartTertiary.toArgb(),
+            LocalPWColors.current.incomeChartQuaternary.toArgb()
+        )
+    )
 
     LaunchedEffect(key1 = tranList) {
         if (tranList.size > tranListVM.previousListSize) {
@@ -104,16 +123,50 @@ fun OverviewScreen(
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    AndroidView(factory = { context ->
-                        PieChart(context).apply {
-                            val ivc = chartVM.ivcList[page]
-                            // no chart to create if ctList is empty
-                            if (ivc.ctList.isNotEmpty()) {
-                                // either "Expense" or "Income"
-                                val type: String = ivc.ctList[0].type
-
-                                // list of values to be displayed in PieChart
-                                val pieEntries: List<PieEntry> = ivc.ctList.map { PieEntry(it.total.toFloat(), it.category) }
+                    val chartInfo = chartInfoList[page]
+                    AndroidView(
+                        factory = { context ->
+                            PieChart(context).apply {
+                                // no chart to create if ctList is empty
+                                if (chartInfo.ctList.isNotEmpty()) {
+                                    // displays translated type in center of chart
+                                    centerText = if (page == 0) {
+                                        context.resources.getString(R.string.type_expense)
+                                    } else {
+                                        context.resources.getString(R.string.type_income)
+                                    }
+                                    // don't want a description so make it blank
+                                    description.text = ""
+                                    // don't want legend so disable it
+                                    legend.isEnabled = false
+                                    // true = doughnut chart
+                                    isDrawHoleEnabled = true
+                                    // color of labels
+                                    setEntryLabelColor(ContextCompat.getColor(this.context, R.color.colorChartText))
+                                    // size of Category labels
+                                    setEntryLabelTextSize(14.5f)
+                                    // color of center hole
+                                    setHoleColor(ContextCompat.getColor(this.context, R.color.colorChartHole))
+                                    // size of center text
+                                    setCenterTextSize(15f)
+                                    // color of center text
+                                    setCenterTextColor(ContextCompat.getColor(this.context, R.color.textColorPrimary))
+                                    // true = display center text
+                                    setDrawCenterText(true)
+                                    // true = use percent values
+                                    setUsePercentValues(true)
+                                } else {
+                                    visibility = View.INVISIBLE
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                        update = {
+                            if (chartInfo.ctList.isNotEmpty()) {
+                                // list of entries to be displayed in PieChart
+                                val pieEntries: List<PieEntry> = chartInfo.ctList.map { catTotal ->
+                                    PieEntry(catTotal.total.toFloat(), catTotal.category)
+                                }
 
                                 // PieDataSet set up
                                 val dataSet = PieDataSet(pieEntries, "Transactions")
@@ -122,11 +175,13 @@ fun OverviewScreen(
                                 // size of percent value
                                 dataSet.valueTextSize = 13f
                                 // color of percent value
-                                dataSet.valueTextColor = ContextCompat.getColor(context, R.color.colorChartText)
+                                dataSet.valueTextColor =
+                                    ContextCompat.getColor(it.context, R.color.colorChartText)
                                 // colors used for slices
-                                dataSet.colors = ivc.colorArray
+                                dataSet.colors = chartColorLists[page]
                                 // size of highlighted area
-                                if (ivc.fCategory && ivc.fType == type && !ivc.fCatName.contains("All")) {
+                                // TODO: Check if statement is necessary
+                                if (chartInfo.fCategory /* TODO: Check this: `&& !ivc.fCatName.contains("All")` */) {
                                     dataSet.selectionShift = 10f
                                 } else {
                                     dataSet.selectionShift = 0.0f
@@ -135,47 +190,25 @@ fun OverviewScreen(
                                 // PieData set up
                                 val pData = PieData(dataSet)
                                 // makes values in form of percentages
-                                pData.setValueFormatter(PercentFormatter(this))
+                                pData.setValueFormatter(PercentFormatter(it))
                                 // PieChart set up
-                                data = pData
-                                // displays translated type in center of chart
-                                centerText = ivc.typeTrans
-                                // don't want a description so make it blank
-                                description.text = ""
-                                // don't want legend so disable it
-                                legend.isEnabled = false
-                                // true = doughnut chart
-                                isDrawHoleEnabled = true
-                                // color of labels
-                                setEntryLabelColor(ContextCompat.getColor(this.context, R.color.colorChartText))
-                                // size of Category labels
-                                setEntryLabelTextSize(14.5f)
-                                // color of center hole
-                                setHoleColor(ContextCompat.getColor(this.context, R.color.colorChartHole))
-                                // size of center text
-                                setCenterTextSize(15f)
-                                // color of center text
-                                setCenterTextColor(ContextCompat.getColor(this.context, R.color.textColorPrimary))
-                                // true = display center text
-                                setDrawCenterText(true)
-                                // true = use percent values
-                                setUsePercentValues(true)
+                                it.data = pData
+
                                 val highlights: MutableList<Highlight> = mutableListOf()
                                 // highlights Category selected if it exists with current filters applied
-                                if (ivc.fCategory && ivc.fType == type && !ivc.fCatName.contains("All")) {
-                                    for (cat: String in ivc.fCatName) {
+                                if (chartInfo.fCategory /* TODO: Check this: `&& !ivc.fCatName.contains("All")` */) {
+                                    for (cat: String in chartInfo.fCatName) {
                                         // finds position of Category selected in FilterFragment in ctList
-                                        val position: Int = ivc.ctList.indexOfFirst { it.category == cat }
+                                        val position: Int = chartInfo.ctList.indexOfFirst { it.category == cat }
                                         // -1 = doesn't exist
                                         if (position != -1) highlights.add(Highlight(position.toFloat(), 0, 0))
                                     }
                                 }
-                                highlightValues(highlights.toTypedArray())
-                                invalidate()
+                                it.highlightValues(highlights.toTypedArray())
+                            } else {
+                                it.visibility = View.INVISIBLE
                             }
                         }
-                    },
-                        modifier = Modifier.fillMaxSize()
                     )
                     Text(
                         text = "$page",

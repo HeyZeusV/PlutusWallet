@@ -2,15 +2,21 @@ package com.heyzeusv.plutuswallet.ui.cfl.chart
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
+import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.ItemViewChart
+import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 /**
  *  Data manager for GraphFragments.
@@ -20,8 +26,24 @@ import kotlinx.coroutines.flow.Flow
  */
 @HiltViewModel
 class ChartViewModel @Inject constructor(
-    private val tranRepo: Repository
+    private val tranRepo: Repository,
+    val setVals: SettingsValues
 ) : ViewModel() {
+
+    private val _catTotalsList = MutableStateFlow(emptyList<CategoryTotals>())
+    val catTotalsList: StateFlow<List<CategoryTotals>> get() = _catTotalsList
+    fun updateCatTotalsList(filter: FilterInfo) {
+        viewModelScope.launch {
+            filteredCategoryTotals(filter).collect { list ->
+                _catTotalsList.value = list
+                prepareChartInformation()
+            }
+        }
+    }
+
+    private val _chartInfoList = MutableStateFlow(listOf(ChartInformation(), ChartInformation()))
+    val chartInfoList: StateFlow<List<ChartInformation>> get() = _chartInfoList
+    fun updateChartInfoList(newList: List<ChartInformation>) { _chartInfoList.value = newList }
 
     var ivcList: MutableList<ItemViewChart> = mutableListOf(ItemViewChart(), ItemViewChart())
         private set
@@ -48,6 +70,50 @@ class ChartViewModel @Inject constructor(
     // formatted text that displays total
     var exTotText: String = ""
     var inTotText: String = ""
+
+    init {
+        updateCatTotalsList(FilterInfo())
+    }
+
+    private fun prepareChartInformation() {
+        val exCTList = mutableListOf<CategoryTotals>()
+        val inCTList = mutableListOf<CategoryTotals>()
+        catTotalsList.value.forEach {
+            if (it.type == "Expense") exCTList.add(it) else inCTList.add(it)
+        }
+        val exCTListTotal =
+            exCTList.fold(BigDecimal.ZERO) { total: BigDecimal, next: CategoryTotals ->
+                total + next.total
+            }
+        val inCTListTotal =
+            inCTList.fold(BigDecimal.ZERO) { total: BigDecimal, next: CategoryTotals ->
+                total + next.total
+            }
+
+        val expenseChartInfo = ChartInformation(
+            ctList = exCTList,
+            totalText = prepareTotalText(exCTListTotal)
+        )
+        val incomeChartInfo = ChartInformation(
+            ctList = inCTList,
+            totalText = prepareTotalText(inCTListTotal)
+        )
+
+        updateChartInfoList(listOf(expenseChartInfo, incomeChartInfo))
+    }
+
+    private fun prepareTotalText(total: BigDecimal): String {
+        var totalText: String
+        setVals.apply {
+            totalText = when {
+                decimalPlaces && symbolSide -> "$currencySymbol${decimalFormatter.format(total)}"
+                decimalPlaces -> "${decimalFormatter.format(total)}$currencySymbol"
+                symbolSide -> "$currencySymbol${integerFormatter.format(total)}"
+                else -> "${integerFormatter.format(total)}$currencySymbol"
+            }
+        }
+        return totalText
+    }
 
     /**
      *  Splits [ctList] into 2 lists depending on [category] and [type] filters
