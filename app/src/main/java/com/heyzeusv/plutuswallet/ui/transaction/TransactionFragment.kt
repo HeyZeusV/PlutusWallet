@@ -18,25 +18,6 @@ import com.heyzeusv.plutuswallet.ui.base.BaseFragment
  */
 class TransactionFragment : BaseFragment() {
 
-    // provides instance of ViewModel
-    private val tranVM: TransactionViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        tranVM.apply {
-            emptyTitle = getString((R.string.transaction_empty_title))
-            // array used by PeriodSpinner
-            updatePeriodList(
-                mutableListOf(
-                    getString(R.string.period_days), getString(R.string.period_weeks),
-                    getString(R.string.period_months), getString(R.string.period_years)
-                )
-            )
-            prepareLists(getString(R.string.account_create), getString(R.string.category_create))
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
