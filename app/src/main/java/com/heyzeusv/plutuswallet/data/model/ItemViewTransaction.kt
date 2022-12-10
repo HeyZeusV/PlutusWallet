@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.data.model
 
+import androidx.room.Ignore
 import java.math.BigDecimal
 import java.util.Date
 
@@ -23,4 +24,9 @@ data class ItemViewTransaction(
     val account: String,
     val type: String,
     val category: String
-)
+) {
+    @Ignore
+    var formattedTotal = ""
+    @Ignore
+    var formattedDate = ""
+}

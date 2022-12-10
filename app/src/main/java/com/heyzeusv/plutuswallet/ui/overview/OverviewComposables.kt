@@ -51,26 +51,22 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
-import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import java.math.BigDecimal
-import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun OverviewScreen(
-    tranListVM: TransactionListViewModel,
     tranList: List<ItemViewTransaction>,
+    tranListPreviousSize: Int,
+    tranListUpdatePreviousSize: (Int) -> Unit,
     tranListItemOnLongClick: (Int) -> Unit,
     tranListItemOnClick: (Int) -> Unit,
     tranListShowDeleteDialog: Int,
@@ -78,11 +74,44 @@ fun OverviewScreen(
     tranListDialogOnDismiss: () -> Unit,
     chartInfoList: List<ChartInformation>
 ) {
-    val tranListState = rememberLazyListState()
-    val pagerState = rememberPagerState()
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
 
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ChartCard(
+            chartInfoList = chartInfoList,
+            modifier = Modifier
+                .weight(0.4f)
+                .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
+        )
+        TransactionListCard(
+            tranListPreviousSize = tranListPreviousSize,
+            tranListUpdatePreviousSize = tranListUpdatePreviousSize,
+            tranList = tranList,
+            tranListItemOnLongClick = tranListItemOnLongClick,
+            tranListItemOnClick = tranListItemOnClick,
+            tranListShowDeleteDialog = tranListShowDeleteDialog,
+            tranListDialogOnConfirm = tranListDialogOnConfirm,
+            tranListDialogOnDismiss = tranListDialogOnDismiss,
+            modifier = Modifier
+                .weight(0.6f)
+                .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad)
+        )
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun ChartCard(
+    chartInfoList: List<ChartInformation>,
+    modifier: Modifier = Modifier
+) {
+    val pagerState = rememberPagerState()
+
+    val chartLabelColor = MaterialTheme.colors.onSurface.toArgb()
+    val chartCenterHoleColor = LocalPWColors.current.chartCenterHole.toArgb()
     val chartColorLists: List<List<Int>> = listOf(
         listOf(
             LocalPWColors.current.expenseChartPrimary.toArgb(),
@@ -98,83 +127,6 @@ fun OverviewScreen(
         )
     )
 
-    LaunchedEffect(key1 = tranList) {
-        if (tranList.size > tranListVM.previousListSize) {
-            tranListState.animateScrollToItem(0)
-            tranListVM.previousListSize = tranList.size
-        }
-    }
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        ChartCard(
-            chartInfoList = chartInfoList,
-            chartColorLists = chartColorLists,
-            pagerState = pagerState,
-            modifier = Modifier
-                .weight(0.4f)
-                .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
-        )
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.6f)
-                .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad)
-        ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = tranListState
-            ) {
-                items(tranList.reversed()) { ivTransaction ->
-                    Divider(
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
-                        thickness = 1.dp
-                    )
-                    TransactionListItem(
-                        onLongClick = { tranListItemOnLongClick(ivTransaction.id) },
-                        onClick = { tranListItemOnClick(ivTransaction.id) },
-                        ivTransaction = ivTransaction,
-                        setVals = tranListVM.setVals
-                    )
-                    if (tranListShowDeleteDialog == ivTransaction.id) {
-                        PWAlertDialog(
-                            onConfirmText = stringResource(R.string.alert_dialog_yes),
-                            onConfirm = { tranListDialogOnConfirm(ivTransaction.id) },
-                            onDismissText = stringResource(R.string.alert_dialog_no),
-                            onDismiss = tranListDialogOnDismiss,
-                            title = stringResource(R.string.alert_dialog_delete_transaction),
-                            message = stringResource(
-                                R.string.alert_dialog_delete_warning,
-                                ivTransaction.title
-                            )
-                        )
-                    }
-                }
-            }
-            if (tranList.isEmpty()) {
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.cfl_no_transactions),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun ChartCard(
-    chartInfoList: List<ChartInformation>,
-    chartColorLists: List<List<Int>>,
-    pagerState: PagerState,
-    modifier: Modifier = Modifier
-) {
-    val chartLabelColor = MaterialTheme.colors.onSurface.toArgb()
-    val chartCenterHoleColor = LocalPWColors.current.chartCenterHole.toArgb()
     Card(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -316,6 +268,73 @@ fun ChartCard(
 }
 
 @Composable
+fun TransactionListCard(
+    tranList: List<ItemViewTransaction>,
+    tranListPreviousSize: Int,
+    tranListUpdatePreviousSize: (Int) -> Unit,
+    tranListItemOnLongClick: (Int) -> Unit,
+    tranListItemOnClick: (Int) -> Unit,
+    tranListShowDeleteDialog: Int,
+    tranListDialogOnConfirm: (Int) -> Unit,
+    tranListDialogOnDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val tranListState = rememberLazyListState()
+
+    LaunchedEffect(key1 = tranList) {
+        if (tranList.size > tranListPreviousSize) {
+            tranListState.animateScrollToItem(0)
+            tranListUpdatePreviousSize(tranList.size)
+        }
+    }
+
+    Card(
+        modifier = modifier.fillMaxWidth()
+
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = tranListState
+        ) {
+            items(tranList.reversed()) { ivTransaction ->
+                Divider(
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
+                    thickness = 1.dp
+                )
+                TransactionListItem(
+                    onLongClick = { tranListItemOnLongClick(ivTransaction.id) },
+                    onClick = { tranListItemOnClick(ivTransaction.id) },
+                    ivTransaction = ivTransaction,
+                )
+                if (tranListShowDeleteDialog == ivTransaction.id) {
+                    PWAlertDialog(
+                        onConfirmText = stringResource(R.string.alert_dialog_yes),
+                        onConfirm = { tranListDialogOnConfirm(ivTransaction.id) },
+                        onDismissText = stringResource(R.string.alert_dialog_no),
+                        onDismiss = tranListDialogOnDismiss,
+                        title = stringResource(R.string.alert_dialog_delete_transaction),
+                        message = stringResource(
+                            R.string.alert_dialog_delete_warning,
+                            ivTransaction.title
+                        )
+                    )
+                }
+            }
+        }
+        if (tranList.isEmpty()) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.cfl_no_transactions),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun MarqueeText(
     text: String,
     style: TextStyle,
@@ -359,23 +378,7 @@ fun TransactionListItem(
     onLongClick: () -> Unit,
     onClick: () -> Unit,
     ivTransaction: ItemViewTransaction,
-    setVals: SettingsValues
 ) {
-    val formattedDate = DateFormat.getDateInstance(setVals.dateFormat).format(ivTransaction.date)
-    val total = when {
-        // currency symbol on left with decimal places
-        setVals.decimalPlaces && setVals.symbolSide ->
-            "${setVals.currencySymbol}${setVals.decimalFormatter.format(ivTransaction.total)}"
-        // currency symbol on right with decimal places
-        setVals.decimalPlaces ->
-            "${setVals.decimalFormatter.format(ivTransaction.total)}${setVals.currencySymbol}"
-        // currency symbol on left without decimal places
-        setVals.symbolSide ->
-            "${setVals.currencySymbol}${setVals.integerFormatter.format(ivTransaction.total)}"
-        // currency symbol on right without decimal places
-        else -> "${setVals.integerFormatter.format(ivTransaction.total)}${setVals.currencySymbol}"
-    }
-
     Surface(
         modifier = Modifier
             .combinedClickable(
@@ -405,7 +408,7 @@ fun TransactionListItem(
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
                 )
                 MarqueeText(
-                    text = formattedDate,
+                    text = ivTransaction.formattedDate,
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
                 )
@@ -417,7 +420,7 @@ fun TransactionListItem(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 MarqueeText(
-                    text = total,
+                    text = ivTransaction.formattedTotal,
                     style = MaterialTheme.typography.subtitle1,
                     color = when (ivTransaction.type) {
                         "Expense" -> LocalPWColors.current.expense
@@ -448,7 +451,6 @@ fun TransactionListItemPreview() {
             onLongClick = { },
             onClick = { },
             ivTransaction = ivTransaction,
-            setVals = SettingsValues()
         )
     }
 }

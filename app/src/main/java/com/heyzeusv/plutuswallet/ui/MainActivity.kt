@@ -217,8 +217,9 @@ fun PlutusWalletApp(
                 composable(OverviewDestination.route) {
                     tranListVM.futureTransactions()
                     OverviewScreen(
-                        tranListVM = tranListVM,
                         tranList = tranList,
+                        tranListPreviousSize = tranListVM.previousListSize,
+                        tranListUpdatePreviousSize = tranListVM::updatePreviousListSize,
                         tranListItemOnLongClick = tranListVM::updateDeleteDialog,
                         tranListItemOnClick = { tranId ->
                             tranVM.retrieveTransaction(tranId)

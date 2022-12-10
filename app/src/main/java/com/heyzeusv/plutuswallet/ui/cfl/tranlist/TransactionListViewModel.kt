@@ -11,8 +11,9 @@ import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
-import com.heyzeusv.plutuswallet.util.Event
+import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.text.DateFormat
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -45,6 +46,11 @@ class TransactionListViewModel @Inject constructor(
     fun updateTranList(filter: FilterInfo) {
         viewModelScope.launch {
             filteredTransactionList(filter).collect { list ->
+                for (ivt in list) {
+                    ivt.formattedTotal = ivt.total.prepareTotalText(setVals)
+                    ivt.formattedDate =
+                        DateFormat.getDateInstance(setVals.dateFormat).format(ivt.date)
+                }
                 _tranList.value = list
             }
         }
@@ -56,7 +62,10 @@ class TransactionListViewModel @Inject constructor(
 
     // true if there are more Transactions that repeat with futureDate before Date()
     private var moreToCreate: Boolean = false
+
     var previousListSize = 0
+        private set
+    fun updatePreviousListSize(newValue: Int) { previousListSize = newValue }
 
     init {
         initializeTables()

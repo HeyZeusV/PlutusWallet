@@ -7,6 +7,7 @@ import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
+import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -72,31 +73,13 @@ class ChartViewModel @Inject constructor(
 
         val expenseChartInfo = ChartInformation(
             ctList = exCTList,
-            totalText = prepareTotalText(exCTListTotal)
+            totalText = exCTListTotal.prepareTotalText(setVals)
         )
         val incomeChartInfo = ChartInformation(
             ctList = inCTList,
-            totalText = prepareTotalText(inCTListTotal)
+            totalText = inCTListTotal.prepareTotalText(setVals)
         )
         updateChartInfoList(listOf(expenseChartInfo, incomeChartInfo))
-    }
-
-    /**
-     *  Takes [total] and turns it into a string which includes currency, thousands, and decimal
-     *  symbols according to SettingsValues.
-     */
-    private fun prepareTotalText(total: BigDecimal): String {
-        var totalText: String
-        setVals.apply {
-            totalText = when {
-                decimalPlaces && symbolSide -> "$currencySymbol${decimalFormatter.format(total)}"
-                decimalPlaces -> "${decimalFormatter.format(total)}$currencySymbol"
-                symbolSide -> "$currencySymbol${integerFormatter.format(total)}"
-                else -> "${integerFormatter.format(total)}$currencySymbol"
-            }
-        }
-
-        return totalText
     }
 
     /**

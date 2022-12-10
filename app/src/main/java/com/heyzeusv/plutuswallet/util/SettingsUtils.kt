@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet.util
 import android.content.SharedPreferences
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -67,7 +68,9 @@ object SettingsUtils {
 
         // remaking formatters with new symbols
         val decimalFormatter = DecimalFormat("#,##0.00", customSymbols)
+            .apply { roundingMode = RoundingMode.HALF_UP }
         val integerFormatter = DecimalFormat("#,###", customSymbols)
+            .apply { roundingMode = RoundingMode.HALF_UP }
 
         return SettingsValues(
             currencySymbol, symbolSide, thousandsSymbol, decimalPlaces,

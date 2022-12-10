@@ -32,7 +32,6 @@ internal class TransactionViewModelTest {
 
     @BeforeEach
     fun setUpViewModel() {
-
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
         tranVM = TransactionViewModel(repo, SettingsValues())

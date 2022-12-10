@@ -9,6 +9,7 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -65,15 +66,8 @@ class TransactionViewModel @Inject constructor(
     private val _totalFieldValue = MutableStateFlow(TextFieldValue())
     val totalFieldValue: StateFlow<TextFieldValue> get() = _totalFieldValue
     fun updateTotalFieldValue(newValue: String) {
-        val removedSymbols = removeSymbols(newValue)
-        var formattedTotal = when (setVals.decimalPlaces) {
-            true -> formatDecimal(BigDecimal(removedSymbols))
-            false -> formatInteger(BigDecimal(removedSymbols))
-        }
-        formattedTotal = when (setVals.symbolSide) {
-            true -> "${setVals.currencySymbol}$formattedTotal"
-            false -> "$formattedTotal${setVals.currencySymbol}"
-        }
+        val removedSymbols = BigDecimal(removeSymbols(newValue))
+        val formattedTotal = removedSymbols.prepareTotalText(setVals)
         _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
 
@@ -339,31 +333,6 @@ class TransactionViewModel @Inject constructor(
             // returns just a string of numbers
             else -> chars
         }
-    }
-
-    /**
-     *  Returns formatted [num] in integer form.
-     */
-    private fun formatInteger(num: BigDecimal): String {
-        val customSymbols = DecimalFormatSymbols(Locale.US)
-        customSymbols.groupingSeparator = setVals.thousandsSymbol
-        // every three numbers, a thousands symbol will be added
-        val formatter = DecimalFormat("#,###", customSymbols)
-        formatter.roundingMode = RoundingMode.HALF_UP
-        return formatter.format(num)
-    }
-
-    /**
-     *  Returns formatted [num] in decimal form.
-     */
-    private fun formatDecimal(num: BigDecimal): String {
-        val customSymbols = DecimalFormatSymbols(Locale.US)
-        customSymbols.groupingSeparator = setVals.thousandsSymbol
-        customSymbols.decimalSeparator = setVals.decimalSymbol
-        // every three numbers, a thousands symbol will be added
-        val formatter = DecimalFormat("#,##0.00", customSymbols)
-        formatter.roundingMode = RoundingMode.HALF_UP
-        return formatter.format(num)
     }
 
     /**

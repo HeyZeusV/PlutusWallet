@@ -4,6 +4,28 @@ import android.view.View
 import androidx.core.view.children
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.heyzeusv.plutuswallet.data.model.SettingsValues
+import java.math.BigDecimal
+
+/**
+ *  Returns formatted String which includes currency, thousands, and decimal symbols depending
+ *  on [setVals] values.
+ */
+fun BigDecimal.prepareTotalText(setVals: SettingsValues): String {
+    val total = this
+    setVals.apply {
+        return when {
+            // currency symbol on left with decimal places
+            decimalPlaces && symbolSide -> "$currencySymbol${decimalFormatter.format(total)}"
+            // currency symbol on right with decimal places
+            decimalPlaces -> "${decimalFormatter.format(total)}$currencySymbol"
+            // currency symbol on left without decimal places
+            symbolSide -> "$currencySymbol${integerFormatter.format(total)}"
+            // currency symbol on right without decimal places
+            else -> "${integerFormatter.format(total)}$currencySymbol"
+        }
+    }
+}
 
 /**
  *  Replace first instance of [old] with [new].
