@@ -218,8 +218,8 @@ fun PlutusWalletApp(
                     tranListVM.futureTransactions()
                     OverviewScreen(
                         tranList = tranList,
-                        tranListPreviousSize = tranListVM.previousListSize,
-                        tranListUpdatePreviousSize = tranListVM::updatePreviousListSize,
+                        tranListPreviousMaxId = tranListVM.previousMaxId,
+                        tranListUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
                         tranListItemOnLongClick = tranListVM::updateDeleteDialog,
                         tranListItemOnClick = { tranId ->
                             tranVM.retrieveTransaction(tranId)

@@ -1,7 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.cfl.tranlist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
@@ -24,6 +22,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 
 private const val EXPENSE = "Expense"
 private const val INCOME = "Income"
@@ -63,11 +62,14 @@ class TransactionListViewModel @Inject constructor(
     // true if there are more Transactions that repeat with futureDate before Date()
     private var moreToCreate: Boolean = false
 
-    var previousListSize = 0
+    var previousMaxId = 0
         private set
-    fun updatePreviousListSize(newValue: Int) { previousListSize = newValue }
+    fun updatePreviousMaxId(newValue: Int) { previousMaxId = newValue }
 
     init {
+        viewModelScope.launch {
+            previousMaxId = tranRepo.getMaxId().first() ?: 0
+        }
         initializeTables()
         updateTranList(FilterInfo())
     }

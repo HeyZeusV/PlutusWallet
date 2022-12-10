@@ -65,8 +65,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun OverviewScreen(
     tranList: List<ItemViewTransaction>,
-    tranListPreviousSize: Int,
-    tranListUpdatePreviousSize: (Int) -> Unit,
+    tranListPreviousMaxId: Int,
+    tranListUpdatePreviousMaxId: (Int) -> Unit,
     tranListItemOnLongClick: (Int) -> Unit,
     tranListItemOnClick: (Int) -> Unit,
     tranListShowDeleteDialog: Int,
@@ -87,8 +87,8 @@ fun OverviewScreen(
                 .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
         )
         TransactionListCard(
-            tranListPreviousSize = tranListPreviousSize,
-            tranListUpdatePreviousSize = tranListUpdatePreviousSize,
+            tranListPreviousMaxId = tranListPreviousMaxId,
+            tranListUpdatePreviousMaxId = tranListUpdatePreviousMaxId,
             tranList = tranList,
             tranListItemOnLongClick = tranListItemOnLongClick,
             tranListItemOnClick = tranListItemOnClick,
@@ -102,6 +102,9 @@ fun OverviewScreen(
     }
 }
 
+/**
+ *  Composable that displays Charts and totals using data from [chartInfoList]
+ */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ChartCard(
@@ -110,6 +113,7 @@ fun ChartCard(
 ) {
     val pagerState = rememberPagerState()
 
+    // colors used by charts
     val chartLabelColor = MaterialTheme.colors.onSurface.toArgb()
     val chartCenterHoleColor = LocalPWColors.current.chartCenterHole.toArgb()
     val chartColorLists: List<List<Int>> = listOf(
@@ -149,6 +153,10 @@ fun ChartCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (chartInfo.ctList.isNotEmpty()) {
+                        /**
+                         *  Library used for PieChart is most likely never going to be updated to
+                         *  be Composable. Will be looking for new library or possibly make own.
+                         */
                         AndroidView(
                             factory = { context ->
                                 PieChart(context).apply {
@@ -235,7 +243,6 @@ fun ChartCard(
                                     }
                                 }
                                 pieChart.highlightValues(highlights.toTypedArray())
-
                             }
                         )
                         val totalPrefix = stringResource(R.string.chart_total)
@@ -267,11 +274,20 @@ fun ChartCard(
     }
 }
 
+/**
+ *  Composable that displays [tranList], list of Transactions, in [ItemViewTransaction] form.
+ *  [tranListPreviousMaxId] is used to determine if a new Transaction was created in order to
+ *  scroll to the top of the list automatically which is updated by [tranListUpdatePreviousMaxId].
+ *  [tranListItemOnLongClick] and [tranListItemOnClick] are used for deletion and selection
+ *  respectively. [tranListShowDeleteDialog] determines when to show AlertDialog, while
+ *  [tranListDialogOnConfirm] and [tranListDialogOnDismiss] are used to confirm deletion or deny it
+ *  respectively.
+ */
 @Composable
 fun TransactionListCard(
     tranList: List<ItemViewTransaction>,
-    tranListPreviousSize: Int,
-    tranListUpdatePreviousSize: (Int) -> Unit,
+    tranListPreviousMaxId: Int,
+    tranListUpdatePreviousMaxId: (Int) -> Unit,
     tranListItemOnLongClick: (Int) -> Unit,
     tranListItemOnClick: (Int) -> Unit,
     tranListShowDeleteDialog: Int,
@@ -281,17 +297,15 @@ fun TransactionListCard(
 ) {
     val tranListState = rememberLazyListState()
 
+    // scrolls to top of the list when new Transaction is added
     LaunchedEffect(key1 = tranList) {
-        if (tranList.size > tranListPreviousSize) {
+        if (tranList.isNotEmpty() && tranList[tranList.size - 1].id > tranListPreviousMaxId) {
             tranListState.animateScrollToItem(0)
-            tranListUpdatePreviousSize(tranList.size)
+            tranListUpdatePreviousMaxId(tranList[tranList.size - 1].id)
         }
     }
 
-    Card(
-        modifier = modifier.fillMaxWidth()
-
-    ) {
+    Card(modifier = modifier.fillMaxWidth()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = tranListState
@@ -302,9 +316,9 @@ fun TransactionListCard(
                     thickness = 1.dp
                 )
                 TransactionListItem(
+                    ivTransaction = ivTransaction,
                     onLongClick = { tranListItemOnLongClick(ivTransaction.id) },
                     onClick = { tranListItemOnClick(ivTransaction.id) },
-                    ivTransaction = ivTransaction,
                 )
                 if (tranListShowDeleteDialog == ivTransaction.id) {
                     PWAlertDialog(
@@ -334,6 +348,10 @@ fun TransactionListCard(
     }
 }
 
+/**
+ *  Composable for scrolling Text. Text will scroll indefinitely when it does not fit in given area.
+ *  [text] is to be displayed using [style], [color], and [textAlign].
+ */
 @Composable
 fun MarqueeText(
     text: String,
@@ -372,12 +390,17 @@ fun MarqueeText(
     )
 }
 
+/**
+ *  Composable that displays a Transaction in [ItemViewTransaction] form. [ivTransaction] contains
+ *  the data to be displayed. [onLongClick] and [onClick] are used for deletion and selection
+ *  respectively.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionListItem(
+    ivTransaction: ItemViewTransaction,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
-    ivTransaction: ItemViewTransaction,
 ) {
     Surface(
         modifier = Modifier
@@ -448,9 +471,9 @@ fun TransactionListItemPreview() {
     )
     PlutusWalletTheme {
         TransactionListItem(
+            ivTransaction = ivTransaction,
             onLongClick = { },
             onClick = { },
-            ivTransaction = ivTransaction,
         )
     }
 }

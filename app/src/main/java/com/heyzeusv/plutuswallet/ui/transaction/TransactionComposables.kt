@@ -80,7 +80,9 @@ import kotlinx.coroutines.launch
 
 /**
  *  Composable that displays the entire Transaction screen.
- *  Data that is displayed is retrieved from [tranVM].
+ *  Data that is displayed is retrieved from [tranVM]. [snackbarHostState] is used to
+ *  display Snackbar on successful save. [navController] allows user to navigate back to
+ *  OverviewScreen onBackPressed.
  */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
