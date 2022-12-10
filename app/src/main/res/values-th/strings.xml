@@ -31,7 +31,7 @@
     <string name="filter_reset">ตั้งค่าใหม่</string>
     <string name="filter_start">ราคาเริ่มต้น</string>
     <string name="filter_type">ประเภท</string>
-    <string name="chart_total">รวม:&#160;</string>
+    <string name="chart_total">"รวม: "</string>
     <string name="period_days">วัน</string>
     <string name="period_months">เดือน</string>
     <string name="period_weeks">สัปดาห์</string>

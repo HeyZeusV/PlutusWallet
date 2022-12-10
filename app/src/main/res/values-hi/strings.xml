@@ -31,7 +31,7 @@
     <string name="filter_reset">रीसेट</string>
     <string name="filter_start">शुरू</string>
     <string name="filter_type">प्रकार</string>
-    <string name="chart_total">संपूर्ण:&#160;</string>
+    <string name="chart_total">"संपूर्ण: "</string>
     <string name="period_days">दिन</string>
     <string name="period_months">महीने</string>
     <string name="period_weeks">सप्ताह</string>

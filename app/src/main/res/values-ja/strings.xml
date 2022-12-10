@@ -31,7 +31,7 @@
     <string name="filter_reset">リセットする</string>
     <string name="filter_start">開始</string>
     <string name="filter_type">タイプ</string>
-    <string name="chart_total">合計:&#160;</string>
+    <string name="chart_total">"合計: "</string>
     <string name="period_days">日々</string>
     <string name="period_months">ヶ月</string>
     <string name="period_weeks">週間</string>

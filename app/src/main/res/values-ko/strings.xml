@@ -31,7 +31,7 @@
     <string name="filter_reset">초기화</string>
     <string name="filter_start">스타트</string>
     <string name="filter_type">유형</string>
-    <string name="chart_total">합계:&#160;</string>
+    <string name="chart_total">"합계: "</string>
     <string name="period_days">일</string>
     <string name="period_months">개월</string>
     <string name="period_weeks">주</string>

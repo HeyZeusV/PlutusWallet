@@ -230,7 +230,6 @@ fun PlutusWalletApp(
                             tranListVM.updateDeleteDialog(-1)
                         },
                         tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
-                        chartVM = chartVM,
                         chartInfoList = chartInfoList
                     )
                 }

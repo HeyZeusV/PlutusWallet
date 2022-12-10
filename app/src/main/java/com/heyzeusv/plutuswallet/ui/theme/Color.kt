@@ -35,7 +35,7 @@ val PurpleBase = Color(0xff24102f) // primary
 val PurpleDark = Color(0xff1b1120) // primary Dark, background
 val GreenBase = Color(0xffa5d6a7) // secondary
 val ErrorDark = Color(0xffffbaba) // error
-val ButtonTextDark = Color(0xff2f1c39) // chart hole color, date picker header
+val ChartCenterHole = Color(0xff2f1c39) // chart hole color, date picker header
 val ButtonUnselectedDark = Color(0x60ffffff)
 val FilterBackgroundDark = Color(0xff362340)
 val AlertDialogButtonTextDark = Color(0xffffb3ff)
@@ -82,6 +82,7 @@ val PWLightColors = PlutusWalletColors(
     incomeChartSecondary = Teal600,
     incomeChartTertiary = Blue500,
     incomeChartQuaternary = DeepPurple300,
+    chartCenterHole = Color.White,
     isLight = true
 )
 
@@ -97,6 +98,7 @@ val PWDarkColors = PlutusWalletColors(
     incomeChartSecondary = Teal800,
     incomeChartTertiary = Blue800,
     incomeChartQuaternary = DeepPurple600,
+    chartCenterHole = ChartCenterHole,
     isLight = false
 )
 
@@ -113,6 +115,7 @@ class PlutusWalletColors(
     incomeChartSecondary: Color,
     incomeChartTertiary: Color,
     incomeChartQuaternary: Color,
+    chartCenterHole: Color,
     isLight: Boolean
 ) {
     var alertDialogButtonText by mutableStateOf(alertDialogButtonText, structuralEqualityPolicy())
@@ -136,6 +139,8 @@ class PlutusWalletColors(
     var incomeChartTertiary by mutableStateOf(incomeChartTertiary, structuralEqualityPolicy())
         internal set
     var incomeChartQuaternary by mutableStateOf(incomeChartQuaternary, structuralEqualityPolicy())
+        internal set
+    var chartCenterHole by mutableStateOf(chartCenterHole, structuralEqualityPolicy())
         internal set
     var isLight by mutableStateOf(isLight, structuralEqualityPolicy())
         internal set

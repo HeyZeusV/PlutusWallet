@@ -91,7 +91,7 @@ class AppNavigationTest {
     fun navigateToExistingTransactionAndBack() {
 
         // click on existing Transaction from TransactionListFragment
-        onView(withIndex(withId(R.id.ivt_layout), 2)).perform(click())
+//        onView(withIndex(withId(R.id.ivt_layout), 2)).perform(click())
 
         // check that TransactionFragment is displayed
         onView(withId(R.id.tran_layout)).check(matches(isDisplayed()))

@@ -221,7 +221,6 @@ class FakeAndroidRepository @Inject constructor() : Repository {
 
     private fun createCatTotals(listOfTranLists: MutableList<MutableList<Transaction>>)
             : List<CategoryTotals> {
-
         val catTotals: MutableList<CategoryTotals> = mutableListOf()
         for (list: MutableList<Transaction> in listOfTranLists) {
             var total = BigDecimal(0)

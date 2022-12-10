@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.overview
 
-import android.view.View
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -52,12 +51,12 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
-import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
@@ -77,7 +76,6 @@ fun OverviewScreen(
     tranListShowDeleteDialog: Int,
     tranListDialogOnConfirm: (Int) -> Unit,
     tranListDialogOnDismiss: () -> Unit,
-    chartVM: ChartViewModel,
     chartInfoList: List<ChartInformation>
 ) {
     val tranListState = rememberLazyListState()
@@ -109,115 +107,14 @@ fun OverviewScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Card(
+        ChartCard(
+            chartInfoList = chartInfoList,
+            chartColorLists = chartColorLists,
+            pagerState = pagerState,
             modifier = Modifier
-                .fillMaxWidth()
                 .weight(0.4f)
                 .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
-        ) {
-            HorizontalPager(
-                count = 2,
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState
-            ) { page ->
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    val chartInfo = chartInfoList[page]
-                    AndroidView(
-                        factory = { context ->
-                            PieChart(context).apply {
-                                // no chart to create if ctList is empty
-                                if (chartInfo.ctList.isNotEmpty()) {
-                                    // displays translated type in center of chart
-                                    centerText = if (page == 0) {
-                                        context.resources.getString(R.string.type_expense)
-                                    } else {
-                                        context.resources.getString(R.string.type_income)
-                                    }
-                                    // don't want a description so make it blank
-                                    description.text = ""
-                                    // don't want legend so disable it
-                                    legend.isEnabled = false
-                                    // true = doughnut chart
-                                    isDrawHoleEnabled = true
-                                    // color of labels
-                                    setEntryLabelColor(ContextCompat.getColor(this.context, R.color.colorChartText))
-                                    // size of Category labels
-                                    setEntryLabelTextSize(14.5f)
-                                    // color of center hole
-                                    setHoleColor(ContextCompat.getColor(this.context, R.color.colorChartHole))
-                                    // size of center text
-                                    setCenterTextSize(15f)
-                                    // color of center text
-                                    setCenterTextColor(ContextCompat.getColor(this.context, R.color.textColorPrimary))
-                                    // true = display center text
-                                    setDrawCenterText(true)
-                                    // true = use percent values
-                                    setUsePercentValues(true)
-                                } else {
-                                    visibility = View.INVISIBLE
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxSize(),
-                        update = {
-                            if (chartInfo.ctList.isNotEmpty()) {
-                                // list of entries to be displayed in PieChart
-                                val pieEntries: List<PieEntry> = chartInfo.ctList.map { catTotal ->
-                                    PieEntry(catTotal.total.toFloat(), catTotal.category)
-                                }
-
-                                // PieDataSet set up
-                                val dataSet = PieDataSet(pieEntries, "Transactions")
-                                // distance between slices
-                                dataSet.sliceSpace = 2.5f
-                                // size of percent value
-                                dataSet.valueTextSize = 13f
-                                // color of percent value
-                                dataSet.valueTextColor =
-                                    ContextCompat.getColor(it.context, R.color.colorChartText)
-                                // colors used for slices
-                                dataSet.colors = chartColorLists[page]
-                                // size of highlighted area
-                                // TODO: Check if statement is necessary
-                                if (chartInfo.fCategory /* TODO: Check this: `&& !ivc.fCatName.contains("All")` */) {
-                                    dataSet.selectionShift = 10f
-                                } else {
-                                    dataSet.selectionShift = 0.0f
-                                }
-
-                                // PieData set up
-                                val pData = PieData(dataSet)
-                                // makes values in form of percentages
-                                pData.setValueFormatter(PercentFormatter(it))
-                                // PieChart set up
-                                it.data = pData
-
-                                val highlights: MutableList<Highlight> = mutableListOf()
-                                // highlights Category selected if it exists with current filters applied
-                                if (chartInfo.fCategory /* TODO: Check this: `&& !ivc.fCatName.contains("All")` */) {
-                                    for (cat: String in chartInfo.fCatName) {
-                                        // finds position of Category selected in FilterFragment in ctList
-                                        val position: Int = chartInfo.ctList.indexOfFirst { it.category == cat }
-                                        // -1 = doesn't exist
-                                        if (position != -1) highlights.add(Highlight(position.toFloat(), 0, 0))
-                                    }
-                                }
-                                it.highlightValues(highlights.toTypedArray())
-                            } else {
-                                it.visibility = View.INVISIBLE
-                            }
-                        }
-                    )
-                    Text(
-                        text = "$page",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-            HorizontalPagerIndicator(pagerState = pagerState)
-        }
+        )
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -268,12 +165,163 @@ fun OverviewScreen(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun ChartCard(
+    chartInfoList: List<ChartInformation>,
+    chartColorLists: List<List<Int>>,
+    pagerState: PagerState,
+    modifier: Modifier = Modifier
+) {
+    val chartLabelColor = MaterialTheme.colors.onSurface.toArgb()
+    val chartCenterHoleColor = LocalPWColors.current.chartCenterHole.toArgb()
+    Card(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            // TODO: Look into item scroll effects https://google.github.io/accompanist/pager/#item-scroll-effects
+            HorizontalPager(
+                count = 2,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.9f)
+                    .testTag("Chart ViewPager"),
+                state = pagerState
+            ) { page ->
+                val chartInfo = chartInfoList[page]
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (chartInfo.ctList.isNotEmpty()) {
+                        AndroidView(
+                            factory = { context ->
+                                PieChart(context).apply {
+                                    // displays translated type in center of chart
+                                    centerText = if (page == 0) {
+                                        context.resources.getString(R.string.type_expense)
+                                    } else {
+                                        context.resources.getString(R.string.type_income)
+                                    }
+                                    // don't want a description so make it blank
+                                    description.text = ""
+                                    // don't want legend so disable it
+                                    legend.isEnabled = false
+                                    // true = doughnut chart
+                                    isDrawHoleEnabled = true
+                                    // color of labels
+                                    setEntryLabelColor(chartLabelColor)
+                                    // size of Category labels
+                                    setEntryLabelTextSize(14.5f)
+                                    // color of center hole
+                                    setHoleColor(chartCenterHoleColor)
+                                    // size of center text
+                                    setCenterTextSize(15f)
+                                    // color of center text
+                                    setCenterTextColor(chartLabelColor)
+                                    // true = display center text
+                                    setDrawCenterText(true)
+                                    // true = use percent values
+                                    setUsePercentValues(true)
+                                    contentDescription = "Chart $page"
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                                .weight(0.8f),
+                            update = { pieChart: PieChart ->
+                                // list of entries to be displayed in PieChart
+                                val pieEntries: List<PieEntry> = chartInfo.ctList.map { catTotal ->
+                                    PieEntry(catTotal.total.toFloat(), catTotal.category)
+                                }
+
+                                // PieDataSet set up
+                                val dataSet = PieDataSet(pieEntries, "Transactions")
+                                // distance between slices
+                                dataSet.sliceSpace = 2.5f
+                                // size of percent value
+                                dataSet.valueTextSize = 13f
+                                // color of percent value
+                                dataSet.valueTextColor =
+                                    ContextCompat.getColor(pieChart.context, R.color.colorChartText)
+                                // colors used for slices
+                                dataSet.colors = chartColorLists[page]
+                                // size of highlighted area
+                                // TODO: Check if statement is necessary
+                                if (chartInfo.fCategory /* TODO: Check this: `&& !ivc.fCatName.contains("All")` */) {
+                                    dataSet.selectionShift = 10f
+                                } else {
+                                    dataSet.selectionShift = 0.0f
+                                }
+
+                                // PieData set up
+                                val pData = PieData(dataSet)
+                                // makes values in form of percentages
+                                pData.setValueFormatter(PercentFormatter(pieChart))
+                                // PieChart set up
+                                pieChart.data = pData
+
+                                val highlights: MutableList<Highlight> = mutableListOf()
+                                // highlights Category selected if it exists with current filters applied
+                                if (chartInfo.fCategory /* TODO: Check this: `&& !ivc.fCatName.contains("All")` */) {
+                                    for (cat: String in chartInfo.fCatName) {
+                                        // finds position of Category selected in FilterFragment in ctList
+                                        val position: Int =
+                                            chartInfo.ctList.indexOfFirst { it.category == cat }
+                                        // -1 = doesn't exist
+                                        if (position != -1) highlights.add(
+                                            Highlight(
+                                                position.toFloat(),
+                                                0,
+                                                0
+                                            )
+                                        )
+                                    }
+                                }
+                                pieChart.highlightValues(highlights.toTypedArray())
+
+                            }
+                        )
+                        val totalPrefix = stringResource(R.string.chart_total)
+                        MarqueeText(
+                            text = "$totalPrefix${chartInfo.totalText}",
+                            style = MaterialTheme.typography.subtitle1,
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .padding(horizontal = dimensionResource(R.dimen.chartMarginStartEnd))
+                                .testTag("Chart Total for page $page")
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.cfl_no_transactions),
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .testTag("Empty Chart for page $page")
+                        )
+                    }
+                }
+            }
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .padding(top = 4.dp, bottom = 8.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+    }
+}
+
 @Composable
 fun MarqueeText(
     text: String,
+    style: TextStyle,
+    modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.onSurface,
-    textAlign: TextAlign? = null,
-    style: TextStyle
+    textAlign: TextAlign? = null
 ) {
     val scrollState = rememberScrollState()
     var animate by remember { mutableStateOf(true) }
@@ -294,7 +342,7 @@ fun MarqueeText(
 
     Text(
         text = text,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState, false),
         color = color,
@@ -353,13 +401,13 @@ fun TransactionListItem(
                 )
                 MarqueeText(
                     text = ivTransaction.account,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.subtitle2
+                    style = MaterialTheme.typography.subtitle2,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
                 )
                 MarqueeText(
                     text = formattedDate,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.subtitle2
+                    style = MaterialTheme.typography.subtitle2,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
                 )
             }
             Column(
@@ -370,18 +418,18 @@ fun TransactionListItem(
             ) {
                 MarqueeText(
                     text = total,
+                    style = MaterialTheme.typography.subtitle1,
                     color = when (ivTransaction.type) {
                         "Expense" -> LocalPWColors.current.expense
                         else -> LocalPWColors.current.income
                     },
-                    textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.subtitle1
+                    textAlign = TextAlign.End
                 )
                 MarqueeText(
                     text = ivTransaction.category,
+                    style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.subtitle2
+                    textAlign = TextAlign.End
                 )
             }
         }
