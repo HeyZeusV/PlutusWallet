@@ -10,8 +10,10 @@ import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
@@ -84,6 +86,15 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1"))
             .check(matches(chartEntry("Salary", 2000.32F)))
         composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
+
+        composeRule.onNode(hasTestTag("Filter Card")).assertDoesNotExist()
+        // should start with no filters selected
+        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
+            .performClick()
+        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNode(hasTestTag(res.getString(R.string.filter_account))).assertIsNotSelected()
+        composeRule.onNode(hasTestTag(res.getString(R.string.filter_category))).assertIsNotSelected()
+        composeRule.onNode(hasTestTag(res.getString(R.string.filter_date))).assertIsNotSelected()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

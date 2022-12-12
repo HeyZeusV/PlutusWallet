@@ -22,10 +22,10 @@
     <string name="category_all">ทั้งหมด</string>
     <string name="category_create">สร้างหมวดหมู่ใหม่</string>
     <string name="cfl_no_transactions">ไม่มีการทำธุรกรรมใด ๆ เพื่อดำเนินการตัวกรองที่ใช้!</string>
-    <string name="filter_account">บัญชี:</string>
+    <string name="filter_account">บัญชี</string>
     <string name="filter_apply">ใช้</string>
-    <string name="filter_category">ประเภท:</string>
-    <string name="filter_date">วันที่:</string>
+    <string name="filter_category">ประเภท</string>
+    <string name="filter_date">วันที่</string>
     <string name="filter_date_warning">วันที่สิ้นสุดต้องอยู่หลังวันที่เริ่มต้น !!</string>
     <string name="filter_end">ปลาย</string>
     <string name="filter_reset">ตั้งค่าใหม่</string>

@@ -151,7 +151,7 @@ internal class FilterViewModelTest {
     @DisplayName("Should create dateErrorEvent when applying filter with endDate before startDate")
     fun applyFilterOCDateError() {
 
-        filterVM.dateFilter.value = true
+        filterVM.dateFilterOld.value = true
         filterVM.startDate = Date()
         filterVM.endDate = Date(0)
 

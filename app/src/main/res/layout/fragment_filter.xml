@@ -169,7 +169,7 @@
                             style="@style/Filter.Button.Outlined.DropDown"
                             android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
                             android:text="@string/transaction_date"
-                            app:isActivated="@{filterVM.dateFilter}"
+                            app:isActivated="@{filterVM.dateFilterOld}"
                             app:layout_constraintTop_toBottomOf="@id/filter_category_scrollview" />
 
                         <View
@@ -189,7 +189,7 @@
                             android:layout_marginBottom="6dp"
                             android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
                             android:text="@{filterVM.startDateLD == `` ? @string/filter_start : filterVM.startDateLD}"
-                            app:isActivated="@{filterVM.dateFilter}"
+                            app:isActivated="@{filterVM.dateFilterOld}"
                             app:layout_constraintBottom_toBottomOf="@id/filter_date"
                             app:layout_constraintEnd_toEndOf="@id/filter_date"
                             app:layout_constraintStart_toStartOf="@id/filter_date"
@@ -204,7 +204,7 @@
                             android:layout_marginBottom="6dp"
                             android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
                             android:text="@{filterVM.endDateLD == `` ? @string/filter_end : filterVM.endDateLD}"
-                            app:isActivated="@{filterVM.dateFilter}"
+                            app:isActivated="@{filterVM.dateFilterOld}"
                             app:layout_constraintBottom_toBottomOf="@id/filter_date"
                             app:layout_constraintEnd_toEndOf="@id/filter_date"
                             app:layout_constraintStart_toStartOf="@id/filter_date"
@@ -222,7 +222,7 @@
                 android:layout_marginStart="@dimen/filterParentMarginStartEnd"
                 android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
                 android:onClick="@{() -> filterVM.applyFilterOC()}"
-                android:text="@{(!filterVM.accFilter &amp;&amp; !filterVM.catFilter &amp;&amp; !filterVM.dateFilter) ? @string/filter_reset : @string/filter_apply}"
+                android:text="@{(!filterVM.accFilter &amp;&amp; !filterVM.catFilter &amp;&amp; !filterVM.dateFilterOld) ? @string/filter_reset : @string/filter_apply}"
                 android:textSize="@dimen/textSizeFilterButton"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/filter_scroll"

@@ -11,6 +11,7 @@ import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
+import com.heyzeusv.plutuswallet.ui.cfl.filter.FilterViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
@@ -59,6 +60,7 @@ abstract class BaseTest {
                             tranListVM = viewModels<TransactionListViewModel>().value,
                             cflVM = viewModels<CFLViewModel>().value,
                             chartVM = viewModels<ChartViewModel>().value,
+                            filterVM = viewModels<FilterViewModel>().value,
                             tranVM = viewModels<TransactionViewModel>().value
                         )
                     }

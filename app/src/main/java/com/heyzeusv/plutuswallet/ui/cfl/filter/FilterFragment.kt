@@ -89,8 +89,8 @@ class FilterFragment : Fragment() {
         }
 
         binding.filterDate.setOnClickListener {
-            filterVM.dateFilter.value = !filterVM.dateFilter.value!!
-            if (filterVM.dateFilter.value!!) {
+            filterVM.dateFilterOld.value = !filterVM.dateFilterOld.value!!
+            if (filterVM.dateFilterOld.value!!) {
                 binding.filterDateMotion.transitionToEnd()
                 // after a short delay, scroll down to show all children
                 binding.filterScroll.postDelayed({
@@ -178,7 +178,7 @@ class FilterFragment : Fragment() {
         // opens filters back up if they were open before user left screen
         if (filterVM.accFilter.value!!) binding.filterAccountMotion.transitionToEnd()
         if (filterVM.catFilter.value!!) binding.filterCategoryMotion.transitionToEnd()
-        if (filterVM.dateFilter.value!!) binding.filterDateMotion.transitionToEnd()
+        if (filterVM.dateFilterOld.value!!) binding.filterDateMotion.transitionToEnd()
     }
 
     /**

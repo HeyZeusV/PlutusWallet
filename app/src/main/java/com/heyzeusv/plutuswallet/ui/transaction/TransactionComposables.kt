@@ -62,7 +62,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -629,7 +628,7 @@ fun TransactionNumberInput(
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun TransactionChip(
+fun PlutusWalletChip(
     selected: Boolean,
     onClick: () -> Unit,
     label: String,
@@ -641,7 +640,6 @@ fun TransactionChip(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(dimensionResource(R.dimen.chip_height))
             .testTag(label),
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(
@@ -701,7 +699,7 @@ fun TransactionChip(
 }
 
 /**
- *  Composable that brings together [TransactionChip]s and [TransactionDropDownMenu] to handle
+ *  Composable that brings together [PlutusWalletChip]s and [TransactionDropDownMenu] to handle
  *  Category selection. [typeSelected] determines which chip is currently selected, which is
  *  updated by [chipExpenseOnClick] and [chipIncomeOnClick]. [dropDownValue] is the currently
  *  selected value. [dropDownList] is the values displayed when the drop down menu is expanded.
@@ -732,19 +730,23 @@ fun TransactionCategories(
             ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TransactionChip(
+            PlutusWalletChip(
                 selected = typeSelected == TransactionType.EXPENSE,
                 onClick = chipExpenseOnClick,
                 label = stringResource(R.string.type_expense),
                 showIcon = false,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .height(dimensionResource(R.dimen.chip_height))
+                    .weight(1f)
             )
-            TransactionChip(
+            PlutusWalletChip(
                 selected = typeSelected == TransactionType.INCOME,
                 onClick = chipIncomeOnClick,
                 label = stringResource(R.string.type_income),
                 showIcon = false,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .height(dimensionResource(R.dimen.chip_height))
+                    .weight(1f)
             )
         }
         TransactionDropDownMenu(
@@ -766,7 +768,7 @@ fun TransactionCategories(
 }
 
 /**
- *  Composable that combines [TransactionChip], [TransactionDropDownMenu], and
+ *  Composable that combines [PlutusWalletChip], [TransactionDropDownMenu], and
  *  [TransactionNumberInput] to handle repeating Transactions. [newTransaction] determines if
  *  scroll down animation should occur. [chipSelected] determines if chip is selected.
  *  [chipOnClick] is called when chip is selected. [dropDownValue] is currently selected value from
@@ -797,11 +799,12 @@ fun TransactionRepeating(
     }
 
     Column(modifier = modifier) {
-        TransactionChip(
+        PlutusWalletChip(
             selected = chipSelected,
             onClick = chipOnClick,
             label = stringResource(R.string.transaction_repeat),
-            showIcon = true
+            showIcon = true,
+            modifier = Modifier.height(dimensionResource(R.dimen.chip_height))
         )
         AnimatedVisibility(visible = chipSelected) {
             Row(

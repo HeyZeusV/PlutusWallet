@@ -1,9 +1,18 @@
 package com.heyzeusv.plutuswallet.ui.overview
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -57,6 +67,7 @@ import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.ui.transaction.PlutusWalletChip
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import java.math.BigDecimal
 import java.util.Date
@@ -72,10 +83,13 @@ fun OverviewScreen(
     tranListShowDeleteDialog: Int,
     tranListDialogOnConfirm: (Int) -> Unit,
     tranListDialogOnDismiss: () -> Unit,
-    chartInfoList: List<ChartInformation>
+    chartInfoList: List<ChartInformation>,
+    showFilter: Boolean,
+    updateShowFilter: (Boolean) -> Unit
 ) {
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
+
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -100,6 +114,16 @@ fun OverviewScreen(
                 .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad)
         )
     }
+    FilterCard(
+        showFilter = showFilter,
+        updateShowFilter = updateShowFilter,
+        accountFilterSelected = false,
+        accountFilterOnClick = { /*TODO*/ },
+        categoryFilterSelected = false,
+        categoryFilterOnClick = { /*TODO*/ },
+        dateFilterSelected = false,
+        dateFilterOnClick = { }
+    )
 }
 
 /**
@@ -405,8 +429,7 @@ fun TransactionListItem(
     Surface(
         modifier = Modifier
             .combinedClickable(
-                onLongClick = onLongClick,
-                onClick = onClick
+                onLongClick = onLongClick, onClick = onClick
             )
             .testTag("${ivTransaction.id}")
     ) {
@@ -459,6 +482,103 @@ fun TransactionListItem(
                 )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun FilterCard(
+    showFilter: Boolean,
+    updateShowFilter: (Boolean) -> Unit,
+    accountFilterSelected: Boolean,
+    accountFilterOnClick: () -> Unit,
+    categoryFilterSelected: Boolean,
+    categoryFilterOnClick: () -> Unit,
+    dateFilterSelected: Boolean,
+    dateFilterOnClick: () -> Unit
+) {
+    AnimatedVisibility(
+        visible = showFilter,
+        enter = EnterTransition.None,
+        exit = ExitTransition.None
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { updateShowFilter(!showFilter) }
+                .animateEnterExit(
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ),
+            color = LocalPWColors.current.transparentBlack
+        ) {}
+        Card(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .animateEnterExit(
+                    enter = slideInVertically(
+                        initialOffsetY = { -520 }
+                    ),
+                    exit = slideOutVertically(
+                        targetOffsetY = { -520 }
+                    )
+                )
+                .testTag("Filter Card")
+        ) {
+            Column(
+                modifier = Modifier.padding(all = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                PlutusWalletChip(
+                    selected = accountFilterSelected,
+                    onClick = accountFilterOnClick,
+                    label = stringResource(R.string.filter_account),
+                    showIcon = true,
+                    modifier = Modifier.height(dimensionResource(R.dimen.filter_chip_height))
+                )
+                PlutusWalletChip(
+                    selected = categoryFilterSelected,
+                    onClick = categoryFilterOnClick,
+                    label = stringResource(R.string.filter_category),
+                    showIcon = true,
+                    modifier = Modifier.height(dimensionResource(R.dimen.filter_chip_height))
+                )
+                PlutusWalletChip(
+                    selected = dateFilterSelected,
+                    onClick = dateFilterOnClick,
+                    label = stringResource(R.string.filter_date),
+                    showIcon = true,
+                    modifier = Modifier.height(dimensionResource(R.dimen.filter_chip_height))
+                )
+                PlutusWalletChip(
+                    selected = true,
+                    onClick = { /*TODO*/ },
+                    label = stringResource(R.string.filter_apply),
+                    showIcon = false,
+                    modifier = Modifier.height(dimensionResource(R.dimen.filter_chip_height))
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun FilterCardPreview() {
+    var accountFilterSelected = true
+    var categoryFilterSelected = false
+    var dateFilterSelected = true
+    PlutusWalletTheme {
+        FilterCard(
+            showFilter = true,
+            updateShowFilter = {},
+            accountFilterSelected = accountFilterSelected,
+            accountFilterOnClick = { accountFilterSelected = !accountFilterSelected },
+            categoryFilterSelected = categoryFilterSelected,
+            categoryFilterOnClick = { categoryFilterSelected = !categoryFilterSelected},
+            dateFilterSelected = dateFilterSelected,
+            dateFilterOnClick = { dateFilterSelected = !dateFilterSelected}
+        )
     }
 }
 

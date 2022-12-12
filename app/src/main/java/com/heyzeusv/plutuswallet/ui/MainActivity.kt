@@ -58,6 +58,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
 import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
+import com.heyzeusv.plutuswallet.ui.cfl.filter.FilterViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.overview.OverviewScreen
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
@@ -81,6 +82,7 @@ class MainActivity : BaseActivity() {
 
     private val tranListVM: TransactionListViewModel by viewModels()
     private val chartVM: ChartViewModel by viewModels()
+    private val filterVM: FilterViewModel by viewModels()
     private val tranVM: TransactionViewModel by viewModels()
 
     // shared ViewModels
@@ -111,6 +113,7 @@ class MainActivity : BaseActivity() {
                         cflVM = cflVM,
                         tranListVM = tranListVM,
                         chartVM = chartVM,
+                        filterVM = filterVM,
                         tranVM = tranVM
                     )
                 }
@@ -146,6 +149,7 @@ fun PlutusWalletApp(
     cflVM: CFLViewModel,
     tranListVM: TransactionListViewModel,
     chartVM: ChartViewModel,
+    filterVM: FilterViewModel,
     tranVM: TransactionViewModel
 ) {
     val navController = rememberNavController()
@@ -165,6 +169,8 @@ fun PlutusWalletApp(
     val tranList by tranListVM.tranList.collectAsState()
     val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
     val chartInfoList by chartVM.chartInfoList.collectAsState()
+
+    val showFilter by filterVM.showFilter.collectAsState()
 
     PlutusWalletTheme {
         BackPressHandler(
@@ -192,7 +198,12 @@ fun PlutusWalletApp(
                             tranVM.updateSaveSuccess(false)
                         }
                     },
-                    onActionLeftPressed = {},
+                    onActionLeftPressed = {
+                        when (currentScreen) {
+                            OverviewDestination -> { filterVM.updateShowFilter(!showFilter) }
+                            else -> {}
+                        }
+                    },
                     onActionRightPressed = {
                         when (currentScreen) {
                             OverviewDestination -> {
@@ -231,7 +242,9 @@ fun PlutusWalletApp(
                             tranListVM.updateDeleteDialog(-1)
                         },
                         tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
-                        chartInfoList = chartInfoList
+                        chartInfoList = chartInfoList,
+                        showFilter = showFilter,
+                        updateShowFilter = filterVM::updateShowFilter
                     )
                 }
                 composable(route = TransactionDestination.route) {

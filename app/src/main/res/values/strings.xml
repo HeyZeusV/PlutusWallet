@@ -27,10 +27,10 @@
     <string name="category_all">All</string>
     <string name="category_create">Create New Category</string>
     <string name="cfl_no_transactions">No transactions fulfill the filters being applied!</string>
-    <string name="filter_account">Account:</string>
+    <string name="filter_account">Account</string>
     <string name="filter_apply">Apply</string>
-    <string name="filter_category">Category:</string>
-    <string name="filter_date">Date:</string>
+    <string name="filter_category">Category</string>
+    <string name="filter_date">Date</string>
     <string name="filter_date_warning">End date must be after start date!!</string>
     <string name="filter_end">End</string>
     <string name="filter_type">Type</string>

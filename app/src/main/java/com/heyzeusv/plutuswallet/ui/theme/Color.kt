@@ -10,13 +10,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.graphics.Color
 
+val TransparentBlack = Color(0x90000000)
+
 // Light colors
 val Purple900 = Color(0xff4a148c) // Primary, AlertDialogButtonText, DatePickerHeader
 val Purple900Dark = Color(0xff12005e) // Primary Dark
 val Purple900Light = Color(0xff7c43bd) // colorBackground
 val LightGreen900 = Color(0xff33691e) // Secondary, Button Background
 val ErrorLight = Color(0xffb00020) // Error
-val ButtonUnselectedLight = Color(0x60000000)
 val ExpenseTextLight = Color(0xffad0000)
 val IncomeTextLight = Color(0xff006300)
 // Expense Chart Colors
@@ -71,6 +72,7 @@ val DarkColors = darkColors(
 )
 
 val PWLightColors = PlutusWalletColors(
+    transparentBlack = TransparentBlack,
     alertDialogButtonText = Purple900,
     expense = ExpenseTextLight,
     expenseChartPrimary = Red600,
@@ -87,6 +89,7 @@ val PWLightColors = PlutusWalletColors(
 )
 
 val PWDarkColors = PlutusWalletColors(
+    transparentBlack = TransparentBlack,
     alertDialogButtonText = AlertDialogButtonTextDark,
     expense = ExpenseTextDark,
     expenseChartPrimary = Red900,
@@ -104,6 +107,7 @@ val PWDarkColors = PlutusWalletColors(
 
 @Stable
 class PlutusWalletColors(
+    transparentBlack: Color,
     alertDialogButtonText: Color,
     expense: Color,
     expenseChartPrimary: Color,
@@ -118,6 +122,8 @@ class PlutusWalletColors(
     chartCenterHole: Color,
     isLight: Boolean
 ) {
+    var transparentBlack by mutableStateOf(transparentBlack, structuralEqualityPolicy())
+        internal set
     var alertDialogButtonText by mutableStateOf(alertDialogButtonText, structuralEqualityPolicy())
         internal set
     var expense by mutableStateOf(expense, structuralEqualityPolicy())

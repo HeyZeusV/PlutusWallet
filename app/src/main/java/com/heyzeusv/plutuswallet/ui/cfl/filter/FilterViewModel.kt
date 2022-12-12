@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.util.Date
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 private const val MIDNIGHT_MILLI = 86399999
 
@@ -51,7 +53,23 @@ class FilterViewModel @Inject constructor(
     // Button status
     val accFilter: MutableLiveData<Boolean> = MutableLiveData(false)
     val catFilter: MutableLiveData<Boolean> = MutableLiveData(false)
-    val dateFilter: MutableLiveData<Boolean> = MutableLiveData(false)
+    val dateFilterOld: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    private val _showFilter = MutableStateFlow(false)
+    val showFilter: StateFlow<Boolean> get() = _showFilter
+    fun updateShowFilter(newValue: Boolean) { _showFilter.value = newValue }
+
+    private val _accountFilter = MutableStateFlow(false)
+    val accountFilter: StateFlow<Boolean> get() = _accountFilter
+    fun updateAccountFilter(newValue: Boolean) { _accountFilter.value = newValue }
+
+    private val _categoryFilter = MutableStateFlow(false)
+    val categoryFilter: StateFlow<Boolean> get() = _categoryFilter
+    fun updateCategoryFilter(newValue: Boolean) { _categoryFilter.value = newValue }
+
+    private val _dateFilter = MutableStateFlow(false)
+    val dateFilter: StateFlow<Boolean> get() = _dateFilter
+    fun updateDateFilter(newValue: Boolean) { _dateFilter.value = newValue }
 
     // Chip status
     val accSelectedChips: MutableList<String> = mutableListOf()
@@ -144,7 +162,7 @@ class FilterViewModel @Inject constructor(
             catFilter.value!! && !typeVisible.value!! && inCatSelectedChips.isEmpty() ->
                 _noChipEvent.value = Event(false)
             // startDate must be before endDate else it displays warning and doesn't apply filters
-            dateFilter.value!! && startDate > endDate -> _dateErrorEvent.value = Event(true)
+            dateFilterOld.value!! && startDate > endDate -> _dateErrorEvent.value = Event(true)
             else -> {
                 val cats: List<String>
                 val type: String
@@ -162,14 +180,14 @@ class FilterViewModel @Inject constructor(
 
                 // updating MutableLiveData value in ViewModel
                 cflTInfo = FilterInfo(
-                    accFilter.value!!, catFilter.value!!, dateFilter.value!!,
+                    accFilter.value!!, catFilter.value!!, dateFilterOld.value!!,
                     type, accSelectedChips, cats,
                     startDate, endDate
                 )
                 // if all filters are unchecked
                 if (!accFilter.value!!
                     && !catFilter.value!!
-                    && !dateFilter.value!!
+                    && !dateFilterOld.value!!
                 ) {
                     resetFilter()
                 }
