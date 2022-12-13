@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.Category
+import kotlinx.coroutines.flow.Flow
 
 /**
  *  Queries that can be applied to Category table.
@@ -23,7 +24,16 @@ abstract class CategoryDao : BaseDao<Category>() {
               FROM category
               WHERE type=(:type)
               ORDER BY name ASC""")
-    abstract suspend fun getCategoryNamesByType(type: String): MutableList<String>
+    abstract suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String>
+
+    /**
+     *  Returns list of Category names of [type] in alphabetical order.
+     */
+    @Query("""SELECT name
+              FROM category
+              WHERE type=(:type)
+              ORDER BY name ASC""")
+    abstract fun getCategoryNamesByType(type: String): Flow<List<String>>
 
     /**
      *  Returns the size of table.

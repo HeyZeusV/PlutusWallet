@@ -55,7 +55,7 @@ class DatabaseTest {
         fun getAccountNames() {
 
             val expected : MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card")
-            assertEquals(expected, runBlocking { accDao.getAccountNames()  })
+            assertEquals(expected, runBlocking { accDao.getAccountNamesAsync()  })
         }
 
         @Test
@@ -83,7 +83,7 @@ class DatabaseTest {
         fun getCategoryNamesByType() {
 
             val expected : MutableList<String> = mutableListOf("Entertainment", "Food")
-            assertEquals(expected, runBlocking { catDao.getCategoryNamesByType("Expense") })
+            assertEquals(expected, runBlocking { catDao.getCategoryNamesByTypeAsync("Expense") })
         }
 
         @Test

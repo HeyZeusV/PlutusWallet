@@ -88,6 +88,7 @@ dependencies {
     //noinspection GradleDependency SDK 33
     implementation "androidx.activity:activity-compose:$activityComposeVersion"
     // Accompanist
+    implementation "com.google.accompanist:accompanist-flowlayout:0.25.0"
     implementation "com.google.accompanist:accompanist-pager:0.25.0"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.25.0"
     // CircleIndicator

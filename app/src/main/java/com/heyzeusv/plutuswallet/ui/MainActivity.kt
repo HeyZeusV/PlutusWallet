@@ -171,6 +171,16 @@ fun PlutusWalletApp(
     val chartInfoList by chartVM.chartInfoList.collectAsState()
 
     val showFilter by filterVM.showFilter.collectAsState()
+    val accountFilterSelected by filterVM.accountFilter.collectAsState()
+    val categoryFilterSelected by filterVM.categoryFilter.collectAsState()
+    val dateFilterSelected by filterVM.dateFilter.collectAsState()
+    val accountList by filterVM.accountList.collectAsState()
+    val accountSelected by filterVM.accountSelected.collectAsState()
+    val filterTypeSelected by filterVM.typeSelected.collectAsState()
+    val expenseCatList by filterVM.expenseCatList.collectAsState()
+    val expenseCatSelected by filterVM.expenseCatSelected.collectAsState()
+    val incomeCatList by filterVM.incomeCatList.collectAsState()
+    val incomeCatSelected by filterVM.incomeCatSelected.collectAsState()
 
     PlutusWalletTheme {
         BackPressHandler(
@@ -244,7 +254,24 @@ fun PlutusWalletApp(
                         tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
                         chartInfoList = chartInfoList,
                         showFilter = showFilter,
-                        updateShowFilter = filterVM::updateShowFilter
+                        updateShowFilter = filterVM::updateShowFilter,
+                        accountFilterSelected = accountFilterSelected,
+                        accountFilterOnClick = filterVM::updateAccountFilter,
+                        accountList,
+                        accountSelected,
+                        accountChipOnClick = filterVM::updateAccountSelected,
+                        categoryFilterSelected = categoryFilterSelected,
+                        categoryFilterOnClick = filterVM::updateCategoryFilter,
+                        filterTypeSelected,
+                        filterUpdateTypeSelected = filterVM::updateTypeSelected,
+                        expenseCatList,
+                        expenseCatSelected,
+                        expenseCatChipOnClick = filterVM::updateExpenseCatSelected,
+                        incomeCatList,
+                        incomeCatSelected,
+                        incomeCatChipOnClick = filterVM::updateIncomeCatSelected,
+                        dateFilterSelected = dateFilterSelected,
+                        dateFilterOnClick = filterVM::updateDateFilter
                     )
                 }
                 composable(route = TransactionDestination.route) {

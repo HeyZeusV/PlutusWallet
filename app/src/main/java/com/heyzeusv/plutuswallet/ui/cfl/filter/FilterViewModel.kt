@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +35,22 @@ class FilterViewModel @Inject constructor(
 
     // Account list
     val accList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
+
+    private val _accountList = MutableStateFlow(listOf<String>())
+    val accountList: StateFlow<List<String>> get() = _accountList
+    private fun updateAccountList(newList: List<String>) { _accountList.value = newList }
+
+    private val _expenseCatList = MutableStateFlow(listOf<String>())
+    val expenseCatList: StateFlow<List<String>> get() = _expenseCatList
+    private fun updateExpenseCatList(newList: List<String>) { _expenseCatList.value = newList }
+
+    private val _incomeCatList = MutableStateFlow(listOf<String>())
+    val incomeCatList: StateFlow<List<String>> get() = _incomeCatList
+    private fun updateIncomeCatList(newList: List<String>) { _incomeCatList.value = newList }
+
+    private val _typeSelected = MutableStateFlow(TransactionType.EXPENSE)
+    val typeSelected: StateFlow<TransactionType> get() = _typeSelected
+    fun updateTypeSelected(newValue: TransactionType) { _typeSelected.value = newValue }
 
     // type of Category selected and which is visible, true = "Expense" false = "Income"
     var typeVisible: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -71,6 +88,36 @@ class FilterViewModel @Inject constructor(
     val dateFilter: StateFlow<Boolean> get() = _dateFilter
     fun updateDateFilter(newValue: Boolean) { _dateFilter.value = newValue }
 
+    private val _accountSelected = MutableStateFlow(listOf<String>())
+    val accountSelected: StateFlow<List<String>> get() = _accountSelected
+    fun updateAccountSelected(value: String, action: Boolean) {
+        _accountSelected.value = if (action) {
+            _accountSelected.value + value
+        } else {
+            _accountSelected.value - value
+        }
+    }
+
+    private val _expenseCatSelected = MutableStateFlow(listOf<String>())
+    val expenseCatSelected: StateFlow<List<String>> get() = _expenseCatSelected
+    fun updateExpenseCatSelected(value: String, action: Boolean) {
+        _expenseCatSelected.value = if (action) {
+            _expenseCatSelected.value + value
+        } else {
+            _expenseCatSelected.value - value
+        }
+    }
+
+    private val _incomeCatSelected = MutableStateFlow(listOf<String>())
+    val incomeCatSelected: StateFlow<List<String>> get() = _incomeCatSelected
+    fun updateIncomeCatSelected(value: String, action: Boolean) {
+        _incomeCatSelected.value = if (action) {
+            _incomeCatSelected.value + value
+        } else {
+            _incomeCatSelected.value - value
+        }
+    }
+
     // Chip status
     val accSelectedChips: MutableList<String> = mutableListOf()
     val exCatSelectedChips: MutableList<String> = mutableListOf()
@@ -94,6 +141,20 @@ class FilterViewModel @Inject constructor(
     val cflChange: LiveData<Event<Boolean>> = _cflChange
 
     var cflTInfo: FilterInfo = FilterInfo()
+
+    init {
+        viewModelScope.launch {
+            tranRepo.getAccountNames().collect { list -> updateAccountList(list) }
+        }
+        viewModelScope.launch {
+            tranRepo.getCategoryNamesByType("Expense")
+                .collect { list -> updateExpenseCatList(list) }
+        }
+        viewModelScope.launch {
+            tranRepo.getCategoryNamesByType("Income")
+                .collect { list -> updateIncomeCatList(list) }
+        }
+    }
 
     /**
      *  Retrieves data that will be displayed in Spinners from Repository.

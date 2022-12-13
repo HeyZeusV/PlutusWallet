@@ -26,7 +26,9 @@ class TransactionRepository @Inject constructor(
      *  Account Queries
      */
     override suspend fun getAccountNamesAsync(): MutableList<String> =
-        withContext(Dispatchers.IO) { accountDao.getAccountNames() }
+        withContext(Dispatchers.IO) { accountDao.getAccountNamesAsync() }
+
+    override suspend fun getAccountNames(): Flow<List<String>> = accountDao.getAccountNames()
 
     override suspend fun getAccountSizeAsync(): Int =
         withContext(Dispatchers.IO) { accountDao.getAccountSize() }
@@ -46,7 +48,10 @@ class TransactionRepository @Inject constructor(
      *  Category Queries
      */
     override suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String> =
-        withContext(Dispatchers.IO) { categoryDao.getCategoryNamesByType(type) }
+        withContext(Dispatchers.IO) { categoryDao.getCategoryNamesByTypeAsync(type) }
+
+    override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> =
+        categoryDao.getCategoryNamesByType(type)
 
     override suspend fun getCategorySizeAsync(): Int =
         withContext(Dispatchers.IO) { categoryDao.getCategorySize() }

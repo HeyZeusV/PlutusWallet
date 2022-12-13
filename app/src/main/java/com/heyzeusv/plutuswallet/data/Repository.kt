@@ -15,6 +15,8 @@ interface Repository {
      */
     suspend fun getAccountNamesAsync(): MutableList<String>
 
+    suspend fun getAccountNames(): Flow<List<String>>
+
     suspend fun getAccountSizeAsync(): Int
 
     suspend fun deleteAccount(account: Account)
@@ -29,6 +31,8 @@ interface Repository {
      *  Category Queries
      */
     suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String>
+
+    suspend fun getCategoryNamesByType(type: String): Flow<List<String>>
 
     suspend fun getCategorySizeAsync(): Int
 
