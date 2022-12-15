@@ -51,6 +51,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -81,8 +82,10 @@ import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.theme.chipTextStyle
 import com.heyzeusv.plutuswallet.ui.transaction.PlutusWalletButtonChip
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
+import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import java.math.BigDecimal
+import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.delay
 
@@ -112,7 +115,11 @@ fun OverviewScreen(
     categorySelected: List<String>,
     categoryChipOnClick: (String, Boolean) -> Unit,
     dateFilterSelected: Boolean,
-    dateFilterOnClick: (Boolean) -> Unit
+    dateFilterOnClick: (Boolean) -> Unit,
+    startDateString: String,
+    startDateOnClick: (Date) -> Unit,
+    endDateString: String,
+    endDateOnClick: (Date) -> Unit
 ) {
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
@@ -157,7 +164,11 @@ fun OverviewScreen(
         categorySelected,
         categoryChipOnClick,
         dateFilterSelected,
-        dateFilterOnClick
+        dateFilterOnClick,
+        startDateString,
+        startDateOnClick,
+        endDateString,
+        endDateOnClick
     )
 }
 
@@ -538,11 +549,17 @@ fun FilterCard(
     categorySelected: List<String>,
     categoryChipOnClick: (String, Boolean) -> Unit,
     dateFilterSelected: Boolean,
-    dateFilterOnClick: (Boolean) -> Unit
+    dateFilterOnClick: (Boolean) -> Unit,
+    startDateString: String,
+    startDateOnClick: (Date) -> Unit,
+    endDateString: String,
+    endDateOnClick: (Date) -> Unit
 ) {
     var accountComposeSize by remember { mutableStateOf(Size.Zero) }
     var categoryComposeSize by remember { mutableStateOf(Size.Zero) }
     var dateComposeSize by remember { mutableStateOf(Size.Zero) }
+
+    val view = LocalView.current
 
     AnimatedVisibility(
         visible = showFilter,
@@ -699,6 +716,63 @@ fun FilterCard(
                         .height(dimensionResource(R.dimen.filter_button_chip_height))
                         .padding(bottom = 6.dp)
                 )
+                AnimatedVisibility(
+                    visible = dateFilterSelected,
+                    enter = expandVertically(
+                        animationSpec = tween(easing = LinearEasing),
+                        initialHeight = { -dateComposeSize.height.toInt() - 50 }
+                    ),
+                    exit = shrinkVertically(
+                        animationSpec = tween(easing = LinearEasing),
+                        targetHeight = { -dateComposeSize.height.toInt() - 50 }
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth()
+                            .onGloballyPositioned { dateComposeSize = it.size.toSize() },
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        PlutusWalletButtonChip(
+                            selected = true,
+                            onClick = {
+                                DateUtils.datePickerDialog(
+                                    view,
+                                    initDate = if (startDateString.isNotBlank()) {
+                                        DateFormat.getDateInstance().parse(startDateString)
+                                    } else {
+                                        Date()
+                                    },
+                                    startDateOnClick
+                                ).show()
+                            },
+                            label = startDateString.ifBlank { stringResource(R.string.filter_start) },
+                            showIcon = false,
+                            modifier = Modifier
+                                .height(dimensionResource(R.dimen.filter_button_chip_height)),
+                        )
+                        PlutusWalletButtonChip(
+                            selected = true,
+                            onClick = {
+                                DateUtils.datePickerDialog(
+                                    view,
+                                    initDate = if (endDateString.isNotBlank()) {
+                                        DateFormat.getDateInstance().parse(endDateString)
+                                    } else {
+                                        Date()
+                                    },
+                                    endDateOnClick
+                                ).show()
+                            },
+                            label = endDateString.ifBlank { stringResource(R.string.filter_end) },
+                            showIcon = false,
+                            modifier = Modifier
+                                .height(dimensionResource(R.dimen.filter_button_chip_height))
+                                .padding(bottom = 6.dp),
+                        )
+                    }
+                }
                 PlutusWalletButtonChip(
                     selected = true,
                     onClick = { /*TODO*/ },
@@ -772,7 +846,11 @@ fun FilterCardPreview() {
             categorySelected = listOf(),
             categoryChipOnClick = { _, _ -> },
             dateFilterSelected = dateFilterSelected,
-            dateFilterOnClick = { dateFilterSelected = !dateFilterSelected}
+            dateFilterOnClick = { dateFilterSelected = !dateFilterSelected},
+            startDateString = "Start",
+            startDateOnClick = { },
+            endDateString = "End",
+            endDateOnClick = { }
         )
     }
 }

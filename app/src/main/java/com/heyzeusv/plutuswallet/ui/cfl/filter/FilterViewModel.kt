@@ -60,8 +60,28 @@ class FilterViewModel @Inject constructor(
     val inCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
 
     // Date values
-    var startDate: Date = DateUtils.startOfDay(Date())
-    var endDate: Date = Date(startDate.time + MIDNIGHT_MILLI)
+    var startDateOld: Date = DateUtils.startOfDay(Date())
+    var endDateOld: Date = Date(startDateOld.time + MIDNIGHT_MILLI)
+
+    var startDate = DateUtils.startOfDay(Date())
+    var endDate = Date(startDate.time + MIDNIGHT_MILLI)
+
+    private val dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT)
+
+    private val _startDateString = MutableStateFlow("")
+    val startDateString: StateFlow<String> get() = _startDateString
+    fun updateStartDateString(newDate: Date) {
+        startDate = newDate
+        _startDateString.value = dateFormatter.format(startDate)
+    }
+
+    private val _endDateString = MutableStateFlow("")
+    val endDateString: StateFlow<String> get() = _endDateString
+    fun updateEndDateString(newDate: Date) {
+        endDate = Date(newDate.time + MIDNIGHT_MILLI)
+        _endDateString.value = dateFormatter.format(endDate)
+    }
+
 
     // Date string values
     val startDateLD: MutableLiveData<String> = MutableLiveData("")
@@ -196,8 +216,8 @@ class FilterViewModel @Inject constructor(
      */
     fun startDateSelected(newDate: Date) {
 
-        startDate = newDate
-        startDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(startDate)
+        startDateOld = newDate
+        startDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(startDateOld)
     }
 
     /**
@@ -205,8 +225,8 @@ class FilterViewModel @Inject constructor(
      */
     fun endDateSelected(newDate: Date) {
 
-        endDate = Date(newDate.time + MIDNIGHT_MILLI)
-        endDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(endDate)
+        endDateOld = Date(newDate.time + MIDNIGHT_MILLI)
+        endDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(endDateOld)
     }
 
     /**
@@ -223,7 +243,7 @@ class FilterViewModel @Inject constructor(
             catFilter.value!! && !typeVisible.value!! && inCatSelectedChips.isEmpty() ->
                 _noChipEvent.value = Event(false)
             // startDate must be before endDate else it displays warning and doesn't apply filters
-            dateFilterOld.value!! && startDate > endDate -> _dateErrorEvent.value = Event(true)
+            dateFilterOld.value!! && startDateOld > endDateOld -> _dateErrorEvent.value = Event(true)
             else -> {
                 val cats: List<String>
                 val type: String
@@ -243,7 +263,7 @@ class FilterViewModel @Inject constructor(
                 cflTInfo = FilterInfo(
                     accFilter.value!!, catFilter.value!!, dateFilterOld.value!!,
                     type, accSelectedChips, cats,
-                    startDate, endDate
+                    startDateOld, endDateOld
                 )
                 // if all filters are unchecked
                 if (!accFilter.value!!
@@ -269,8 +289,8 @@ class FilterViewModel @Inject constructor(
         _resetEvent.value = Event(true)
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDate = DateUtils.startOfDay(Date())
-        endDate = Date(startDate.time + MIDNIGHT_MILLI)
+        startDateOld = DateUtils.startOfDay(Date())
+        endDateOld = Date(startDateOld.time + MIDNIGHT_MILLI)
         startDateLD.value = ""
         endDateLD.value = ""
     }

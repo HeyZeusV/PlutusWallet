@@ -173,15 +173,17 @@ fun PlutusWalletApp(
 
     val showFilter by filterVM.showFilter.collectAsState()
     val accountFilterSelected by filterVM.accountFilter.collectAsState()
-    val categoryFilterSelected by filterVM.categoryFilter.collectAsState()
-    val dateFilterSelected by filterVM.dateFilter.collectAsState()
     val accountList by filterVM.accountList.collectAsState()
     val accountSelected by filterVM.accountSelected.collectAsState()
+    val categoryFilterSelected by filterVM.categoryFilter.collectAsState()
     val filterTypeSelected by filterVM.typeSelected.collectAsState()
     val expenseCatList by filterVM.expenseCatList.collectAsState()
     val expenseCatSelected by filterVM.expenseCatSelected.collectAsState()
     val incomeCatList by filterVM.incomeCatList.collectAsState()
     val incomeCatSelected by filterVM.incomeCatSelected.collectAsState()
+    val dateFilterSelected by filterVM.dateFilter.collectAsState()
+    val startDateString by filterVM.startDateString.collectAsState()
+    val endDateString by filterVM.endDateString.collectAsState()
 
     PlutusWalletTheme {
         BackPressHandler(
@@ -271,8 +273,12 @@ fun PlutusWalletApp(
                             expenseCatSelected else incomeCatSelected,
                         categoryChipOnClick = if (filterTypeSelected == TransactionType.EXPENSE)
                             filterVM::updateExpenseCatSelected else filterVM::updateIncomeCatSelected,
-                        dateFilterSelected = dateFilterSelected,
-                        dateFilterOnClick = filterVM::updateDateFilter
+                        dateFilterSelected,
+                        dateFilterOnClick = filterVM::updateDateFilter,
+                        startDateString,
+                        startDateOnClick = filterVM::updateStartDateString,
+                        endDateString,
+                        endDateOnClick = filterVM::updateEndDateString
                     )
                 }
                 composable(route = TransactionDestination.route) {

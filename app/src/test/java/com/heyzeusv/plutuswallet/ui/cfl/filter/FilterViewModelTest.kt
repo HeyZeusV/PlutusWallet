@@ -82,7 +82,7 @@ internal class FilterViewModelTest {
 
         filterVM.startDateSelected(Date(864000000))
 
-        assertEquals(Date(864000000), filterVM.startDate)
+        assertEquals(Date(864000000), filterVM.startDateOld)
         assertEquals("1/10/70", filterVM.startDateLD.value!!)
     }
 
@@ -92,7 +92,7 @@ internal class FilterViewModelTest {
 
         filterVM.endDateSelected(Date(864000000))
 
-        assertEquals(Date(864000000 + 86399999), filterVM.endDate)
+        assertEquals(Date(864000000 + 86399999), filterVM.endDateOld)
         assertEquals("1/11/70", filterVM.endDateLD.value!!)
     }
 
@@ -103,8 +103,8 @@ internal class FilterViewModelTest {
         filterVM.catFilter.value = true
         filterVM.accSelectedChips.add("Cash")
         filterVM.exCatSelectedChips.add("Food")
-        filterVM.startDate = Date(0)
-        filterVM.endDate = Date(1000)
+        filterVM.startDateOld = Date(0)
+        filterVM.endDateOld = Date(1000)
         val expectedCFLtInfo = FilterInfo(
             account = false, category = true, date = false,
             "Expense", listOf("Cash"), listOf("Food"), Date(0), Date(1000)
@@ -139,8 +139,8 @@ internal class FilterViewModelTest {
         assertEquals(listOf<String>(), filterVM.exCatSelectedChips)
         assertEquals(listOf<String>(), filterVM.inCatSelectedChips)
         assertEquals(true, resetEvent.getContentIfNotHandled())
-        assertEquals(expectedStartDate, filterVM.startDate)
-        assertEquals(expectedEndDate, filterVM.endDate)
+        assertEquals(expectedStartDate, filterVM.startDateOld)
+        assertEquals(expectedEndDate, filterVM.endDateOld)
         assertEquals("", filterVM.startDateLD.value)
         assertEquals("", filterVM.endDateLD.value)
         assertEquals(expectedCFLtInfo, filterVM.cflTInfo)
@@ -152,8 +152,8 @@ internal class FilterViewModelTest {
     fun applyFilterOCDateError() {
 
         filterVM.dateFilterOld.value = true
-        filterVM.startDate = Date()
-        filterVM.endDate = Date(0)
+        filterVM.startDateOld = Date()
+        filterVM.endDateOld = Date(0)
 
         filterVM.applyFilterOC()
         val dateErrorEvent: Event<Boolean> = filterVM.dateErrorEvent.value!!

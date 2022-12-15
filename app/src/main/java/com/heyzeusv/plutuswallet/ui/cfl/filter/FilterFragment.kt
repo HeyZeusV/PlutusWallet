@@ -132,11 +132,11 @@ class FilterFragment : Fragment() {
         filterVM.selectDateEvent.observe(viewLifecycleOwner, EventObserver { dateId: Int ->
             val dateDialog: DatePickerDialog = if (dateId == R.id.filter_start_date) {
                 DateUtils.datePickerDialog(
-                    binding.root, filterVM.startDate, filterVM::startDateSelected
+                    binding.root, filterVM.startDateOld, filterVM::startDateSelected
                 )
             } else {
                 DateUtils.datePickerDialog(
-                    binding.root, filterVM.endDate, filterVM::endDateSelected
+                    binding.root, filterVM.endDateOld, filterVM::endDateSelected
                 )
             }
             dateDialog.show()
