@@ -647,7 +647,7 @@ fun PlutusWalletButtonChip(
             color = if (selected) {
                 MaterialTheme.colors.secondary
             } else {
-                colorResource(R.color.colorButtonUnselected)
+                LocalPWColors.current.unselected
             }
         ),
         colors = ChipDefaults.filterChipColors(
@@ -676,7 +676,7 @@ fun PlutusWalletButtonChip(
                     tint = if (selected) {
                         MaterialTheme.colors.secondary
                     } else {
-                        colorResource(R.color.colorButtonUnselected)
+                        LocalPWColors.current.unselected
                     }
                 )
             }
@@ -690,7 +690,7 @@ fun PlutusWalletButtonChip(
                 color = if (selected) {
                     MaterialTheme.colors.secondary
                 } else {
-                    colorResource(R.color.colorButtonUnselected)
+                    LocalPWColors.current.unselected
                 },
                 style = chipTextStyle
             )

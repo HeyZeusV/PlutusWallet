@@ -47,7 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -103,12 +102,9 @@ fun OverviewScreen(
     categoryFilterOnClick: (Boolean) -> Unit,
     filterTypeSelected: TransactionType,
     filterUpdateTypeSelected: (TransactionType) -> Unit,
-    expenseCatList: List<String>,
-    expenseCatSelected: List<String>,
-    expenseCatChipOnClick: (String, Boolean) -> Unit,
-    incomeCatList: List<String>,
-    incomeCatSelected: List<String>,
-    incomeCatChipOnClick: (String, Boolean) -> Unit,
+    categoryList: List<String>,
+    categorySelected: List<String>,
+    categoryChipOnClick: (String, Boolean) -> Unit,
     dateFilterSelected: Boolean,
     dateFilterOnClick: (Boolean) -> Unit
 ) {
@@ -151,12 +147,9 @@ fun OverviewScreen(
         categoryFilterOnClick,
         filterTypeSelected,
         filterUpdateTypeSelected,
-        expenseCatList,
-        expenseCatSelected,
-        expenseCatChipOnClick,
-        incomeCatList,
-        incomeCatSelected,
-        incomeCatChipOnClick,
+        categoryList,
+        categorySelected,
+        categoryChipOnClick,
         dateFilterSelected,
         dateFilterOnClick
     )
@@ -535,12 +528,9 @@ fun FilterCard(
     categoryFilterOnClick: (Boolean) -> Unit,
     filterTypeSelected: TransactionType,
     filterUpdateTypeSelected: (TransactionType) -> Unit,
-    expenseCatList: List<String>,
-    expenseCatSelected: List<String>,
-    expenseCatChipOnClick: (String, Boolean) -> Unit,
-    incomeCatList: List<String>,
-    incomeCatSelected: List<String>,
-    incomeCatChipOnClick: (String, Boolean) -> Unit,
+    categoryList: List<String>,
+    categorySelected: List<String>,
+    categoryChipOnClick: (String, Boolean) -> Unit,
     dateFilterSelected: Boolean,
     dateFilterOnClick: (Boolean) -> Unit
 ) {
@@ -557,7 +547,7 @@ fun FilterCard(
                     enter = fadeIn(),
                     exit = fadeOut()
                 ),
-            color = LocalPWColors.current.transparentBlack
+            color = LocalPWColors.current.backgroundOverlay
         ) {}
         Card(
             modifier = Modifier
@@ -655,32 +645,17 @@ fun FilterCard(
                             modifier = Modifier.padding(horizontal = 8.dp),
                             mainAxisSpacing = 4.dp
                         ) {
-                            if (filterTypeSelected == TransactionType.EXPENSE) {
-                                for (category in expenseCatList) {
-                                    PlutusWalletChip(
-                                        selected = expenseCatSelected.contains(category),
-                                        onClick = {
-                                            expenseCatChipOnClick(
-                                                category,
-                                                !expenseCatSelected.contains(category)
-                                            )
-                                        },
-                                        label = category
-                                    )
-                                }
-                            } else {
-                                for (category in incomeCatList) {
-                                    PlutusWalletChip(
-                                        selected = incomeCatSelected.contains(category),
-                                        onClick = {
-                                            incomeCatChipOnClick(
-                                                category,
-                                                !incomeCatSelected.contains(category)
-                                            )
-                                        },
-                                        label = category
-                                    )
-                                }
+                            for (category in categoryList) {
+                                PlutusWalletChip(
+                                    selected = categorySelected.contains(category),
+                                    onClick = {
+                                        categoryChipOnClick(
+                                            category,
+                                            !categorySelected.contains(category)
+                                        )
+                                    },
+                                    label = category
+                                )
                             }
                         }
                     }
@@ -714,18 +689,18 @@ fun PlutusWalletChip(
     FilterChip(
         selected,
         onClick,
-        modifier = Modifier,
+        modifier = Modifier.testTag("Chip: $label"),
         border = BorderStroke(
             width = dimensionResource(R.dimen.filter_chip_border_width),
             color = if (selected) {
                 MaterialTheme.colors.secondary
             } else {
-                colorResource(R.color.colorButtonUnselected)
+                LocalPWColors.current.unselected
             }
         ),
         colors = ChipDefaults.filterChipColors(
-            backgroundColor = Color.White,
-            selectedBackgroundColor = Color.White
+            backgroundColor = LocalPWColors.current.chipUnselectedBackground,
+            selectedBackgroundColor = LocalPWColors.current.chipSelectedBackground
         ),
         content = {
             Text(
@@ -734,7 +709,7 @@ fun PlutusWalletChip(
                 color = if (selected) {
                     MaterialTheme.colors.secondary
                 } else {
-                    colorResource(R.color.colorButtonUnselected)
+                    LocalPWColors.current.unselected
                 },
                 style = chipTextStyle
             )
@@ -761,12 +736,9 @@ fun FilterCardPreview() {
             categoryFilterOnClick = { categoryFilterSelected = !categoryFilterSelected},
             filterTypeSelected = TransactionType.EXPENSE,
             filterUpdateTypeSelected = { },
-            expenseCatList = listOf("Preview"),
-            expenseCatSelected = listOf(),
-            expenseCatChipOnClick = { _, _ -> },
-            incomeCatList = listOf("Preview"),
-            incomeCatSelected = listOf(),
-            incomeCatChipOnClick = { _, _ -> },
+            categoryList = listOf("Preview"),
+            categorySelected = listOf(),
+            categoryChipOnClick = { _, _ -> },
             dateFilterSelected = dateFilterSelected,
             dateFilterOnClick = { dateFilterSelected = !dateFilterSelected}
         )

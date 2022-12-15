@@ -66,6 +66,7 @@ import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.ui.theme.PWLightColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionScreen
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
@@ -264,12 +265,12 @@ fun PlutusWalletApp(
                         categoryFilterOnClick = filterVM::updateCategoryFilter,
                         filterTypeSelected,
                         filterUpdateTypeSelected = filterVM::updateTypeSelected,
-                        expenseCatList,
-                        expenseCatSelected,
-                        expenseCatChipOnClick = filterVM::updateExpenseCatSelected,
-                        incomeCatList,
-                        incomeCatSelected,
-                        incomeCatChipOnClick = filterVM::updateIncomeCatSelected,
+                        categoryList = if (filterTypeSelected == TransactionType.EXPENSE)
+                            expenseCatList else incomeCatList,
+                        categorySelected = if (filterTypeSelected == TransactionType.EXPENSE)
+                            expenseCatSelected else incomeCatSelected,
+                        categoryChipOnClick = if (filterTypeSelected == TransactionType.EXPENSE)
+                            filterVM::updateExpenseCatSelected else filterVM::updateIncomeCatSelected,
                         dateFilterSelected = dateFilterSelected,
                         dateFilterOnClick = filterVM::updateDateFilter
                     )

@@ -10,13 +10,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.graphics.Color
 
-val TransparentBlack = Color(0x90000000)
-
+/**
+ *  Alpha % -> Hex
+ *  100% — FF   75% — BF    50% — 80    25% — 40
+ *  95% — F2    70% — B3    45% — 73    20% — 33
+ *  90% — E6    65% — A6    40% — 66    15% — 26
+ *  85% — D9    60% — 99    35% — 59    10% — 1A
+ *  80% — CC    55% — 8C    30% — 4D    5% — 0D
+ */
 // Light colors
 val Purple900 = Color(0xff4a148c) // Primary, AlertDialogButtonText, DatePickerHeader
 val Purple900Dark = Color(0xff12005e) // Primary Dark
 val Purple900Light = Color(0xff7c43bd) // colorBackground
 val LightGreen900 = Color(0xff33691e) // Secondary, Button Background
+val LightGreen900Alpha15 = Color(0x2633691e) // Selected Chip Background
+val BlackAlpha10 = Color(0x19000000) // Unselected Chip Background
+val BlackAlpha40 = Color(0x66000000) // Unselected Stroke
+val BlackAlpha60 = Color(0x99000000) // Background Overlay
 val ErrorLight = Color(0xffb00020) // Error
 val ExpenseTextLight = Color(0xffad0000)
 val IncomeTextLight = Color(0xff006300)
@@ -35,6 +45,9 @@ val DeepPurple300 = Color(0xff9575cd)
 val PurpleBase = Color(0xff24102f) // primary
 val PurpleDark = Color(0xff1b1120) // primary Dark, background
 val GreenBase = Color(0xffa5d6a7) // secondary
+val GreenBaseAlpha15 = Color(0x26a5d6a7) // Selected Chip Background
+val WhiteAlpha10 = Color(0x19ffffff) // Unselected Chip Background
+val WhiteAlpha40 = Color(0x66ffffff) // Unselected Stroke
 val ErrorDark = Color(0xffffbaba) // error
 val ChartCenterHole = Color(0xff2f1c39) // chart hole color, date picker header
 val ButtonUnselectedDark = Color(0x60ffffff)
@@ -72,8 +85,11 @@ val DarkColors = darkColors(
 )
 
 val PWLightColors = PlutusWalletColors(
-    transparentBlack = TransparentBlack,
+    backgroundOverlay = BlackAlpha60,
     alertDialogButtonText = Purple900,
+    unselected = BlackAlpha40,
+    chipSelectedBackground = LightGreen900Alpha15,
+    chipUnselectedBackground = BlackAlpha10,
     expense = ExpenseTextLight,
     expenseChartPrimary = Red600,
     expenseChartSecondary = Yellow500,
@@ -89,8 +105,11 @@ val PWLightColors = PlutusWalletColors(
 )
 
 val PWDarkColors = PlutusWalletColors(
-    transparentBlack = TransparentBlack,
+    backgroundOverlay = BlackAlpha60,
     alertDialogButtonText = AlertDialogButtonTextDark,
+    unselected = WhiteAlpha40,
+    chipSelectedBackground = GreenBaseAlpha15,
+    chipUnselectedBackground = WhiteAlpha10,
     expense = ExpenseTextDark,
     expenseChartPrimary = Red900,
     expenseChartSecondary = Lime900,
@@ -107,8 +126,11 @@ val PWDarkColors = PlutusWalletColors(
 
 @Stable
 class PlutusWalletColors(
-    transparentBlack: Color,
+    backgroundOverlay: Color,
     alertDialogButtonText: Color,
+    unselected: Color,
+    chipSelectedBackground: Color,
+    chipUnselectedBackground: Color,
     expense: Color,
     expenseChartPrimary: Color,
     expenseChartSecondary: Color,
@@ -122,9 +144,15 @@ class PlutusWalletColors(
     chartCenterHole: Color,
     isLight: Boolean
 ) {
-    var transparentBlack by mutableStateOf(transparentBlack, structuralEqualityPolicy())
+    var backgroundOverlay by mutableStateOf(backgroundOverlay, structuralEqualityPolicy())
         internal set
     var alertDialogButtonText by mutableStateOf(alertDialogButtonText, structuralEqualityPolicy())
+        internal set
+    var unselected by mutableStateOf(unselected, structuralEqualityPolicy())
+        internal set
+    var chipSelectedBackground by mutableStateOf(chipSelectedBackground, structuralEqualityPolicy())
+        internal set
+    var chipUnselectedBackground by mutableStateOf(chipUnselectedBackground, structuralEqualityPolicy())
         internal set
     var expense by mutableStateOf(expense, structuralEqualityPolicy())
         internal set
