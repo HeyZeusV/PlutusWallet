@@ -37,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.TextButton
@@ -92,7 +91,7 @@ fun TransactionScreen(
 ) {
     // used for SnackBar
     val saveSuccess by tranVM.saveSuccess.collectAsState()
-    val saved = stringResource(R.string.snackbar_saved)
+    val saveSuccessMessage = stringResource(R.string.snackbar_saved)
 
     // data to be displayed
     val transaction by tranVM.transaction.collectAsState()
@@ -127,10 +126,7 @@ fun TransactionScreen(
     // displays SnackBar when saveSuccess is true
     LaunchedEffect(key1 = saveSuccess) {
         if (saveSuccess) {
-            snackbarHostState.showSnackbar(
-                message = saved,
-                duration = SnackbarDuration.Short
-            )
+            snackbarHostState.showSnackbar(saveSuccessMessage)
         }
     }
     if (showFutureDialog) {

@@ -34,6 +34,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -65,6 +66,7 @@ import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.ui.theme.PWLightColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.ui.transaction.FilterState
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionScreen
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
@@ -166,7 +168,7 @@ fun PlutusWalletApp(
      *  TODO: Convert tInfoLiveData from CFLViewModel to StateFlow, whenever the filter is updated
      *  TODO: tInfoLiveData will get updated as well causing tranList to be updated.
      */
-    val filterInfo by cflVM.filterInfo.collectAsState()
+    val filterInfo by filterVM.filterInfo.collectAsState()
     val tranList by tranListVM.tranList.collectAsState()
     val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
     val chartInfoList by chartVM.chartInfoList.collectAsState()
@@ -184,8 +186,16 @@ fun PlutusWalletApp(
     val dateFilterSelected by filterVM.dateFilter.collectAsState()
     val startDateString by filterVM.startDateString.collectAsState()
     val endDateString by filterVM.endDateString.collectAsState()
+    val filterState by filterVM.filterState.collectAsState()
+    val filterStateMessage = stringResource(filterState.stringId)
 
     PlutusWalletTheme {
+        LaunchedEffect(key1 = filterState) {
+            if (filterState != FilterState.VALID) {
+                scaffoldState.snackbarHostState.showSnackbar(filterStateMessage)
+                filterVM.updateFilterState(FilterState.VALID)
+            }
+        }
         BackPressHandler(
             onBackPressed =  {
                 if (scaffoldState.drawerState.isOpen) {
@@ -278,7 +288,8 @@ fun PlutusWalletApp(
                         startDateString,
                         startDateOnClick = filterVM::updateStartDateString,
                         endDateString,
-                        endDateOnClick = filterVM::updateEndDateString
+                        endDateOnClick = filterVM::updateEndDateString,
+                        applyOnClick = filterVM::applyFilter
                     )
                 }
                 composable(route = TransactionDestination.route) {

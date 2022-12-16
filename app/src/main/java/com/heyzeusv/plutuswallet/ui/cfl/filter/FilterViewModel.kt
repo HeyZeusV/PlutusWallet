@@ -6,7 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
+import com.heyzeusv.plutuswallet.ui.transaction.FilterState
+import com.heyzeusv.plutuswallet.ui.transaction.FilterState.INVALID_DATE_RANGE
+import com.heyzeusv.plutuswallet.ui.transaction.FilterState.NO_SELECTED_ACCOUNT
+import com.heyzeusv.plutuswallet.ui.transaction.FilterState.NO_SELECTED_CATEGORY
+import com.heyzeusv.plutuswallet.ui.transaction.FilterState.NO_SELECTED_DATE
+import com.heyzeusv.plutuswallet.ui.transaction.FilterState.VALID
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,9 +56,16 @@ class FilterViewModel @Inject constructor(
     val incomeCatList: StateFlow<List<String>> get() = _incomeCatList
     private fun updateIncomeCatList(newList: List<String>) { _incomeCatList.value = newList }
 
-    private val _typeSelected = MutableStateFlow(TransactionType.EXPENSE)
+    private val _typeSelected = MutableStateFlow(EXPENSE)
     val typeSelected: StateFlow<TransactionType> get() = _typeSelected
     fun updateTypeSelected(newValue: TransactionType) { _typeSelected.value = newValue }
+
+    private val _filterState = MutableStateFlow(VALID)
+    val filterState: StateFlow<FilterState> get() = _filterState
+    fun updateFilterState(newState: FilterState) { _filterState.value = newState}
+
+    private val _filterInfo = MutableStateFlow(FilterInfo())
+    val filterInfo: StateFlow<FilterInfo> get() = _filterInfo
 
     // type of Category selected and which is visible, true = "Expense" false = "Income"
     var typeVisible: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -233,47 +248,35 @@ class FilterViewModel @Inject constructor(
      *  Applies filters or shows Snackbar warning if no Chips are selected or if end date is before
      *  start date.
      */
-    fun applyFilterOC() {
-
+    fun applyFilter() {
         when {
             // users must select at least 1 Chip
-            accFilter.value!! && accSelectedChips.isEmpty() -> _noChipEvent.value = Event(true)
-            catFilter.value!! && typeVisible.value!! && exCatSelectedChips.isEmpty() ->
-                _noChipEvent.value = Event(false)
-            catFilter.value!! && !typeVisible.value!! && inCatSelectedChips.isEmpty() ->
-                _noChipEvent.value = Event(false)
+            accountFilter.value && accountSelected.value.isEmpty() ->
+                _filterState.value = NO_SELECTED_ACCOUNT
+            categoryFilter.value &&
+                    ((typeSelected.value == EXPENSE && expenseCatSelected.value.isEmpty()) ||
+                    (typeSelected.value == INCOME && incomeCatSelected.value.isEmpty())) ->
+                _filterState.value = NO_SELECTED_CATEGORY
+            // user must select both start and end date
+            startDateString.value.isEmpty() && endDateString.value.isEmpty() ->
+                _filterState.value = NO_SELECTED_DATE
             // startDate must be before endDate else it displays warning and doesn't apply filters
-            dateFilterOld.value!! && startDateOld > endDateOld -> _dateErrorEvent.value = Event(true)
-            else -> {
-                val cats: List<String>
-                val type: String
-                // sets type and category applied
-                if (typeVisible.value!!) {
-                    type = "Expense"
-                    cats = exCatSelectedChips
+            dateFilter.value && startDate > endDate -> _filterState.value = INVALID_DATE_RANGE
+            !accountFilter.value && !categoryFilter.value && !dateFilter.value -> resetFilter()
+            else -> _filterInfo.value = FilterInfo(
+                account = accountFilter.value,
+                category = categoryFilter.value,
+                date = dateFilter.value,
+                type = typeSelected.value.type,
+                accountNames = accountSelected.value,
+                categoryNames = if (typeSelected.value == EXPENSE) {
+                    expenseCatSelected.value
                 } else {
-                    type = "Income"
-                    cats = inCatSelectedChips
-                }
-
-                // translates "All"
-                if (cats.contains(all)) cats[cats.indexOf(all)] = "All"
-
-                // updating MutableLiveData value in ViewModel
-                cflTInfo = FilterInfo(
-                    accFilter.value!!, catFilter.value!!, dateFilterOld.value!!,
-                    type, accSelectedChips, cats,
-                    startDateOld, endDateOld
-                )
-                // if all filters are unchecked
-                if (!accFilter.value!!
-                    && !catFilter.value!!
-                    && !dateFilterOld.value!!
-                ) {
-                    resetFilter()
-                }
-                _cflChange.value = Event(true)
-            }
+                    incomeCatSelected.value
+                },
+                start = startDate,
+                end = endDate
+            )
         }
     }
 
@@ -281,17 +284,15 @@ class FilterViewModel @Inject constructor(
      *  Resets all filters.
      */
     private fun resetFilter() {
-
         // clear Chip lists and launch resetEvent to clear Chips
-        accSelectedChips.clear()
-        exCatSelectedChips.clear()
-        inCatSelectedChips.clear()
-        _resetEvent.value = Event(true)
+        _accountSelected.value = emptyList()
+        _expenseCatSelected.value = emptyList()
+        _incomeCatSelected.value = emptyList()
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDateOld = DateUtils.startOfDay(Date())
-        endDateOld = Date(startDateOld.time + MIDNIGHT_MILLI)
-        startDateLD.value = ""
-        endDateLD.value = ""
+        startDate = DateUtils.startOfDay(Date())
+        endDate = Date(startDate.time + MIDNIGHT_MILLI)
+        _startDateString.value = ""
+        _endDateString.value = ""
     }
 }

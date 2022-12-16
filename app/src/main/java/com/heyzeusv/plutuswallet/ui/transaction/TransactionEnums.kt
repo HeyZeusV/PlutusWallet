@@ -8,3 +8,11 @@ enum class TransactionType(val type: String, val stringId: Int) {
 
     fun opposite(): TransactionType = if (this == EXPENSE) INCOME else EXPENSE
 }
+
+enum class FilterState(val stringId: Int) {
+    VALID(R.string.blank_string),
+    NO_SELECTED_ACCOUNT(R.string.filter_no_selected_account),
+    NO_SELECTED_CATEGORY(R.string.filter_no_selected_category),
+    NO_SELECTED_DATE(R.string.filter_no_selected_dates),
+    INVALID_DATE_RANGE(R.string.filter_date_warning)
+}

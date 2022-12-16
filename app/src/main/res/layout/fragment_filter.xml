@@ -221,7 +221,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="@dimen/filterParentMarginStartEnd"
                 android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
-                android:onClick="@{() -> filterVM.applyFilterOC()}"
+                android:onClick="@{() -> filterVM.applyFilter()}"
                 android:text="@{(!filterVM.accFilter &amp;&amp; !filterVM.catFilter &amp;&amp; !filterVM.dateFilterOld) ? @string/filter_reset : @string/filter_apply}"
                 android:textSize="@dimen/textSizeFilterButton"
                 app:layout_constraintBottom_toBottomOf="parent"

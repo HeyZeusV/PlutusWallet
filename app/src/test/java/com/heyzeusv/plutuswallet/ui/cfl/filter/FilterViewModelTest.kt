@@ -110,7 +110,7 @@ internal class FilterViewModelTest {
             "Expense", listOf("Cash"), listOf("Food"), Date(0), Date(1000)
         )
 
-        filterVM.applyFilterOC()
+        filterVM.applyFilter()
         val cflChangeEvent: Event<Boolean> = filterVM.cflChange.value!!
 
         assertEquals(expectedCFLtInfo, filterVM.cflTInfo)
@@ -131,7 +131,7 @@ internal class FilterViewModelTest {
             listOf(), listOf(), expectedStartDate, Date(expectedStartDate.time + 86399999)
         )
 
-        filterVM.applyFilterOC()
+        filterVM.applyFilter()
         val resetEvent: Event<Boolean> = filterVM.resetEvent.value!!
         val cflChangeEvent: Event<Boolean> = filterVM.cflChange.value!!
 
@@ -155,7 +155,7 @@ internal class FilterViewModelTest {
         filterVM.startDateOld = Date()
         filterVM.endDateOld = Date(0)
 
-        filterVM.applyFilterOC()
+        filterVM.applyFilter()
         val dateErrorEvent: Event<Boolean> = filterVM.dateErrorEvent.value!!
 
         assertEquals(true, dateErrorEvent.getContentIfNotHandled())
@@ -172,7 +172,7 @@ internal class FilterViewModelTest {
         filterVM.catFilter.value = false
         filterVM.typeVisible.value = true
 
-        filterVM.applyFilterOC()
+        filterVM.applyFilter()
         var noChipEvent: Event<Boolean> = filterVM.noChipEvent.value!!
 
         assertEquals(true, noChipEvent.getContentIfNotHandled())
@@ -184,7 +184,7 @@ internal class FilterViewModelTest {
         filterVM.catFilter.value = true
         filterVM.typeVisible.value = true
 
-        filterVM.applyFilterOC()
+        filterVM.applyFilter()
         noChipEvent = filterVM.noChipEvent.value!!
 
         assertEquals(false, noChipEvent.getContentIfNotHandled())
@@ -196,7 +196,7 @@ internal class FilterViewModelTest {
         filterVM.catFilter.value = true
         filterVM.typeVisible.value = false
 
-        filterVM.applyFilterOC()
+        filterVM.applyFilter()
         noChipEvent = filterVM.noChipEvent.value!!
 
         assertEquals(false, noChipEvent.getContentIfNotHandled())

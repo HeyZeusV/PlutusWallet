@@ -121,7 +121,8 @@ fun OverviewScreen(
     startDateString: String,
     startDateOnClick: (Date) -> Unit,
     endDateString: String,
-    endDateOnClick: (Date) -> Unit
+    endDateOnClick: (Date) -> Unit,
+    applyOnClick: () -> Unit
 ) {
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
@@ -170,7 +171,8 @@ fun OverviewScreen(
         startDateString,
         startDateOnClick,
         endDateString,
-        endDateOnClick
+        endDateOnClick,
+        applyOnClick
     )
 }
 
@@ -555,7 +557,8 @@ fun FilterCard(
     startDateString: String,
     startDateOnClick: (Date) -> Unit,
     endDateString: String,
-    endDateOnClick: (Date) -> Unit
+    endDateOnClick: (Date) -> Unit,
+    applyOnClick: () -> Unit
 ) {
     // used by animation to determine Y offset
     var accountComposeSize by remember { mutableStateOf(Size.Zero) }
@@ -563,6 +566,7 @@ fun FilterCard(
     var dateComposeSize by remember { mutableStateOf(Size.Zero) }
 
     val view = LocalView.current
+    val noFilters = !accountFilterSelected && !categoryFilterSelected && !dateFilterSelected
 
     AnimatedVisibility(
         visible = showFilter,
@@ -755,7 +759,7 @@ fun FilterCard(
                                     } else {
                                         Date()
                                     },
-                                    startDateOnClick
+                                    onDateSelected = startDateOnClick
                                 ).show()
                             },
                             label = startDateString.ifBlank { stringResource(R.string.filter_start) },
@@ -773,7 +777,7 @@ fun FilterCard(
                                     } else {
                                         Date()
                                     },
-                                    endDateOnClick
+                                    onDateSelected = endDateOnClick
                                 ).show()
                             },
                             label = endDateString.ifBlank { stringResource(R.string.filter_end) },
@@ -786,9 +790,8 @@ fun FilterCard(
                 }
                 PlutusWalletButtonChip(
                     selected = true,
-                    onClick = { /*TODO*/ },
-                    label =
-                    if (!accountFilterSelected && !categoryFilterSelected && !dateFilterSelected) {
+                    onClick = applyOnClick,
+                    label = if (noFilters) {
                         stringResource(R.string.filter_reset)
                     } else {
                         stringResource(R.string.filter_apply)
@@ -868,7 +871,8 @@ fun FilterCardPreview() {
             startDateString = "Start",
             startDateOnClick = { },
             endDateString = "End",
-            endDateOnClick = { }
+            endDateOnClick = { },
+            applyOnClick = { }
         )
     }
 }

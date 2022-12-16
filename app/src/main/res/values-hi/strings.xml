@@ -94,6 +94,7 @@
     <string name="transaction_period">अवधि</string>
     <string name="transaction_memo">मेमो</string>
     <string name="cfl_menu_filter">फ़िल्टर संपादित करें</string>
-    <string name="filter_no_chip_account">कृपया कम से कम एक खाते का चयन करें !!</string>
-    <string name="filter_no_chip_category">"कृपया कम से कम एक श्रेणी का चयन करें !! "</string>
+    <string name="filter_no_selected_account">कृपया कम से कम एक खाते का चयन करें !!</string>
+    <string name="filter_no_selected_category">"कृपया कम से कम एक श्रेणी का चयन करें !! "</string>
+    <string name="filter_no_selected_dates">कृपया प्रारंभ और समाप्ति दिनांक चुनें!!</string>
 </resources>

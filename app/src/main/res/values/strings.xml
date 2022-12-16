@@ -108,6 +108,7 @@
     <string name="alert_dialog_input_error">Can\'t be blank!</string>
     <string name="transaction_period">Period</string>
     <string name="cfl_menu_filter">Edit Filter</string>
-    <string name="filter_no_chip_account">Please select at least one account!!</string>
-    <string name="filter_no_chip_category">Please select at least one category!!</string>
+    <string name="filter_no_selected_account">Please select at least one account!!</string>
+    <string name="filter_no_selected_category">Please select at least one category!!</string>
+    <string name="filter_no_selected_dates">Please select start and end dates!!</string>
 </resources>
