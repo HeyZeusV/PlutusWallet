@@ -633,7 +633,10 @@ fun PlutusWalletButtonChip(
     onClick: () -> Unit,
     label: String,
     showIcon: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.White,
+    selectedBackgroundColor: Color = Color.White,
+    selectedTextColor: Color = MaterialTheme.colors.secondary,
 ) {
     FilterChip(
         selected = selected,
@@ -651,8 +654,8 @@ fun PlutusWalletButtonChip(
             }
         ),
         colors = ChipDefaults.filterChipColors(
-            backgroundColor = Color.White,
-            selectedBackgroundColor = Color.White
+            backgroundColor = backgroundColor,
+            selectedBackgroundColor = selectedBackgroundColor
         ),
         leadingIcon = {
             // this icon is used to center text when trailing icon exists
@@ -688,7 +691,7 @@ fun PlutusWalletButtonChip(
                     .fillMaxWidth()
                     .weight(1f),
                 color = if (selected) {
-                    MaterialTheme.colors.secondary
+                    selectedTextColor
                 } else {
                     LocalPWColors.current.unselected
                 },

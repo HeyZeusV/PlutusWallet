@@ -95,7 +95,11 @@
     <dimen name="transaction_button_chip_height">56dp</dimen>
     <dimen name="button_chip_border_width">2dp</dimen>
 
-    <dimen name="filter_button_chip_height">40dp</dimen>
-    <dimen name="filter_chip_border_width">1dp</dimen>
-    <dimen name="filter_surface_border_width">2dp</dimen>
+    <!-- Filter (f) -->
+    <dimen name="f_button_chip_height">40dp</dimen>
+    <dimen name="f_chip_border_width">1dp</dimen>
+    <dimen name="f_surface_border_width">2dp</dimen>
+    <dimen name="f_chipGr_max_height">130dp</dimen>
+    <dimen name="f_chipGr_inVertPad">-10dp</dimen>
+    <dimen name="f_chipGr_inHoriPad">4.dp</dimen>
 </resources>

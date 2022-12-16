@@ -26,11 +26,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.Divider
@@ -555,6 +557,7 @@ fun FilterCard(
     endDateString: String,
     endDateOnClick: (Date) -> Unit
 ) {
+    // used by animation to determine Y offset
     var accountComposeSize by remember { mutableStateOf(Size.Zero) }
     var categoryComposeSize by remember { mutableStateOf(Size.Zero) }
     var dateComposeSize by remember { mutableStateOf(Size.Zero) }
@@ -598,7 +601,7 @@ fun FilterCard(
                     label = stringResource(R.string.filter_account),
                     showIcon = true,
                     modifier = Modifier
-                        .height(dimensionResource(R.dimen.filter_button_chip_height))
+                        .height(dimensionResource(R.dimen.f_button_chip_height))
                         .padding(bottom = 6.dp)
                 )
                 AnimatedVisibility(
@@ -614,18 +617,22 @@ fun FilterCard(
                 ) {
                     Surface(
                         modifier = Modifier
+                            .heightIn(max = dimensionResource(R.dimen.f_chipGr_max_height))
                             .padding(start = 8.dp, end = 6.dp, bottom = 6.dp)
                             .fillMaxWidth()
                             .onGloballyPositioned { accountComposeSize = it.size.toSize() },
                         shape = MaterialTheme.shapes.medium,
                         border = BorderStroke(
-                            width = dimensionResource(R.dimen.filter_surface_border_width),
+                            width = dimensionResource(R.dimen.f_surface_border_width),
                             color = MaterialTheme.colors.secondary
                         )
                     ) {
                         FlowRow(
-                            modifier = Modifier.padding(horizontal = 8.dp),
-                            mainAxisSpacing = 4.dp
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .verticalScroll(rememberScrollState()),
+                            mainAxisSpacing = dimensionResource(R.dimen.f_chipGr_inHoriPad),
+                            crossAxisSpacing = dimensionResource(R.dimen.f_chipGr_inVertPad)
                         ) {
                             for (account in accountList) {
                                 PlutusWalletChip(
@@ -648,7 +655,7 @@ fun FilterCard(
                     label = stringResource(R.string.filter_category),
                     showIcon = true,
                     modifier = Modifier
-                        .height(dimensionResource(R.dimen.filter_button_chip_height))
+                        .height(dimensionResource(R.dimen.f_button_chip_height))
                         .padding(bottom = 6.dp)
                 )
                 AnimatedVisibility(
@@ -675,23 +682,27 @@ fun FilterCard(
                             label = stringResource(filterTypeSelected.stringId),
                             showIcon = false,
                             modifier = Modifier
-                                .height(dimensionResource(R.dimen.filter_button_chip_height)),
+                                .height(dimensionResource(R.dimen.f_button_chip_height)),
                         )
                         Surface(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 6.dp),
+                                .heightIn(max = dimensionResource(R.dimen.f_chipGr_max_height))
+                                .padding(bottom = 6.dp)
+                                .fillMaxWidth(),
                             shape = MaterialTheme.shapes.medium,
                             border = BorderStroke(
-                                width = dimensionResource(R.dimen.filter_surface_border_width),
+                                width = dimensionResource(R.dimen.f_surface_border_width),
                                 color = MaterialTheme.colors.secondary
                             )
                         ) {
                             FlowRow(
-                                modifier = Modifier.padding(horizontal = 8.dp),
-                                mainAxisSpacing = 4.dp
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+                                    .verticalScroll(rememberScrollState()),
+                                mainAxisSpacing = dimensionResource(R.dimen.f_chipGr_inHoriPad),
+                                crossAxisSpacing = dimensionResource(R.dimen.f_chipGr_inVertPad)
                             ) {
-                                for (category in categoryList) {
+                                categoryList.map { category ->
                                     PlutusWalletChip(
                                         selected = categorySelected.contains(category),
                                         onClick = {
@@ -713,7 +724,7 @@ fun FilterCard(
                     label = stringResource(R.string.filter_date),
                     showIcon = true,
                     modifier = Modifier
-                        .height(dimensionResource(R.dimen.filter_button_chip_height))
+                        .height(dimensionResource(R.dimen.f_button_chip_height))
                         .padding(bottom = 6.dp)
                 )
                 AnimatedVisibility(
@@ -750,7 +761,7 @@ fun FilterCard(
                             label = startDateString.ifBlank { stringResource(R.string.filter_start) },
                             showIcon = false,
                             modifier = Modifier
-                                .height(dimensionResource(R.dimen.filter_button_chip_height)),
+                                .height(dimensionResource(R.dimen.f_button_chip_height)),
                         )
                         PlutusWalletButtonChip(
                             selected = true,
@@ -768,7 +779,7 @@ fun FilterCard(
                             label = endDateString.ifBlank { stringResource(R.string.filter_end) },
                             showIcon = false,
                             modifier = Modifier
-                                .height(dimensionResource(R.dimen.filter_button_chip_height))
+                                .height(dimensionResource(R.dimen.f_button_chip_height))
                                 .padding(bottom = 6.dp),
                         )
                     }
@@ -776,9 +787,16 @@ fun FilterCard(
                 PlutusWalletButtonChip(
                     selected = true,
                     onClick = { /*TODO*/ },
-                    label = stringResource(R.string.filter_apply),
+                    label =
+                    if (!accountFilterSelected && !categoryFilterSelected && !dateFilterSelected) {
+                        stringResource(R.string.filter_reset)
+                    } else {
+                        stringResource(R.string.filter_apply)
+                    },
                     showIcon = false,
-                    modifier = Modifier.height(dimensionResource(R.dimen.filter_button_chip_height))
+                    modifier = Modifier.height(dimensionResource(R.dimen.f_button_chip_height)),
+                    selectedBackgroundColor = MaterialTheme.colors.secondary,
+                    selectedTextColor = MaterialTheme.colors.onBackground
                 )
             }
         }
@@ -797,7 +815,7 @@ fun PlutusWalletChip(
         onClick,
         modifier = Modifier.testTag("Chip: $label"),
         border = BorderStroke(
-            width = dimensionResource(R.dimen.filter_chip_border_width),
+            width = dimensionResource(R.dimen.f_chip_border_width),
             color = if (selected) {
                 MaterialTheme.colors.secondary
             } else {
