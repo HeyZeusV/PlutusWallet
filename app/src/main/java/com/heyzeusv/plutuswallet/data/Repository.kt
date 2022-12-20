@@ -88,7 +88,30 @@ interface Repository {
 
     suspend fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>>
 
+    suspend fun getCtAC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>
+    ): Flow<List<CategoryTotals>>
+
     suspend fun getCtAD(accounts: List<String>, start: Date, end: Date): Flow<List<CategoryTotals>>
+
+    suspend fun getCtACD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>>
+
+    suspend fun getCtC(type: String, categories: List<String>): Flow<List<CategoryTotals>>
+
+    suspend fun getCtCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>>
 
     suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
 

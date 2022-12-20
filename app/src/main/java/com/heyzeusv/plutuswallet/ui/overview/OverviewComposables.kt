@@ -70,7 +70,6 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
-import com.github.mikephil.charting.highlight.Highlight
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -126,7 +125,6 @@ fun OverviewScreen(
 ) {
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
-
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -284,13 +282,8 @@ fun ChartCard(
                                     ContextCompat.getColor(pieChart.context, R.color.colorChartText)
                                 // colors used for slices
                                 dataSet.colors = chartColorLists[page]
-                                // size of highlighted area
-                                // TODO: Check if statement is necessary
-                                if (chartInfo.fCategory /* TODO: Check this: `&& !ivc.fCatName.contains("All")` */) {
-                                    dataSet.selectionShift = 10f
-                                } else {
-                                    dataSet.selectionShift = 0.0f
-                                }
+                                // no highlights so no shift needed
+                                dataSet.selectionShift = 0f
 
                                 // PieData set up
                                 val pData = PieData(dataSet)
@@ -298,25 +291,6 @@ fun ChartCard(
                                 pData.setValueFormatter(PercentFormatter(pieChart))
                                 // PieChart set up
                                 pieChart.data = pData
-
-                                val highlights: MutableList<Highlight> = mutableListOf()
-                                // highlights Category selected if it exists with current filters applied
-                                if (chartInfo.fCategory /* TODO: Check this: `&& !ivc.fCatName.contains("All")` */) {
-                                    for (cat: String in chartInfo.fCatName) {
-                                        // finds position of Category selected in FilterFragment in ctList
-                                        val position: Int =
-                                            chartInfo.ctList.indexOfFirst { it.category == cat }
-                                        // -1 = doesn't exist
-                                        if (position != -1) highlights.add(
-                                            Highlight(
-                                                position.toFloat(),
-                                                0,
-                                                0
-                                            )
-                                        )
-                                    }
-                                }
-                                pieChart.highlightValues(highlights.toTypedArray())
                             }
                         )
                         val totalPrefix = stringResource(R.string.chart_total)

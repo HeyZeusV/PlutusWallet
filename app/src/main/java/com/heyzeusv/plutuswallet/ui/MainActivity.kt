@@ -190,6 +190,10 @@ fun PlutusWalletApp(
     val filterStateMessage = stringResource(filterState.stringId)
 
     PlutusWalletTheme {
+        LaunchedEffect(key1 = filterInfo) {
+            tranListVM.updateTranList(filterInfo)
+            chartVM.updateCatTotalsList(filterInfo)
+        }
         LaunchedEffect(key1 = filterState) {
             if (filterState != FilterState.VALID) {
                 scaffoldState.snackbarHostState.showSnackbar(filterStateMessage)

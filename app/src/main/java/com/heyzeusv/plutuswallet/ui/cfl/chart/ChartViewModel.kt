@@ -7,6 +7,7 @@ import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
@@ -30,9 +31,9 @@ class ChartViewModel @Inject constructor(
 
     private val _catTotalsList = MutableStateFlow(emptyList<CategoryTotals>())
     val catTotalsList: StateFlow<List<CategoryTotals>> get() = _catTotalsList
-    fun updateCatTotalsList(filter: FilterInfo) {
+    fun updateCatTotalsList(filterInfo: FilterInfo) {
         viewModelScope.launch {
-            filteredCategoryTotals(filter).collect { list ->
+            filteredCategoryTotals(filterInfo).collect { list ->
                 _catTotalsList.value = list
                 prepareChartInformation()
             }
@@ -58,7 +59,7 @@ class ChartViewModel @Inject constructor(
         val exCTList = mutableListOf<CategoryTotals>()
         val inCTList = mutableListOf<CategoryTotals>()
         catTotalsList.value.forEach {
-            if (it.type == "Expense") exCTList.add(it) else inCTList.add(it)
+            if (it.type == EXPENSE.type) exCTList.add(it) else inCTList.add(it)
         }
 
         // calculate totals
@@ -87,8 +88,13 @@ class ChartViewModel @Inject constructor(
      */
     suspend fun filteredCategoryTotals(fi: FilterInfo): Flow<List<CategoryTotals>> {
         return when {
+            fi.account && fi.category && fi.date ->
+                tranRepo.getCtACD(fi.accountNames, fi.type, fi.categoryNames, fi.start, fi.end)
+            fi.account && fi.category -> tranRepo.getCtAC(fi.accountNames, fi.type, fi.categoryNames)
             fi.account && fi.date -> tranRepo.getCtAD(fi.accountNames, fi.start, fi.end)
+            fi.category && fi.date -> tranRepo.getCtCD(fi.type, fi.categoryNames, fi.start, fi.end)
             fi.account -> tranRepo.getCtA(fi.accountNames)
+            fi.category -> tranRepo.getCtC(fi.type, fi.categoryNames)
             fi.date -> tranRepo.getCtD(fi.start, fi.end)
             else -> tranRepo.getCt()
         }

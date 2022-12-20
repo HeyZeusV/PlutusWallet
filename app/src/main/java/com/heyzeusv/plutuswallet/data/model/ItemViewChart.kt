@@ -24,7 +24,5 @@ data class ItemViewChart(
 
 data class ChartInformation(
     val ctList: List<CategoryTotals> = emptyList(),
-    var totalText: String = "",
-    val fCategory: Boolean = false,
-    val fCatName: List<String> = listOf(""),
+    var totalText: String = ""
 )

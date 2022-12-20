@@ -149,14 +149,18 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>>
 
     /**
-     *  Returns list of CT between given [start]/[end] dates.
+     *  Returns list of CT of given [accounts] and given [categories] with [type].
      */
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
-              WHERE date BETWEEN :start AND :end
+              WHERE account IN (:accounts) AND type=(:type) AND category IN (:categories)
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
+    abstract fun getCtAC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+    ): Flow<List<CategoryTotals>>
 
     /**
      *  Returns list of CT of given [accounts] and between given [start]/[end] dates.
@@ -167,6 +171,60 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               GROUP BY category, type
               HAVING SUM(total) > 0""")
     abstract fun getCtAD(accounts: List<String>, start: Date, end: Date): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [accounts], given [categories] with [type],
+     *  and between given [start]/[end] dates.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND type=(:type) AND category IN (:categories) 
+                AND date BETWEEN :start AND :end
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtACD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [categories] with [type].
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE type=(:type) AND category IN (:categories)
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtC(type: String, categories: List<String>): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [categories] with [type] and between given [start]/[end] dates.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE type=(:type) AND category IN (:categories) 
+                AND date BETWEEN :start AND :end
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT between given [start]/[end] dates.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE date BETWEEN :start AND :end
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
 
     /**
      *  Returns list of IVT.

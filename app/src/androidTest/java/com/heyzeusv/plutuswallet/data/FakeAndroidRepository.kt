@@ -51,6 +51,15 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         return accNames
     }
 
+    override suspend fun getAccountNames(): Flow<List<String>> {
+        val accNames: MutableList<String> = mutableListOf()
+        for (acc: Account in accList) {
+            accNames.add(acc.name)
+        }
+        accNames.sort()
+        return flow { emit(accNames) }
+    }
+
     override suspend fun getAccountSizeAsync(): Int {
 
         return accList.size
@@ -88,6 +97,15 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         }
         typeNameList.sort()
         return typeNameList
+    }
+
+    override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> {
+        val typeNameList: MutableList<String> = mutableListOf()
+        for (cat: Category in catList.filter { it.type == type}) {
+            typeNameList.add(cat.name)
+        }
+        typeNameList.sort()
+        return flow { emit(typeNameList) }
     }
 
     override suspend fun getCategorySizeAsync(): Int {
@@ -387,6 +405,37 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         return flow { emit(createCatTotals(listOfTranLists)) }
     }
 
+    override suspend fun getCtAC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>
+    ): Flow<List<CategoryTotals>> {
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && accounts.contains(it.account) &&
+                        categories.contains(it.category)
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
+                        categories.contains(it.category)
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return flow { emit(createCatTotals(listOfTranLists)) }
+    }
+
     override suspend fun getCtAD(
         accounts: List<String>,
         start: Date,
@@ -408,6 +457,96 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
+                        it.date >= start && it.date <= end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return flow { emit(createCatTotals(listOfTranLists)) }
+    }
+
+    override suspend fun getCtACD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>> {
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && accounts.contains(it.account) &&
+                        categories.contains(it.category) && it.date >= start && it.date <= end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
+                        categories.contains(it.category) && it.date >= start && it.date <= end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return flow { emit(createCatTotals(listOfTranLists)) }
+    }
+
+    override suspend fun getCtC(type: String, categories: List<String>): Flow<List<CategoryTotals>> {
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && categories.contains(it.category)
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && categories.contains(it.category)
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+
+        return flow { emit(createCatTotals(listOfTranLists)) }
+    }
+
+    override suspend fun getCtCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>> {
+        val catLists: List<List<String>> = getCatLists()
+        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
+        for (cat: String in catLists[0]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Expense" && categories.contains(it.category) &&
+                        it.date >= start && it.date <= end
+            }) {
+                listOfTran.add(tran)
+            }
+            listOfTranLists.add(listOfTran)
+        }
+        for (cat: String in catLists[1]) {
+            val listOfTran: MutableList<Transaction> = mutableListOf()
+            for (tran: Transaction in tranList.filter {
+                it.category == cat && it.type == "Income" && categories.contains(it.category) &&
                         it.date >= start && it.date <= end
             }) {
                 listOfTran.add(tran)

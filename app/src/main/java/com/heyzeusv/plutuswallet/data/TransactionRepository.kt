@@ -128,11 +128,37 @@ class TransactionRepository @Inject constructor(
     override suspend fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>> =
         transactionDao.getCtA(accounts)
 
+    override suspend fun getCtAC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>
+    ): Flow<List<CategoryTotals>> = transactionDao.getCtAC(accounts, type, categories)
+
     override suspend fun getCtAD(
         accounts: List<String>,
         start: Date,
         end: Date
     ): Flow<List<CategoryTotals>> = transactionDao.getCtAD(accounts, start, end)
+
+    override suspend fun getCtACD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>> = transactionDao.getCtACD(accounts, type, categories, start, end)
+
+    override suspend fun getCtC(
+        type: String,
+        categories: List<String>,
+    ): Flow<List<CategoryTotals>> = transactionDao.getCtC(type, categories)
+
+    override suspend fun getCtCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>> = transactionDao.getCtCD(type, categories, start, end)
 
     override suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>> =
         transactionDao.getCtD(start, end)

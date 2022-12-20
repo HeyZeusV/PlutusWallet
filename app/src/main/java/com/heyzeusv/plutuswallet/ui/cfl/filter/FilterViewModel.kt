@@ -182,11 +182,11 @@ class FilterViewModel @Inject constructor(
             tranRepo.getAccountNames().collect { list -> updateAccountList(list) }
         }
         viewModelScope.launch {
-            tranRepo.getCategoryNamesByType("Expense")
+            tranRepo.getCategoryNamesByType(EXPENSE.type)
                 .collect { list -> updateExpenseCatList(list) }
         }
         viewModelScope.launch {
-            tranRepo.getCategoryNamesByType("Income")
+            tranRepo.getCategoryNamesByType(INCOME.type)
                 .collect { list -> updateIncomeCatList(list) }
         }
     }
@@ -258,7 +258,7 @@ class FilterViewModel @Inject constructor(
                     (typeSelected.value == INCOME && incomeCatSelected.value.isEmpty())) ->
                 _filterState.value = NO_SELECTED_CATEGORY
             // user must select both start and end date
-            startDateString.value.isEmpty() && endDateString.value.isEmpty() ->
+            dateFilter.value && startDateString.value.isEmpty() && endDateString.value.isEmpty() ->
                 _filterState.value = NO_SELECTED_DATE
             // startDate must be before endDate else it displays warning and doesn't apply filters
             dateFilter.value && startDate > endDate -> _filterState.value = INVALID_DATE_RANGE
@@ -294,5 +294,7 @@ class FilterViewModel @Inject constructor(
         endDate = Date(startDate.time + MIDNIGHT_MILLI)
         _startDateString.value = ""
         _endDateString.value = ""
+
+        _filterInfo.value = FilterInfo()
     }
 }
