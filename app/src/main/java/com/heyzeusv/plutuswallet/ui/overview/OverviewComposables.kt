@@ -70,6 +70,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.PercentFormatter
+import com.github.mikephil.charting.highlight.Highlight
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -291,6 +292,12 @@ fun ChartCard(
                                 pData.setValueFormatter(PercentFormatter(pieChart))
                                 // PieChart set up
                                 pieChart.data = pData
+
+                                val highlights: MutableList<Highlight> = mutableListOf()
+                                chartInfo.ctList.forEachIndexed { i, _ ->
+                                    highlights.add(Highlight(i.toFloat(), 0, 0))
+                                }
+                                pieChart.highlightValues(highlights.toTypedArray())
                             }
                         )
                         val totalPrefix = stringResource(R.string.chart_total)

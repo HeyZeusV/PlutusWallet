@@ -263,20 +263,23 @@ class FilterViewModel @Inject constructor(
             // startDate must be before endDate else it displays warning and doesn't apply filters
             dateFilter.value && startDate > endDate -> _filterState.value = INVALID_DATE_RANGE
             !accountFilter.value && !categoryFilter.value && !dateFilter.value -> resetFilter()
-            else -> _filterInfo.value = FilterInfo(
-                account = accountFilter.value,
-                category = categoryFilter.value,
-                date = dateFilter.value,
-                type = typeSelected.value.type,
-                accountNames = accountSelected.value,
-                categoryNames = if (typeSelected.value == EXPENSE) {
-                    expenseCatSelected.value
-                } else {
-                    incomeCatSelected.value
-                },
-                start = startDate,
-                end = endDate
-            )
+            else -> {
+                _filterInfo.value = FilterInfo(
+                    account = accountFilter.value,
+                    category = categoryFilter.value,
+                    date = dateFilter.value,
+                    type = typeSelected.value.type,
+                    accountNames = accountSelected.value,
+                    categoryNames = if (typeSelected.value == EXPENSE) {
+                        expenseCatSelected.value
+                    } else {
+                        incomeCatSelected.value
+                    },
+                    start = startDate,
+                    end = endDate
+                )
+                _showFilter.value = false
+            }
         }
     }
 
