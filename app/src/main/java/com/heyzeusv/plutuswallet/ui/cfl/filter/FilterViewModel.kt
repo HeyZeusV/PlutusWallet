@@ -1,11 +1,12 @@
 package com.heyzeusv.plutuswallet.ui.cfl.filter
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
+import com.heyzeusv.plutuswallet.ui.transaction.FilterSelectedAction
+import com.heyzeusv.plutuswallet.ui.transaction.FilterSelectedAction.ADD
+import com.heyzeusv.plutuswallet.ui.transaction.FilterSelectedAction.REMOVE
 import com.heyzeusv.plutuswallet.ui.transaction.FilterState
 import com.heyzeusv.plutuswallet.ui.transaction.FilterState.INVALID_DATE_RANGE
 import com.heyzeusv.plutuswallet.ui.transaction.FilterState.NO_SELECTED_ACCOUNT
@@ -16,7 +17,6 @@ import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.DateUtils
-import com.heyzeusv.plutuswallet.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -28,8 +28,6 @@ import kotlinx.coroutines.flow.StateFlow
 private const val MIDNIGHT_MILLI = 86399999
 
 /**
- *  Data manager for FilterFragments.
- *
  *  Stores and manages UI-related data in a lifecycle conscious way.
  *  Data can survive configuration changes.
  */
@@ -38,12 +36,11 @@ class FilterViewModel @Inject constructor(
     private val tranRepo: Repository
 ) : ViewModel() {
 
-    // translated "All"
-    var all = "All"
+    private val _showFilter = MutableStateFlow(false)
+    val showFilter: StateFlow<Boolean> get() = _showFilter
+    fun updateShowFilter(newValue: Boolean) { _showFilter.value = newValue }
 
-    // Account list
-    val accList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
-
+    // chip lists
     private val _accountList = MutableStateFlow(listOf<String>())
     val accountList: StateFlow<List<String>> get() = _accountList
     private fun updateAccountList(newList: List<String>) { _accountList.value = newList }
@@ -60,29 +57,52 @@ class FilterViewModel @Inject constructor(
     val typeSelected: StateFlow<TransactionType> get() = _typeSelected
     fun updateTypeSelected(newValue: TransactionType) { _typeSelected.value = newValue }
 
-    private val _filterState = MutableStateFlow(VALID)
-    val filterState: StateFlow<FilterState> get() = _filterState
-    fun updateFilterState(newState: FilterState) { _filterState.value = newState}
+    // filter status
+    private val _accountFilter = MutableStateFlow(false)
+    val accountFilter: StateFlow<Boolean> get() = _accountFilter
+    fun updateAccountFilter(newValue: Boolean) { _accountFilter.value = newValue }
 
-    private val _filterInfo = MutableStateFlow(FilterInfo())
-    val filterInfo: StateFlow<FilterInfo> get() = _filterInfo
+    private val _categoryFilter = MutableStateFlow(false)
+    val categoryFilter: StateFlow<Boolean> get() = _categoryFilter
+    fun updateCategoryFilter(newValue: Boolean) { _categoryFilter.value = newValue }
 
-    // type of Category selected and which is visible, true = "Expense" false = "Income"
-    var typeVisible: MutableLiveData<Boolean> = MutableLiveData(true)
+    private val _dateFilter = MutableStateFlow(false)
+    val dateFilter: StateFlow<Boolean> get() = _dateFilter
+    fun updateDateFilter(newValue: Boolean) { _dateFilter.value = newValue }
 
-    // Category list by type
-    val exCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
-    val inCatList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
+    // selected items
+    private val _accountSelected = MutableStateFlow(listOf<String>())
+    val accountSelected: StateFlow<List<String>> get() = _accountSelected
+    fun updateAccountSelected(value: String, action: FilterSelectedAction) {
+        _accountSelected.value = when (action) {
+            ADD -> _accountSelected.value + value
+            REMOVE -> _accountSelected.value - value
+        }
+    }
 
-    // Date values
-    var startDateOld: Date = DateUtils.startOfDay(Date())
-    var endDateOld: Date = Date(startDateOld.time + MIDNIGHT_MILLI)
+    private val _expenseCatSelected = MutableStateFlow(listOf<String>())
+    val expenseCatSelected: StateFlow<List<String>> get() = _expenseCatSelected
+    fun updateExpenseCatSelected(value: String, action: FilterSelectedAction) {
+        _expenseCatSelected.value = when (action) {
+            ADD -> _expenseCatSelected.value + value
+            REMOVE -> _expenseCatSelected.value - value
+        }
+    }
 
-    var startDate = DateUtils.startOfDay(Date())
-    var endDate = Date(startDate.time + MIDNIGHT_MILLI)
+    private val _incomeCatSelected = MutableStateFlow(listOf<String>())
+    val incomeCatSelected: StateFlow<List<String>> get() = _incomeCatSelected
+    fun updateIncomeCatSelected(value: String, action: FilterSelectedAction) {
+        _incomeCatSelected.value = when (action) {
+            ADD -> _incomeCatSelected.value + value
+            REMOVE -> _incomeCatSelected.value - value
+        }
+    }
 
+    private var startDate = DateUtils.startOfDay(Date())
+    private var endDate = Date(startDate.time + MIDNIGHT_MILLI)
     private val dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT)
 
+    // Date string values
     private val _startDateString = MutableStateFlow("")
     val startDateString: StateFlow<String> get() = _startDateString
     fun updateStartDateString(newDate: Date) {
@@ -97,85 +117,12 @@ class FilterViewModel @Inject constructor(
         _endDateString.value = dateFormatter.format(endDate)
     }
 
+    private val _filterInfo = MutableStateFlow(FilterInfo())
+    val filterInfo: StateFlow<FilterInfo> get() = _filterInfo
 
-    // Date string values
-    val startDateLD: MutableLiveData<String> = MutableLiveData("")
-    val endDateLD: MutableLiveData<String> = MutableLiveData("")
-
-    // Button status
-    val accFilter: MutableLiveData<Boolean> = MutableLiveData(false)
-    val catFilter: MutableLiveData<Boolean> = MutableLiveData(false)
-    val dateFilterOld: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private val _showFilter = MutableStateFlow(false)
-    val showFilter: StateFlow<Boolean> get() = _showFilter
-    fun updateShowFilter(newValue: Boolean) { _showFilter.value = newValue }
-
-    private val _accountFilter = MutableStateFlow(false)
-    val accountFilter: StateFlow<Boolean> get() = _accountFilter
-    fun updateAccountFilter(newValue: Boolean) { _accountFilter.value = newValue }
-
-    private val _categoryFilter = MutableStateFlow(false)
-    val categoryFilter: StateFlow<Boolean> get() = _categoryFilter
-    fun updateCategoryFilter(newValue: Boolean) { _categoryFilter.value = newValue }
-
-    private val _dateFilter = MutableStateFlow(false)
-    val dateFilter: StateFlow<Boolean> get() = _dateFilter
-    fun updateDateFilter(newValue: Boolean) { _dateFilter.value = newValue }
-
-    private val _accountSelected = MutableStateFlow(listOf<String>())
-    val accountSelected: StateFlow<List<String>> get() = _accountSelected
-    fun updateAccountSelected(value: String, action: Boolean) {
-        _accountSelected.value = if (action) {
-            _accountSelected.value + value
-        } else {
-            _accountSelected.value - value
-        }
-    }
-
-    private val _expenseCatSelected = MutableStateFlow(listOf<String>())
-    val expenseCatSelected: StateFlow<List<String>> get() = _expenseCatSelected
-    fun updateExpenseCatSelected(value: String, action: Boolean) {
-        _expenseCatSelected.value = if (action) {
-            _expenseCatSelected.value + value
-        } else {
-            _expenseCatSelected.value - value
-        }
-    }
-
-    private val _incomeCatSelected = MutableStateFlow(listOf<String>())
-    val incomeCatSelected: StateFlow<List<String>> get() = _incomeCatSelected
-    fun updateIncomeCatSelected(value: String, action: Boolean) {
-        _incomeCatSelected.value = if (action) {
-            _incomeCatSelected.value + value
-        } else {
-            _incomeCatSelected.value - value
-        }
-    }
-
-    // Chip status
-    val accSelectedChips: MutableList<String> = mutableListOf()
-    val exCatSelectedChips: MutableList<String> = mutableListOf()
-    val inCatSelectedChips: MutableList<String> = mutableListOf()
-
-    // Events
-    private val _noChipEvent = MutableLiveData<Event<Boolean>>()
-    val noChipEvent: LiveData<Event<Boolean>> = _noChipEvent
-
-    private val _dateErrorEvent = MutableLiveData<Event<Boolean>>()
-    val dateErrorEvent: LiveData<Event<Boolean>> = _dateErrorEvent
-
-    private val _selectDateEvent = MutableLiveData<Event<Int>>()
-    val selectDateEvent: LiveData<Event<Int>> = _selectDateEvent
-
-    private val _resetEvent = MutableLiveData<Event<Boolean>>()
-    val resetEvent: LiveData<Event<Boolean>> = _resetEvent
-
-    // used to pass FilterInfo to CFLViewModel
-    private val _cflChange = MutableLiveData<Event<Boolean>>()
-    val cflChange: LiveData<Event<Boolean>> = _cflChange
-
-    var cflTInfo: FilterInfo = FilterInfo()
+    private val _filterState = MutableStateFlow(VALID)
+    val filterState: StateFlow<FilterState> get() = _filterState
+    fun updateFilterState(newState: FilterState) { _filterState.value = newState}
 
     init {
         viewModelScope.launch {
@@ -192,63 +139,11 @@ class FilterViewModel @Inject constructor(
     }
 
     /**
-     *  Retrieves data that will be displayed in Spinners from Repository.
-     */
-    fun prepareChipData() {
-
-        viewModelScope.launch {
-            // Account data
-            accList.value = tranRepo.getAccountNamesAsync()
-
-            // Category by type data
-            val mExCatList: MutableList<String> = tranRepo.getCategoryNamesByTypeAsync("Expense")
-            val mInCatList: MutableList<String> = tranRepo.getCategoryNamesByTypeAsync("Income")
-            mExCatList.add(0, all)
-            mInCatList.add(0, all)
-            exCatList.value = mExCatList
-            inCatList.value = mInCatList
-        }
-    }
-
-    /**
-     *  Changes what Transaction type is visible.
-     */
-    fun typeVisibleOC() {
-
-        typeVisible.value = !typeVisible.value!!
-    }
-
-    /**
-     *  Event to show DatePickerDialog. Uses [viewId] to determine if Start or End was selected.
-     */
-    fun selectDateOC(viewId: Int) {
-
-        _selectDateEvent.value = Event(viewId)
-    }
-
-    /**
-     *  Takes [newDate] user selected on Start button and saves to be used in query.
-     */
-    fun startDateSelected(newDate: Date) {
-
-        startDateOld = newDate
-        startDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(startDateOld)
-    }
-
-    /**
-     *  Takes [newDate] user selected on End button and saves to be used in query
-     */
-    fun endDateSelected(newDate: Date) {
-
-        endDateOld = Date(newDate.time + MIDNIGHT_MILLI)
-        endDateLD.value = DateFormat.getDateInstance(DateFormat.SHORT).format(endDateOld)
-    }
-
-    /**
      *  Applies filters or shows Snackbar warning if no Chips are selected or if end date is before
      *  start date.
      */
     fun applyFilter() {
+
         when {
             // users must select at least 1 Chip
             accountFilter.value && accountSelected.value.isEmpty() ->

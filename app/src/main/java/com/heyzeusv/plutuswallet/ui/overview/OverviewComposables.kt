@@ -82,6 +82,9 @@ import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.theme.chipTextStyle
+import com.heyzeusv.plutuswallet.ui.transaction.FilterSelectedAction
+import com.heyzeusv.plutuswallet.ui.transaction.FilterSelectedAction.ADD
+import com.heyzeusv.plutuswallet.ui.transaction.FilterSelectedAction.REMOVE
 import com.heyzeusv.plutuswallet.ui.transaction.PlutusWalletButtonChip
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
 import com.heyzeusv.plutuswallet.util.DateUtils
@@ -108,14 +111,14 @@ fun OverviewScreen(
     accountFilterOnClick: (Boolean) -> Unit,
     accountList: List<String>,
     accountSelected: List<String>,
-    accountChipOnClick: (String, Boolean) -> Unit,
+    accountChipOnClick: (String, FilterSelectedAction) -> Unit,
     categoryFilterSelected: Boolean,
     categoryFilterOnClick: (Boolean) -> Unit,
     filterTypeSelected: TransactionType,
     filterUpdateTypeSelected: (TransactionType) -> Unit,
     categoryList: List<String>,
     categorySelected: List<String>,
-    categoryChipOnClick: (String, Boolean) -> Unit,
+    categoryChipOnClick: (String, FilterSelectedAction) -> Unit,
     dateFilterSelected: Boolean,
     dateFilterOnClick: (Boolean) -> Unit,
     startDateString: String,
@@ -525,14 +528,14 @@ fun FilterCard(
     accountFilterOnClick: (Boolean) -> Unit,
     accountList: List<String>,
     accountSelected: List<String>,
-    accountChipOnClick: (String, Boolean) -> Unit,
+    accountChipOnClick: (String, FilterSelectedAction) -> Unit,
     categoryFilterSelected: Boolean,
     categoryFilterOnClick: (Boolean) -> Unit,
     filterTypeSelected: TransactionType,
     filterUpdateTypeSelected: (TransactionType) -> Unit,
     categoryList: List<String>,
     categorySelected: List<String>,
-    categoryChipOnClick: (String, Boolean) -> Unit,
+    categoryChipOnClick: (String, FilterSelectedAction) -> Unit,
     dateFilterSelected: Boolean,
     dateFilterOnClick: (Boolean) -> Unit,
     startDateString: String,
@@ -542,6 +545,7 @@ fun FilterCard(
     applyOnClick: () -> Unit
 ) {
     // used by animation to determine Y offset
+    var filterComposeSize by remember { mutableStateOf(Size.Zero) }
     var accountComposeSize by remember { mutableStateOf(Size.Zero) }
     var categoryComposeSize by remember { mutableStateOf(Size.Zero) }
     var dateComposeSize by remember { mutableStateOf(Size.Zero) }
@@ -567,12 +571,13 @@ fun FilterCard(
         Card(
             modifier = Modifier
                 .padding(horizontal = 8.dp)
+                .onGloballyPositioned { filterComposeSize = it.size.toSize() }
                 .animateEnterExit(
                     enter = slideInVertically(
-                        initialOffsetY = { -520 }
+                        initialOffsetY = { -filterComposeSize.height.toInt() - 50 }
                     ),
                     exit = slideOutVertically(
-                        targetOffsetY = { -520 }
+                        targetOffsetY = { -filterComposeSize.height.toInt() - 50 }
                     )
                 )
                 .testTag("Filter Card")
@@ -625,7 +630,7 @@ fun FilterCard(
                                     onClick = {
                                         accountChipOnClick(
                                             account,
-                                            !accountSelected.contains(account)
+                                            if (accountSelected.contains(account)) REMOVE else ADD
                                         )
                                     },
                                     label = account
@@ -693,7 +698,7 @@ fun FilterCard(
                                         onClick = {
                                             categoryChipOnClick(
                                                 category,
-                                                !categorySelected.contains(category)
+                                                if (categorySelected.contains(category)) REMOVE else ADD
                                             )
                                         },
                                         label = category

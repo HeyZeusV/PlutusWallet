@@ -52,7 +52,6 @@
                             style="@style/Filter.Button.Outlined.DropDown"
                             android:layout_marginTop="8dp"
                             android:text="@string/transaction_account"
-                            app:isActivated="@{filterVM.accFilter}"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <View
@@ -70,7 +69,6 @@
                             android:layout_height="0dp"
                             android:layout_marginTop="6dp"
                             android:layout_marginBottom="6dp"
-                            app:isActivated="@{filterVM.accFilter}"
                             app:layout_constraintBottom_toBottomOf="@id/filter_account"
                             app:layout_constraintEnd_toEndOf="@id/filter_account"
                             app:layout_constraintStart_toStartOf="@id/filter_account"
@@ -95,7 +93,6 @@
                             style="@style/Filter.Button.Outlined.DropDown"
                             android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
                             android:text="@string/transaction_category"
-                            app:isActivated="@{filterVM.catFilter}"
                             app:layout_constraintTop_toBottomOf="@id/filter_account_scrollview" />
 
                         <View
@@ -113,9 +110,7 @@
                             android:layout_height="0dp"
                             android:layout_marginTop="6dp"
                             android:layout_marginBottom="6dp"
-                            android:onClick="@{() -> filterVM.typeVisibleOC()}"
-                            android:text="@{filterVM.typeVisible ? @string/type_expense : @string/type_income}"
-                            app:isActivated="@{filterVM.catFilter}"
+
                             app:layout_constraintBottom_toBottomOf="@id/filter_category"
                             app:layout_constraintEnd_toEndOf="@id/filter_category"
                             app:layout_constraintStart_toStartOf="@id/filter_category"
@@ -128,7 +123,6 @@
                             android:layout_height="0dp"
                             android:layout_marginTop="6dp"
                             android:layout_marginBottom="6dp"
-                            app:isActivated="@{filterVM.catFilter}"
                             app:layout_constraintBottom_toBottomOf="@id/filter_category"
                             app:layout_constraintEnd_toEndOf="@id/filter_category"
                             app:layout_constraintStart_toStartOf="@id/filter_category"
@@ -142,14 +136,12 @@
                                 <com.google.android.material.chip.ChipGroup
                                     android:id="@+id/filter_expense_chips"
                                     style="@style/Filter.ChipGroup"
-                                    android:visibility="@{filterVM.typeVisible ? View.VISIBLE : View.GONE}"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
 
                                 <com.google.android.material.chip.ChipGroup
                                     android:id="@+id/filter_income_chips"
                                     style="@style/Filter.ChipGroup"
-                                    android:visibility="@{filterVM.typeVisible ? View.GONE : View.VISIBLE}"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
                             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -169,7 +161,6 @@
                             style="@style/Filter.Button.Outlined.DropDown"
                             android:layout_marginTop="@dimen/filterButtonToNestedSvMargin"
                             android:text="@string/transaction_date"
-                            app:isActivated="@{filterVM.dateFilterOld}"
                             app:layout_constraintTop_toBottomOf="@id/filter_category_scrollview" />
 
                         <View
@@ -187,9 +178,7 @@
                             android:layout_height="0dp"
                             android:layout_marginTop="6dp"
                             android:layout_marginBottom="6dp"
-                            android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
-                            android:text="@{filterVM.startDateLD == `` ? @string/filter_start : filterVM.startDateLD}"
-                            app:isActivated="@{filterVM.dateFilterOld}"
+
                             app:layout_constraintBottom_toBottomOf="@id/filter_date"
                             app:layout_constraintEnd_toEndOf="@id/filter_date"
                             app:layout_constraintStart_toStartOf="@id/filter_date"
@@ -202,9 +191,7 @@
                             android:layout_height="0dp"
                             android:layout_marginTop="6dp"
                             android:layout_marginBottom="6dp"
-                            android:onClick="@{(view) -> filterVM.selectDateOC(view.id)}"
-                            android:text="@{filterVM.endDateLD == `` ? @string/filter_end : filterVM.endDateLD}"
-                            app:isActivated="@{filterVM.dateFilterOld}"
+
                             app:layout_constraintBottom_toBottomOf="@id/filter_date"
                             app:layout_constraintEnd_toEndOf="@id/filter_date"
                             app:layout_constraintStart_toStartOf="@id/filter_date"
@@ -221,8 +208,6 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginStart="@dimen/filterParentMarginStartEnd"
                 android:layout_marginEnd="@dimen/filterParentMarginStartEnd"
-                android:onClick="@{() -> filterVM.applyFilter()}"
-                android:text="@{(!filterVM.accFilter &amp;&amp; !filterVM.catFilter &amp;&amp; !filterVM.dateFilterOld) ? @string/filter_reset : @string/filter_apply}"
                 android:textSize="@dimen/textSizeFilterButton"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/filter_scroll"

@@ -16,3 +16,8 @@ enum class FilterState(val stringId: Int) {
     NO_SELECTED_DATE(R.string.filter_no_selected_dates),
     INVALID_DATE_RANGE(R.string.filter_date_warning)
 }
+
+enum class FilterSelectedAction {
+    ADD,
+    REMOVE
+}
