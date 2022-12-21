@@ -399,6 +399,7 @@ fun TransactionListCard(
             ) {
                 Text(
                     text = stringResource(R.string.cfl_no_transactions),
+                    modifier = Modifier.testTag("Empty Transaction List"),
                     textAlign = TextAlign.Center
                 )
             }
@@ -553,6 +554,8 @@ fun FilterCard(
     val view = LocalView.current
     val noFilters = !accountFilterSelected && !categoryFilterSelected && !dateFilterSelected
 
+    val typeSelectedLabel = stringResource(filterTypeSelected.stringId)
+
     AnimatedVisibility(
         visible = showFilter,
         enter = EnterTransition.None,
@@ -669,10 +672,11 @@ fun FilterCard(
                         PlutusWalletButtonChip(
                             selected = true,
                             onClick = { filterUpdateTypeSelected(filterTypeSelected.opposite()) },
-                            label = stringResource(filterTypeSelected.stringId),
+                            label = typeSelectedLabel,
                             showIcon = false,
                             modifier = Modifier
-                                .height(dimensionResource(R.dimen.f_button_chip_height)),
+                                .height(dimensionResource(R.dimen.f_button_chip_height))
+                                .testTag("$typeSelectedLabel Button"),
                         )
                         Surface(
                             modifier = Modifier
@@ -751,7 +755,8 @@ fun FilterCard(
                             label = startDateString.ifBlank { stringResource(R.string.filter_start) },
                             showIcon = false,
                             modifier = Modifier
-                                .height(dimensionResource(R.dimen.f_button_chip_height)),
+                                .height(dimensionResource(R.dimen.f_button_chip_height))
+                                .testTag("Filter Start Date"),
                         )
                         PlutusWalletButtonChip(
                             selected = true,
@@ -770,7 +775,8 @@ fun FilterCard(
                             showIcon = false,
                             modifier = Modifier
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
-                                .padding(bottom = 6.dp),
+                                .padding(bottom = 6.dp)
+                                .testTag("Filter End Date"),
                         )
                     }
                 }
@@ -783,7 +789,9 @@ fun FilterCard(
                         stringResource(R.string.filter_apply)
                     },
                     showIcon = false,
-                    modifier = Modifier.height(dimensionResource(R.dimen.f_button_chip_height)),
+                    modifier = Modifier
+                        .height(dimensionResource(R.dimen.f_button_chip_height))
+                        .testTag("Filter action"),
                     selectedBackgroundColor = MaterialTheme.colors.secondary,
                     selectedTextColor = MaterialTheme.colors.onBackground
                 )
