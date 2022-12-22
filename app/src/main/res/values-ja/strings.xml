@@ -97,4 +97,6 @@
     <string name="filter_no_selected_account">アカウントを1つ以上選択してください!!</string>
     <string name="filter_no_selected_category">"カテゴリを1つ以上選択してください!! "</string>
     <string name="filter_no_selected_dates">開始日と終了日を選択してください!!</string>
+    <string name="data_edit">編集</string>
+    <string name="data_delete">消去</string>
 </resources>

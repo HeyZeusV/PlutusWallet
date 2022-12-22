@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,8 +57,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
-import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.filter.FilterViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
@@ -87,9 +88,7 @@ class MainActivity : BaseActivity() {
     private val chartVM: ChartViewModel by viewModels()
     private val filterVM: FilterViewModel by viewModels()
     private val tranVM: TransactionViewModel by viewModels()
-
-    // shared ViewModels
-    private val cflVM: CFLViewModel by viewModels()
+    private val accountVM: AccountViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,11 +112,11 @@ class MainActivity : BaseActivity() {
             CompositionLocalProvider(LocalPWColors provides pwColors) {
                 PlutusWalletTheme {
                     PlutusWalletApp(
-                        cflVM = cflVM,
                         tranListVM = tranListVM,
                         chartVM = chartVM,
                         filterVM = filterVM,
-                        tranVM = tranVM
+                        tranVM = tranVM,
+                        accountVM
                     )
                 }
             }
@@ -149,11 +148,11 @@ class MainActivity : BaseActivity() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PlutusWalletApp(
-    cflVM: CFLViewModel,
     tranListVM: TransactionListViewModel,
     chartVM: ChartViewModel,
     filterVM: FilterViewModel,
-    tranVM: TransactionViewModel
+    tranVM: TransactionViewModel,
+    accountVM: AccountViewModel
 ) {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
@@ -164,18 +163,15 @@ fun PlutusWalletApp(
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
-    /**
-     *  TODO: Convert tInfoLiveData from CFLViewModel to StateFlow, whenever the filter is updated
-     *  TODO: tInfoLiveData will get updated as well causing tranList to be updated.
-     */
     val filterInfo by filterVM.filterInfo.collectAsState()
     val tranList by tranListVM.tranList.collectAsState()
     val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
     val chartInfoList by chartVM.chartInfoList.collectAsState()
+    val accountList by accountVM.accountList.collectAsState()
 
     val showFilter by filterVM.showFilter.collectAsState()
     val accountFilterSelected by filterVM.accountFilter.collectAsState()
-    val accountList by filterVM.accountList.collectAsState()
+    val accountNameList by filterVM.accountList.collectAsState()
     val accountSelected by filterVM.accountSelected.collectAsState()
     val categoryFilterSelected by filterVM.categoryFilter.collectAsState()
     val filterTypeSelected by filterVM.typeSelected.collectAsState()
@@ -244,7 +240,17 @@ fun PlutusWalletApp(
                     }
                 )
             },
-            drawerContent = { PWDrawer() },
+            // TODO: Make PWDrawer a child composable that opens/closes using AnimateVisibility
+            drawerContent = {
+                PWDrawer(
+                    closeDrawer = {
+                        coroutineScope.launch {
+                            scaffoldState.drawerState.close()
+                        }
+                    },
+                    navController
+                )
+            },
             drawerGesturesEnabled = false,
             backgroundColor = MaterialTheme.colors.background
         ) {
@@ -274,7 +280,7 @@ fun PlutusWalletApp(
                         updateShowFilter = filterVM::updateShowFilter,
                         accountFilterSelected = accountFilterSelected,
                         accountFilterOnClick = filterVM::updateAccountFilter,
-                        accountList,
+                        accountNameList,
                         accountSelected,
                         accountChipOnClick = filterVM::updateAccountSelected,
                         categoryFilterSelected = categoryFilterSelected,
@@ -303,7 +309,13 @@ fun PlutusWalletApp(
                         navController = navController
                     )
                 }
-                composable(AccountsDestination.route){ }
+                composable(AccountsDestination.route){
+                    DataScreen(
+                        dataLists = listOf(accountList),
+                        editOnClick = { /*TODO*/ },
+                        deleteOnClick = { }
+                    )
+                }
                 composable(CategoriesDestination.route) { }
                 composable(SettingsDestination.route) { }
                 composable(AboutDestination.route) { }
@@ -385,8 +397,10 @@ enum class PWDrawerItems(val icon: ImageVector, val labelId: Int) {
 }
 
 @Composable
-fun PWDrawer() {
-    Icons.Filled.AccountBalance
+fun PWDrawer(
+    closeDrawer: () -> Unit,
+    navController: NavHostController
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -420,7 +434,15 @@ fun PWDrawer() {
         ) {
             items(PWDrawerItems.values()) { item ->
                 PWDrawerItem(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        when(item) {
+                            PWDrawerItems.ACCOUNTS -> {
+                                closeDrawer()
+                                navController.navigateSingleTopTo(AccountsDestination.route)
+                            }
+                            else -> { }
+                        }
+                    },
                     icon = item.icon,
                     label = stringResource(item.labelId)
                 )
@@ -432,8 +454,12 @@ fun PWDrawer() {
 @Preview
 @Composable
 fun PWDrawerPreview() {
+    val previewNavHostController = rememberNavController()
     PlutusWalletTheme {
-        PWDrawer()
+        PWDrawer(
+            {},
+            previewNavHostController
+        )
     }
 }
 
@@ -449,7 +475,8 @@ fun PWDrawerItem(
             .padding(
                 horizontal = 16.dp,
                 vertical = 16.dp
-            ),
+            )
+            .clickable { onClick() },
         horizontalArrangement = Arrangement.spacedBy(
             space = 8.dp
         )

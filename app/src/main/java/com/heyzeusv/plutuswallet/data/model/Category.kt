@@ -18,7 +18,12 @@ import androidx.room.PrimaryKey
                          unique = true)])
 data class Category(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    var name: String,
+    override val id: Int,
+    override var name: String,
     var type: String
-)
+) : DataInterface
+
+interface DataInterface {
+    val id: Int
+    var name: String
+}

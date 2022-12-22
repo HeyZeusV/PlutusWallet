@@ -111,4 +111,6 @@
     <string name="filter_no_selected_account">Please select at least one account!!</string>
     <string name="filter_no_selected_category">Please select at least one category!!</string>
     <string name="filter_no_selected_dates">Please select start and end dates!!</string>
+    <string name="data_edit">Edit</string>
+    <string name="data_delete">Delete</string>
 </resources>

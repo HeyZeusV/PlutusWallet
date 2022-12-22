@@ -81,6 +81,11 @@ class FakeRepository @Inject constructor() : Repository {
         accListLD.value = accList.sortedBy { it.name }
     }
 
+    override suspend fun getAccounts(): Flow<List<Account>> {
+
+        return flow { emit(accList.sortedBy { it.name }) }
+    }
+
     override fun getLDAccounts(): LiveData<List<Account>> {
 
         accListLD.value = accList.sortedBy { it.name }

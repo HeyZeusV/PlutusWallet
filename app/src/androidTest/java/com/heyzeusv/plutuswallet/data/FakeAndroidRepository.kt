@@ -29,12 +29,6 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.name })
     private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
 
-    fun clearLists() {
-        accList.clear()
-        catList.clear()
-        tranList.clear()
-    }
-
     fun resetLists() {
         accList = dd.accList
         catList = dd.catList
@@ -81,6 +75,11 @@ class FakeAndroidRepository @Inject constructor() : Repository {
 
         accList.replace(accList.find { it.id == account.id }!!, account)
         accListLD.value = accList.sortedBy { it.name }
+    }
+
+    override suspend fun getAccounts(): Flow<List<Account>> {
+
+        return flow { emit(accList.sortedBy { it.name }) }
     }
 
     override fun getLDAccounts(): LiveData<List<Account>> {

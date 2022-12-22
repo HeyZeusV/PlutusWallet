@@ -41,6 +41,14 @@ abstract class AccountDao : BaseDao<Account>() {
     abstract suspend fun getAccountSize(): Int
 
     /**
+     *  Returns flow that emits list of all Accounts in order of name.
+     */
+    @Query("""SELECT *
+              FROM account
+              ORDER BY name ASC""")
+    abstract fun getAccounts(): Flow<List<Account>>
+
+    /**
      *  Returns LD of list of all Accounts in order of name.
      */
     @Query("""SELECT *

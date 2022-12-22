@@ -25,6 +25,8 @@ interface Repository {
 
     suspend fun updateAccount(account: Account)
 
+    suspend fun getAccounts(): Flow<List<Account>>
+
     fun getLDAccounts(): LiveData<List<Account>>
 
     /**

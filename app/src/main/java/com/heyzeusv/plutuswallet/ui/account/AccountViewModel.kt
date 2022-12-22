@@ -10,6 +10,8 @@ import com.heyzeusv.plutuswallet.util.Event
 import com.heyzeusv.plutuswallet.util.replace
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -42,6 +44,17 @@ class AccountViewModel @Inject constructor(
 
     private val _deleteAccountEvent = MutableLiveData<Event<Account>>()
     val deleteAccountEvent: LiveData<Event<Account>> = _deleteAccountEvent
+
+    private val _accountList = MutableStateFlow(listOf<Account>())
+    val accountList: StateFlow<List<Account>> get() = _accountList
+
+    init {
+        viewModelScope.launch {
+            tranRepo.getAccounts().collect { list ->
+                _accountList.value = list
+            }
+        }
+    }
 
     /**
      *  Event to edit name of selected [account].

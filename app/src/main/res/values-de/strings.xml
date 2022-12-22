@@ -97,4 +97,6 @@
     <string name="filter_no_selected_account">Bitte wählen Sie mindestens ein Konto aus !!</string>
     <string name="filter_no_selected_category">"Bitte wählen Sie mindestens eine Kategorie aus !! "</string>
     <string name="filter_no_selected_dates">Bitte Start- und Enddatum auswählen!!</string>
+    <string name="data_edit">Bearbeiten</string>
+    <string name="data_delete">löschen</string>
 </resources>

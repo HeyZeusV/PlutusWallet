@@ -42,6 +42,8 @@ class TransactionRepository @Inject constructor(
     override suspend fun updateAccount(account: Account): Unit =
         withContext(Dispatchers.IO) { accountDao.update(account) }
 
+    override suspend fun getAccounts(): Flow<List<Account>> = accountDao.getAccounts()
+
     override fun getLDAccounts(): LiveData<List<Account>> = accountDao.getLDAccounts()
 
     /**

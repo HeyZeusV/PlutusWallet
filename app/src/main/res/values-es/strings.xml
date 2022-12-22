@@ -97,4 +97,6 @@
     <string name="filter_no_selected_account">Por favor, seleccione al menos una cuenta.</string>
     <string name="filter_no_selected_category">Por favor, seleccione al menos una categoría.</string>
     <string name="filter_no_selected_dates">Por favor, seleccione las fechas de inicio y finalización.</string>
+    <string name="data_edit">Editar</string>
+    <string name="data_delete">Eliminar</string>
 </resources>
