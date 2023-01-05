@@ -157,7 +157,8 @@ fun PlutusWalletApp(
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
-    val currentScreen = PWScreens.find { it.route == currentDestination?.route } ?: OverviewDestination
+    val currentScreen =
+        PWScreens.find { it.route == currentDestination?.route } ?: OverviewDestination
     val activity = LocalContext.current as Activity
 
     val scaffoldState = rememberScaffoldState()
