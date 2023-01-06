@@ -111,7 +111,7 @@ class DatabaseTest {
         fun getDistinctAccounts() {
 
             val expected : List<String> = listOf("Cash", "Credit Card", "Debit Card")
-            assertEquals(expected, runBlocking { tranDao.getDistinctAccounts() })
+            assertEquals(expected, runBlocking { tranDao.getDistinctAccountsAsync() })
         }
 
         @Test
@@ -119,7 +119,7 @@ class DatabaseTest {
         fun getDistinctCatsByType() {
 
             val expected : List<String> = listOf("Entertainment", "Food")
-            assertEquals(expected, runBlocking { tranDao.getDistinctCatsByType("Expense") })
+            assertEquals(expected, runBlocking { tranDao.getDistinctCatsByTypeAsync("Expense") })
         }
 
         @Test

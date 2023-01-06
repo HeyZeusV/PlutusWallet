@@ -68,6 +68,8 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.data.model.Account
+import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.ui.BackPressHandler
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
@@ -466,9 +468,11 @@ fun TransactionDropDownMenu(
 @Composable
 fun InputAlertDialog(
     title: String,
-    onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    data: DataInterface = Account(0, ""),
+    onConfirm: (String) -> Unit = { },
+    onConfirmData: (DataInterface, String) -> Unit = { _, _ -> }
 ) {
     var text by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
@@ -554,6 +558,7 @@ fun InputAlertDialog(
                             if (text.isNotBlank()) {
                                 isError = false
                                 onConfirm(text)
+                                onConfirmData(data, text)
                             } else {
                                 isError = true
                             }

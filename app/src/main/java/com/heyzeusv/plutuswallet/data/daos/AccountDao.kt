@@ -21,7 +21,7 @@ abstract class AccountDao : BaseDao<Account>() {
      *  Returns a list of Account names in alphabetical order.
      */
     @Query("""SELECT name
-              FROM account
+              FROM `account`
               ORDER BY name ASC""")
     abstract suspend fun getAccountNamesAsync(): MutableList<String>
 
@@ -29,22 +29,31 @@ abstract class AccountDao : BaseDao<Account>() {
      *  Returns a list of Account names in alphabetical order.
      */
     @Query("""SELECT name
-              FROM account
+              FROM `account`
               ORDER BY name ASC""")
     abstract fun getAccountNames(): Flow<List<String>>
+
+    /**
+     *  Returns a list of Accounts used by a Transaction
+     */
+    @Query("""SELECT DISTINCT `account`.id, `account`.name
+              FROM `account`
+              INNER JOIN `transaction` ON `transaction`.account = `account`.name
+              ORDER BY name ASC""")
+    abstract fun getAccountsUsed(): Flow<List<Account>>
 
     /**
      *  Returns the size of table.
      */
     @Query("""SELECT COUNT(*)
-              FROM account""")
+              FROM `account`""")
     abstract suspend fun getAccountSize(): Int
 
     /**
      *  Returns flow that emits list of all Accounts in order of name.
      */
     @Query("""SELECT *
-              FROM account
+              FROM `account`
               ORDER BY name ASC""")
     abstract fun getAccounts(): Flow<List<Account>>
 
@@ -52,7 +61,7 @@ abstract class AccountDao : BaseDao<Account>() {
      *  Returns LD of list of all Accounts in order of name.
      */
     @Query("""SELECT *
-              FROM account
+              FROM `account`
               ORDER BY name ASC""")
     abstract fun getLDAccounts(): LiveData<List<Account>>
 }

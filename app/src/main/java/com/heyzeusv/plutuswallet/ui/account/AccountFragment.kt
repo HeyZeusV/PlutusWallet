@@ -79,7 +79,7 @@ class AccountFragment : BaseFragment() {
                 getString(R.string.alert_dialog_edit_account),
                 getString(R.string.alert_dialog_save), getString(R.string.alert_dialog_cancel),
                 null, null, null,
-                account, accountVM::editAccountName,
+                account, accountVM::editAccount,
                 null, null, null
             )
         })

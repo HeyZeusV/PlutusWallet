@@ -169,7 +169,6 @@ fun PlutusWalletApp(
     val tranList by tranListVM.tranList.collectAsState()
     val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
     val chartInfoList by chartVM.chartInfoList.collectAsState()
-    val accountList by accountVM.accountList.collectAsState()
 
     val showFilter by filterVM.showFilter.collectAsState()
     val accountFilterSelected by filterVM.accountFilter.collectAsState()
@@ -187,7 +186,10 @@ fun PlutusWalletApp(
     val filterState by filterVM.filterState.collectAsState()
     val filterStateMessage = stringResource(filterState.stringId)
 
+    val accountList by accountVM.accountList.collectAsState()
+    val accountsUsedList by accountVM.accountsUsedList.collectAsState()
     val accountListShowDialog by accountVM.showDialog.collectAsState()
+    val accountListExistsName by accountVM.accountExists.collectAsState()
 
     PlutusWalletTheme {
         LaunchedEffect(key1 = filterInfo) {
@@ -221,8 +223,11 @@ fun PlutusWalletApp(
                             }
                         } else {
                             navController.navigateUp()
-                            // TODO make this universal for all Snackbars
-                            tranVM.updateSaveSuccess(false)
+                            when (currentScreen) {
+                                TransactionDestination -> tranVM.updateSaveSuccess(false)
+                                AccountsDestination -> accountVM.updateAccountExists("")
+                                else -> {}
+                            }
                         }
                     },
                     onActionLeftPressed = {
@@ -315,12 +320,17 @@ fun PlutusWalletApp(
                 }
                 composable(AccountsDestination.route){
                     DataScreen(
+                        snackbarHostState = scaffoldState.snackbarHostState,
                         dataLists = listOf(accountList),
+                        usedDataLists = listOf(accountsUsedList),
                         onClick = accountVM::updateDialog,
                         showDialog = accountListShowDialog,
-                        editDialogOnConfirm = { /*TODO*/ },
+                        deleteDialogTitle = stringResource(R.string.alert_dialog_delete_account),
                         deleteDialogOnConfirm = accountVM::deleteAccount,
-                        dialogOnDismiss = accountVM::updateDialog
+                        editDialogTitle = stringResource(R.string.alert_dialog_edit_account),
+                        editDialogOnConfirm = accountVM::editAccount,
+                        dialogOnDismiss = accountVM::updateDialog,
+                        existsName = accountListExistsName
                     )
                 }
                 composable(CategoriesDestination.route) { }

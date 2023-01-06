@@ -25,7 +25,14 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT DISTINCT account
               FROM `transaction`""")
-    abstract suspend fun getDistinctAccounts(): MutableList<String>
+    abstract suspend fun getDistinctAccountsAsync(): MutableList<String>
+
+    /**
+     *  Returns flow containing list of unique Accounts.
+     */
+    @Query("""SELECT DISTINCT account
+              FROM `transaction`""")
+    abstract fun getDistinctAccounts(): Flow<List<String>>
 
     /**
      *  Returns list of unique Categories of [type].
@@ -33,7 +40,15 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT DISTINCT category
               FROM `transaction`
               WHERE type=(:type)""")
-    abstract suspend fun getDistinctCatsByType(type: String): MutableList<String>
+    abstract suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String>
+
+    /**
+     *  Returns flow containing list of unique Categories of [type].
+     */
+    @Query("""SELECT DISTINCT category
+              FROM `transaction`
+              WHERE type=(:type)""")
+    abstract fun getDistinctCatsByType(type: String): Flow<List<String>>
 
     /**
      *  Returns list of all Transactions with futureDate before [currentDate]

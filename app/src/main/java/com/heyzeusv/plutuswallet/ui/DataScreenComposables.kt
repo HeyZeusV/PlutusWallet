@@ -16,11 +16,13 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,22 +43,34 @@ import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
+import com.heyzeusv.plutuswallet.ui.transaction.InputAlertDialog
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun DataScreen(
+    snackbarHostState: SnackbarHostState,
     dataLists: List<List<DataInterface>>,
+    usedDataLists: List<List<DataInterface>>,
     onClick: (DataDialog) -> Unit,
     showDialog: DataDialog,
-    editDialogOnConfirm: () -> Unit,
+    deleteDialogTitle: String,
     deleteDialogOnConfirm: (DataInterface) -> Unit,
+    editDialogTitle: String,
+    editDialogOnConfirm: (DataInterface, String) -> Unit,
     dialogOnDismiss: (DataDialog) -> Unit,
+    existsName: String
 ) {
     val pagerState = rememberPagerState()
 
     val dataListsSize = dataLists.size
+    val existsMessage = stringResource(id = R.string.snackbar_exists, existsName)
 
+    LaunchedEffect(key1 = existsName) {
+        if (existsName.isNotBlank()) {
+            snackbarHostState.showSnackbar(existsMessage)
+        }
+    }
     Card(
         modifier = Modifier
             .padding(all = dimensionResource(R.dimen.cardFullPadding))
@@ -88,6 +102,7 @@ fun DataScreen(
                     items(dataLists[page]) { data ->
                         DataItem(
                             data = data,
+                            deletable = !usedDataLists[page].contains(data),
                             editOnClick = { onClick(DataDialog(EDIT, data.id)) },
                             deleteOnClick = { onClick(DataDialog(DELETE, data.id)) }
                         )
@@ -103,14 +118,21 @@ fun DataScreen(
                                         onConfirm = { deleteDialogOnConfirm(data) },
                                         onDismissText = stringResource(R.string.alert_dialog_no),
                                         onDismiss = { dialogOnDismiss(DataDialog(DELETE, -1)) },
-                                        title = stringResource(R.string.alert_dialog_delete_transaction),
+                                        title = deleteDialogTitle,
                                         message = stringResource(
                                             R.string.alert_dialog_delete_warning,
                                             data.name
                                         )
                                     )
                                 }
-                                EDIT -> {}
+                                EDIT -> {
+                                    InputAlertDialog(
+                                        title = editDialogTitle,
+                                        onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
+                                        data = data,
+                                        onConfirmData = editDialogOnConfirm
+                                    )
+                                }
                             }
                         }
                     }
@@ -131,6 +153,7 @@ fun DataScreen(
 @Composable
 fun DataItem(
     data: DataInterface,
+    deletable: Boolean,
     editOnClick: () -> Unit,
     deleteOnClick: () -> Unit
 ) {
@@ -163,6 +186,7 @@ fun DataItem(
         Button(
             onClick = deleteOnClick,
             modifier = Modifier.size(49.dp),
+            enabled = deletable,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
                 contentColor = Color.White
@@ -183,6 +207,7 @@ fun PreviewDataItem() {
     PlutusWalletTheme {
         DataItem(
             data = Account(0, "Preview"),
+            deletable = false,
             editOnClick = { /*TODO*/ },
             deleteOnClick = { }
         )

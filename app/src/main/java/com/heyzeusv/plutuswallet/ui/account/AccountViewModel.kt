@@ -9,8 +9,8 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import com.heyzeusv.plutuswallet.util.Event
-import com.heyzeusv.plutuswallet.util.replace
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,16 +51,24 @@ class AccountViewModel @Inject constructor(
     private val _accountList = MutableStateFlow(listOf<Account>())
     val accountList: StateFlow<List<Account>> get() = _accountList
 
+    private val _accountsUsedList = MutableStateFlow(listOf<Account>())
+    val accountsUsedList: StateFlow<List<Account>> get() = _accountsUsedList
+
     private val _showDialog = MutableStateFlow(DataDialog(DELETE, -1))
     val showDialog: StateFlow<DataDialog> get() = _showDialog
     fun updateDialog(newValue: DataDialog) { _showDialog.value = newValue }
 
+    private val _accountExists = MutableStateFlow("")
+    val accountExists: StateFlow<String> get() = _accountExists
+    fun updateAccountExists(newValue: String) { _accountExists.value = newValue }
+
 
     init {
         viewModelScope.launch {
-            tranRepo.getAccounts().collect { list ->
-                _accountList.value = list
-            }
+            tranRepo.getAccounts().collect { _accountList.value = it }
+        }
+        viewModelScope.launch {
+            tranRepo.getAccountsUsed().collect { _accountsUsedList.value = it }
         }
     }
 
@@ -71,6 +79,7 @@ class AccountViewModel @Inject constructor(
         viewModelScope.launch {
             tranRepo.deleteAccount(account as Account)
         }
+        updateDialog(DataDialog(DELETE, -1))
     }
     /**
      *  Event to edit name of selected [account].
@@ -110,27 +119,19 @@ class AccountViewModel @Inject constructor(
     }
 
     /**
-     *  If name exists, creates Snackbar event telling user so,
-     *  else updates [account] with [newName].
+     *  If name exists, creates Snackbar telling user so, else updates [account] with [newName].
      */
-    fun editAccountName(account: Account, newName: String) {
-
-        if (accountNames.contains(newName)) {
-            _existsAccountEvent.value = Event(newName)
+    fun editAccount(account: DataInterface, newName: String) {
+        val exists = _accountList.value.find { it.name == newName }
+        if (exists != null) {
+            updateAccountExists(newName)
         } else {
-            // replaces previous name in lists with new value
-            accountNames.replace(account.name, newName)
-            if (accountsUsed.contains(account.name)) {
-                accountsUsed.replace(account.name, newName)
-            }
             account.name = newName
             viewModelScope.launch {
-                tranRepo.updateAccount(account)
+                tranRepo.updateAccount(account as Account)
             }
-            // DiffUtil would not update the name change,
-            // so notifying specific item change rather than entire list
-            accountAdapter?.notifyItemChanged(accountLD.value!!.indexOf(account))
         }
+        updateDialog(DataDialog(EDIT, -1))
     }
 
     /**

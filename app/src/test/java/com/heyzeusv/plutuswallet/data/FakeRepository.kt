@@ -58,6 +58,14 @@ class FakeRepository @Inject constructor() : Repository {
         return flow { emit(accNames) }
     }
 
+    override suspend fun getAccountsUsed(): Flow<List<Account>> {
+        val accUsed: MutableList<String> = mutableListOf()
+        for (tran: Transaction in tranList) {
+            accUsed.add(tran.account)
+        }
+        return flow { emit(accList.filter { accUsed.contains(it.name) }.distinct()) }
+    }
+
     override suspend fun getAccountSizeAsync(): Int {
 
         return accList.size
@@ -162,6 +170,15 @@ class FakeRepository @Inject constructor() : Repository {
         return accList.distinct().sorted() as MutableList<String>
     }
 
+    override suspend fun getDistinctAccounts(): Flow<List<String>> {
+        val accList: MutableList<String> = mutableListOf()
+        for (tran: Transaction in tranList) {
+            accList.add(tran.account)
+        }
+
+        return flow { emit(accList.distinct().sorted()) }
+    }
+
     override suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String> {
 
         val catList: MutableList<String> = mutableListOf()
@@ -170,6 +187,15 @@ class FakeRepository @Inject constructor() : Repository {
         }
 
         return catList.distinct().sorted() as MutableList<String>
+    }
+
+    override suspend fun getDistinctCatsByType(type: String): Flow<List<String>> {
+        val catList: MutableList<String> = mutableListOf()
+        for (tran: Transaction in tranList.filter { it.type == type }) {
+            catList.add(tran.category)
+        }
+
+        return flow { emit(catList.distinct().sorted()) }
     }
 
     override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {

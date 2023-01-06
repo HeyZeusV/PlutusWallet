@@ -99,7 +99,7 @@ internal class AccountViewModelTest {
         accVM.accountNames = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
         accVM.accountsUsed = mutableListOf("Cash", "Credit Card", "Debit Card")
 
-        accVM.editAccountName(dd.acc1, "Test")
+        accVM.editAccount(dd.acc1, "Test")
 
         assertEquals(expectedNames, accVM.accountNames)
         assertEquals(expectedUsed, accVM.accountsUsed)
@@ -112,7 +112,7 @@ internal class AccountViewModelTest {
 
         accVM.accountNames = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
 
-        accVM.editAccountName(dd.acc1, "Cash")
+        accVM.editAccount(dd.acc1, "Cash")
         val value: Event<String> = accVM.existsAccountEvent.value!!
 
         assertEquals(value.getContentIfNotHandled(), "Cash")

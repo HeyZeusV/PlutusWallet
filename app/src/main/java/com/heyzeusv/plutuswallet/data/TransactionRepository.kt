@@ -30,6 +30,8 @@ class TransactionRepository @Inject constructor(
 
     override suspend fun getAccountNames(): Flow<List<String>> = accountDao.getAccountNames()
 
+    override suspend fun getAccountsUsed(): Flow<List<Account>> = accountDao.getAccountsUsed()
+
     override suspend fun getAccountSizeAsync(): Int =
         withContext(Dispatchers.IO) { accountDao.getAccountSize() }
 
@@ -77,10 +79,16 @@ class TransactionRepository @Inject constructor(
      *  Transaction Queries
      */
     override suspend fun getDistinctAccountsAsync(): MutableList<String> =
-        withContext(Dispatchers.IO) { transactionDao.getDistinctAccounts() }
+        withContext(Dispatchers.IO) { transactionDao.getDistinctAccountsAsync() }
+
+    override suspend fun getDistinctAccounts(): Flow<List<String>> =
+        transactionDao.getDistinctAccounts()
 
     override suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String> =
-        withContext(Dispatchers.IO) { transactionDao.getDistinctCatsByType(type) }
+        withContext(Dispatchers.IO) { transactionDao.getDistinctCatsByTypeAsync(type) }
+
+    override suspend fun getDistinctCatsByType(type: String): Flow<List<String>> =
+        transactionDao.getDistinctCatsByType(type)
 
     override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> =
         withContext(Dispatchers.IO) { transactionDao.getFutureTransactions(currentDate) }
