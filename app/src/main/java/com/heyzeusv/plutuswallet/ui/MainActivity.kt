@@ -94,7 +94,9 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         tranVM.apply {
-            emptyTitle = getString((R.string.transaction_empty_title))
+            emptyTitle = getString(R.string.transaction_empty_title)
+            accountCreate = getString(R.string.account_create)
+            categoryCreate = getString(R.string.category_create)
             // array used by Period DropDownMenu
             updatePeriodList(
                 mutableListOf(
@@ -102,7 +104,6 @@ class MainActivity : BaseActivity() {
                     getString(R.string.period_months), getString(R.string.period_years)
                 )
             )
-            prepareLists(getString(R.string.account_create), getString(R.string.category_create))
         }
 
         AppCompatDelegate.setDefaultNightMode(sharedPref[Key.KEY_THEME, "-1"].toInt())

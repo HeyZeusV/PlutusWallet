@@ -9,16 +9,15 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DateFormat
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,8 +39,10 @@ class TransactionViewModel @Inject constructor(
     private var _tranId: Int = 0
     val tranId: Int get() = _tranId
 
-    // string resource received from Fragment
+    // string resources received from MainActivity
     var emptyTitle = ""
+    var accountCreate = "Create New Account"
+    var categoryCreate = "Create New Category"
     // highest Transaction.id in DB
     private var maxId: Int = 0
     // used to tell if date has been edited for re-repeating Transactions
@@ -71,7 +72,7 @@ class TransactionViewModel @Inject constructor(
         _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
 
-    private val _typeSelected = MutableStateFlow(TransactionType.EXPENSE)
+    private val _typeSelected = MutableStateFlow(EXPENSE)
     val typeSelected: StateFlow<TransactionType> get() = _typeSelected
     fun updateTypeSelected(newValue: TransactionType) { _typeSelected.value = newValue }
 
@@ -101,19 +102,24 @@ class TransactionViewModel @Inject constructor(
         _frequencyFieldValue.value = TextFieldValue(newValue, TextRange(newValue.length))
     }
 
-
     // Lists used by Spinners
-    private val _accountList = MutableStateFlow(mutableListOf(""))
-    val accountList: StateFlow<MutableList<String>> get() = _accountList
-    fun updateAccountList(newList: MutableList<String>) { _accountList.value = newList }
+    private val _accountList = MutableStateFlow(listOf(""))
+    val accountList: StateFlow<List<String>> get() = _accountList
+    fun updateAccountList(newList: List<String>) {
+        _accountList.value = newList + listOf(accountCreate)
+    }
 
-    private val _expenseCatList = MutableStateFlow(mutableListOf(""))
-    val expenseCatList: StateFlow<MutableList<String>> get() = _expenseCatList
-    fun updateExpenseCatList(newList: MutableList<String>) { _expenseCatList.value = newList }
+    private val _expenseCatList = MutableStateFlow(listOf(""))
+    val expenseCatList: StateFlow<List<String>> get() = _expenseCatList
+    fun updateExpenseCatList(newList: List<String>) {
+        _expenseCatList.value = newList + listOf(categoryCreate)
+    }
 
-    private val _incomeCatList = MutableStateFlow(mutableListOf(""))
-    val incomeCatList: StateFlow<MutableList<String>> get() = _incomeCatList
-    fun updateIncomeCatList(newList: MutableList<String>) { _incomeCatList.value = newList }
+    private val _incomeCatList = MutableStateFlow(listOf(""))
+    val incomeCatList: StateFlow<List<String>> get() = _incomeCatList
+    fun updateIncomeCatList(newList: List<String>) {
+        _incomeCatList.value = newList + listOf(categoryCreate)
+    }
 
     private val _periodList = MutableStateFlow(mutableListOf(""))
     val periodList: StateFlow<MutableList<String>> get() = _periodList
@@ -144,9 +150,16 @@ class TransactionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            tranRepo.getMaxId().collect { response ->
-                maxId = response ?: 0
-            }
+            tranRepo.getMaxId().collect { maxId = it ?: 0 }
+        }
+        viewModelScope.launch {
+            tranRepo.getAccountNames().collect { updateAccountList(it) }
+        }
+        viewModelScope.launch {
+            tranRepo.getCategoryNamesByType(EXPENSE.type).collect { updateExpenseCatList(it) }
+        }
+        viewModelScope.launch {
+            tranRepo.getCategoryNamesByType(INCOME.type).collect { updateIncomeCatList(it) }
         }
     }
     /**
@@ -172,11 +185,11 @@ class TransactionViewModel @Inject constructor(
         updateDate(DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date))
         updateAccount(transaction.account)
         updateTotalFieldValue(transaction.total.toString())
-        if (transaction.type == "Expense") {
-            updateTypeSelected(TransactionType.EXPENSE)
+        if (transaction.type == EXPENSE.type) {
+            updateTypeSelected(EXPENSE)
             updateExpenseCat(transaction.category)
         } else {
-            updateTypeSelected(TransactionType.INCOME)
+            updateTypeSelected(INCOME)
             updateIncomeCat(transaction.category)
         }
         updateMemo(transaction.memo)
@@ -225,8 +238,8 @@ class TransactionViewModel @Inject constructor(
             tran.type = typeSelected.value.type
             // cat values are empty if they haven't been changed so defaults to first category
             tran.category = when (typeSelected.value) {
-                TransactionType.EXPENSE -> expenseCat.value.ifBlank { expenseCatList.value[0] }
-                TransactionType.INCOME -> incomeCat.value.ifBlank { incomeCatList.value[0] }
+                EXPENSE -> expenseCat.value.ifBlank { expenseCatList.value[0] }
+                INCOME -> incomeCat.value.ifBlank { incomeCatList.value[0] }
             }
 
             tran.memo = memo.value
@@ -337,9 +350,8 @@ class TransactionViewModel @Inject constructor(
 
     /**
      *  Creates Account with [name] or selects it in Spinner if it exists already.
-     *  [accCreate] ("Create New..." translated) is added after resorting list.
      */
-    fun insertAccount(name: String, accCreate: String) {
+    fun insertAccount(name: String) {
         accountList.value.let {
             // create if doesn't exist
             if (!it.contains(name)) {
@@ -348,7 +360,6 @@ class TransactionViewModel @Inject constructor(
                     val account = Account(0, name)
                     tranRepo.insertAccount(account)
                 }
-                updateAccountList(addNewToList(it, name, accCreate))
             }
             updateAccount(name)
         }
@@ -357,12 +368,11 @@ class TransactionViewModel @Inject constructor(
 
     /**
      *  Creates Category with [name] or selects it in Spinner if it exists already.
-     *  [catCreate] ("Create New..." translated) is added after resorting list.
      */
-    fun insertCategory(name: String, catCreate: String) {
+    fun insertCategory(name: String) {
         // checks which type is currently selected
         when (typeSelected.value) {
-            TransactionType.EXPENSE -> {
+            EXPENSE -> {
                 expenseCatList.value.let {
                     // create if doesn't exist
                     if (!it.contains(name)) {
@@ -371,13 +381,12 @@ class TransactionViewModel @Inject constructor(
                             val category = Category(0, name, typeSelected.value.type)
                             tranRepo.insertCategory(category)
                         }
-                        updateExpenseCatList(addNewToList(it, name, catCreate))
                     }
                 }
                 updateExpenseCat(name)
                 updateExpenseDialog(false)
             }
-            TransactionType.INCOME -> {
+            INCOME -> {
                 incomeCatList.value.let {
                     // create if doesn't exist
                     if (!it.contains(name)) {
@@ -386,29 +395,12 @@ class TransactionViewModel @Inject constructor(
                             val category = Category(0, name, typeSelected.value.type)
                             tranRepo.insertCategory(category)
                         }
-                        updateIncomeCatList(addNewToList(it, name, catCreate))
                     }
                 }
                 updateIncomeCat(name)
                 updateIncomeDialog(false)
             }
         }
-    }
-
-    /**
-     *  Takes given [list], removes "Create New..", adds new entry with [name], sorts list, re-adds
-     *  [create] ("Create New.." translated), and returns list.
-     */
-    private fun addNewToList(
-        list: MutableList<String>,
-        name: String,
-        create: String
-    ): MutableList<String> {
-        list.remove(create)
-        list.add(name)
-        list.sort()
-        list.add(create)
-        return list
     }
 
     /**
@@ -420,21 +412,5 @@ class TransactionViewModel @Inject constructor(
         _transaction.value.date = newDate
         // turns date selected into Date type
         updateDate(DateFormat.getDateInstance(setVals.dateFormat).format(newDate))
-    }
-
-    /**
-     *  Retrieves list of Accounts/Categories from Database,
-     *  adds [accCreate]/[catCreate] ("Create New..." translated),
-     *  and retrieves highest ID from database, then refreshes tranIdLd
-     */
-    fun prepareLists(accCreate: String, catCreate: String) {
-        viewModelScope.launch {
-            updateAccountList(tranRepo.getAccountNamesAsync())
-            accountList.value.add(accCreate)
-            updateExpenseCatList(tranRepo.getCategoryNamesByTypeAsync("Expense"))
-            expenseCatList.value.add(catCreate)
-            updateIncomeCatList(tranRepo.getCategoryNamesByTypeAsync("Income"))
-            incomeCatList.value.add(catCreate)
-        }
     }
 }

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
 import java.util.Date
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -148,13 +149,13 @@ internal class TransactionViewModelTest {
 
     @Test
     @DisplayName("Should create new Account and add it to database")
-    fun insertAccount() {
-        val expectedList: MutableList<String> = mutableListOf("Test1", "Test2", "Test3", "Create")
+    fun insertAccount() = runTest {
+        val expectedList: MutableList<String> = mutableListOf("Test1", "Test3", "Create New Account")
         val expectedAcc = Account(0, "Test2")
 
-        tranVM.updateAccountList(mutableListOf("Test1", "Test3", "Create"))
+        tranVM.updateAccountList(mutableListOf("Test1", "Test3"))
+        tranVM.insertAccount("Test2")
 
-        tranVM.insertAccount("Test2", "Create")
 
         assertEquals(expectedList, tranVM.accountList.value)
         assertEquals(expectedAcc, repo.accList[repo.accList.size - 1])
@@ -164,12 +165,12 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should set account value to existing Account from list")
     fun insertAccountExists() {
-        val expectedList: MutableList<String> = mutableListOf("Test1", "Test2", "Test3", "Create")
+        val expectedList: MutableList<String> = mutableListOf("Test1", "Test2", "Test3", "Create New Account")
         val expectedListSize: Int = repo.accList.size
 
-        tranVM.updateAccountList(mutableListOf("Test1", "Test2", "Test3", "Create"))
+        tranVM.updateAccountList(mutableListOf("Test1", "Test2", "Test3"))
 
-        tranVM.insertAccount("Test3", "Create")
+        tranVM.insertAccount("Test3")
 
         assertEquals(expectedList, tranVM.accountList.value)
         assertEquals(expectedListSize, repo.accList.size)
@@ -179,18 +180,18 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should create new Category and add it to database")
     fun insertCategory() {
-        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest2", "ETest3", "Create")
+        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest3", "Create New Category")
         val expectedExCat = Category(0, "ETest2", "Expense")
-        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "Create")
+        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest3", "Create New Category")
         val expectedInCat = Category(0, "ITest2", "Income")
 
-        tranVM.updateExpenseCatList(mutableListOf("ETest1", "ETest3", "Create"))
-        tranVM.updateIncomeCatList(mutableListOf("ITest1", "ITest3", "Create"))
+        tranVM.updateExpenseCatList(mutableListOf("ETest1", "ETest3"))
+        tranVM.updateIncomeCatList(mutableListOf("ITest1", "ITest3"))
 
         tranVM.updateTypeSelected(TransactionType.EXPENSE)
-        tranVM.insertCategory("ETest2", "Create")
+        tranVM.insertCategory("ETest2")
         tranVM.updateTypeSelected(TransactionType.INCOME)
-        tranVM.insertCategory("ITest2", "Create")
+        tranVM.insertCategory("ITest2")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
         assertEquals(expectedExCat, repo.catList[repo.catList.size - 2])
@@ -203,17 +204,17 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should set category value to existing Category from list")
     fun insertCategoryExists() {
-        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest2", "ETest3", "Create")
-        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "Create")
+        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest2", "ETest3", "Create New Category")
+        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "Create New Category")
         val expectedCatRepoSize: Int = repo.catList.size
 
-        tranVM.updateExpenseCatList(mutableListOf("ETest1", "ETest2", "ETest3", "Create"))
-        tranVM.updateIncomeCatList(mutableListOf("ITest1", "ITest2", "ITest3", "Create"))
+        tranVM.updateExpenseCatList(mutableListOf("ETest1", "ETest2", "ETest3"))
+        tranVM.updateIncomeCatList(mutableListOf("ITest1", "ITest2", "ITest3"))
 
         tranVM.updateTypeSelected(TransactionType.EXPENSE)
-        tranVM.insertCategory("ETest2", "Create")
+        tranVM.insertCategory("ETest2")
         tranVM.updateTypeSelected(TransactionType.INCOME)
-        tranVM.insertCategory("ITest2", "Create")
+        tranVM.insertCategory("ITest2")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
         assertEquals("ETest2", tranVM.expenseCat.value)
@@ -238,11 +239,9 @@ internal class TransactionViewModelTest {
     @DisplayName("Should retrieve lists of Accounts and Categories by type, add 'Create'," +
             " and retrieve highest ID from Database")
     fun prepareLists() {
-        val expectedAccList = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create")
-        val expectedExCatList = mutableListOf("Entertainment", "Food", "Unused Expense", "Create")
-        val expectedInCatList = mutableListOf("Salary", "Unused Income", "Zelle", "Create")
-
-        tranVM.prepareLists("Create", "Create")
+        val expectedAccList = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create New Account")
+        val expectedExCatList = mutableListOf("Entertainment", "Food", "Unused Expense", "Create New Category")
+        val expectedInCatList = mutableListOf("Salary", "Unused Income", "Zelle", "Create New Category")
 
         assertEquals(expectedAccList, tranVM.accountList.value)
         assertEquals(expectedExCatList, tranVM.expenseCatList.value)

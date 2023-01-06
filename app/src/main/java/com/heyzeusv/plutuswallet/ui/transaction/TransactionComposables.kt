@@ -375,14 +375,14 @@ fun TransactionDate(
 @Composable
 fun TransactionDropDownMenu(
     value: String,
-    list: MutableList<String>,
+    list: List<String>,
     onClick: (String) -> Unit,
     label: String,
     createNew: String,
     showInputDialog: Boolean,
     updateInputDialog: () -> Unit,
     dialogTitle: String,
-    dialogOnConfirm: (String, String) -> Unit,
+    dialogOnConfirm: (String) -> Unit,
     dialogOnDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -398,7 +398,6 @@ fun TransactionDropDownMenu(
                 expanded = false
                 InputAlertDialog(
                     title = dialogTitle,
-                    createNew = createNew,
                     onConfirm = dialogOnConfirm,
                     onDismiss = dialogOnDismiss
                 )
@@ -461,15 +460,13 @@ fun TransactionDropDownMenu(
 }
 
 /**
- *  Composable that displays an AlertDialog with [title] that allows for user input. [createNew]
- *  is a translated string resource that is passed onto [onConfirm] which handles user input.
- *  [onDismiss] closes the AlertDialog.
+ *  Composable that displays an AlertDialog with [title] that allows for user input.
+ *  [onConfirm] handles user input. [onDismiss] closes the AlertDialog.
  */
 @Composable
 fun InputAlertDialog(
     title: String,
-    createNew: String,
-    onConfirm: (String, String) -> Unit,
+    onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -556,7 +553,7 @@ fun InputAlertDialog(
                         onClick = {
                             if (text.isNotBlank()) {
                                 isError = false
-                                onConfirm(text, createNew)
+                                onConfirm(text)
                             } else {
                                 isError = true
                             }
@@ -712,11 +709,11 @@ fun TransactionCategories(
     chipExpenseOnClick: () -> Unit,
     chipIncomeOnClick: () -> Unit,
     dropDownValue: String,
-    dropDownList: MutableList<String>,
+    dropDownList: List<String>,
     dropDownOnClick: (String) -> Unit,
     showInputDialog: Boolean,
     updateInputDialog: () -> Unit,
-    dialogOnConfirm: (String, String) -> Unit,
+    dialogOnConfirm: (String) -> Unit,
     dialogOnDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -824,7 +821,7 @@ fun TransactionRepeating(
                     updateInputDialog = {},
                     showInputDialog = false,
                     dialogTitle = stringResource(R.string.blank_string),
-                    dialogOnConfirm = { _, _ -> },
+                    dialogOnConfirm = {},
                     dialogOnDismiss = {},
                     modifier = Modifier.weight(1f)
                 )
