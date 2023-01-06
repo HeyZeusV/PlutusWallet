@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
+import com.heyzeusv.plutuswallet.data.model.DataDialog
+import com.heyzeusv.plutuswallet.data.model.DataInterface
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.util.Event
 import com.heyzeusv.plutuswallet.util.replace
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -48,6 +51,11 @@ class AccountViewModel @Inject constructor(
     private val _accountList = MutableStateFlow(listOf<Account>())
     val accountList: StateFlow<List<Account>> get() = _accountList
 
+    private val _showDialog = MutableStateFlow(DataDialog(DELETE, -1))
+    val showDialog: StateFlow<DataDialog> get() = _showDialog
+    fun updateDialog(newValue: DataDialog) { _showDialog.value = newValue }
+
+
     init {
         viewModelScope.launch {
             tranRepo.getAccounts().collect { list ->
@@ -56,6 +64,14 @@ class AccountViewModel @Inject constructor(
         }
     }
 
+    /**
+     *  Removes [account] from database
+     */
+    fun deleteAccount(account: DataInterface) {
+        viewModelScope.launch {
+            tranRepo.deleteAccount(account as Account)
+        }
+    }
     /**
      *  Event to edit name of selected [account].
      */

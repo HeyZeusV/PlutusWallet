@@ -21,3 +21,8 @@ enum class FilterSelectedAction {
     ADD,
     REMOVE
 }
+
+enum class DataListSelectedAction {
+    EDIT,
+    DELETE
+}

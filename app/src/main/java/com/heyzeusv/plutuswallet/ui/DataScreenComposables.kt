@@ -36,15 +36,22 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
+import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
+import com.heyzeusv.plutuswallet.util.PWAlertDialog
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun DataScreen(
     dataLists: List<List<DataInterface>>,
-    editOnClick: () -> Unit,
-    deleteOnClick: () -> Unit
+    onClick: (DataDialog) -> Unit,
+    showDialog: DataDialog,
+    editDialogOnConfirm: () -> Unit,
+    deleteDialogOnConfirm: (DataInterface) -> Unit,
+    dialogOnDismiss: (DataDialog) -> Unit,
 ) {
     val pagerState = rememberPagerState()
 
@@ -79,20 +86,44 @@ fun DataScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(dataLists[page]) { data ->
-                        DataItem(data, editOnClick, deleteOnClick)
+                        DataItem(
+                            data = data,
+                            editOnClick = { onClick(DataDialog(EDIT, data.id)) },
+                            deleteOnClick = { onClick(DataDialog(DELETE, data.id)) }
+                        )
                         Divider(
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
                             thickness = 1.dp
                         )
+                        if (showDialog.id == data.id) {
+                            when (showDialog.action) {
+                                DELETE -> {
+                                    PWAlertDialog(
+                                        onConfirmText = stringResource(R.string.alert_dialog_yes),
+                                        onConfirm = { deleteDialogOnConfirm(data) },
+                                        onDismissText = stringResource(R.string.alert_dialog_no),
+                                        onDismiss = { dialogOnDismiss(DataDialog(DELETE, -1)) },
+                                        title = stringResource(R.string.alert_dialog_delete_transaction),
+                                        message = stringResource(
+                                            R.string.alert_dialog_delete_warning,
+                                            data.name
+                                        )
+                                    )
+                                }
+                                EDIT -> {}
+                            }
+                        }
                     }
                 }
             }
-            HorizontalPagerIndicator(
-                pagerState = pagerState,
-                modifier = Modifier
-                    .padding(top = 4.dp, bottom = 8.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
+            if (dataListsSize > 1) {
+                HorizontalPagerIndicator(
+                    pagerState = pagerState,
+                    modifier = Modifier
+                        .padding(top = 4.dp, bottom = 8.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
         }
     }
 }

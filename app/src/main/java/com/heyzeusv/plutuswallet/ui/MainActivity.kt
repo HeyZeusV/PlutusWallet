@@ -186,6 +186,8 @@ fun PlutusWalletApp(
     val filterState by filterVM.filterState.collectAsState()
     val filterStateMessage = stringResource(filterState.stringId)
 
+    val accountListShowDialog by accountVM.showDialog.collectAsState()
+
     PlutusWalletTheme {
         LaunchedEffect(key1 = filterInfo) {
             tranListVM.updateTranList(filterInfo)
@@ -313,8 +315,11 @@ fun PlutusWalletApp(
                 composable(AccountsDestination.route){
                     DataScreen(
                         dataLists = listOf(accountList),
-                        editOnClick = { /*TODO*/ },
-                        deleteOnClick = { }
+                        onClick = accountVM::updateDialog,
+                        showDialog = accountListShowDialog,
+                        editDialogOnConfirm = { /*TODO*/ },
+                        deleteDialogOnConfirm = accountVM::deleteAccount,
+                        dialogOnDismiss = accountVM::updateDialog
                     )
                 }
                 composable(CategoriesDestination.route) { }

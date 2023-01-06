@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet.data.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction
 
 /**
  *  Representation of Category table.
@@ -27,3 +28,8 @@ interface DataInterface {
     val id: Int
     var name: String
 }
+
+data class DataDialog(
+    val action: DataListSelectedAction,
+    val id: Int
+)
