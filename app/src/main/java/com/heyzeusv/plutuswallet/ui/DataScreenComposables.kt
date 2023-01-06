@@ -41,6 +41,7 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import com.heyzeusv.plutuswallet.ui.transaction.InputAlertDialog
@@ -54,6 +55,8 @@ fun DataScreen(
     usedDataLists: List<List<DataInterface>>,
     onClick: (DataDialog) -> Unit,
     showDialog: DataDialog,
+    createDialogTitle: String,
+    createDialogOnConfirm: (String) -> Unit,
     deleteDialogTitle: String,
     deleteDialogOnConfirm: (DataInterface) -> Unit,
     editDialogTitle: String,
@@ -70,6 +73,13 @@ fun DataScreen(
         if (existsName.isNotBlank()) {
             snackbarHostState.showSnackbar(existsMessage)
         }
+    }
+    if (showDialog.action == CREATE) {
+        InputAlertDialog(
+            title = createDialogTitle,
+            onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
+            onConfirm = createDialogOnConfirm
+        )
     }
     Card(
         modifier = Modifier
@@ -133,6 +143,7 @@ fun DataScreen(
                                         onConfirmData = editDialogOnConfirm
                                     )
                                 }
+                                CREATE -> { }
                             }
                         }
                     }

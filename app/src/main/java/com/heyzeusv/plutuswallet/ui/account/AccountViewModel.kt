@@ -126,8 +126,8 @@ class AccountViewModel @Inject constructor(
         if (exists != null) {
             updateAccountExists(newName)
         } else {
-            account.name = newName
             viewModelScope.launch {
+                account.name = newName
                 tranRepo.updateAccount(account as Account)
             }
         }
@@ -150,5 +150,20 @@ class AccountViewModel @Inject constructor(
                 tranRepo.insertAccount(account)
             }
         }
+    }
+
+    /**
+     *  If Account exists, creates SnackBar telling user so, else creates account with [name].
+     */
+    fun createNewAccount(name: String) {
+        val exists = _accountList.value.find { it.name == name }
+        if (exists != null) {
+            updateAccountExists(name)
+        } else {
+            viewModelScope.launch {
+                tranRepo.insertAccount(Account(0, name))
+            }
+        }
+        updateDialog(DataDialog(EDIT, -1))
     }
 }

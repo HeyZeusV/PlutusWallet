@@ -23,6 +23,7 @@ enum class FilterSelectedAction {
 }
 
 enum class DataListSelectedAction {
-    EDIT,
-    DELETE
+    CREATE,
+    DELETE,
+    EDIT
 }

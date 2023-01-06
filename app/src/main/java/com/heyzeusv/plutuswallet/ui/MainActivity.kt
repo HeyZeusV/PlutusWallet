@@ -57,6 +57,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
@@ -67,6 +68,7 @@ import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.ui.theme.PWLightColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.ui.transaction.FilterState
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionScreen
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
@@ -243,7 +245,7 @@ fun PlutusWalletApp(
                                 navController.navigateSingleTopTo(TransactionDestination.route)
                             }
                             TransactionDestination -> { tranVM.saveTransaction() }
-                            AccountsDestination -> {}
+                            AccountsDestination -> { accountVM.updateDialog(DataDialog(CREATE, 0))}
                             CategoriesDestination -> {}
                         }
                     }
@@ -325,6 +327,8 @@ fun PlutusWalletApp(
                         usedDataLists = listOf(accountsUsedList),
                         onClick = accountVM::updateDialog,
                         showDialog = accountListShowDialog,
+                        createDialogTitle = stringResource(R.string.alert_dialog_create_account),
+                        createDialogOnConfirm = accountVM::createNewAccount,
                         deleteDialogTitle = stringResource(R.string.alert_dialog_delete_account),
                         deleteDialogOnConfirm = accountVM::deleteAccount,
                         editDialogTitle = stringResource(R.string.alert_dialog_edit_account),
