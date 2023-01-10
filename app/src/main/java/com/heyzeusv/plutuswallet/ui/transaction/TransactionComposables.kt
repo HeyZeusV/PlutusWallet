@@ -42,6 +42,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.LaunchedEffect
@@ -510,6 +511,14 @@ fun InputAlertDialog(
                             .padding(top = dimensionResource(R.dimen.id_tf_topPad))
                             .testTag("AlertDialog input"),
                         label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
+                        trailingIcon = {
+                            if (isError) {
+                                Icon(
+                                    imageVector = Icons.Filled.Error,
+                                    contentDescription = null
+                                )
+                            }
+                        },
                         isError = isError,
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             textColor = MaterialTheme.colors.onSurface,
@@ -522,7 +531,7 @@ fun InputAlertDialog(
                             text = stringResource(R.string.alert_dialog_input_error),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(dimensionResource(R.dimen.tfh_horiPad))
+                                .padding(horizontal = dimensionResource(R.dimen.tfh_horiPad))
                                 .padding(top = dimensionResource(R.dimen.tfh_topPad))
                                 .height(dimensionResource(R.dimen.tfh_height)),
                             color = MaterialTheme.colors.error,
@@ -531,6 +540,7 @@ fun InputAlertDialog(
                     } else {
                         Spacer(
                             modifier = Modifier
+                                .padding(top = dimensionResource(R.dimen.tfh_topPad))
                                 .height(dimensionResource(R.dimen.tfh_height))
                         )
                     }
