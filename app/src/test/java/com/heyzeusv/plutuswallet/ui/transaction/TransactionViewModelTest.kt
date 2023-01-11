@@ -8,6 +8,8 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -32,11 +34,28 @@ internal class TransactionViewModelTest {
     private val dd = DummyDataUtil()
 
     @BeforeEach
-    fun setUpViewModel() {
+    fun setUpViewModel() = runTest {
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
         tranVM = TransactionViewModel(repo, SettingsValues())
         tranVM.updatePeriodList(mutableListOf("Days", "Weeks", "Months", "Years"))
+        repo.accountNameListEmit(dd.accList.map { it.name })
+        repo.expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
+        repo.incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
+    }
+
+    @Test
+    @DisplayName("Should correctly launch ViewModel with correct data required in its init block")
+    fun viewModelSetUp() {
+        assertEquals(dd.accList.map { it.name }.sorted() + "Create New Account", tranVM.accountList.value)
+        assertEquals(
+            dd.catList.filter { it.type == EXPENSE.type }.map { it.name }.sorted() + "Create New Category",
+            tranVM.expenseCatList.value
+        )
+        assertEquals(
+            dd.catList.filter { it.type == INCOME.type }.map { it.name }.sorted() + "Create New Category",
+            tranVM.incomeCatList.value
+        )
     }
 
     @Test
@@ -47,7 +66,7 @@ internal class TransactionViewModelTest {
         assertEquals("Thursday, January 1, 1970", tranVM.date.value)
         assertEquals("Cash", tranVM.account.value)
         assertEquals("$1,000.10", tranVM.totalFieldValue.value.text)
-        assertEquals(TransactionType.EXPENSE, tranVM.typeSelected.value)
+        assertEquals(EXPENSE, tranVM.typeSelected.value)
         assertEquals("Food", tranVM.expenseCat.value)
         assertEquals(true, tranVM.repeat.value)
     }
@@ -74,7 +93,7 @@ internal class TransactionViewModelTest {
         tranVM.retrieveTransaction(dd.tran1.id)
         tranVM.updateAccount(expectedTran.account)
         tranVM.updateTotalFieldValue(expectedTran.total.toString())
-        tranVM.updateTypeSelected(TransactionType.INCOME)
+        tranVM.updateTypeSelected(INCOME)
         tranVM.updateIncomeCat(expectedTran.category)
         tranVM.updateRepeat(expectedTran.repeating)
         tranVM.updatePeriod("Days")
@@ -111,7 +130,7 @@ internal class TransactionViewModelTest {
         tranVM.onDateSelected(expectedTran.date)
         tranVM.updateAccount(expectedTran.account)
         tranVM.updateTotalFieldValue(expectedTran.total.toString())
-        tranVM.updateTypeSelected(TransactionType.INCOME)
+        tranVM.updateTypeSelected(INCOME)
         tranVM.updateIncomeCat(expectedTran.category)
         tranVM.updateRepeat(expectedTran.repeating)
         tranVM.updatePeriod("Days")
@@ -150,76 +169,71 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should create new Account and add it to database")
     fun insertAccount() = runTest {
-        val expectedList: MutableList<String> = mutableListOf("Test1", "Test3", "Create New Account")
-        val expectedAcc = Account(0, "Test2")
+        val expectedList =
+            mutableListOf("Cash", "Credit Card", "Debit Card", "Test", "Unused", "Create New Account")
+        val expectedAcc = Account(0, "Test")
 
-        tranVM.updateAccountList(mutableListOf("Test1", "Test3"))
-        tranVM.insertAccount("Test2")
-
+        tranVM.insertAccount("Test")
 
         assertEquals(expectedList, tranVM.accountList.value)
         assertEquals(expectedAcc, repo.accList[repo.accList.size - 1])
-        assertEquals("Test2", tranVM.account.value)
+        assertEquals("Test", tranVM.account.value)
     }
 
     @Test
     @DisplayName("Should set account value to existing Account from list")
     fun insertAccountExists() {
-        val expectedList: MutableList<String> = mutableListOf("Test1", "Test2", "Test3", "Create New Account")
+        val expectedList =
+            mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create New Account")
         val expectedListSize: Int = repo.accList.size
 
-        tranVM.updateAccountList(mutableListOf("Test1", "Test2", "Test3"))
-
-        tranVM.insertAccount("Test3")
+        tranVM.insertAccount("Debit Card")
 
         assertEquals(expectedList, tranVM.accountList.value)
         assertEquals(expectedListSize, repo.accList.size)
-        assertEquals("Test3", tranVM.account.value)
+        assertEquals("Debit Card", tranVM.account.value)
     }
 
     @Test
     @DisplayName("Should create new Category and add it to database")
     fun insertCategory() {
-        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest3", "Create New Category")
-        val expectedExCat = Category(0, "ETest2", "Expense")
-        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest3", "Create New Category")
-        val expectedInCat = Category(0, "ITest2", "Income")
+        val expectedExList =
+            mutableListOf("ETest", "Entertainment", "Food", "Unused Expense", "Create New Category")
+        val expectedExCat = Category(0, "ETest", "Expense")
+        val expectedInList =
+            mutableListOf("ITest", "Salary", "Unused Income", "Zelle", "Create New Category")
+        val expectedInCat = Category(0, "ITest", "Income")
 
-        tranVM.updateExpenseCatList(mutableListOf("ETest1", "ETest3"))
-        tranVM.updateIncomeCatList(mutableListOf("ITest1", "ITest3"))
-
-        tranVM.updateTypeSelected(TransactionType.EXPENSE)
-        tranVM.insertCategory("ETest2")
-        tranVM.updateTypeSelected(TransactionType.INCOME)
-        tranVM.insertCategory("ITest2")
+        tranVM.updateTypeSelected(EXPENSE)
+        tranVM.insertCategory("ETest")
+        tranVM.updateTypeSelected(INCOME)
+        tranVM.insertCategory("ITest")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
         assertEquals(expectedExCat, repo.catList[repo.catList.size - 2])
-        assertEquals("ETest2", tranVM.expenseCat.value)
+        assertEquals("ETest", tranVM.expenseCat.value)
         assertEquals(expectedInList, tranVM.incomeCatList.value)
         assertEquals(expectedInCat, repo.catList[repo.catList.size - 1])
-        assertEquals("ITest2", tranVM.incomeCat.value)
+        assertEquals("ITest", tranVM.incomeCat.value)
     }
 
     @Test
     @DisplayName("Should set category value to existing Category from list")
     fun insertCategoryExists() {
-        val expectedExList: MutableList<String> = mutableListOf("ETest1", "ETest2", "ETest3", "Create New Category")
-        val expectedInList: MutableList<String> = mutableListOf("ITest1", "ITest2", "ITest3", "Create New Category")
+        val expectedExList =
+            mutableListOf("Entertainment", "Food", "Unused Expense", "Create New Category")
+        val expectedInList = mutableListOf("Salary", "Unused Income", "Zelle", "Create New Category")
         val expectedCatRepoSize: Int = repo.catList.size
 
-        tranVM.updateExpenseCatList(mutableListOf("ETest1", "ETest2", "ETest3"))
-        tranVM.updateIncomeCatList(mutableListOf("ITest1", "ITest2", "ITest3"))
-
-        tranVM.updateTypeSelected(TransactionType.EXPENSE)
-        tranVM.insertCategory("ETest2")
-        tranVM.updateTypeSelected(TransactionType.INCOME)
-        tranVM.insertCategory("ITest2")
+        tranVM.updateTypeSelected(EXPENSE)
+        tranVM.insertCategory("Food")
+        tranVM.updateTypeSelected(INCOME)
+        tranVM.insertCategory("Zelle")
 
         assertEquals(expectedExList, tranVM.expenseCatList.value)
-        assertEquals("ETest2", tranVM.expenseCat.value)
+        assertEquals("Food", tranVM.expenseCat.value)
         assertEquals(expectedInList, tranVM.incomeCatList.value)
-        assertEquals("ITest2", tranVM.incomeCat.value)
+        assertEquals("Zelle", tranVM.incomeCat.value)
         assertEquals(expectedCatRepoSize, repo.catList.size)
     }
 

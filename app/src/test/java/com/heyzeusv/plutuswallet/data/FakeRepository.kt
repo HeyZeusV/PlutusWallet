@@ -7,6 +7,8 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.replace
 import java.math.BigDecimal
 import java.util.Date
@@ -26,6 +28,12 @@ class FakeRepository @Inject constructor() : Repository {
     suspend fun accountListEmit(value: List<Account>) = accountListFlow.emit(value.sortedBy { it.name })
     private val accountsUsedListFlow = MutableSharedFlow<List<Account>>()
     suspend fun accountsUsedListEmit(value: List<Account>) = accountsUsedListFlow.emit(value)
+    private val accountNameListFLow = MutableSharedFlow<List<String>>()
+    suspend fun accountNameListEmit(value: List<String>) = accountNameListFLow.emit(value.sorted())
+    private val expenseCatNameListFlow = MutableSharedFlow<List<String>>()
+    suspend fun expenseCatNameListEmit(value: List<String>) = expenseCatNameListFlow.emit(value.sorted())
+    private val incomeCatNameListFlow = MutableSharedFlow<List<String>>()
+    suspend fun incomeCatNameListEmit(value: List<String>) = incomeCatNameListFlow.emit(value.sorted())
 
     private val accListLD = MutableLiveData(accList.sortedBy { it.name })
     private val catExListLD =
@@ -56,12 +64,13 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getAccountNames(): Flow<List<String>> {
-        val accNames: MutableList<String> = mutableListOf()
-        for (acc: Account in accList) {
-            accNames.add(acc.name)
-        }
-        accNames.sort()
-        return flow { emit(accNames) }
+//        val accNames: MutableList<String> = mutableListOf()
+//        for (acc: Account in accList) {
+//            accNames.add(acc.name)
+//        }
+//        accNames.sort()
+//        flow { emit(accNames) }
+        return accountNameListFLow
     }
 
     override suspend fun getAccountsUsed(): Flow<List<Account>> {
@@ -86,6 +95,7 @@ class FakeRepository @Inject constructor() : Repository {
     override suspend fun insertAccount(account: Account) {
         accList.add(account)
         accountListEmit(accList)
+        accountNameListEmit(accList.map { it.name })
         accListLD.value = accList.sortedBy { it.name }
     }
 
@@ -117,12 +127,13 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> {
-        val typeNameList: MutableList<String> = mutableListOf()
-        for (cat: Category in catList.filter { it.type == type}) {
-            typeNameList.add(cat.name)
-        }
-        typeNameList.sort()
-        return flow { emit(typeNameList) }
+//        val typeNameList: MutableList<String> = mutableListOf()
+//        for (cat: Category in catList.filter { it.type == type}) {
+//            typeNameList.add(cat.name)
+//        }
+//        typeNameList.sort()
+//        flow { emit(typeNameList) }
+        return if (type == EXPENSE.type) expenseCatNameListFlow else incomeCatNameListFlow
     }
 
     override suspend fun getCategorySizeAsync(): Int {
@@ -138,8 +149,9 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override suspend fun insertCategory(category: Category) {
-
         catList.add(category)
+        expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
+        incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
         catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
         catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
