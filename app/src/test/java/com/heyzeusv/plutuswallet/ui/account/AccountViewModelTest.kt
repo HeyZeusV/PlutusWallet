@@ -5,10 +5,12 @@ import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
-import com.heyzeusv.plutuswallet.util.Event
+import com.heyzeusv.plutuswallet.data.model.DataDialog
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Assert.assertEquals
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -28,118 +30,79 @@ internal class AccountViewModelTest {
     private val dd = DummyDataUtil()
 
     @BeforeEach
-    fun setUpViewModel() {
+    fun setUpViewModel() = runTest {
 
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
         accVM = AccountViewModel(repo)
+        repo.accountListEmit(dd.accList)
+        repo.accountsUsedListEmit(
+            dd.accList.filter { acc -> dd.tranList.any { it.account == acc.name }}.distinct()
+        )
     }
 
     @Test
-    @DisplayName("Should create edit Event containing Account when edit button is pressed")
-    fun editAccountOC() {
+    @DisplayName("Should have 2 lists at start up, a list of all accounts " +
+            "and a list of accounts in use")
+    fun startUpLists() {
+        val expectedAccountList = dd.accList.sortedBy { it.name }
+        val expectedAccountsUsedList = listOf(dd.acc1, dd.acc2, dd.acc3)
 
-        val acc = Account(0, "Test")
-
-        accVM.editAccountOC(acc)
-        val value: Event<Account> = accVM.editAccountEvent.value!!
-
-        assertEquals(value.getContentIfNotHandled(), acc)
+        assertEquals(expectedAccountList, accVM.accountList.value)
+        assertEquals(expectedAccountsUsedList, accVM.accountsUsedList.value)
     }
 
     @Test
-    @DisplayName("Should create delete Event containing Account when delete button is pressed")
-    fun deleteAccountOC() {
+    @DisplayName("Should delete Account from database and update showDialog")
+    fun deleteAccount() = runTest {
+        val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2)
 
-        val acc = Account(0, "Test")
+        accVM.updateDialog(DataDialog(DELETE, 4))
+        accVM.deleteAccount(dd.acc4)
 
-        accVM.deleteAccountOC(acc)
-        val value: Event<Account> = accVM.deleteAccountEvent.value!!
-
-        assertEquals(value.getContentIfNotHandled(), acc)
+        assertEquals(expectedAccounts, accVM.accountList.value)
+        assertEquals(DataDialog(DELETE, -1), accVM.showDialog.value)
     }
 
     @Test
-    @DisplayName("Should initialize list containing all Account names and Accounts being used")
-    fun initNamesUsedLists() {
+    @DisplayName("Should edit Account with a new name and update showDialog")
+    fun editAccount() = runTest {
+        val expectedAccounts = listOf( dd.acc3, dd.acc2, Account(1, "Test"), dd.acc4)
+        val expectedAccountsUsed = listOf(Account(1, "Test"), dd.acc2, dd.acc3)
 
-        val expectedNames: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
-        val expectedUsed: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card")
-
-        runBlockingTest {
-            accVM.initNamesUsedLists()
-        }
-
-        assertEquals(expectedNames, accVM.accountNames)
-        assertEquals(expectedUsed, accVM.accountsUsed)
-    }
-
-    @Test
-    @DisplayName("Should delete Account from lists and database")
-    fun deleteAccountPosFun() {
-
-        val expectedNames: MutableList<String> = mutableListOf("Cash", "Debit Card", "Unused")
-        val expectedUsed: MutableList<String> = mutableListOf("Cash", "Debit Card")
-        accVM.accountNames = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
-        accVM.accountsUsed = mutableListOf("Cash", "Credit Card", "Debit Card")
-
-        accVM.deleteAccountPosFun(dd.acc1)
-
-        assertEquals(expectedNames, accVM.accountNames)
-        assertEquals(expectedUsed, accVM.accountsUsed)
-        assertEquals(mutableListOf(dd.acc2, dd.acc3, dd.acc4), repo.accList)
-    }
-
-    @Test
-    @DisplayName("Should edit Account with a new name")
-    fun editAccountName() {
-
-        val expectedNames: MutableList<String> = mutableListOf("Cash", "Test", "Debit Card", "Unused")
-        val expectedUsed: MutableList<String> = mutableListOf("Cash", "Test", "Debit Card")
-        accVM.accountNames = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
-        accVM.accountsUsed = mutableListOf("Cash", "Credit Card", "Debit Card")
-
+        accVM.updateDialog(DataDialog(EDIT, 1))
         accVM.editAccount(dd.acc1, "Test")
 
-        assertEquals(expectedNames, accVM.accountNames)
-        assertEquals(expectedUsed, accVM.accountsUsed)
-        assertEquals(Account(1, "Test"), repo.accList[0])
+        assertEquals(expectedAccounts, accVM.accountList.value)
+        assertEquals(expectedAccountsUsed, accVM.accountsUsedList.value)
+        assertEquals(DataDialog(EDIT, -1), accVM.showDialog.value)
     }
 
     @Test
-    @DisplayName("Should edit Account with an existing name which creates an exists Event")
+    @DisplayName("Should edit Account with an existing name which updates accountExists")
     fun editAccountNameExists() {
-
-        accVM.accountNames = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
-
         accVM.editAccount(dd.acc1, "Cash")
-        val value: Event<String> = accVM.existsAccountEvent.value!!
 
-        assertEquals(value.getContentIfNotHandled(), "Cash")
+        assertEquals("Cash", accVM.accountExists.value)
     }
 
     @Test
-    @DisplayName("Should insert a new unique Account")
-    fun insertNewAccount() {
+    @DisplayName("Should create a new unique Account")
+    fun createNewAccount() {
+        val newAccount = Account(0, "Test")
+        val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2, newAccount, dd.acc4)
 
-        val newAccount = Account(100, "Test")
-
-        accVM.insertNewAccount(newAccount, "Test")
+        accVM.createNewAccount("Test")
 
         assert(repo.accList.contains(newAccount))
-        assertEquals(mutableListOf("Test"), accVM.accountNames)
+        assertEquals(expectedAccounts, accVM.accountList.value)
     }
 
     @Test
-    @DisplayName("Should insert Account with an existing name which creates an exist Event")
-    fun insertNewAccountExists() {
+    @DisplayName("Should insert Account with an existing name which updates accountExists")
+    fun createNewAccountExists() {
+        accVM.createNewAccount("Cash")
 
-        val newAccount = Account(100, "Cash")
-        accVM.accountNames = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
-
-        accVM.insertNewAccount(newAccount, "Cash")
-        val value: Event<String> = accVM.existsAccountEvent.value!!
-
-        assertEquals(value.getContentIfNotHandled(), "Cash")
+        assertEquals("Cash", accVM.accountExists.value)
     }
 }

@@ -5,12 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="account"
-            type="com.heyzeusv.plutuswallet.data.model.Account" />
-        <variable
-            name="accountVM"
-            type="com.heyzeusv.plutuswallet.ui.account.AccountViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,7 +15,6 @@
         <TextView
             android:id="@+id/iva_name"
             style="@style/AccCat.TextView.Scrollable"
-            android:text="@{account.name}"
             app:layout_constraintEnd_toStartOf="@+id/iva_edit"
             app:selected="@{true}"
             tools:text="Account Name" />
@@ -29,7 +22,6 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/iva_edit"
             style="@style/AccCat.Button.IconOnly"
-            android:onClick="@{() -> accountVM.editAccountOC(account)}"
             app:icon="@drawable/ic_baseline_edit_24"
             app:layout_constraintEnd_toStartOf="@+id/iva_delete" />
 
@@ -37,9 +29,7 @@
             android:id="@+id/iva_delete"
             style="@style/AccCat.Button.IconOnly"
             android:enabled="false"
-            android:onClick="@{() -> accountVM.deleteAccountOC(account)}"
             app:icon="@drawable/ic_baseline_delete_24"
-            app:isEnabled="@{(!accountVM.accountsUsed.contains(account.name) &amp;&amp; accountVM.accountLD.size() > 1) ? true : false}"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

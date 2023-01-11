@@ -12,6 +12,7 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 
 class FakeRepository @Inject constructor() : Repository {
@@ -20,6 +21,11 @@ class FakeRepository @Inject constructor() : Repository {
     var accList: MutableList<Account> = dd.accList
     var catList: MutableList<Category> = dd.catList
     var tranList: MutableList<Transaction> = dd.tranList
+
+    private val accountListFlow = MutableSharedFlow<List<Account>>()
+    suspend fun accountListEmit(value: List<Account>) = accountListFlow.emit(value.sortedBy { it.name })
+    private val accountsUsedListFlow = MutableSharedFlow<List<Account>>()
+    suspend fun accountsUsedListEmit(value: List<Account>) = accountsUsedListFlow.emit(value)
 
     private val accListLD = MutableLiveData(accList.sortedBy { it.name })
     private val catExListLD =
@@ -59,39 +65,39 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getAccountsUsed(): Flow<List<Account>> {
-        val accUsed: MutableList<String> = mutableListOf()
-        for (tran: Transaction in tranList) {
-            accUsed.add(tran.account)
-        }
-        return flow { emit(accList.filter { accUsed.contains(it.name) }.distinct()) }
+//        val accUsed: MutableList<String> = mutableListOf()
+//        for (tran: Transaction in tranList) {
+//            accUsed.add(tran.account)
+//        }
+//        flow { emit(accList.filter { accUsed.contains(it.name) }.distinct()) }
+        return accountsUsedListFlow
     }
 
     override suspend fun getAccountSizeAsync(): Int {
-
         return accList.size
     }
 
     override suspend fun deleteAccount(account: Account) {
-
         accList.remove(account)
+        accountListEmit(accList)
         accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun insertAccount(account: Account) {
-
         accList.add(account)
+        accountListEmit(accList)
         accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun updateAccount(account: Account) {
-
         accList.replace(accList.find { it.id == account.id }!!, account)
+        accountListEmit(accList)
         accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun getAccounts(): Flow<List<Account>> {
-
-        return flow { emit(accList.sortedBy { it.name }) }
+//        flow { emit(accList.sortedBy { it.name }) }
+        return accountListFlow
     }
 
     override fun getLDAccounts(): LiveData<List<Account>> {
