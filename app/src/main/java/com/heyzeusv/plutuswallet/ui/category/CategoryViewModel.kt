@@ -6,10 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Category
+import com.heyzeusv.plutuswallet.data.model.DataDialog
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.Event
 import com.heyzeusv.plutuswallet.util.replace
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
@@ -46,6 +54,35 @@ class CategoryViewModel @Inject constructor(
 
     private val _deleteCategoryEvent = MutableLiveData<Event<Category>>()
     val deleteCategoryEvent: LiveData<Event<Category>> = _deleteCategoryEvent
+
+    private val _expenseCatList = MutableStateFlow(listOf<Category>())
+    val expenseCatList: StateFlow<List<Category>> get() = _expenseCatList
+
+    private val _incomeCatList = MutableStateFlow(listOf<Category>())
+    val incomeCatList: StateFlow<List<Category>> get() = _incomeCatList
+
+    private val _categoriesUsedList = MutableStateFlow(listOf<Category>())
+    val categoriesUsedList: StateFlow<List<Category>> get() = _categoriesUsedList
+
+    private val _showDialog = MutableStateFlow(DataDialog(DELETE, -1))
+    val showDialog: StateFlow<DataDialog> get() = _showDialog
+    fun updateDialog(newValue: DataDialog) { _showDialog.value = newValue }
+
+    private val _categoryExists = MutableStateFlow("")
+    val categoryExists: StateFlow<String> get() = _categoryExists
+    fun updateCategoryExists(newValue: String) { _categoryExists.value = newValue }
+
+    init {
+        viewModelScope.launch {
+            tranRepo.getCategoriesByType(EXPENSE.type).collect { _expenseCatList.value = it }
+        }
+        viewModelScope.launch {
+            tranRepo.getCategoriesByType(INCOME.type).collect { _incomeCatList.value = it }
+        }
+        viewModelScope.launch {
+            tranRepo.getCategoriesUsed().collect { _categoriesUsedList.value = it }
+        }
+    }
 
     /**
      *  Event to edit name of selected [category].

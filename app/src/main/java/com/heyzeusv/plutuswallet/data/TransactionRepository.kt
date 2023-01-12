@@ -57,6 +57,8 @@ class TransactionRepository @Inject constructor(
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> =
         categoryDao.getCategoryNamesByType(type)
 
+    override suspend fun getCategoriesUsed(): Flow<List<Category>> = categoryDao.getCategoriesUsed()
+
     override suspend fun getCategorySizeAsync(): Int =
         withContext(Dispatchers.IO) { categoryDao.getCategorySize() }
 
@@ -71,6 +73,9 @@ class TransactionRepository @Inject constructor(
 
     override suspend fun insertCategories(categories: List<Category>): Unit =
         withContext(Dispatchers.IO) { categoryDao.insert(categories) }
+
+    override suspend fun getCategoriesByType(type: String): Flow<List<Category>> =
+        categoryDao.getCategoriesByType(type)
 
     override fun getLDCategoriesByType(type: String): LiveData<List<Category>> =
         categoryDao.getLDCategoriesByType(type)

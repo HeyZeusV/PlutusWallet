@@ -34,6 +34,12 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     suspend fun expenseCatNameListEmit(value: List<String>) = expenseCatNameListFlow.emit(value.sorted())
     private val incomeCatNameListFlow = MutableSharedFlow<List<String>>()
     suspend fun incomeCatNameListEmit(value: List<String>) = incomeCatNameListFlow.emit(value.sorted())
+    private val expenseCatListFlow = MutableSharedFlow<List<Category>>()
+    suspend fun expenseCatListEmit(value: List<Category>) = expenseCatListFlow.emit(value.sortedBy { it.name })
+    private val incomeCatListFlow = MutableSharedFlow<List<Category>>()
+    suspend fun incomeCatListEmit(value: List<Category>) = incomeCatListFlow.emit(value.sortedBy { it.name })
+    private val categoriesUsedListFlow = MutableSharedFlow<List<Category>>()
+    suspend fun categoriesUsedListEmit(value: List<Category>) = categoriesUsedListFlow.emit(value)
 
     private val accListLD = MutableLiveData(accList.sortedBy { it.name })
     private val catExListLD =
@@ -134,6 +140,12 @@ class FakeAndroidRepository @Inject constructor() : Repository {
 //        typeNameList.sort()
 //        flow { emit(typeNameList) }
         return if (type == EXPENSE.type) expenseCatNameListFlow else incomeCatNameListFlow
+    }
+
+    override suspend fun getCategoriesUsed(): Flow<List<Category>> = categoriesUsedListFlow
+
+    override suspend fun getCategoriesByType(type: String): Flow<List<Category>> {
+        return if (type == EXPENSE.type) expenseCatListFlow else incomeCatListFlow
     }
 
     override suspend fun getCategorySizeAsync(): Int {

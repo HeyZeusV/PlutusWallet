@@ -38,6 +38,8 @@ interface Repository {
 
     suspend fun getCategoryNamesByType(type: String): Flow<List<String>>
 
+    suspend fun getCategoriesUsed(): Flow<List<Category>>
+
     suspend fun getCategorySizeAsync(): Int
 
     suspend fun deleteCategory(category: Category)
@@ -47,6 +49,8 @@ interface Repository {
     suspend fun updateCategory(category: Category)
 
     suspend fun insertCategories(categories: List<Category>)
+
+    suspend fun getCategoriesByType(type: String): Flow<List<Category>>
 
     fun getLDCategoriesByType(type: String): LiveData<List<Category>>
 

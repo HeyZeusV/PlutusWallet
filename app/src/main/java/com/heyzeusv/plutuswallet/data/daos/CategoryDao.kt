@@ -36,11 +36,29 @@ abstract class CategoryDao : BaseDao<Category>() {
     abstract fun getCategoryNamesByType(type: String): Flow<List<String>>
 
     /**
+     *  Returns list of Categories used by a Transaction
+     */
+    @Query("""SELECT DISTINCT `category`.id, `category`.name, `category`.type
+              FROM `category`
+              INNER JOIN `transaction` ON `transaction`.category = `category`.name
+              ORDER BY `category`.name ASC""")
+    abstract fun getCategoriesUsed(): Flow<List<Category>>
+
+    /**
      *  Returns the size of table.
      */
     @Query("""SELECT COUNT(*) 
               FROM category""")
     abstract suspend fun getCategorySize(): Int
+
+    /**
+     *  Returns flow that emits list of Categories of [type] in order of name.
+     */
+    @Query("""SELECT *
+              FROM category
+              WHERE type=(:type)
+              ORDER BY name ASC""")
+    abstract fun getCategoriesByType(type: String): Flow<List<Category>>
 
     /**
      *  Returns LD of list that holds all Categories of [type] in order of name.
