@@ -9,7 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
+import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.filter.FilterViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
@@ -18,6 +18,8 @@ import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.ui.theme.PWLightColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -25,6 +27,8 @@ import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.DecimalFormat
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.jupiter.api.AfterEach
@@ -47,8 +51,9 @@ abstract class BaseTest {
     val dateFormatter: DateFormat = DateFormat.getDateInstance(0)
     val totalFormatter = DecimalFormat("#,##0.00").apply { roundingMode = RoundingMode.HALF_UP }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
         hiltRule.inject()
         composeRule.activity.apply {
             res = resources
@@ -58,16 +63,23 @@ abstract class BaseTest {
                     PlutusWalletTheme {
                         PlutusWalletApp(
                             tranListVM = viewModels<TransactionListViewModel>().value,
-                            cflVM = viewModels<CFLViewModel>().value,
                             chartVM = viewModels<ChartViewModel>().value,
                             filterVM = viewModels<FilterViewModel>().value,
-                            tranVM = viewModels<TransactionViewModel>().value
+                            tranVM = viewModels<TransactionViewModel>().value,
+                            accountVM = viewModels<AccountViewModel>().value
                         )
                     }
                 }
             }
         }
         repo = (fakeRepo as FakeAndroidRepository)
+        repo.accountListEmit(dd.accList)
+        repo.accountsUsedListEmit(
+            dd.accList.filter { acc -> dd.tranList.any { it.account == acc.name }}.distinct()
+        )
+        repo.accountNameListEmit(dd.accList.map { it.name })
+        repo.expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
+        repo.incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
     }
 
     @AfterEach

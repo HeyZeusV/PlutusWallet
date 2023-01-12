@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -354,11 +355,13 @@ fun PWAppBar(
 ) {
     val actionLeftDescription = stringResource(currentScreen.actionLeftDescription)
     val actionRightDescription = stringResource(currentScreen.actionRightDescription)
+    val title = stringResource(currentScreen.title)
 
     TopAppBar(
         title = {
             Text(
-                text = stringResource(currentScreen.title),
+                text = title,
+                modifier = Modifier.testTag("AppBar $title"),
                 color = MaterialTheme.colors.onBackground
             )
         },
@@ -497,7 +500,8 @@ fun PWDrawerItem(
                 horizontal = 16.dp,
                 vertical = 16.dp
             )
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .testTag("DrawerItem $label"),
         horizontalArrangement = Arrangement.spacedBy(
             space = 8.dp
         )

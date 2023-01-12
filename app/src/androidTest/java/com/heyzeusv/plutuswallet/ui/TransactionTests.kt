@@ -269,7 +269,6 @@ class TransactionTests : BaseTest() {
 
     @Test
     fun transaction_acceptFutureDialogWarning() {
-
         // check that we start on Overview screen and click on repeatedTransaction
         composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
         composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
@@ -305,7 +304,6 @@ class TransactionTests : BaseTest() {
 
     @Test
     fun transaction_declineFutureDialogWarning() {
-
         // check that we start on Overview screen and click on repeatedTransaction
         composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
         composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
@@ -342,12 +340,11 @@ class TransactionTests : BaseTest() {
     fun SemanticsNodeInteraction.assertEditTextEquals(value: String) : SemanticsNodeInteraction =
         assert(hasEditTextExactly(value))
 
-    private fun hasEditTextExactly(value: String): SemanticsMatcher = SemanticsMatcher(
-        "${SemanticsProperties.EditableText.name} is $value"
-    ) { node ->
-        var actual = ""
-        node.config.getOrNull(SemanticsProperties.EditableText)?.let { actual = it.text }
-        return@SemanticsMatcher actual == value
-    }
+    private fun hasEditTextExactly(value: String): SemanticsMatcher =
+        SemanticsMatcher("${SemanticsProperties.EditableText.name} is $value") { node ->
+            var actual = ""
+            node.config.getOrNull(SemanticsProperties.EditableText)?.let { actual = it.text }
+            return@SemanticsMatcher actual == value
+        }
 }
 

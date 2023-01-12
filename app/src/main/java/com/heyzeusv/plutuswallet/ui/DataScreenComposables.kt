@@ -67,7 +67,7 @@ fun DataScreen(
     val pagerState = rememberPagerState()
 
     val dataListsSize = dataLists.size
-    val existsMessage = stringResource(id = R.string.snackbar_exists, existsName)
+    val existsMessage = stringResource(R.string.snackbar_exists, existsName)
 
     LaunchedEffect(key1 = existsName) {
         if (existsName.isNotBlank()) {
@@ -182,7 +182,9 @@ fun DataItem(
         )
         Button(
             onClick = editOnClick,
-            modifier = Modifier.size(49.dp),
+            modifier = Modifier
+                .size(49.dp)
+                .testTag("${data.name} Edit"),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
                 contentColor = Color.White
@@ -196,7 +198,9 @@ fun DataItem(
         }
         Button(
             onClick = deleteOnClick,
-            modifier = Modifier.size(49.dp),
+            modifier = Modifier
+                .size(49.dp)
+                .testTag("${data.name} Delete"),
             enabled = deletable,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,

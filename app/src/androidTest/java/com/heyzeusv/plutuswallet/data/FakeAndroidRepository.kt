@@ -7,11 +7,14 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.replace
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 
 class FakeAndroidRepository @Inject constructor() : Repository {
@@ -20,7 +23,17 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     var accList: MutableList<Account> = dd.accList
     var catList: MutableList<Category> = dd.catList
     var tranList: MutableList<Transaction> = dd.tranList
-    val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
+
+    private val accountListFlow = MutableSharedFlow<List<Account>>()
+    suspend fun accountListEmit(value: List<Account>) = accountListFlow.emit(value.sortedBy { it.name })
+    private val accountsUsedListFlow = MutableSharedFlow<List<Account>>()
+    suspend fun accountsUsedListEmit(value: List<Account>) = accountsUsedListFlow.emit(value)
+    private val accountNameListFLow = MutableSharedFlow<List<String>>()
+    suspend fun accountNameListEmit(value: List<String>) = accountNameListFLow.emit(value.sorted())
+    private val expenseCatNameListFlow = MutableSharedFlow<List<String>>()
+    suspend fun expenseCatNameListEmit(value: List<String>) = expenseCatNameListFlow.emit(value.sorted())
+    private val incomeCatNameListFlow = MutableSharedFlow<List<String>>()
+    suspend fun incomeCatNameListEmit(value: List<String>) = incomeCatNameListFlow.emit(value.sorted())
 
     private val accListLD = MutableLiveData(accList.sortedBy { it.name })
     private val catExListLD =
@@ -28,6 +41,11 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     private val catInListLD =
         MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.name })
     private val ivtListLD = MutableLiveData<List<ItemViewTransaction>>(emptyList())
+
+    fun clearAccCatLists() {
+        accList.clear()
+        catList.clear()
+    }
 
     fun resetLists() {
         accList = dd.accList
@@ -46,48 +64,50 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getAccountNames(): Flow<List<String>> {
-        val accNames: MutableList<String> = mutableListOf()
-        for (acc: Account in accList) {
-            accNames.add(acc.name)
-        }
-        accNames.sort()
-        return flow { emit(accNames) }
+//        val accNames: MutableList<String> = mutableListOf()
+//        for (acc: Account in accList) {
+//            accNames.add(acc.name)
+//        }
+//        accNames.sort()
+//        flow { emit(accNames) }
+        return accountNameListFLow
     }
 
     override suspend fun getAccountsUsed(): Flow<List<Account>> {
-        val accUsed: MutableList<String> = mutableListOf()
-        for (tran: Transaction in tranList) {
-            accUsed.add(tran.account)
-        }
-        return flow { emit(accList.filter { accUsed.contains(it.name) }.distinct()) }
+//        val accUsed: MutableList<String> = mutableListOf()
+//        for (tran: Transaction in tranList) {
+//            accUsed.add(tran.account)
+//        }
+//        flow { emit(accList.filter { accUsed.contains(it.name) }.distinct()) }
+        return accountsUsedListFlow
     }
 
     override suspend fun getAccountSizeAsync(): Int {
-
         return accList.size
     }
 
     override suspend fun deleteAccount(account: Account) {
-
         accList.remove(account)
+        accountListEmit(accList)
         accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun insertAccount(account: Account) {
-
         accList.add(account)
+        accountListEmit(accList)
+        accountNameListEmit(accList.map { it.name })
         accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun updateAccount(account: Account) {
-
         accList.replace(accList.find { it.id == account.id }!!, account)
+        accountListEmit(accList)
         accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun getAccounts(): Flow<List<Account>> {
-
-        return flow { emit(accList.sortedBy { it.name }) }
+//        flow { emit(accList.sortedBy { it.name }) }
+        return accountListFlow
     }
 
     override fun getLDAccounts(): LiveData<List<Account>> {
@@ -107,12 +127,13 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> {
-        val typeNameList: MutableList<String> = mutableListOf()
-        for (cat: Category in catList.filter { it.type == type}) {
-            typeNameList.add(cat.name)
-        }
-        typeNameList.sort()
-        return flow { emit(typeNameList) }
+//        val typeNameList: MutableList<String> = mutableListOf()
+//        for (cat: Category in catList.filter { it.type == type}) {
+//            typeNameList.add(cat.name)
+//        }
+//        typeNameList.sort()
+//        flow { emit(typeNameList) }
+        return if (type == EXPENSE.type) expenseCatNameListFlow else incomeCatNameListFlow
     }
 
     override suspend fun getCategorySizeAsync(): Int {
@@ -128,8 +149,9 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun insertCategory(category: Category) {
-
         catList.add(category)
+        expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
+        incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
         catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
         catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
@@ -142,8 +164,9 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun insertCategories(categories: List<Category>) {
-
         catList.addAll(categories)
+        expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
+        incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
         catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
         catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
@@ -213,29 +236,26 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         }
     }
 
-    override suspend fun getTransactionAsync(id: Int): Transaction? {
+    override suspend fun getTransactionAsync(id: Int): Transaction {
 
-        return tranList.find { it.id == id }
+        return tranList.single { it.id == id }
     }
 
     override suspend fun deleteTransaction(transaction: Transaction) {
-
         tranList.remove(transaction)
-//        if (ivtListLD.value!!.isNotEmpty()) {
-//            (ivtListLD.value as MutableList).removeIf { it.id == transaction.id }
-//            ivtListLD.postValue(ivtListLD.value!!)
-//        }
+        if (ivtListLD.value!!.isNotEmpty()) {
+            (ivtListLD.value as MutableList).removeIf { it.id == transaction.id }
+            ivtListLD.postValue(ivtListLD.value!!)
+        }
     }
 
     override suspend fun upsertTransaction(transaction: Transaction) {
-
         tranList.find { it.id == transaction.id }.let {
             if (it == null) tranList.add(transaction) else tranList.replace(it, transaction)
         }
     }
 
     override suspend fun upsertTransactions(transactions: List<Transaction>) {
-
         for (tran: Transaction in transactions) {
             tranList.find { it.id == tran.id }.let {
                 if (it == null) tranList.add(tran) else tranList.replace(it, tran)
@@ -264,6 +284,7 @@ class FakeAndroidRepository @Inject constructor() : Repository {
 
     private fun createCatTotals(listOfTranLists: MutableList<MutableList<Transaction>>)
             : List<CategoryTotals> {
+
         val catTotals: MutableList<CategoryTotals> = mutableListOf()
         for (list: MutableList<Transaction> in listOfTranLists) {
             var total = BigDecimal(0)
@@ -822,8 +843,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getIvt(): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -835,8 +856,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getIvtA(accounts: List<String>): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -852,8 +873,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         start: Date,
         end: Date
     ): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.date >= start && it.date <= end
         }) {
@@ -870,8 +891,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         accounts: List<String>,
         type: String
     ): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) && it.type == type }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -887,8 +908,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         type: String,
         categories: List<String>
     ): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && categories.contains(it.category)
         }) {
@@ -907,8 +928,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         start: Date,
         end: Date
     ): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && it.date >= start && it.date <= end
         }) {
@@ -928,8 +949,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         start: Date,
         end: Date
     ): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && categories.contains(it.category) &&
                     it.date >= start && it.date <= end
@@ -944,8 +965,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getIvtD(start: Date, end: Date): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.date in start..end }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -957,8 +978,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getIvtT(type: String): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -973,8 +994,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         type: String,
         categories: List<String>
     ): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type && categories.contains(it.category) }) {
             val ivt = ItemViewTransaction(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -991,8 +1012,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         start: Date,
         end: Date
     ): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             it.type == type && categories.contains(it.category) && it.date >= start && it.date <= end
         }) {
@@ -1010,8 +1031,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         start: Date,
         end: Date
     ): Flow<List<ItemViewTransaction>> {
-        ivtList.clear()
 
+        val ivtList: MutableList<ItemViewTransaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             it.type == type  && it.date >= start && it.date <= end }) {
             val ivt = ItemViewTransaction(

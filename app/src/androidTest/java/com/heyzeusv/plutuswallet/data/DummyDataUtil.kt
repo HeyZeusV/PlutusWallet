@@ -12,8 +12,9 @@ class DummyDataUtil {
     val acc1 = Account(1, "Credit Card")
     val acc2 = Account(2, "Debit Card")
     val acc3 = Account(3, "Cash")
-    val acc4 = Account(4, "Unused")
-    val accList : MutableList<Account> = mutableListOf(acc1, acc2, acc3, acc4)
+    val acc4 = Account(4, "Savings")
+    val acc5 = Account(5, "Unused")
+    val accList : MutableList<Account> = mutableListOf(acc1, acc2, acc3, acc4, acc5)
 
     val cat1 = Category(1, "Food", "Expense")
     val cat2 = Category(2, "Entertainment", "Expense")
@@ -30,7 +31,7 @@ class DummyDataUtil {
     )
     val tran2 = Transaction(
         2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-        "Unused", "Expense", "Unused Expense", "",
+        "Savings", "Expense", "Unused Expense", "",
         false, 1, 0, Date(86400000 * 3), true
     )
     val tran3 = Transaction(
