@@ -236,10 +236,7 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         }
     }
 
-    override suspend fun getTransactionAsync(id: Int): Transaction {
-
-        return tranList.single { it.id == id }
-    }
+    override suspend fun getTransactionAsync(id: Int): Transaction? = tranList.find { it.id == id }
 
     override suspend fun deleteTransaction(transaction: Transaction) {
         tranList.remove(transaction)
