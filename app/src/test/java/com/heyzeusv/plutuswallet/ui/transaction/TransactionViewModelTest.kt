@@ -46,7 +46,7 @@ internal class TransactionViewModelTest {
 
     @Test
     @DisplayName("Should correctly launch ViewModel with correct data required in its init block")
-    fun viewModelSetUp() {
+    fun viewModelInit() {
         assertEquals(dd.accList.map { it.name }.sorted() + "Create New Account", tranVM.accountList.value)
         assertEquals(
             dd.catList.filter { it.type == EXPENSE.type }.map { it.name }.sorted() + "Create New Category",

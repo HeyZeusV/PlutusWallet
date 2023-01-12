@@ -40,6 +40,14 @@ internal class TransactionListViewModelTest {
     }
 
     @Test
+    @DisplayName("Should correctly launch ViewModel with correct data required in its init block")
+    fun viewModelInit() {
+        assertEquals(4, tlVM.previousMaxId)
+        assertEquals(dd.ivtList, tlVM.tranList.value)
+        // initializeTables() has its own test
+    }
+
+    @Test
     @DisplayName("Should take given id and delete Transaction associated with it from Database")
     fun deleteTranPosFun() = runTest {
         tlVM.deleteTransaction(dd.tran1.id)

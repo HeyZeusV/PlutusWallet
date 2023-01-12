@@ -32,7 +32,6 @@ internal class ChartViewModelTest {
 
     @BeforeEach
     fun setUpViewModel() {
-
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
         chartVM = ChartViewModel(repo, SettingsValues())
@@ -40,7 +39,7 @@ internal class ChartViewModelTest {
 
     @Test
     @DisplayName("Should have ChartInformation ready for Expense and Income types at start up")
-    fun checkSetUp() {
+    fun viewModelInit() {
         val expectedExpenseCatTotalList = listOf(
             CategoryTotals("Food", BigDecimal("1100.10"), "Expense"),
             CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense")
@@ -61,10 +60,10 @@ internal class ChartViewModelTest {
     @DisplayName("Should have correct ChartInformation after adding a Transaction from an" +
             " existing Category.")
     fun checkAfterNewTransactionOfSameCategory() = runTest {
+        // adding extra Transactions
         repo.tranList.add(dd.tran1)
         repo.tranList.add(dd.tran3)
         chartVM.updateCatTotalsList(FilterInfo())
-
 
         val expectedExpenseCatTotalList = listOf(
             CategoryTotals("Food", BigDecimal("2100.20"), "Expense"),

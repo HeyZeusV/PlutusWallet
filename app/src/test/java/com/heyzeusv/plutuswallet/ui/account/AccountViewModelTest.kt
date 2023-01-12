@@ -31,7 +31,6 @@ internal class AccountViewModelTest {
 
     @BeforeEach
     fun setUpViewModel() = runTest {
-
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
         accVM = AccountViewModel(repo)
@@ -44,7 +43,7 @@ internal class AccountViewModelTest {
     @Test
     @DisplayName("Should have 2 lists at start up, a list of all accounts " +
             "and a list of accounts in use")
-    fun startUpLists() {
+    fun viewModelInit() {
         val expectedAccountList = dd.accList.sortedBy { it.name }
         val expectedAccountsUsedList = listOf(dd.acc1, dd.acc2, dd.acc3)
 

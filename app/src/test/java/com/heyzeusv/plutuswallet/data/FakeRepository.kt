@@ -164,8 +164,9 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override suspend fun insertCategories(categories: List<Category>) {
-
         catList.addAll(categories)
+        expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
+        incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
         catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
         catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
@@ -241,7 +242,6 @@ class FakeRepository @Inject constructor() : Repository {
     }
 
     override suspend fun deleteTransaction(transaction: Transaction) {
-
         tranList.remove(transaction)
         if (ivtListLD.value!!.isNotEmpty()) {
             (ivtListLD.value as MutableList).removeIf { it.id == transaction.id }
