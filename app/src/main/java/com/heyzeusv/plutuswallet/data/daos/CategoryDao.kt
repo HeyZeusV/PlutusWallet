@@ -41,8 +41,9 @@ abstract class CategoryDao : BaseDao<Category>() {
     @Query("""SELECT DISTINCT `category`.id, `category`.name, `category`.type
               FROM `category`
               INNER JOIN `transaction` ON `transaction`.category = `category`.name
+              WHERE `category`.type=(:type)
               ORDER BY `category`.name ASC""")
-    abstract fun getCategoriesUsed(): Flow<List<Category>>
+    abstract fun getCategoriesUsedByType(type: String): Flow<List<Category>>
 
     /**
      *  Returns the size of table.

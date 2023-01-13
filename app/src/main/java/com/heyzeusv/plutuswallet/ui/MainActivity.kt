@@ -61,6 +61,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
+import com.heyzeusv.plutuswallet.ui.category.CategoryViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.filter.FilterViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
@@ -92,6 +93,7 @@ class MainActivity : BaseActivity() {
     private val filterVM: FilterViewModel by viewModels()
     private val tranVM: TransactionViewModel by viewModels()
     private val accountVM: AccountViewModel by viewModels()
+    private val categoryVM: CategoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,11 +118,12 @@ class MainActivity : BaseActivity() {
             CompositionLocalProvider(LocalPWColors provides pwColors) {
                 PlutusWalletTheme {
                     PlutusWalletApp(
-                        tranListVM = tranListVM,
-                        chartVM = chartVM,
-                        filterVM = filterVM,
-                        tranVM = tranVM,
-                        accountVM
+                        tranListVM,
+                        chartVM,
+                        filterVM,
+                        tranVM,
+                        accountVM,
+                        categoryVM
                     )
                 }
             }
@@ -156,7 +159,8 @@ fun PlutusWalletApp(
     chartVM: ChartViewModel,
     filterVM: FilterViewModel,
     tranVM: TransactionViewModel,
-    accountVM: AccountViewModel
+    accountVM: AccountViewModel,
+    categoryVM: CategoryViewModel
 ) {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
@@ -179,9 +183,9 @@ fun PlutusWalletApp(
     val accountSelected by filterVM.accountSelected.collectAsState()
     val categoryFilterSelected by filterVM.categoryFilter.collectAsState()
     val filterTypeSelected by filterVM.typeSelected.collectAsState()
-    val expenseCatList by filterVM.expenseCatList.collectAsState()
+    val expenseCatNameList by filterVM.expenseCatList.collectAsState()
     val expenseCatSelected by filterVM.expenseCatSelected.collectAsState()
-    val incomeCatList by filterVM.incomeCatList.collectAsState()
+    val incomeCatNameList by filterVM.incomeCatList.collectAsState()
     val incomeCatSelected by filterVM.incomeCatSelected.collectAsState()
     val dateFilterSelected by filterVM.dateFilter.collectAsState()
     val startDateString by filterVM.startDateString.collectAsState()
@@ -193,6 +197,13 @@ fun PlutusWalletApp(
     val accountsUsedList by accountVM.accountsUsedList.collectAsState()
     val accountListShowDialog by accountVM.showDialog.collectAsState()
     val accountListExistsName by accountVM.accountExists.collectAsState()
+
+    val expenseCatList by categoryVM.expenseCatList.collectAsState()
+    val incomeCatList by categoryVM.incomeCatList.collectAsState()
+    val expenseCatUsedList by categoryVM.expenseCatUsedList.collectAsState()
+    val incomeCatUsedList by categoryVM.incomeCatUsedList.collectAsState()
+    val categoryListShowDialog by categoryVM.showDialog.collectAsState()
+    val categoryListExists by categoryVM.categoryExists.collectAsState()
 
     PlutusWalletTheme {
         LaunchedEffect(key1 = filterInfo) {
@@ -229,6 +240,7 @@ fun PlutusWalletApp(
                             when (currentScreen) {
                                 TransactionDestination -> tranVM.updateSaveSuccess(false)
                                 AccountsDestination -> accountVM.updateAccountExists("")
+                                CategoriesDestination -> categoryVM.updateCategoryExists("")
                                 else -> {}
                             }
                         }
@@ -246,8 +258,8 @@ fun PlutusWalletApp(
                                 navController.navigateSingleTopTo(TransactionDestination.route)
                             }
                             TransactionDestination -> { tranVM.saveTransaction() }
-                            AccountsDestination -> { accountVM.updateDialog(DataDialog(CREATE, 0))}
-                            CategoriesDestination -> {}
+                            AccountsDestination -> { accountVM.updateDialog(DataDialog(CREATE, 0)) }
+                            CategoriesDestination -> { categoryVM.updateDialog(DataDialog(CREATE, 0)) }
                         }
                     }
                 )
@@ -300,7 +312,7 @@ fun PlutusWalletApp(
                         filterTypeSelected,
                         filterUpdateTypeSelected = filterVM::updateTypeSelected,
                         categoryList = if (filterTypeSelected == TransactionType.EXPENSE)
-                            expenseCatList else incomeCatList,
+                            expenseCatNameList else incomeCatNameList,
                         categorySelected = if (filterTypeSelected == TransactionType.EXPENSE)
                             expenseCatSelected else incomeCatSelected,
                         categoryChipOnClick = if (filterTypeSelected == TransactionType.EXPENSE)
@@ -338,7 +350,26 @@ fun PlutusWalletApp(
                         existsName = accountListExistsName
                     )
                 }
-                composable(CategoriesDestination.route) { }
+                composable(CategoriesDestination.route) {
+                    val expenseSubtitle = stringResource(R.string.type_expense)
+                    val incomeSubtitle = stringResource(R.string.type_income)
+                    DataScreen(
+                        snackbarHostState = scaffoldState.snackbarHostState,
+                        dataLists = listOf(expenseCatList, incomeCatList),
+                        usedDataLists = listOf(expenseCatUsedList, incomeCatUsedList),
+                        listSubtitles = listOf(expenseSubtitle, incomeSubtitle),
+                        onClick = categoryVM::updateDialog,
+                        showDialog = categoryListShowDialog,
+                        createDialogTitle = stringResource(R.string.alert_dialog_create_category),
+                        createDialogOnConfirm = categoryVM::createNewCategory,
+                        deleteDialogTitle = stringResource(R.string.alert_dialog_delete_category),
+                        deleteDialogOnConfirm = categoryVM::deleteCategory,
+                        editDialogTitle = stringResource(R.string.alert_dialog_edit_category),
+                        editDialogOnConfirm = categoryVM::editCategory,
+                        dialogOnDismiss = categoryVM::updateDialog,
+                        existsName = categoryListExists
+                    )
+                }
                 composable(SettingsDestination.route) { }
                 composable(AboutDestination.route) { }
             }
@@ -463,6 +494,10 @@ fun PWDrawer(
                             PWDrawerItems.ACCOUNTS -> {
                                 closeDrawer()
                                 navController.navigateSingleTopTo(AccountsDestination.route)
+                            }
+                            PWDrawerItems.CATEGORIES -> {
+                                closeDrawer()
+                                navController.navigateSingleTopTo(CategoriesDestination.route)
                             }
                             else -> { }
                         }

@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.DataDialog
+import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
-import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.Event
@@ -17,7 +17,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
@@ -61,8 +60,11 @@ class CategoryViewModel @Inject constructor(
     private val _incomeCatList = MutableStateFlow(listOf<Category>())
     val incomeCatList: StateFlow<List<Category>> get() = _incomeCatList
 
-    private val _categoriesUsedList = MutableStateFlow(listOf<Category>())
-    val categoriesUsedList: StateFlow<List<Category>> get() = _categoriesUsedList
+    private val _expenseCatUsedList = MutableStateFlow(listOf<Category>())
+    val expenseCatUsedList: StateFlow<List<Category>> get() = _expenseCatUsedList
+
+    private val _incomeCatUsedList = MutableStateFlow(listOf<Category>())
+    val incomeCatUsedList: StateFlow<List<Category>> get() = _incomeCatUsedList
 
     private val _showDialog = MutableStateFlow(DataDialog(DELETE, -1))
     val showDialog: StateFlow<DataDialog> get() = _showDialog
@@ -80,7 +82,10 @@ class CategoryViewModel @Inject constructor(
             tranRepo.getCategoriesByType(INCOME.type).collect { _incomeCatList.value = it }
         }
         viewModelScope.launch {
-            tranRepo.getCategoriesUsed().collect { _categoriesUsedList.value = it }
+            tranRepo.getCategoriesUsedByType(EXPENSE.type).collect { _expenseCatUsedList.value = it }
+        }
+        viewModelScope.launch {
+            tranRepo.getCategoriesUsedByType(INCOME.type).collect { _incomeCatUsedList.value = it }
         }
     }
 
@@ -98,6 +103,21 @@ class CategoryViewModel @Inject constructor(
     fun deleteCategoryOC(category: Category) {
 
         _deleteCategoryEvent.value = Event(category)
+    }
+
+    /**
+     *  Event to edit name of selected [category].
+     */
+    fun editCategory(category: DataInterface, newName: String) {
+
+    }
+
+    /**
+     *  Event to delete selected [category].
+     */
+    fun deleteCategory(category: DataInterface) {
+
+
     }
 
     /**
@@ -168,5 +188,24 @@ class CategoryViewModel @Inject constructor(
                 tranRepo.insertCategory(category)
             }
         }
+    }
+
+    /**
+     *  If Category exists, creates SnackBar event telling user so,
+     *  else creates and inserts [category] in [type] list with [name].
+     */
+    fun createNewCategory(name: String /*, type: Int*/) {
+
+//        if (catNames[type].contains(name)) {
+//            _existsCategoryEvent.value = Event(name)
+//        } else {
+//            // adds new name to list to prevent new Category with same name
+//            catNames[type].add(name)
+//            category.name = name
+//            category.type = if (type == 0) "Expense" else "Income"
+//            viewModelScope.launch {
+//                tranRepo.insertCategory(category)
+//            }
+//        }
     }
 }

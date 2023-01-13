@@ -57,7 +57,8 @@ class TransactionRepository @Inject constructor(
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> =
         categoryDao.getCategoryNamesByType(type)
 
-    override suspend fun getCategoriesUsed(): Flow<List<Category>> = categoryDao.getCategoriesUsed()
+    override suspend fun getCategoriesUsedByType(type: String): Flow<List<Category>> =
+        categoryDao.getCategoriesUsedByType(type)
 
     override suspend fun getCategorySizeAsync(): Int =
         withContext(Dispatchers.IO) { categoryDao.getCategorySize() }

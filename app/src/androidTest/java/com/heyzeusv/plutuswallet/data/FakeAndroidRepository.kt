@@ -38,8 +38,10 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     suspend fun expenseCatListEmit(value: List<Category>) = expenseCatListFlow.emit(value.sortedBy { it.name })
     private val incomeCatListFlow = MutableSharedFlow<List<Category>>()
     suspend fun incomeCatListEmit(value: List<Category>) = incomeCatListFlow.emit(value.sortedBy { it.name })
-    private val categoriesUsedListFlow = MutableSharedFlow<List<Category>>()
-    suspend fun categoriesUsedListEmit(value: List<Category>) = categoriesUsedListFlow.emit(value)
+    private val expenseCatUsedListFlow = MutableSharedFlow<List<Category>>()
+    suspend fun expenseCatUsedListEmit(value: List<Category>) = expenseCatUsedListFlow.emit(value)
+    private val incomeCatUsedListFLow = MutableSharedFlow<List<Category>>()
+    suspend fun incomeCatUsedListEmit(value: List<Category>) = incomeCatUsedListFLow.emit(value)
 
     private val accListLD = MutableLiveData(accList.sortedBy { it.name })
     private val catExListLD =
@@ -142,7 +144,9 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         return if (type == EXPENSE.type) expenseCatNameListFlow else incomeCatNameListFlow
     }
 
-    override suspend fun getCategoriesUsed(): Flow<List<Category>> = categoriesUsedListFlow
+    override suspend fun getCategoriesUsedByType(type: String): Flow<List<Category>> {
+        return if (type == EXPENSE.type) expenseCatUsedListFlow else incomeCatUsedListFLow
+    }
 
     override suspend fun getCategoriesByType(type: String): Flow<List<Category>> {
         return if (type == EXPENSE.type) expenseCatListFlow else incomeCatListFlow

@@ -38,7 +38,7 @@ interface Repository {
 
     suspend fun getCategoryNamesByType(type: String): Flow<List<String>>
 
-    suspend fun getCategoriesUsed(): Flow<List<Category>>
+    suspend fun getCategoriesUsedByType(type: String): Flow<List<Category>>
 
     suspend fun getCategorySizeAsync(): Int
 

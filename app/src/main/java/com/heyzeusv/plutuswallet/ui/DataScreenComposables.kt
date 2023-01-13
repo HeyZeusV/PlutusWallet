@@ -53,6 +53,7 @@ fun DataScreen(
     snackbarHostState: SnackbarHostState,
     dataLists: List<List<DataInterface>>,
     usedDataLists: List<List<DataInterface>>,
+    listSubtitles: List<String> = listOf(""),
     onClick: (DataDialog) -> Unit,
     showDialog: DataDialog,
     createDialogTitle: String,
@@ -95,55 +96,56 @@ fun DataScreen(
                     .testTag("Data ViewPager"),
                 state = pagerState
             ) { page ->
-                if (dataListsSize > 1) {
-                    Text(
-                        text = if (page == 0) {
-                            stringResource(R.string.type_expense)
-                        } else {
-                            stringResource(R.string.type_income)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                }
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(dataLists[page]) { data ->
-                        DataItem(
-                            data = data,
-                            deletable = !usedDataLists[page].contains(data),
-                            editOnClick = { onClick(DataDialog(EDIT, data.id)) },
-                            deleteOnClick = { onClick(DataDialog(DELETE, data.id)) }
+                Column {
+                    if (dataLists.isNotEmpty()) {
+                        Text(
+                            text = listSubtitles[page],
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(all = 12.dp),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.h5
                         )
-                        Divider(
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
-                            thickness = 1.dp
-                        )
-                        if (showDialog.id == data.id) {
-                            when (showDialog.action) {
-                                DELETE -> {
-                                    PWAlertDialog(
-                                        onConfirmText = stringResource(R.string.alert_dialog_yes),
-                                        onConfirm = { deleteDialogOnConfirm(data) },
-                                        onDismissText = stringResource(R.string.alert_dialog_no),
-                                        onDismiss = { dialogOnDismiss(DataDialog(DELETE, -1)) },
-                                        title = deleteDialogTitle,
-                                        message = stringResource(
-                                            R.string.alert_dialog_delete_warning,
-                                            data.name
+                    }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(dataLists[page]) { data ->
+                            DataItem(
+                                data = data,
+                                deletable = !usedDataLists[page].contains(data),
+                                editOnClick = { onClick(DataDialog(EDIT, data.id)) },
+                                deleteOnClick = { onClick(DataDialog(DELETE, data.id)) }
+                            )
+                            Divider(
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
+                                thickness = 1.dp
+                            )
+                            if (showDialog.id == data.id) {
+                                when (showDialog.action) {
+                                    DELETE -> {
+                                        PWAlertDialog(
+                                            onConfirmText = stringResource(R.string.alert_dialog_yes),
+                                            onConfirm = { deleteDialogOnConfirm(data) },
+                                            onDismissText = stringResource(R.string.alert_dialog_no),
+                                            onDismiss = { dialogOnDismiss(DataDialog(DELETE, -1)) },
+                                            title = deleteDialogTitle,
+                                            message = stringResource(
+                                                R.string.alert_dialog_delete_warning,
+                                                data.name
+                                            )
                                         )
-                                    )
+                                    }
+                                    EDIT -> {
+                                        InputAlertDialog(
+                                            title = editDialogTitle,
+                                            onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
+                                            data = data,
+                                            onConfirmData = editDialogOnConfirm
+                                        )
+                                    }
+                                    CREATE -> {}
                                 }
-                                EDIT -> {
-                                    InputAlertDialog(
-                                        title = editDialogTitle,
-                                        onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
-                                        data = data,
-                                        onConfirmData = editDialogOnConfirm
-                                    )
-                                }
-                                CREATE -> { }
                             }
                         }
                     }
