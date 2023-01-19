@@ -22,7 +22,8 @@ class DummyDataUtil {
     val cat4 = Category(4, "Zelle", "Income")
     val cat5 = Category(5, "Unused Expense", "Expense")
     val cat6 = Category(6, "Unused Income", "Income")
-    val catList : MutableList<Category> = mutableListOf(cat1, cat2, cat3, cat4, cat5, cat6)
+    val cat7 = Category(7, "Housing", "Expense")
+    val catList : MutableList<Category> = mutableListOf(cat1, cat2, cat3, cat4, cat5, cat6, cat7)
 
     val tran1 = Transaction(
         1, "Party", Date(86400000), BigDecimal("1000.10"),
@@ -31,7 +32,7 @@ class DummyDataUtil {
     )
     val tran2 = Transaction(
         2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-        "Savings", "Expense", "Unused Expense", "",
+        "Savings", "Expense", "Housing", "",
         false, 1, 0, Date(86400000 * 3), true
     )
     val tran3 = Transaction(

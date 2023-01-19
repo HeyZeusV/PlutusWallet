@@ -92,7 +92,7 @@ fun ListCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.9f)
-                    .testTag("Data ViewPager"),
+                    .testTag("List ViewPager"),
                 state = pagerState
             ) { page ->
                 Column {
@@ -101,7 +101,8 @@ fun ListCard(
                             text = listSubtitles[page],
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(all = 12.dp),
+                                .padding(all = 12.dp)
+                                .testTag("List Subtitle ${listSubtitles[page]}"),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.h5
                         )

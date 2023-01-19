@@ -10,6 +10,7 @@ import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
+import com.heyzeusv.plutuswallet.ui.category.CategoryViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.filter.FilterViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
@@ -66,7 +67,8 @@ abstract class BaseTest {
                             chartVM = viewModels<ChartViewModel>().value,
                             filterVM = viewModels<FilterViewModel>().value,
                             tranVM = viewModels<TransactionViewModel>().value,
-                            accountVM = viewModels<AccountViewModel>().value
+                            accountVM = viewModels<AccountViewModel>().value,
+                            categoryVM = viewModels<CategoryViewModel>().value
                         )
                     }
                 }
@@ -80,6 +82,18 @@ abstract class BaseTest {
         repo.accountNameListEmit(dd.accList.map { it.name })
         repo.expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
         repo.incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
+        repo.expenseCatListEmit(dd.catList.filter { it.type == EXPENSE.type })
+        repo.expenseCatUsedListEmit(
+            dd.catList.filter { cat ->
+                cat.type == EXPENSE.type && dd.tranList.any { it.category == cat.name }
+            }.distinct()
+        )
+        repo.incomeCatListEmit(dd.catList.filter { it.type == INCOME.type })
+        repo.incomeCatUsedListEmit(
+            dd.catList.filter { cat ->
+                cat.type == INCOME.type && dd.tranList.any { it.category == cat.name }
+            }.distinct()
+        )
     }
 
     @AfterEach

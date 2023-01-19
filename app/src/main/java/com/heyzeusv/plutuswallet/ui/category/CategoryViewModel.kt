@@ -6,7 +6,6 @@ import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
-import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
@@ -90,8 +89,8 @@ class CategoryViewModel @Inject constructor(
                 category.name = newName
                 tranRepo.updateCategory(category)
             }
-            updateDialog(DataDialog(EDIT, -1))
         }
+        updateDialog(DataDialog(EDIT, -1))
     }
 
     /**
@@ -113,6 +112,6 @@ class CategoryViewModel @Inject constructor(
                 tranRepo.insertCategory(newCategory)
             }
         }
-        updateDialog(DataDialog(CREATE, -1, type))
+        updateDialog(DataDialog(EDIT, -1, type))
     }
 }

@@ -61,7 +61,7 @@ class AccountTests : BaseTest() {
         // check that snackbar with message appears
         composeRule.onNodeWithText(res.getString(R.string.snackbar_exists, dd.acc1.name))
             .assertIsDisplayed()
-        // check that no repeating account exists
+        // check that no repeating Account exists
         checkAccountsAndDeleteState()
     }
 
@@ -136,7 +136,7 @@ class AccountTests : BaseTest() {
             useUnmergedTree = true
         ).performClick()
 
-        // check that account exists unedited then check all
+        // check that Account exists unedited then check all
         composeRule.onNodeWithText(dd.acc5.name).assertExists()
         checkAccountsAndDeleteState()
     }
@@ -153,7 +153,7 @@ class AccountTests : BaseTest() {
             useUnmergedTree = true
         ).performClick()
 
-        // check that account is deleted then check all
+        // check that account is Deleted then check all
         composeRule.onNodeWithText(dd.acc5.name).assertDoesNotExist()
         checkAccountsAndDeleteState()
     }
@@ -170,7 +170,7 @@ class AccountTests : BaseTest() {
             useUnmergedTree = true
         ).performClick()
 
-        // check that account still exists then check all
+        // check that Account still exists then check all
         composeRule.onNodeWithText(dd.acc5.name).assertExists()
         checkAccountsAndDeleteState()
     }
