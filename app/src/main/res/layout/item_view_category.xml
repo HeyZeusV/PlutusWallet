@@ -5,15 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="category"
-            type="com.heyzeusv.plutuswallet.data.model.Category" />
-        <variable
-            name="type"
-            type="Integer" />
-        <variable
-            name="catVM"
-            type="com.heyzeusv.plutuswallet.ui.category.CategoryViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,7 +15,6 @@
         <TextView
             android:id="@+id/ivcat_name"
             style="@style/AccCat.TextView.Scrollable"
-            android:text="@{category.name}"
             app:layout_constraintEnd_toStartOf="@+id/ivcat_edit"
             app:selected="@{true}"
             tools:text="Category Name" />
@@ -32,7 +22,6 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/ivcat_edit"
             style="@style/AccCat.Button.IconOnly"
-            android:onClick="@{() -> catVM.editCategoryOC(category)}"
             app:icon="@drawable/ic_baseline_edit_24"
             app:layout_constraintEnd_toStartOf="@+id/ivcat_delete" />
 
@@ -40,9 +29,7 @@
             android:id="@+id/ivcat_delete"
             style="@style/AccCat.Button.IconOnly"
             android:enabled="false"
-            android:onClick="@{() -> catVM.deleteCategoryOC(category)}"
             app:icon="@drawable/ic_baseline_delete_24"
-            app:isEnabled="@{(!catVM.catsUsed[type].contains(category.name) &amp;&amp; catVM.catNames[type].size > 1) ? true : false}"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
