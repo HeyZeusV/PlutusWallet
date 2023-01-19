@@ -6,6 +6,7 @@ import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,8 +42,8 @@ internal class AccountViewModelTest {
     }
 
     @Test
-    @DisplayName("Should have 2 lists at start up, a list of all accounts " +
-            "and a list of accounts in use")
+    @DisplayName("Should have 2 lists at start up, a list of all Accounts " +
+            "and a list of Accounts in use")
     fun viewModelInit() {
         val expectedAccountList = dd.accList.sortedBy { it.name }
         val expectedAccountsUsedList = listOf(dd.acc1, dd.acc2, dd.acc3)
@@ -79,10 +80,10 @@ internal class AccountViewModelTest {
 
     @Test
     @DisplayName("Should edit Account with an existing name which updates accountExists")
-    fun editAccountNameExists() {
-        accVM.editAccount(dd.acc1, "Cash")
+    fun editAccountExists() {
+        accVM.editAccount(dd.acc1, dd.acc3.name)
 
-        assertEquals("Cash", accVM.accountExists.value)
+        assertEquals(dd.acc3.name, accVM.accountExists.value)
     }
 
     @Test
@@ -91,17 +92,18 @@ internal class AccountViewModelTest {
         val newAccount = Account(0, "Test")
         val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2, newAccount, dd.acc4)
 
-        accVM.createNewAccount("Test")
+        accVM.createNewAccount(newAccount.name)
 
         assert(repo.accList.contains(newAccount))
         assertEquals(expectedAccounts, accVM.accountList.value)
+        assertEquals(DataDialog(CREATE, -1), accVM.showDialog.value)
     }
 
     @Test
     @DisplayName("Should insert Account with an existing name which updates accountExists")
     fun createNewAccountExists() {
-        accVM.createNewAccount("Cash")
+        accVM.createNewAccount(dd.acc3.name)
 
-        assertEquals("Cash", accVM.accountExists.value)
+        assertEquals(dd.acc3.name, accVM.accountExists.value)
     }
 }

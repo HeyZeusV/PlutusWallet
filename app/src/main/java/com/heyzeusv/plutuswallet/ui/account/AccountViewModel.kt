@@ -6,6 +6,7 @@ import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -87,6 +88,6 @@ class AccountViewModel @Inject constructor(
                 tranRepo.insertAccount(Account(0, name))
             }
         }
-        updateDialog(DataDialog(EDIT, -1))
+        updateDialog(DataDialog(CREATE, -1))
     }
 }

@@ -158,14 +158,17 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun deleteCategory(category: Category) {
-
         catList.remove(category)
+        expenseCatListEmit(dd.catList.filter { it.type == EXPENSE.type })
+        incomeCatListEmit(dd.catList.filter { it.type == INCOME.type })
         catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
         catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
 
     override suspend fun insertCategory(category: Category) {
         catList.add(category)
+        expenseCatListEmit(dd.catList.filter { it.type == EXPENSE.type })
+        incomeCatListEmit(dd.catList.filter { it.type == INCOME.type })
         expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
         incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
         catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
@@ -173,7 +176,6 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun updateCategory(category: Category) {
-
         catList.replace(catList.find { it.id == category.id }!!, category)
         catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
         catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
