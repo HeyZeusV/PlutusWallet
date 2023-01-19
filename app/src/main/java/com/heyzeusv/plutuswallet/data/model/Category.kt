@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
 
 /**
  *  Representation of Category table.
@@ -31,5 +33,6 @@ interface DataInterface {
 
 data class DataDialog(
     val action: DataListSelectedAction,
-    val id: Int
+    val id: Int,
+    val type: TransactionType = EXPENSE
 )

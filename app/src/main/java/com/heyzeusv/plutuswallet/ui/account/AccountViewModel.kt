@@ -76,7 +76,7 @@ class AccountViewModel @Inject constructor(
     }
 
     /**
-     *  If Account exists, creates SnackBar telling user so, else creates account with [name].
+     *  If Account exists, creates SnackBar telling user so, else creates Account with [name].
      */
     fun createNewAccount(name: String) {
         val exists = _accountList.value.find { it.name == name }

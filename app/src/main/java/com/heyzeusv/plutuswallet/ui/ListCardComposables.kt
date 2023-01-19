@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.pager.PagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
@@ -50,10 +50,11 @@ import com.heyzeusv.plutuswallet.util.PWAlertDialog
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ListCard(
+    pagerState: PagerState,
     snackbarHostState: SnackbarHostState,
     dataLists: List<List<DataInterface>>,
     usedDataLists: List<List<DataInterface>>,
-    listSubtitles: List<String> = listOf(""),
+    listSubtitles: List<String> = emptyList(),
     onClick: (DataDialog) -> Unit,
     showDialog: DataDialog,
     createDialogTitle: String,
@@ -65,8 +66,6 @@ fun ListCard(
     dialogOnDismiss: (DataDialog) -> Unit,
     existsName: String
 ) {
-    val pagerState = rememberPagerState()
-
     val dataListsSize = dataLists.size
     val existsMessage = stringResource(R.string.snackbar_exists, existsName)
 
@@ -97,7 +96,7 @@ fun ListCard(
                 state = pagerState
             ) { page ->
                 Column {
-                    if (dataLists.isNotEmpty()) {
+                    if (listSubtitles.isNotEmpty()) {
                         Text(
                             text = listSubtitles[page],
                             modifier = Modifier

@@ -9,6 +9,7 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
+import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.Event
@@ -106,18 +107,34 @@ class CategoryViewModel @Inject constructor(
     }
 
     /**
-     *  Event to edit name of selected [category].
+     *  Removes [category] from database.
      */
-    fun editCategory(category: DataInterface, newName: String) {
-
+    fun deleteCategory(category: DataInterface) {
+        viewModelScope.launch {
+            tranRepo.deleteCategory(category as Category)
+        }
+        updateDialog(DataDialog(DELETE, -1))
     }
 
     /**
-     *  Event to delete selected [category].
+     *  If name exists, creates Snackbar telling user so, else updates [category] with [newName]
      */
-    fun deleteCategory(category: DataInterface) {
-
-
+    fun editCategory(data: DataInterface, newName: String) {
+        val category = (data as Category)
+        val exists = if (category.type == EXPENSE.type) {
+            _expenseCatList.value.find { it.name == newName }
+        } else {
+            _incomeCatList.value.find { it.name == newName }
+        }
+        if (exists != null) {
+            updateCategoryExists(newName)
+        } else {
+            viewModelScope.launch {
+                category.name = newName
+                tranRepo.updateCategory(category)
+            }
+            updateDialog(DataDialog(EDIT, -1))
+        }
     }
 
     /**
@@ -191,21 +208,24 @@ class CategoryViewModel @Inject constructor(
     }
 
     /**
-     *  If Category exists, creates SnackBar event telling user so,
-     *  else creates and inserts [category] in [type] list with [name].
+     *  If Category exists, creates SnackBar telling user so, else creates Category with [name].
      */
-    fun createNewCategory(name: String /*, type: Int*/) {
-
-//        if (catNames[type].contains(name)) {
-//            _existsCategoryEvent.value = Event(name)
-//        } else {
-//            // adds new name to list to prevent new Category with same name
-//            catNames[type].add(name)
-//            category.name = name
-//            category.type = if (type == 0) "Expense" else "Income"
-//            viewModelScope.launch {
-//                tranRepo.insertCategory(category)
-//            }
-//        }
+    fun createNewCategory(name: String) {
+        // use type passed along with DataDialog to determine if Expense or Income Category
+        val type = showDialog.value.type
+        val exists = if (type == EXPENSE) {
+            _expenseCatList.value.find { it.name == name }
+        } else {
+            _incomeCatList.value.find { it.name == name }
+        }
+        if (exists != null) {
+            updateCategoryExists(name)
+        } else {
+            viewModelScope.launch {
+                val newCategory = Category(0, name, type.type)
+                tranRepo.insertCategory(newCategory)
+            }
+        }
+        updateDialog(DataDialog(EDIT, -1, type))
     }
 }

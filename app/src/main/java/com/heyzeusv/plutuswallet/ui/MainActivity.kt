@@ -57,6 +57,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
@@ -73,7 +75,8 @@ import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.ui.transaction.FilterState
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionScreen
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
@@ -152,6 +155,7 @@ class MainActivity : BaseActivity() {
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PlutusWalletApp(
@@ -204,6 +208,9 @@ fun PlutusWalletApp(
     val incomeCatUsedList by categoryVM.incomeCatUsedList.collectAsState()
     val categoryListShowDialog by categoryVM.showDialog.collectAsState()
     val categoryListExists by categoryVM.categoryExists.collectAsState()
+
+    val accountListPagerState = rememberPagerState()
+    val categoryListPagerState = rememberPagerState()
 
     PlutusWalletTheme {
         LaunchedEffect(key1 = filterInfo) {
@@ -259,7 +266,11 @@ fun PlutusWalletApp(
                             }
                             TransactionDestination -> { tranVM.saveTransaction() }
                             AccountsDestination -> { accountVM.updateDialog(DataDialog(CREATE, 0)) }
-                            CategoriesDestination -> { categoryVM.updateDialog(DataDialog(CREATE, 0)) }
+                            CategoriesDestination -> {
+                                val type =
+                                    if (categoryListPagerState.currentPage == 0) EXPENSE else INCOME
+                                categoryVM.updateDialog(DataDialog(CREATE, 0, type))
+                            }
                         }
                     }
                 )
@@ -311,11 +322,11 @@ fun PlutusWalletApp(
                         categoryFilterOnClick = filterVM::updateCategoryFilter,
                         filterTypeSelected,
                         filterUpdateTypeSelected = filterVM::updateTypeSelected,
-                        categoryList = if (filterTypeSelected == TransactionType.EXPENSE)
+                        categoryList = if (filterTypeSelected == EXPENSE)
                             expenseCatNameList else incomeCatNameList,
-                        categorySelected = if (filterTypeSelected == TransactionType.EXPENSE)
+                        categorySelected = if (filterTypeSelected == EXPENSE)
                             expenseCatSelected else incomeCatSelected,
-                        categoryChipOnClick = if (filterTypeSelected == TransactionType.EXPENSE)
+                        categoryChipOnClick = if (filterTypeSelected == EXPENSE)
                             filterVM::updateExpenseCatSelected else filterVM::updateIncomeCatSelected,
                         dateFilterSelected,
                         dateFilterOnClick = filterVM::updateDateFilter,
@@ -335,6 +346,7 @@ fun PlutusWalletApp(
                 }
                 composable(AccountsDestination.route){
                     ListCard(
+                        pagerState = accountListPagerState,
                         snackbarHostState = scaffoldState.snackbarHostState,
                         dataLists = listOf(accountList),
                         usedDataLists = listOf(accountsUsedList),
@@ -354,6 +366,7 @@ fun PlutusWalletApp(
                     val expenseSubtitle = stringResource(R.string.type_expense)
                     val incomeSubtitle = stringResource(R.string.type_income)
                     ListCard(
+                        pagerState = categoryListPagerState,
                         snackbarHostState = scaffoldState.snackbarHostState,
                         dataLists = listOf(expenseCatList, incomeCatList),
                         usedDataLists = listOf(expenseCatUsedList, incomeCatUsedList),
