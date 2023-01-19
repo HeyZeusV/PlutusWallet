@@ -334,7 +334,7 @@ fun PlutusWalletApp(
                     )
                 }
                 composable(AccountsDestination.route){
-                    DataScreen(
+                    ListCard(
                         snackbarHostState = scaffoldState.snackbarHostState,
                         dataLists = listOf(accountList),
                         usedDataLists = listOf(accountsUsedList),
@@ -353,7 +353,7 @@ fun PlutusWalletApp(
                 composable(CategoriesDestination.route) {
                     val expenseSubtitle = stringResource(R.string.type_expense)
                     val incomeSubtitle = stringResource(R.string.type_income)
-                    DataScreen(
+                    ListCard(
                         snackbarHostState = scaffoldState.snackbarHostState,
                         dataLists = listOf(expenseCatList, incomeCatList),
                         usedDataLists = listOf(expenseCatUsedList, incomeCatUsedList),

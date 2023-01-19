@@ -49,7 +49,7 @@ import com.heyzeusv.plutuswallet.util.PWAlertDialog
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun DataScreen(
+fun ListCard(
     snackbarHostState: SnackbarHostState,
     dataLists: List<List<DataInterface>>,
     usedDataLists: List<List<DataInterface>>,
