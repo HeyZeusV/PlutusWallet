@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.ui
 
 import androidx.activity.viewModels
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -26,18 +27,11 @@ class AccountTests : BaseTest() {
 
     @Test
     fun account_createNewAccount() {
+        val createNew = hasContentDescription(res.getString(R.string.account_new))
         navigateToAccountScreen()
 
         val testAccount = "Test Account"
-        // create new Account
-        composeRule.onNode(hasContentDescription(res.getString(R.string.account_new)))
-            .performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(testAccount)
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
+        dialogAction(createNew, testAccount, "AlertDialog confirm")
 
         // check that new Account was created then check all
         composeRule.onNodeWithText(testAccount).assertExists()
@@ -46,17 +40,10 @@ class AccountTests : BaseTest() {
 
     @Test
     fun account_createNewAccountExists() {
+        val createNew = hasContentDescription(res.getString(R.string.account_new))
         navigateToAccountScreen()
 
-        // create new Account with existing name
-        composeRule.onNode(hasContentDescription(res.getString(R.string.account_new)))
-            .performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(dd.acc1.name)
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
+        dialogAction(createNew, dd.acc1.name, "AlertDialog confirm")
 
         // check that snackbar with message appears
         composeRule.onNodeWithText(res.getString(R.string.snackbar_exists, dd.acc1.name))
@@ -67,18 +54,11 @@ class AccountTests : BaseTest() {
 
     @Test
     fun account_createNewAccountDismiss() {
+        val createNew = hasContentDescription(res.getString(R.string.account_new))
         navigateToAccountScreen()
 
         val testAccount = "Test Account"
-        // create new Account
-        composeRule.onNode(hasContentDescription(res.getString(R.string.account_new)))
-            .performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(testAccount)
-        composeRule.onNode(
-            hasTestTag("AlertDialog dismiss"),
-            useUnmergedTree = true
-        ).performClick()
+        dialogAction(createNew, testAccount, "AlertDialog dismiss")
 
         // check that new Account was not created then check all
         composeRule.onNodeWithText(testAccount).assertDoesNotExist()
@@ -90,14 +70,7 @@ class AccountTests : BaseTest() {
         navigateToAccountScreen()
 
         val newName = "New Test Name"
-        // edit Account
-        composeRule.onNode(hasTestTag("${dd.acc5.name} Edit")).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(newName)
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
+        dialogAction(hasTestTag("${dd.acc5.name} Edit"), newName, "AlertDialog confirm")
 
         // check for updated name then check all
         composeRule.onNodeWithText(newName).assertExists()
@@ -108,14 +81,7 @@ class AccountTests : BaseTest() {
     fun account_editAccountExists() {
         navigateToAccountScreen()
 
-        // edit Account
-        composeRule.onNode(hasTestTag("${dd.acc5.name} Edit")).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(dd.acc2.name)
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
+        dialogAction(hasTestTag("${dd.acc5.name} Edit"), dd.acc2.name, "AlertDialog confirm")
 
         // check that snackbar with message appears then check all
         composeRule.onNodeWithText(res.getString(R.string.snackbar_exists, dd.acc2.name))
@@ -127,14 +93,7 @@ class AccountTests : BaseTest() {
     fun account_editAccountDismiss() {
         navigateToAccountScreen()
 
-        // edit Account
-        composeRule.onNode(hasTestTag("${dd.acc5.name} Edit")).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(dd.acc2.name)
-        composeRule.onNode(
-            hasTestTag("AlertDialog dismiss"),
-            useUnmergedTree = true
-        ).performClick()
+        dialogAction(hasTestTag("${dd.acc5.name} Edit"), dd.acc2.name, "AlertDialog dismiss")
 
         // check that Account exists unedited then check all
         composeRule.onNodeWithText(dd.acc5.name).assertExists()
@@ -145,13 +104,7 @@ class AccountTests : BaseTest() {
     fun account_deleteAccount() {
         navigateToAccountScreen()
 
-        // delete Account
-        composeRule.onNode(hasTestTag("${dd.acc5.name} Delete")).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
+        dialogAction(hasTestTag("${dd.acc5.name} Delete"), "", "AlertDialog confirm")
 
         // check that account is Deleted then check all
         composeRule.onNodeWithText(dd.acc5.name).assertDoesNotExist()
@@ -162,17 +115,27 @@ class AccountTests : BaseTest() {
     fun account_deleteAccountDismiss() {
         navigateToAccountScreen()
 
-        // open delete dialog but dismiss
-        composeRule.onNode(hasTestTag("${dd.acc5.name} Delete")).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(
-            hasTestTag("AlertDialog dismiss"),
-            useUnmergedTree = true
-        ).performClick()
+        dialogAction(hasTestTag("${dd.acc5.name} Delete"), "", "AlertDialog dismiss")
 
         // check that Account still exists then check all
         composeRule.onNodeWithText(dd.acc5.name).assertExists()
         checkAccountsAndDeleteState()
+    }
+
+    /**
+     *  Clicks on [node] then types in [name] into input field if it is not empty and
+     *  performs [action].
+     */
+    private fun dialogAction(node: SemanticsMatcher, name: String, action: String) {
+        composeRule.onNode(node).performClick()
+        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
+        if (name.isNotBlank()) {
+            composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(name)
+        }
+        composeRule.onNode(
+            hasTestTag(action),
+            useUnmergedTree = true
+        ).performClick()
     }
 
     private fun navigateToAccountScreen() {
