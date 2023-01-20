@@ -4,7 +4,8 @@
     <string name="about_by_name">By Jesus E. Valdes</string>
     <string name="about_changelog">Changelog</string>
     <string name="about_contact_me">Questions, comments, or concerns? \nFeel free to email me at</string>
-    <string name="about_email" translatable="false"><![CDATA[<a href=\"mailto:heyzeusvapps@gmail.com?subject=Plutus\' Wallet\">heyzeusvapps@gmail.com</a>]]></string>
+    <string name="about_email_link" translatable="false">mailto:heyzeusvapps@gmail.com?subject=Plutus\' Wallet</string>
+    <string name="app_email" translatable="false">heyzeusvapps@gmail.com</string>
     <string name="about_external_libraries">External Libraries Used</string>
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
@@ -41,7 +42,7 @@
     <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
     <string name="library_circleindicator" translatable="false">CircleIndicator</string>
     <string name="library_mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>
-    <string name="library_mpandroidchart_github" translatable="false"><![CDATA[<a href=\"https://github.com/PhilJay/MPAndroidChart\">GitHub</a>]]></string>
+    <string name="library_mpandroidchart_github" translatable="false">https://github.com/PhilJay/MPAndroidChart</string>
     <string name="period_days">Days</string>
     <string name="period_months">Months</string>
     <string name="period_weeks">Weeks</string>
@@ -100,7 +101,8 @@
     <string name="cfl_overview">Overview</string>
     <string name="cfl_drawer_description">Open Navigation Drawer</string>
     <string name="navigate_back">Navigate Back</string>
-    <string name="app_github" translatable="false"><![CDATA[<a href=\"https://github.com/HeyZeusV/PlutusWallet\">GitHub</a>]]></string>
+    <string name="app_github_link" translatable="false">https://github.com/HeyZeusV/PlutusWallet</string>
+    <string name="about_github" translatable="false">GitHub</string>
     <string name="preferences_theme">Theme</string>
     <string name="preferences_theme_light">Light</string>
     <string name="preferences_theme_dark">Dark</string>

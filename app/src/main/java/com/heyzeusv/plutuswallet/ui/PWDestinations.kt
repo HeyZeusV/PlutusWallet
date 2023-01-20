@@ -77,7 +77,7 @@ object AboutDestination: PWDestination {
 
 val PWScreens = listOf(
     OverviewDestination, TransactionDestination, AccountsDestination,
-    CategoriesDestination, SettingsDestination, AccountsDestination
+    CategoriesDestination, SettingsDestination, AboutDestination
 )
 
 val Blank: ImageVector get() = materialIcon(name = "Filled.Blank") { materialPath { } }

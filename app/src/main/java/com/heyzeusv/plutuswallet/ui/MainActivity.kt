@@ -50,7 +50,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -273,6 +272,7 @@ fun PlutusWalletApp(
                                     if (categoryListPagerState.currentPage == 0) EXPENSE else INCOME
                                 categoryVM.updateDialog(DataDialog(CREATE, 0, type))
                             }
+                            else -> {}
                         }
                     }
                 )
@@ -386,7 +386,7 @@ fun PlutusWalletApp(
                     )
                 }
                 composable(SettingsDestination.route) { }
-                composable(AboutDestination.route) { }
+                composable(AboutDestination.route) { AboutScreen() }
             }
         }
     }
@@ -513,6 +513,10 @@ fun PWDrawer(
                             PWDrawerItems.CATEGORIES -> {
                                 closeDrawer()
                                 navController.navigateSingleTopTo(CategoriesDestination.route)
+                            }
+                            PWDrawerItems.ABOUT -> {
+                                closeDrawer()
+                                navController.navigateSingleTopTo(AboutDestination.route)
                             }
                             else -> { }
                         }
