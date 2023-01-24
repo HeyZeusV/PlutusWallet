@@ -2,6 +2,7 @@ package com.heyzeusv.plutuswallet.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
@@ -122,6 +123,7 @@ class MainActivity : BaseActivity() {
             CompositionLocalProvider(LocalPWColors provides pwColors) {
                 PlutusWalletTheme {
                     PlutusWalletApp(
+                        sharedPref,
                         tranListVM,
                         chartVM,
                         filterVM,
@@ -160,6 +162,7 @@ class MainActivity : BaseActivity() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PlutusWalletApp(
+    sharedPref: SharedPreferences,
     tranListVM: TransactionListViewModel,
     chartVM: ChartViewModel,
     filterVM: FilterViewModel,
@@ -385,7 +388,7 @@ fun PlutusWalletApp(
                         existsName = categoryListExists
                     )
                 }
-                composable(SettingsDestination.route) { }
+                composable(SettingsDestination.route) { SettingsScreen(sharedPref) }
                 composable(AboutDestination.route) { AboutScreen() }
             }
         }
@@ -518,7 +521,10 @@ fun PWDrawer(
                                 closeDrawer()
                                 navController.navigateSingleTopTo(AboutDestination.route)
                             }
-                            else -> { }
+                            PWDrawerItems.SETTINGS -> {
+                                closeDrawer()
+                                navController.navigateSingleTopTo(SettingsDestination.route)
+                            }
                         }
                     },
                     icon = item.icon,

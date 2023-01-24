@@ -63,7 +63,7 @@
     <string-array name="language_array">
         <item>English</item>
         <item>Deutsche</item>
-        <item>Español (latinoamericano)</item>
+        <item>Español (latino americano)</item>
         <item>हिंदी</item>
         <item>日本語</item>
         <item>한국어</item>
@@ -78,5 +78,25 @@
         <item>ja</item>
         <item>ko</item>
         <item>th</item>
+    </string-array>
+
+    <string-array name="symbol_side_array">
+        <item>Left</item>
+        <item>Right</item>
+    </string-array>
+
+    <string-array name="symbol_side_key_array">
+        <item>true</item>
+        <item>false</item>
+    </string-array>
+
+    <string-array name="number_decimal_array">
+        <item>Yes 123.45</item>
+        <item>No  123</item>
+    </string-array>
+
+    <string-array name="number_decimal_key_array">
+        <item>true</item>
+        <item>false</item>
     </string-array>
 </resources>
