@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">Se pueden usar lugares decimales.</string>
     <string name="preferences_decimal_symbol">Símbolo separador decimal</string>
     <string name="preferences_language">Idioma</string>
-    <string name="preferences_number_decimal">Lugares decimales</string>
-    <string name="preferences_symbol_side">Lado del símbolo de moneda</string>
+    <string name="preferences_decimal_number">Lugares decimales</string>
+    <string name="preferences_currency_symbol_side">Lado del símbolo de moneda</string>
     <string name="preferences_symbol_side_summary_off">El símbolo de moneda aparecerá en el lado derecho.</string>
     <string name="preferences_symbol_side_summary_on">El símbolo de moneda aparecerá en el lado izquierdo.</string>
     <string name="preferences_thousands_symbol">Símbolo del separador de miles</string>

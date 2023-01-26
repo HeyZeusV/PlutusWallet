@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">小数点以下の場所を使用できます。</string>
     <string name="preferences_decimal_symbol">小数点記号</string>
     <string name="preferences_language">言語</string>
-    <string name="preferences_number_decimal">小数位</string>
-    <string name="preferences_symbol_side">通貨記号側</string>
+    <string name="preferences_decimal_number">小数位</string>
+    <string name="preferences_currency_symbol_side">通貨記号側</string>
     <string name="preferences_symbol_side_summary_off">通貨記号が右側に表示されます。</string>
     <string name="preferences_symbol_side_summary_on">通貨記号が左側に表示されます。</string>
     <string name="preferences_thousands_symbol">数千の区切り記号</string>

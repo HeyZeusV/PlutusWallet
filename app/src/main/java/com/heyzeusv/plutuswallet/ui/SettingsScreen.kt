@@ -38,8 +38,8 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
 import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions
-import com.heyzeusv.plutuswallet.util.Key
-import timber.log.Timber
+import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
+import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
 
 @Composable
 fun SettingsScreen(sharedPref: SharedPreferences) {
@@ -51,30 +51,28 @@ fun SettingsScreen(sharedPref: SharedPreferences) {
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            SettingOptions.values().forEach { option ->
-                Setting(
-                    title = stringResource(option.titleId),
-                    keys = stringArrayResource(option.keyId),
-                    values = stringArrayResource(option.valueId),
-                    sharedPrefKey = option.key,
-                    sharedPref
-                )
-            }
+            SettingOptions.values().forEach { setting -> Setting(setting, sharedPref) }
         }
     }
-    Timber.d(sharedPref.all.toString())
 }
 
 @Composable
 fun Setting(
-    title: String,
-    keys: Array<String>,
-    values: Array<String>,
-    sharedPrefKey: Key,
+    setting: SettingOptions,
     sharedPref: SharedPreferences
 ) {
+    val valueArray = stringArrayResource(setting.valueArrayId)
+    val displayArray = stringArrayResource(setting.displayArrayId)
+    val options = valueArray.zip(displayArray).toMap()
+
+    val optionSelectedValue = sharedPref[setting.key, valueArray[0]]
+    var optionSelectedDisplay by remember { mutableStateOf(options[optionSelectedValue] ?: "") }
+
     var openDialog by remember { mutableStateOf(false) }
 
+    /**
+     *  TODO?: Settings ViewModel, updateSetting(key, value) { when(key) -> updateSpecificSetting(value) }
+     */
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,8 +80,14 @@ fun Setting(
     ) {
         if (openDialog) {
             ListAlertDialog(
-                title = title,
-                options = keys.zip(values).toMap(),
+                setting,
+                optionSelectedValue,
+                options,
+                onConfirm = {
+                    sharedPref[setting.key] = it
+                    optionSelectedDisplay = options.getValue(it)
+                    openDialog = false
+                },
                 onDismiss = { openDialog = false }
             )
         }
@@ -94,14 +98,14 @@ fun Setting(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = title,
+                text = stringResource(setting.titleId),
                 style = MaterialTheme.typography.subtitle1.copy(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
             )
             Text(
-                text = "Blah",
+                text = optionSelectedDisplay,
                 style = MaterialTheme.typography.subtitle2
             )
         }
@@ -110,11 +114,15 @@ fun Setting(
 
 @Composable
 fun ListAlertDialog(
-    title: String,
+    setting: SettingOptions,
+    initialValue: String,
     options: Map<String, String>,
+    onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(initialValue) }
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier.testTag("AlertDialog"),
@@ -133,7 +141,7 @@ fun ListAlertDialog(
                     )
                 ) {
                     Text(
-                        text = title,
+                        text = stringResource(setting.titleId),
                         style = MaterialTheme.typography.subtitle1
                     )
                     Column(modifier = Modifier.selectableGroup()) {
@@ -142,14 +150,14 @@ fun ListAlertDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .selectable(
-                                        selected = true,
+                                        selected = (entry.key == selectedOption),
                                         role = Role.RadioButton,
-                                        onClick = { }
+                                        onClick = { onOptionSelected(entry.key) }
                                     )
                                     .padding(horizontal = 16.dp)
                             ) {
                                 RadioButton(
-                                    selected = true,
+                                    selected = (entry.key == selectedOption),
                                     onClick = null // recommended for accessibility by Google
                                 )
                                 Text(
@@ -178,7 +186,7 @@ fun ListAlertDialog(
                         )
                     }
                     TextButton(
-                        onClick = { }
+                        onClick = { onConfirm(selectedOption) }
                     ) {
                         Text(
                             text = stringResource(R.string.alert_dialog_save).uppercase(),

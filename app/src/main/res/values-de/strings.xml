@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">Nachkommastellen können verwendet werden.</string>
     <string name="preferences_decimal_symbol">Dezimaltrennzeichen</string>
     <string name="preferences_language">Sprache</string>
-    <string name="preferences_number_decimal">Nachkommastellen</string>
-    <string name="preferences_symbol_side">Währungssymbol Seite</string>
+    <string name="preferences_decimal_number">Nachkommastellen</string>
+    <string name="preferences_currency_symbol_side">Währungssymbol Seite</string>
     <string name="preferences_symbol_side_summary_off">Das Währungssymbol wird auf der rechten Seite angezeigt.</string>
     <string name="preferences_symbol_side_summary_on">Das Währungssymbol erscheint auf der linken Seite.</string>
     <string name="preferences_thousands_symbol">Tausendertrennzeichen</string>

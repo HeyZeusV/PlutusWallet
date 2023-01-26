@@ -57,8 +57,8 @@
     <string name="preferences_decimal_places_summary_on">Decimal places can be used.</string>
     <string name="preferences_decimal_symbol">Decimal Separator Symbol</string>
     <string name="preferences_language">Language</string>
-    <string name="preferences_number_decimal">Decimal Places</string>
-    <string name="preferences_symbol_side">Currency Symbol Side</string>
+    <string name="preferences_decimal_number">Decimal Places</string>
+    <string name="preferences_currency_symbol_side">Currency Symbol Side</string>
     <string name="preferences_symbol_side_summary_off">Currency symbol will appear on right side.</string>
     <string name="preferences_symbol_side_summary_on">Currency symbol will appear on left side.</string>
     <string name="preferences_thousands_symbol">Thousands Separator Symbol</string>

@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">소수 자릿수를 사용할 수 있습니다.</string>
     <string name="preferences_decimal_symbol">소수 구분 기호</string>
     <string name="preferences_language">언어</string>
-    <string name="preferences_number_decimal">소수 자릿수</string>
-    <string name="preferences_symbol_side">통화 기호 측</string>
+    <string name="preferences_decimal_number">소수 자릿수</string>
+    <string name="preferences_currency_symbol_side">통화 기호 측</string>
     <string name="preferences_symbol_side_summary_off">통화 기호가 오른쪽에 나타납니다.</string>
     <string name="preferences_symbol_side_summary_on">통화 기호가 왼쪽에 나타납니다.</string>
     <string name="preferences_thousands_symbol">천 구분 기호</string>

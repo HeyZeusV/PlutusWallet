@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">ตำแหน่งทศนิยมสามารถใช้ได้</string>
     <string name="preferences_decimal_symbol">สัญลักษณ์ตัวแยกทศนิยม</string>
     <string name="preferences_language">ภาษา</string>
-    <string name="preferences_number_decimal">ตำแหน่งทศนิยม</string>
-    <string name="preferences_symbol_side">สัญลักษณ์สกุลเงิน</string>
+    <string name="preferences_decimal_number">ตำแหน่งทศนิยม</string>
+    <string name="preferences_currency_symbol_side">สัญลักษณ์สกุลเงิน</string>
     <string name="preferences_symbol_side_summary_off">สัญลักษณ์สกุลเงินจะปรากฏทางด้านขวา</string>
     <string name="preferences_symbol_side_summary_on">สัญลักษณ์สกุลเงินจะปรากฏขึ้นทางด้านซ้าย</string>
     <string name="preferences_thousands_symbol">สัญลักษณ์ตัวคั่นหลักพัน</string>

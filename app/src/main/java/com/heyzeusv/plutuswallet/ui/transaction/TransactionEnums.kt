@@ -29,55 +29,58 @@ enum class DataListSelectedAction {
     EDIT
 }
 
-enum class SettingOptions(val titleId: Int, val keyId: Int, val valueId: Int, val key: Key, isBool: Boolean = false) {
+enum class SettingOptions(
+    val titleId: Int,
+    val valueArrayId: Int,
+    val displayArrayId: Int,
+    val key: Key
+) {
     THEME(
         R.string.preferences_theme,
-        R.array.theme_key_array,
-        R.array.theme_array,
+        R.array.theme_value_array,
+        R.array.theme_display_array,
         Key.KEY_THEME
     ),
     CURRENCY_SYMBOL(
         R.string.preferences_currency_symbol,
-        R.array.currency_symbol_key_array,
-        R.array.currency_symbol_array,
+        R.array.currency_symbol_value_array,
+        R.array.currency_symbol_display_array,
         Key.KEY_CURRENCY_SYMBOL
     ),
-    SYMBOL_SIDE(
-        R.string.preferences_symbol_side,
-        R.array.symbol_side_key_array,
-        R.array.symbol_side_array,
-        Key.KEY_SYMBOL_SIDE,
-        true
+    CURRENCY_SYMBOL_SIDE(
+        R.string.preferences_currency_symbol_side,
+        R.array.currency_symbol_side_value_array,
+        R.array.currency_symbol_side_display_array,
+        Key.KEY_CURRENCY_SYMBOL_SIDE
     ),
     THOUSANDS_SYMBOL(
         R.string.preferences_thousands_symbol,
-        R.array.separator_symbol_key_array,
-        R.array.separator_symbol_array,
+        R.array.separator_symbol_value_array,
+        R.array.separator_symbol_display_array,
         Key.KEY_THOUSANDS_SYMBOL
     ),
     DECIMAL_SYMBOL(
         R.string.preferences_decimal_symbol,
-        R.array.separator_symbol_key_array,
-        R.array.separator_symbol_array,
+        R.array.separator_symbol_value_array,
+        R.array.separator_symbol_display_array,
         Key.KEY_DECIMAL_SYMBOL
     ),
-    NUMBER_DECIMAL(
-        R.string.preferences_number_decimal,
-        R.array.number_decimal_key_array,
-        R.array.number_decimal_array,
-        Key.KEY_DECIMAL_PLACES,
-        true
+    DECIMAL_NUMBER(
+        R.string.preferences_decimal_number,
+        R.array.decimal_number_value_array,
+        R.array.decimal_number_display_array,
+        Key.KEY_DECIMAL_NUMBER
     ),
     DATE_FORMAT(
         R.string.preferences_date_format,
-        R.array.date_format_key_array,
-        R.array.date_format_array,
+        R.array.date_format_value_array,
+        R.array.date_format_display_array,
         Key.KEY_DATE_FORMAT
     ),
     LANGUAGE(
         R.string.preferences_language,
-        R.array.language_key_array,
-        R.array.language_array,
+        R.array.language_value_array,
+        R.array.language_display_array,
         Key.KEY_LANGUAGE
     )
 }

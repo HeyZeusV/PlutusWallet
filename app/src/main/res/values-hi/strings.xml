@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">दशमलव स्थानों का उपयोग किया जा सकता है।</string>
     <string name="preferences_decimal_symbol">दशमलव विभाजक प्रतीक</string>
     <string name="preferences_language">हिन्दी</string>
-    <string name="preferences_number_decimal">दशमलव स्थान</string>
-    <string name="preferences_symbol_side">मुद्रा प्रतीक पक्ष</string>
+    <string name="preferences_decimal_number">दशमलव स्थान</string>
+    <string name="preferences_currency_symbol_side">मुद्रा प्रतीक पक्ष</string>
     <string name="preferences_symbol_side_summary_off">मुद्रा का प्रतीक दाईं ओर दिखाई देगा।</string>
     <string name="preferences_symbol_side_summary_on">मुद्रा प्रतीक बाईं ओर दिखाई देगा।</string>
     <string name="preferences_thousands_symbol">हजारों विभाजक प्रतीक</string>

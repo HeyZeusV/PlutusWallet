@@ -52,9 +52,11 @@ object PreferenceHelper {
 // SharedPreferences Keys
 enum class Key(val key: String) {
     KEY_CHART_CHANGED("key_chart_changed"),
+    KEY_CURRENCY_SYMBOL_SIDE("key_currency_symbol_side"),
     KEY_CURRENCY_SYMBOL("key_currency_symbol"),
     KEY_DATE_FORMAT("key_date_format"),
     KEY_DECIMAL_PLACES("key_decimal_places"),
+    KEY_DECIMAL_NUMBER("key_decimal_number"),
     KEY_DECIMAL_SYMBOL("key_decimal_symbol"),
     KEY_LANGUAGE("key_language"),
     KEY_LANGUAGE_CHANGED("key_language_changed"),
