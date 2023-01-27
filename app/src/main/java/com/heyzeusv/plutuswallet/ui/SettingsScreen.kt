@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -92,9 +93,6 @@ fun Setting(
 
     var openDialog by remember { mutableStateOf(false) }
 
-    /**
-     *  TODO?: Settings ViewModel, updateSetting(key, value) { when(key) -> updateSpecificSetting(value) }
-     */
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -172,12 +170,14 @@ fun ListAlertDialog(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .height(40.dp)
                                     .selectable(
                                         selected = (entry.key == selectedOption),
                                         role = Role.RadioButton,
                                         onClick = { onOptionSelected(entry.key) }
-                                    )
-                                    .padding(horizontal = 16.dp)
+                                    ),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
                                     selected = (entry.key == selectedOption),
