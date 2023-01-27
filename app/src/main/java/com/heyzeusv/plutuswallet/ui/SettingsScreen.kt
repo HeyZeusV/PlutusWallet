@@ -67,6 +67,9 @@ fun SettingsScreen(
                             }
                         )
                     }
+                    SettingOptions.THEME -> {
+                        Setting(setting, sharedPref, onConfirm = { recreateActivity() })
+                    }
                     else -> Setting(setting, sharedPref)
                 }
             }

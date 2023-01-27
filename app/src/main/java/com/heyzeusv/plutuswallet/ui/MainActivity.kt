@@ -9,7 +9,6 @@ import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -82,7 +81,6 @@ import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
-import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -116,10 +114,12 @@ class MainActivity : BaseActivity() {
             )
         }
 
-        AppCompatDelegate.setDefaultNightMode(sharedPref[Key.KEY_THEME, "-1"].toInt())
-
         setContent {
-            val pwColors = if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
+            val pwColors = when (sharedPref[Key.KEY_THEME, "-1"].toInt()) {
+                1 -> PWLightColors
+                2 -> PWDarkColors
+                else -> if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
+            }
             CompositionLocalProvider(LocalPWColors provides pwColors) {
                 PlutusWalletTheme {
                     PlutusWalletApp(
@@ -134,18 +134,6 @@ class MainActivity : BaseActivity() {
                     )
                 }
             }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // loads if view mode changed
-        val themeChanged: Boolean = sharedPref[Key.KEY_THEME_CHANGED, false]
-        if (themeChanged) {
-            sharedPref[Key.KEY_THEME_CHANGED] = false
-            // destroys then restarts Activity in order to have updated theme
-            recreate()
         }
     }
 }
