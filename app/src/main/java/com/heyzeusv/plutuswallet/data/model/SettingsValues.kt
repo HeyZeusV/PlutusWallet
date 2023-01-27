@@ -10,5 +10,7 @@ data class SettingsValues(
     var decimalSymbol: Char = '.',
     var dateFormat: Int = 0,
     var decimalFormatter: DecimalFormat = DecimalFormat("#,##0.00"),
-    var integerFormatter: DecimalFormat = DecimalFormat("#,###")
+    var integerFormatter: DecimalFormat = DecimalFormat("#,###"),
+    var decimalNumber: String = "yes",
+    var currencySymbolSide: String = "left"
 )

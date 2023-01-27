@@ -129,7 +129,8 @@ class MainActivity : BaseActivity() {
                         filterVM,
                         tranVM,
                         accountVM,
-                        categoryVM
+                        categoryVM,
+                        recreateActivity = { recreate() }
                     )
                 }
             }
@@ -146,15 +147,6 @@ class MainActivity : BaseActivity() {
             // destroys then restarts Activity in order to have updated theme
             recreate()
         }
-
-        // loads if language changed
-        val languageChanged: Boolean = sharedPref[Key.KEY_LANGUAGE_CHANGED, false]
-        if (languageChanged) {
-            // saving into SharedPreferences
-            sharedPref[Key.KEY_LANGUAGE_CHANGED] = false
-            // destroys then restarts Activity in order to have updated language
-            recreate()
-        }
     }
 }
 
@@ -168,7 +160,8 @@ fun PlutusWalletApp(
     filterVM: FilterViewModel,
     tranVM: TransactionViewModel,
     accountVM: AccountViewModel,
-    categoryVM: CategoryViewModel
+    categoryVM: CategoryViewModel,
+    recreateActivity: () -> Unit
 ) {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
@@ -388,7 +381,7 @@ fun PlutusWalletApp(
                         existsName = categoryListExists
                     )
                 }
-                composable(SettingsDestination.route) { SettingsScreen(sharedPref) }
+                composable(SettingsDestination.route) { SettingsScreen(sharedPref, recreateActivity) }
                 composable(AboutDestination.route) { AboutScreen() }
             }
         }

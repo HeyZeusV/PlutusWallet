@@ -38,11 +38,15 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
 import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions
+import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
 
 @Composable
-fun SettingsScreen(sharedPref: SharedPreferences) {
+fun SettingsScreen(
+    sharedPref: SharedPreferences,
+    recreateActivity: () -> Unit
+) {
     val scrollState = rememberScrollState()
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -51,7 +55,21 @@ fun SettingsScreen(sharedPref: SharedPreferences) {
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            SettingOptions.values().forEach { setting -> Setting(setting, sharedPref) }
+            SettingOptions.values().forEach { setting ->
+                when (setting) {
+                    SettingOptions.LANGUAGE -> {
+                        Setting(
+                            setting,
+                            sharedPref,
+                            onConfirm = {
+                                sharedPref[Key.KEY_MANUAL_LANGUAGE] = true
+                                recreateActivity()
+                            }
+                        )
+                    }
+                    else -> Setting(setting, sharedPref)
+                }
+            }
         }
     }
 }
@@ -59,7 +77,8 @@ fun SettingsScreen(sharedPref: SharedPreferences) {
 @Composable
 fun Setting(
     setting: SettingOptions,
-    sharedPref: SharedPreferences
+    sharedPref: SharedPreferences,
+    onConfirm: () -> Unit = { }
 ) {
     val valueArray = stringArrayResource(setting.valueArrayId)
     val displayArray = stringArrayResource(setting.displayArrayId)
@@ -87,6 +106,7 @@ fun Setting(
                     sharedPref[setting.key] = it
                     optionSelectedDisplay = options.getValue(it)
                     openDialog = false
+                    onConfirm()
                 },
                 onDismiss = { openDialog = false }
             )
