@@ -61,7 +61,9 @@ fun SettingsScreen(
 
     var decimalSymbolSelectedValue by remember { mutableStateOf("") }
     var thousandsSymbolSelectedValue by remember { mutableStateOf("") }
+    var decimalNumberSelectedValue by remember { mutableStateOf("") }
     var openSwitchDialog by remember { mutableStateOf(false) }
+    var openDecimalDialog by remember { mutableStateOf(false) }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -83,6 +85,27 @@ fun SettingsScreen(
                     onDismiss = { openSwitchDialog = false },
                     title = stringResource(R.string.alert_dialog_duplicate_symbols),
                     message = stringResource(R.string.alert_dialog_duplicate_symbols_warning)
+                )
+            }
+            if (openDecimalDialog) {
+                val current = sharedPref[Key.KEY_DECIMAL_NUMBER, "yes"]
+                PWAlertDialog(
+                    onConfirmText = stringResource(R.string.alert_dialog_switch),
+                    onConfirm = {
+                        when (current) {
+                            "yes" -> sharedPref[Key.KEY_DECIMAL_NUMBER] = "no"
+                            "no" -> sharedPref[Key.KEY_DECIMAL_NUMBER] = "yes"
+                        }
+                        openDecimalDialog = false
+                    },
+                    onDismissText = stringResource(R.string.alert_dialog_cancel),
+                    onDismiss = { openDecimalDialog = false },
+                    title = stringResource(R.string.alert_dialog_are_you_sure),
+                    message = if (current == "yes") {
+                        stringResource(R.string.alert_dialog_decimal_place_warning)
+                    } else {
+                        ""
+                    }
                 )
             }
             SettingSetup(THEME, sharedPref) {
@@ -111,8 +134,8 @@ fun SettingsScreen(
                 DECIMAL_SYMBOL,
                 optionSelectedDisplay = decimalSymbolSelectedValue,
                 updateOptionSelectedDisplay = { decimalSymbolSelectedValue = it },
-                sharedPref)
-            {
+                sharedPref
+            ) {
                 val thousandsSymbol = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
                 val newDecimalSymbol = it
                 if (thousandsSymbol == newDecimalSymbol) {
@@ -121,7 +144,12 @@ fun SettingsScreen(
                     sharedPref[DECIMAL_SYMBOL.key] = it
                 }
             }
-            SettingSetup(DECIMAL_NUMBER, sharedPref) { sharedPref[DECIMAL_NUMBER.key] = it }
+            SettingSetup(
+                DECIMAL_NUMBER,
+                optionSelectedDisplay = decimalNumberSelectedValue,
+                updateOptionSelectedDisplay = { decimalNumberSelectedValue = it },
+                sharedPref,
+            ) { openDecimalDialog = true }
             SettingSetup(DATE_FORMAT, sharedPref) { sharedPref[DATE_FORMAT.key] = it }
             SettingSetup(LANGUAGE, sharedPref) {
                 sharedPref[LANGUAGE.key] = it
@@ -152,8 +180,10 @@ fun SettingSetup(
         optionsMap,
         optionSelectedValue,
         optionSelectedDisplay,
-        updateOptionSelectedDisplay = { optionSelectedDisplay = it },
-        onConfirm = { onConfirm(it) }
+        onConfirm = {
+            optionSelectedDisplay = optionsMap.getValue(it)
+            onConfirm(it)
+        }
     )
 }
 
@@ -176,7 +206,6 @@ fun SettingSetup(
         optionsMap,
         optionSelectedValue,
         optionSelectedDisplay,
-        updateOptionSelectedDisplay = { updateOptionSelectedDisplay(it) },
         onConfirm = { onConfirm(it) }
     )
 }
@@ -187,7 +216,6 @@ fun Setting(
     optionsMap: Map<String, String>,
     optionSelectedValue:String,
     optionSelectedDisplay: String,
-    updateOptionSelectedDisplay: (String) -> Unit,
     onConfirm: (String) -> Unit
 ) {
     var openDialog by remember { mutableStateOf(false) }
@@ -203,7 +231,6 @@ fun Setting(
                 optionSelectedValue,
                 optionsMap,
                 onConfirm = {
-                    updateOptionSelectedDisplay(optionsMap.getValue(it))
                     openDialog = false
                     onConfirm(it)
                 },
