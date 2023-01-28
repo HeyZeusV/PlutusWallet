@@ -39,7 +39,16 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
 import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions
+import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions.CURRENCY_SYMBOL
+import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions.CURRENCY_SYMBOL_SIDE
+import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions.DATE_FORMAT
+import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions.DECIMAL_NUMBER
+import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions.DECIMAL_SYMBOL
+import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions.LANGUAGE
+import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions.THEME
+import com.heyzeusv.plutuswallet.ui.transaction.SettingOptions.THOUSANDS_SYMBOL
 import com.heyzeusv.plutuswallet.util.Key
+import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
 
@@ -50,47 +59,137 @@ fun SettingsScreen(
 ) {
     val scrollState = rememberScrollState()
 
+    var decimalSymbolSelectedValue by remember { mutableStateOf("") }
+    var thousandsSymbolSelectedValue by remember { mutableStateOf("") }
+    var openSwitchDialog by remember { mutableStateOf(false) }
+
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            SettingOptions.values().forEach { setting ->
-                when (setting) {
-                    SettingOptions.LANGUAGE -> {
-                        Setting(
-                            setting,
-                            sharedPref,
-                            onConfirm = {
-                                sharedPref[Key.KEY_MANUAL_LANGUAGE] = true
-                                recreateActivity()
-                            }
-                        )
-                    }
-                    SettingOptions.THEME -> {
-                        Setting(setting, sharedPref, onConfirm = { recreateActivity() })
-                    }
-                    else -> Setting(setting, sharedPref)
+            if (openSwitchDialog) {
+                PWAlertDialog(
+                    onConfirmText = stringResource(R.string.alert_dialog_switch),
+                    onConfirm = {
+                        val oldDecimal = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
+                        val oldThousands = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
+                        sharedPref[Key.KEY_THOUSANDS_SYMBOL] = oldDecimal
+                        sharedPref[Key.KEY_DECIMAL_SYMBOL] = oldThousands
+                        openSwitchDialog = false
+                    },
+                    onDismissText = stringResource(R.string.alert_dialog_cancel),
+                    onDismiss = { openSwitchDialog = false },
+                    title = stringResource(R.string.alert_dialog_duplicate_symbols),
+                    message = stringResource(R.string.alert_dialog_duplicate_symbols_warning)
+                )
+            }
+            SettingSetup(THEME, sharedPref) {
+                sharedPref[THEME.key] = it
+                recreateActivity()
+            }
+            SettingSetup(CURRENCY_SYMBOL, sharedPref) { sharedPref[CURRENCY_SYMBOL.key] = it }
+            SettingSetup(CURRENCY_SYMBOL_SIDE, sharedPref) {
+                sharedPref[CURRENCY_SYMBOL_SIDE.key] = it
+             }
+            SettingSetup(
+                THOUSANDS_SYMBOL,
+                optionSelectedDisplay = thousandsSymbolSelectedValue,
+                updateOptionSelectedDisplay = { thousandsSymbolSelectedValue = it },
+                sharedPref
+            ) {
+                val decimalSymbol = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
+                val newThousandsSymbol = it
+                if (decimalSymbol == newThousandsSymbol) {
+                    openSwitchDialog = true
+                } else {
+                    sharedPref[THOUSANDS_SYMBOL.key] = it
                 }
+            }
+            SettingSetup(
+                DECIMAL_SYMBOL,
+                optionSelectedDisplay = decimalSymbolSelectedValue,
+                updateOptionSelectedDisplay = { decimalSymbolSelectedValue = it },
+                sharedPref)
+            {
+                val thousandsSymbol = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
+                val newDecimalSymbol = it
+                if (thousandsSymbol == newDecimalSymbol) {
+                    openSwitchDialog = true
+                } else {
+                    sharedPref[DECIMAL_SYMBOL.key] = it
+                }
+            }
+            SettingSetup(DECIMAL_NUMBER, sharedPref) { sharedPref[DECIMAL_NUMBER.key] = it }
+            SettingSetup(DATE_FORMAT, sharedPref) { sharedPref[DATE_FORMAT.key] = it }
+            SettingSetup(LANGUAGE, sharedPref) {
+                sharedPref[LANGUAGE.key] = it
+                sharedPref[Key.KEY_MANUAL_LANGUAGE] = true
+                recreateActivity()
             }
         }
     }
 }
 
 @Composable
-fun Setting(
+fun SettingSetup(
     setting: SettingOptions,
     sharedPref: SharedPreferences,
-    onConfirm: () -> Unit = { }
+    onConfirm: (String) -> Unit
 ) {
     val valueArray = stringArrayResource(setting.valueArrayId)
     val displayArray = stringArrayResource(setting.displayArrayId)
-    val options = valueArray.zip(displayArray).toMap()
+    val optionsMap = valueArray.zip(displayArray).toMap()
 
     val optionSelectedValue = sharedPref[setting.key, valueArray[0]]
-    var optionSelectedDisplay by remember { mutableStateOf(options[optionSelectedValue] ?: "") }
+    var optionSelectedDisplay by remember {
+        mutableStateOf(optionsMap[optionSelectedValue] ?: "")
+    }
 
+    Setting(
+        setting,
+        optionsMap,
+        optionSelectedValue,
+        optionSelectedDisplay,
+        updateOptionSelectedDisplay = { optionSelectedDisplay = it },
+        onConfirm = { onConfirm(it) }
+    )
+}
+
+@Composable
+fun SettingSetup(
+    setting: SettingOptions,
+    optionSelectedDisplay: String,
+    updateOptionSelectedDisplay: (String) -> Unit,
+    sharedPref: SharedPreferences,
+    onConfirm: (String) -> Unit
+) {
+    val valueArray = stringArrayResource(setting.valueArrayId)
+    val displayArray = stringArrayResource(setting.displayArrayId)
+    val optionsMap = valueArray.zip(displayArray).toMap()
+
+    val optionSelectedValue = sharedPref[setting.key, valueArray[0]]
+    updateOptionSelectedDisplay(optionsMap[optionSelectedValue] ?: "")
+    Setting(
+        setting,
+        optionsMap,
+        optionSelectedValue,
+        optionSelectedDisplay,
+        updateOptionSelectedDisplay = { updateOptionSelectedDisplay(it) },
+        onConfirm = { onConfirm(it) }
+    )
+}
+
+@Composable
+fun Setting(
+    setting: SettingOptions,
+    optionsMap: Map<String, String>,
+    optionSelectedValue:String,
+    optionSelectedDisplay: String,
+    updateOptionSelectedDisplay: (String) -> Unit,
+    onConfirm: (String) -> Unit
+) {
     var openDialog by remember { mutableStateOf(false) }
 
     Surface(
@@ -100,14 +199,13 @@ fun Setting(
     ) {
         if (openDialog) {
             ListAlertDialog(
-                setting,
+                title = stringResource(setting.titleId),
                 optionSelectedValue,
-                options,
+                optionsMap,
                 onConfirm = {
-                    sharedPref[setting.key] = it
-                    optionSelectedDisplay = options.getValue(it)
+                    updateOptionSelectedDisplay(optionsMap.getValue(it))
                     openDialog = false
-                    onConfirm()
+                    onConfirm(it)
                 },
                 onDismiss = { openDialog = false }
             )
@@ -135,7 +233,7 @@ fun Setting(
 
 @Composable
 fun ListAlertDialog(
-    setting: SettingOptions,
+    title: String,
     initialValue: String,
     options: Map<String, String>,
     onConfirm: (String) -> Unit,
@@ -162,7 +260,7 @@ fun ListAlertDialog(
                     )
                 ) {
                     Text(
-                        text = stringResource(setting.titleId),
+                        text = title,
                         style = MaterialTheme.typography.subtitle1
                     )
                     Column(modifier = Modifier.selectableGroup()) {
