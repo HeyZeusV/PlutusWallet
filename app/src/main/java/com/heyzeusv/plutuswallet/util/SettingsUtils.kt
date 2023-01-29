@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import java.math.RoundingMode
+import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -16,8 +17,7 @@ object SettingsUtils {
     /**
      *  Returns currency symbol by using [symbolKey] from settings.
      */
-    private fun getCurrencySymbol(symbolKey: String): String {
-
+    fun getCurrencySymbol(symbolKey: String): String {
         return when (symbolKey) {
             "dollar" -> "$"
             "euro" -> "€"
@@ -33,7 +33,6 @@ object SettingsUtils {
      *  Returns separator symbol by using [symbolKey] from settings.
      */
     fun getSeparatorSymbol(symbolKey: String): Char {
-
         return when (symbolKey) {
             "comma" -> ','
             "period" -> '.'
@@ -74,10 +73,12 @@ object SettingsUtils {
         val integerFormatter = DecimalFormat("#,###", customSymbols)
             .apply { roundingMode = RoundingMode.HALF_UP }
 
+        val dateFormatter = DateFormat.getDateInstance(dateFormat)
+
         return SettingsValues(
             currencySymbol, symbolSide, thousandsSymbol, decimalPlaces,
             decimalSymbol, dateFormat, decimalFormatter, integerFormatter,
-            decimalNumber, currencySymbolSide
+            decimalNumber, currencySymbolSide, dateFormatter
         )
     }
 }

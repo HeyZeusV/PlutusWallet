@@ -51,19 +51,21 @@ import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
+import com.heyzeusv.plutuswallet.util.SettingsUtils
+import java.lang.NumberFormatException
 
 @Composable
 fun SettingsScreen(
+    setVM: SettingsViewModel,
     sharedPref: SharedPreferences,
     recreateActivity: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
-
     var decimalSymbolSelectedValue by remember { mutableStateOf("") }
     var thousandsSymbolSelectedValue by remember { mutableStateOf("") }
     var decimalNumberSelectedValue by remember { mutableStateOf("") }
     var openSwitchDialog by remember { mutableStateOf(false) }
     var openDecimalDialog by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -79,6 +81,8 @@ fun SettingsScreen(
                         val oldThousands = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
                         sharedPref[Key.KEY_THOUSANDS_SYMBOL] = oldDecimal
                         sharedPref[Key.KEY_DECIMAL_SYMBOL] = oldThousands
+                        setVM.updateDecimalSymbol(SettingsUtils.getSeparatorSymbol(oldDecimal))
+                        setVM.updateThousandsSymbol(SettingsUtils.getSeparatorSymbol(oldThousands))
                         openSwitchDialog = false
                     },
                     onDismissText = stringResource(R.string.alert_dialog_cancel),
@@ -93,8 +97,14 @@ fun SettingsScreen(
                     onConfirmText = stringResource(R.string.alert_dialog_switch),
                     onConfirm = {
                         when (current) {
-                            "yes" -> sharedPref[Key.KEY_DECIMAL_NUMBER] = "no"
-                            "no" -> sharedPref[Key.KEY_DECIMAL_NUMBER] = "yes"
+                            "yes" -> {
+                                sharedPref[Key.KEY_DECIMAL_NUMBER] = "no"
+                                setVM.updateDecimalNumber("no")
+                            }
+                            "no" -> {
+                                sharedPref[Key.KEY_DECIMAL_NUMBER] = "yes"
+                                setVM.updateDecimalNumber("yes")
+                            }
                         }
                         openDecimalDialog = false
                     },
@@ -112,9 +122,13 @@ fun SettingsScreen(
                 sharedPref[THEME.key] = it
                 recreateActivity()
             }
-            SettingSetup(CURRENCY_SYMBOL, sharedPref) { sharedPref[CURRENCY_SYMBOL.key] = it }
+            SettingSetup(CURRENCY_SYMBOL, sharedPref) {
+                sharedPref[CURRENCY_SYMBOL.key] = it
+                setVM.updateCurrencySymbol(SettingsUtils.getCurrencySymbol(it))
+            }
             SettingSetup(CURRENCY_SYMBOL_SIDE, sharedPref) {
                 sharedPref[CURRENCY_SYMBOL_SIDE.key] = it
+                setVM.updateCurrencySymbolSide(it)
              }
             SettingSetup(
                 THOUSANDS_SYMBOL,
@@ -127,7 +141,8 @@ fun SettingsScreen(
                 if (decimalSymbol == newThousandsSymbol) {
                     openSwitchDialog = true
                 } else {
-                    sharedPref[THOUSANDS_SYMBOL.key] = it
+                    sharedPref[THOUSANDS_SYMBOL.key] = newThousandsSymbol
+                    setVM.updateThousandsSymbol(SettingsUtils.getSeparatorSymbol(newThousandsSymbol))
                 }
             }
             SettingSetup(
@@ -141,7 +156,8 @@ fun SettingsScreen(
                 if (thousandsSymbol == newDecimalSymbol) {
                     openSwitchDialog = true
                 } else {
-                    sharedPref[DECIMAL_SYMBOL.key] = it
+                    sharedPref[DECIMAL_SYMBOL.key] = newDecimalSymbol
+                    setVM.updateDecimalSymbol(SettingsUtils.getSeparatorSymbol(newDecimalSymbol))
                 }
             }
             SettingSetup(
@@ -150,7 +166,10 @@ fun SettingsScreen(
                 updateOptionSelectedDisplay = { decimalNumberSelectedValue = it },
                 sharedPref,
             ) { openDecimalDialog = true }
-            SettingSetup(DATE_FORMAT, sharedPref) { sharedPref[DATE_FORMAT.key] = it }
+            SettingSetup(DATE_FORMAT, sharedPref) {
+                sharedPref[DATE_FORMAT.key] = it
+                setVM.updateDateFormatter( try { it.toInt() } catch (e: NumberFormatException) { 0 })
+            }
             SettingSetup(LANGUAGE, sharedPref) {
                 sharedPref[LANGUAGE.key] = it
                 sharedPref[Key.KEY_MANUAL_LANGUAGE] = true
@@ -201,6 +220,7 @@ fun SettingSetup(
 
     val optionSelectedValue = sharedPref[setting.key, valueArray[0]]
     updateOptionSelectedDisplay(optionsMap[optionSelectedValue] ?: "")
+
     Setting(
         setting,
         optionsMap,
@@ -308,9 +328,7 @@ fun ListAlertDialog(
                                     selected = (entry.key == selectedOption),
                                     onClick = null // recommended for accessibility by Google
                                 )
-                                Text(
-                                    text = entry.value
-                                )
+                                Text(text = entry.value)
                             }
                         }
                     }
@@ -333,9 +351,7 @@ fun ListAlertDialog(
                             style = alertDialogButton
                         )
                     }
-                    TextButton(
-                        onClick = { onConfirm(selectedOption) }
-                    ) {
+                    TextButton(onClick = { onConfirm(selectedOption) }) {
                         Text(
                             text = stringResource(R.string.alert_dialog_save).uppercase(),
                             modifier = Modifier.testTag("AlertDialog confirm"),

@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -196,6 +197,8 @@ fun PlutusWalletApp(
 
     val accountListPagerState = rememberPagerState()
     val categoryListPagerState = rememberPagerState()
+
+    val setVM: SettingsViewModel = viewModel()
 
     PlutusWalletTheme {
         LaunchedEffect(key1 = filterInfo) {
@@ -369,7 +372,9 @@ fun PlutusWalletApp(
                         existsName = categoryListExists
                     )
                 }
-                composable(SettingsDestination.route) { SettingsScreen(sharedPref, recreateActivity) }
+                composable(SettingsDestination.route) {
+                    SettingsScreen(setVM, sharedPref, recreateActivity)
+                }
                 composable(AboutDestination.route) { AboutScreen() }
             }
         }

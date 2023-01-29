@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 /**
  *  Tells Hilt how to provide SharedPreferences.
@@ -20,14 +21,12 @@ object AppModule {
 
     @Provides
     fun provideSharedPreference(@ApplicationContext appContext: Context): SharedPreferences {
-
         return PreferenceManager.getDefaultSharedPreferences(appContext)
     }
 
+    @Singleton
     @Provides
-    fun provideSettingsValues(@ApplicationContext appContext: Context): SettingsValues {
-
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(appContext)
+    fun provideSettingsValues(sharedPref: SharedPreferences): SettingsValues {
         return SettingsUtils.prepareSettingValues(sharedPref)
     }
 }

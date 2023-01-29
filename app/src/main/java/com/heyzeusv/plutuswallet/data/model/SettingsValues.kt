@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.data.model
 
+import java.text.DateFormat
 import java.text.DecimalFormat
 
 data class SettingsValues(
@@ -12,5 +13,6 @@ data class SettingsValues(
     var decimalFormatter: DecimalFormat = DecimalFormat("#,##0.00"),
     var integerFormatter: DecimalFormat = DecimalFormat("#,###"),
     var decimalNumber: String = "yes",
-    var currencySymbolSide: String = "left"
+    var currencySymbolSide: String = "left",
+    var dateFormatter: DateFormat
 )
