@@ -168,7 +168,7 @@ fun SettingsScreen(
             ) { openDecimalDialog = true }
             SettingSetup(DATE_FORMAT, sharedPref) {
                 sharedPref[DATE_FORMAT.key] = it
-                setVM.updateDateFormatter( try { it.toInt() } catch (e: NumberFormatException) { 0 })
+                setVM.updateDateFormatter(try { it.toInt() } catch (e: NumberFormatException) { 0 })
             }
             SettingSetup(LANGUAGE, sharedPref) {
                 sharedPref[LANGUAGE.key] = it

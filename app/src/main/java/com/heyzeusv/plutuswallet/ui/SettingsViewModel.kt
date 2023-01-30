@@ -45,6 +45,6 @@ class SettingsViewModel @Inject constructor(
     private val _dateFormatter = MutableStateFlow(settingsValues.dateFormatter)
     val dateFormatter: StateFlow<DateFormat> get() = _dateFormatter
     fun updateDateFormatter(format: Int) {
-        _dateFormatter.value = DateFormat.getDateInstance(format)
+        updateSetVals(_setVals.value.copy(dateFormatter = DateFormat.getDateInstance(format)))
     }
 }
