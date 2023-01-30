@@ -3,15 +3,24 @@ package com.heyzeusv.plutuswallet.ui
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.math.RoundingMode
 import java.text.DateFormat
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+
+private const val decimalPattern = "#,###.00"
+private const val integerPattern = "#,###"
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     settingsValues: SettingsValues
 ) : ViewModel() {
+
+    private val customSymbols = DecimalFormatSymbols(Locale.US)
 
     private val _setVals = MutableStateFlow(settingsValues)
     val setVals: StateFlow<SettingsValues> get() = _setVals
@@ -20,30 +29,44 @@ class SettingsViewModel @Inject constructor(
      *  Don't need StateFlows for theme/language Settings because recreate() is called on those
      */
 
-    private val _currencySymbol = MutableStateFlow(settingsValues.currencySymbol)
-    val currencySymbol: StateFlow<String> get() = _currencySymbol
     fun updateCurrencySymbol(newSymbol: String) {
         updateSetVals(_setVals.value.copy(currencySymbol = newSymbol))
     }
-    
-    private val _currencySymbolSide = MutableStateFlow(settingsValues.currencySymbolSide)
-    val currencySymbolSide: StateFlow<String> get() = _currencySymbolSide
-    fun updateCurrencySymbolSide(newSide: String) { _currencySymbolSide.value = newSide }
 
-    private val _thousandsSymbol = MutableStateFlow(settingsValues.thousandsSymbol)
-    val thousandsSymbol: StateFlow<Char> get() = _thousandsSymbol
-    fun updateThousandsSymbol(newSymbol: Char) { _thousandsSymbol.value = newSymbol }
+    fun updateCurrencySymbolSide(newSide: String) {
+        updateSetVals(_setVals.value.copy(currencySymbolSide = newSide))
+    }
 
-    private val _decimalSymbol = MutableStateFlow(settingsValues.decimalSymbol)
-    val decimalSymbol: StateFlow<Char> get() = _decimalSymbol
-    fun updateDecimalSymbol(newSymbol: Char) { _decimalSymbol.value = newSymbol }
+    fun updateThousandsSymbol(newSymbol: Char) {
+        customSymbols.groupingSeparator = newSymbol
+        updateSetVals(_setVals.value.copy(
+            thousandsSymbol = newSymbol,
+            decimalFormatter = DecimalFormat(decimalPattern, customSymbols).apply {
+                roundingMode = RoundingMode.HALF_UP
+            },
+            integerFormatter = DecimalFormat(integerPattern, customSymbols).apply {
+                roundingMode = RoundingMode.HALF_UP
+            }
+        ))
+    }
 
-    private val _decimalNumber = MutableStateFlow(settingsValues.decimalNumber)
-    val decimalNumber: StateFlow<String> get() = _decimalNumber
-    fun updateDecimalNumber(format: String) { _decimalNumber.value = format }
+    fun updateDecimalSymbol(newSymbol: Char) {
+        customSymbols.decimalSeparator = newSymbol
+        updateSetVals(_setVals.value.copy(
+            decimalSymbol = newSymbol,
+            decimalFormatter = DecimalFormat(decimalPattern, customSymbols).apply {
+                roundingMode = RoundingMode.HALF_UP
+            },
+            integerFormatter = DecimalFormat(integerPattern, customSymbols).apply {
+                roundingMode = RoundingMode.HALF_UP
+            }
+        ))
+    }
 
-    private val _dateFormatter = MutableStateFlow(settingsValues.dateFormatter)
-    val dateFormatter: StateFlow<DateFormat> get() = _dateFormatter
+    fun updateDecimalNumber(format: String) {
+        updateSetVals(_setVals.value.copy(decimalNumber = format))
+    }
+
     fun updateDateFormatter(format: Int) {
         updateSetVals(_setVals.value.copy(dateFormatter = DateFormat.getDateInstance(format)))
     }

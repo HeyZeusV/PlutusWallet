@@ -16,11 +16,13 @@ fun BigDecimal.prepareTotalText(setVals: SettingsValues): String {
     setVals.apply {
         return when {
             // currency symbol on left with decimal places
-            decimalPlaces && symbolSide -> "$currencySymbol${decimalFormatter.format(total)}"
+            decimalNumber == "yes" && currencySymbolSide == "left" -> {
+                "$currencySymbol${decimalFormatter.format(total)}"
+            }
             // currency symbol on right with decimal places
-            decimalPlaces -> "${decimalFormatter.format(total)}$currencySymbol"
+            decimalNumber == "yes" -> "${decimalFormatter.format(total)}$currencySymbol"
             // currency symbol on left without decimal places
-            symbolSide -> "$currencySymbol${integerFormatter.format(total)}"
+            currencySymbolSide == "left" -> "$currencySymbol${integerFormatter.format(total)}"
             // currency symbol on right without decimal places
             else -> "${integerFormatter.format(total)}$currencySymbol"
         }

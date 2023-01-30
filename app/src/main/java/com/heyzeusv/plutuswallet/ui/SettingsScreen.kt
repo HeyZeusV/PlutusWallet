@@ -137,12 +137,13 @@ fun SettingsScreen(
                 sharedPref
             ) {
                 val decimalSymbol = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
-                val newThousandsSymbol = it
-                if (decimalSymbol == newThousandsSymbol) {
+                if (decimalSymbol == it) {
                     openSwitchDialog = true
                 } else {
-                    sharedPref[THOUSANDS_SYMBOL.key] = newThousandsSymbol
-                    setVM.updateThousandsSymbol(SettingsUtils.getSeparatorSymbol(newThousandsSymbol))
+                    sharedPref[THOUSANDS_SYMBOL.key] = it
+                    val newThousandsSymbol = SettingsUtils.getSeparatorSymbol(it)
+                    setVM.updateThousandsSymbol(newThousandsSymbol)
+                    thousandsSymbolSelectedValue = "\"$newThousandsSymbol\""
                 }
             }
             SettingSetup(
@@ -152,12 +153,13 @@ fun SettingsScreen(
                 sharedPref
             ) {
                 val thousandsSymbol = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
-                val newDecimalSymbol = it
-                if (thousandsSymbol == newDecimalSymbol) {
+                if (thousandsSymbol == it) {
                     openSwitchDialog = true
                 } else {
-                    sharedPref[DECIMAL_SYMBOL.key] = newDecimalSymbol
-                    setVM.updateDecimalSymbol(SettingsUtils.getSeparatorSymbol(newDecimalSymbol))
+                    sharedPref[DECIMAL_SYMBOL.key] = it
+                    val newDecimalSymbol = SettingsUtils.getSeparatorSymbol(it)
+                    setVM.updateDecimalSymbol(newDecimalSymbol)
+                    decimalSymbolSelectedValue = "\"$newDecimalSymbol\""
                 }
             }
             SettingSetup(
