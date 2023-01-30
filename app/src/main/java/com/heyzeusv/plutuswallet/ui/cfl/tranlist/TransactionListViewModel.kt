@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
+import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.text.DateFormat
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -36,22 +36,15 @@ private const val INCOME = "Income"
 @HiltViewModel
 class TransactionListViewModel @Inject constructor(
     private val tranRepo: Repository,
-    val setVals: SettingsValues
+    val settingsValues: SettingsValues
 ) : ViewModel() {
 
     // ItemViewTransaction list to be displayed by RecyclerView
-    private val _tranList = MutableStateFlow(emptyList<ItemViewTransaction>())
-    val tranList: StateFlow<List<ItemViewTransaction>> get() = _tranList
-    fun updateTranList(filter: FilterInfo) {
-        viewModelScope.launch {
-            filteredTransactionList(filter).collect { list ->
-                for (ivt in list) {
-                    ivt.formattedTotal = ivt.total.prepareTotalText(setVals)
-                    ivt.formattedDate =
-                        DateFormat.getDateInstance(setVals.dateFormat).format(ivt.date)
-                }
-                _tranList.value = list
-            }
+    private val _tranList = MutableStateFlow(emptyList<TranListItemFull>())
+    val tranList: StateFlow<List<TranListItemFull>> get() = _tranList
+    suspend fun updateTranList(filter: FilterInfo, setVals: SettingsValues) {
+        filteredTransactionList(filter).collect { list ->
+            createTLIFullList(list, setVals)
         }
     }
 
@@ -71,7 +64,10 @@ class TransactionListViewModel @Inject constructor(
             previousMaxId = tranRepo.getMaxId().first() ?: 0
         }
         initializeTables()
-        updateTranList(FilterInfo())
+        viewModelScope.launch {
+            val tlItem = filteredTransactionList(FilterInfo()).first()
+            createTLIFullList(tlItem, settingsValues)
+        }
     }
 
     /**
@@ -122,6 +118,22 @@ class TransactionListViewModel @Inject constructor(
                 tranRepo.insertAccount(none)
             }
         }
+    }
+
+    /**
+     *  Takes in [list] and creates a [TranListItemFull] item for each value in [list], while also
+     *  creating a formattedTotal and formattedDate for the new [TranListItemFull] item using
+     *  [setVals].
+     */
+    private fun createTLIFullList(list: List<TranListItem>, setVals: SettingsValues) {
+        val tranItemList = mutableListOf<TranListItemFull>()
+        for (tlItem in list) {
+            val formattedTotal = tlItem.total.prepareTotalText(setVals)
+            val formattedDate = setVals.dateFormatter.format(tlItem.date)
+            val tranItem = TranListItemFull(tlItem, formattedTotal, formattedDate)
+            tranItemList.add(tranItem)
+        }
+        _tranList.value = tranItemList
     }
 
     /**
@@ -232,7 +244,7 @@ class TransactionListViewModel @Inject constructor(
     /**
      *  Returns StateFlow of list of Transactions depending on [fi] arguments.
      */
-    suspend fun filteredTransactionList(fi: FilterInfo): Flow<List<ItemViewTransaction>> {
+    suspend fun filteredTransactionList(fi: FilterInfo): Flow<List<TranListItem>> {
         return when {
             fi.account && fi.category && fi.date && fi.categoryNames.contains("All") ->
                 tranRepo.getIvtATD(fi.accountNames, fi.type, fi.start, fi.end)

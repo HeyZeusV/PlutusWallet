@@ -43,6 +43,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,7 +79,11 @@ import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.FilterInfo
+import com.heyzeusv.plutuswallet.data.model.TranListItem
+import com.heyzeusv.plutuswallet.data.model.SettingsValues
+import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.theme.chipTextStyle
@@ -96,7 +101,10 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun OverviewScreen(
-    tranList: List<ItemViewTransaction>,
+    filterInfo: FilterInfo,
+    setVals: SettingsValues,
+    tranListVM: TransactionListViewModel,
+    tranListUpdateList: suspend (FilterInfo, SettingsValues) -> Unit,
     tranListPreviousMaxId: Int,
     tranListUpdatePreviousMaxId: (Int) -> Unit,
     tranListItemOnLongClick: (Int) -> Unit,
@@ -130,6 +138,8 @@ fun OverviewScreen(
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
 
+    val tranList by tranListVM.tranList.collectAsState()
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -140,6 +150,9 @@ fun OverviewScreen(
                 .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
         )
         TransactionListCard(
+            filterInfo,
+            setVals,
+            tranListUpdateList,
             tranListPreviousMaxId = tranListPreviousMaxId,
             tranListUpdatePreviousMaxId = tranListUpdatePreviousMaxId,
             tranList = tranList,
@@ -333,7 +346,7 @@ fun ChartCard(
 }
 
 /**
- *  Composable that displays [tranList], list of Transactions, in [ItemViewTransaction] form.
+ *  Composable that displays [tranList], list of Transactions, in [TranListItem] form.
  *  [tranListPreviousMaxId] is used to determine if a new Transaction was created in order to
  *  scroll to the top of the list automatically which is updated by [tranListUpdatePreviousMaxId].
  *  [tranListItemOnLongClick] and [tranListItemOnClick] are used for deletion and selection
@@ -343,7 +356,10 @@ fun ChartCard(
  */
 @Composable
 fun TransactionListCard(
-    tranList: List<ItemViewTransaction>,
+    filterInfo: FilterInfo,
+    setVals: SettingsValues,
+    tranListUpdateList: suspend (FilterInfo, SettingsValues) -> Unit,
+    tranList: List<TranListItemFull>,
     tranListPreviousMaxId: Int,
     tranListUpdatePreviousMaxId: (Int) -> Unit,
     tranListItemOnLongClick: (Int) -> Unit,
@@ -355,11 +371,16 @@ fun TransactionListCard(
 ) {
     val tranListState = rememberLazyListState()
 
+    LaunchedEffect(key1 = filterInfo, key2 = setVals) {
+        tranListUpdateList(filterInfo, setVals)
+    }
     // scrolls to top of the list when new Transaction is added
     LaunchedEffect(key1 = tranList) {
-        if (tranList.isNotEmpty() && tranList[tranList.size - 1].id > tranListPreviousMaxId) {
+        if (tranList.isNotEmpty()
+            && tranList[tranList.size - 1].transactionItem.id > tranListPreviousMaxId
+        ) {
             tranListState.animateScrollToItem(0)
-            tranListUpdatePreviousMaxId(tranList[tranList.size - 1].id)
+            tranListUpdatePreviousMaxId(tranList[tranList.size - 1].transactionItem.id)
         }
     }
 
@@ -368,26 +389,27 @@ fun TransactionListCard(
             modifier = Modifier.fillMaxSize(),
             state = tranListState
         ) {
-            items(tranList.reversed()) { ivTransaction ->
+            items(tranList.reversed()) { transactionItemFormatted ->
+                val transactionItem = transactionItemFormatted.transactionItem
                 Divider(
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
                     thickness = 1.dp
                 )
                 TransactionListItem(
-                    ivTransaction = ivTransaction,
-                    onLongClick = { tranListItemOnLongClick(ivTransaction.id) },
-                    onClick = { tranListItemOnClick(ivTransaction.id) },
+                    transactionItemFormatted,
+                    onLongClick = { tranListItemOnLongClick(transactionItem.id) },
+                    onClick = { tranListItemOnClick(transactionItem.id) },
                 )
-                if (tranListShowDeleteDialog == ivTransaction.id) {
+                if (tranListShowDeleteDialog == transactionItem.id) {
                     PWAlertDialog(
                         onConfirmText = stringResource(R.string.alert_dialog_yes),
-                        onConfirm = { tranListDialogOnConfirm(ivTransaction.id) },
+                        onConfirm = { tranListDialogOnConfirm(transactionItem.id) },
                         onDismissText = stringResource(R.string.alert_dialog_no),
                         onDismiss = tranListDialogOnDismiss,
                         title = stringResource(R.string.alert_dialog_delete_transaction),
                         message = stringResource(
                             R.string.alert_dialog_delete_warning,
-                            ivTransaction.title
+                            transactionItem.title
                         )
                     )
                 }
@@ -450,23 +472,24 @@ fun MarqueeText(
 }
 
 /**
- *  Composable that displays a Transaction in [ItemViewTransaction] form. [ivTransaction] contains
- *  the data to be displayed. [onLongClick] and [onClick] are used for deletion and selection
- *  respectively.
+ *  Composable that displays a Transaction in [TranListItem] form. [transactionItemFormatted]
+ *  contains the data to be displayed. [onLongClick] and [onClick] are used for deletion and
+ *  selection respectively.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionListItem(
-    ivTransaction: ItemViewTransaction,
+    transactionItemFormatted: TranListItemFull,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
 ) {
+    val transactionItem = transactionItemFormatted.transactionItem
     Surface(
         modifier = Modifier
             .combinedClickable(
                 onLongClick = onLongClick, onClick = onClick
             )
-            .testTag("${ivTransaction.id}")
+            .testTag("${transactionItem.id}")
     ) {
         Row(
             modifier = Modifier
@@ -480,16 +503,16 @@ fun TransactionListItem(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 MarqueeText(
-                    text = ivTransaction.title,
+                    text = transactionItem.title,
                     style = MaterialTheme.typography.subtitle1
                 )
                 MarqueeText(
-                    text = ivTransaction.account,
+                    text = transactionItem.account,
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
                 )
                 MarqueeText(
-                    text = ivTransaction.formattedDate,
+                    text = transactionItemFormatted.formattedDate,
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
                 )
@@ -501,16 +524,16 @@ fun TransactionListItem(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 MarqueeText(
-                    text = ivTransaction.formattedTotal,
+                    text = transactionItemFormatted.formattedTotal,
                     style = MaterialTheme.typography.subtitle1,
-                    color = when (ivTransaction.type) {
+                    color = when (transactionItem.type) {
                         "Expense" -> LocalPWColors.current.expense
                         else -> LocalPWColors.current.income
                     },
                     textAlign = TextAlign.End
                 )
                 MarqueeText(
-                    text = ivTransaction.category,
+                    text = transactionItem.category,
                     style = MaterialTheme.typography.subtitle2,
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
                     textAlign = TextAlign.End
@@ -874,13 +897,16 @@ fun FilterCardPreview() {
 @Preview
 @Composable
 fun TransactionListItemPreview() {
-    val ivTransaction = ItemViewTransaction(
+    val ivTransaction = TranListItem(
         0, "This is a very long title to test marquee text", Date(),
         BigDecimal(1000000000000000000), "Account", "Expense", "Category"
     )
+    val transactionItemFormatted = TranListItemFull(
+        ivTransaction, "$123.45", "Jan 1, 2000"
+    )
     PlutusWalletTheme {
         TransactionListItem(
-            ivTransaction = ivTransaction,
+            transactionItemFormatted,
             onLongClick = { },
             onClick = { },
         )

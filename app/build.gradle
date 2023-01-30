@@ -114,6 +114,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
     // Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
     androidTestImplementation project(path: ':app')
     kapt "com.google.dagger:hilt-compiler:$hiltVersion"
     kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"

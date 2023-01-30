@@ -1,7 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.cfl.tranlist
 
-import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,24 +7,16 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavDirections
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
-import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
 import com.heyzeusv.plutuswallet.ui.base.BaseFragment
-import com.heyzeusv.plutuswallet.ui.cfl.CFLFragmentDirections
-import com.heyzeusv.plutuswallet.util.AlertDialogCreator
-import com.heyzeusv.plutuswallet.util.EventObserver
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
 import com.heyzeusv.plutuswallet.util.SettingsUtils
 import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
-import kotlinx.coroutines.launch
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -38,9 +28,6 @@ class TransactionListFragment : BaseFragment() {
 
     // provides instance of TransactionListViewModel
     private val listVM: TransactionListViewModel by viewModels()
-
-    // shared ViewModels
-    private val cflVM: CFLViewModel by activityViewModels()
 
     // RecyclerView Adapter/LayoutManager
     private lateinit var layoutManager: LinearLayoutManager

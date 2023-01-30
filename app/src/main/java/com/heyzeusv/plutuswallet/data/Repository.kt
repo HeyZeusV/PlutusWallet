@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import java.util.Date
 import kotlinx.coroutines.flow.Flow
@@ -127,26 +127,26 @@ interface Repository {
 
     suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
 
-    suspend fun getIvt(): Flow<List<ItemViewTransaction>>
+    suspend fun getIvt(): Flow<List<TranListItem>>
 
-    suspend fun getIvtA(accounts: List<String>): Flow<List<ItemViewTransaction>>
+    suspend fun getIvtA(accounts: List<String>): Flow<List<TranListItem>>
 
-    suspend fun getIvtAD(accounts: List<String>, start: Date, end: Date): Flow<List<ItemViewTransaction>>
+    suspend fun getIvtAD(accounts: List<String>, start: Date, end: Date): Flow<List<TranListItem>>
 
-    suspend fun getIvtAT(accounts: List<String>, type: String): Flow<List<ItemViewTransaction>>
+    suspend fun getIvtAT(accounts: List<String>, type: String): Flow<List<TranListItem>>
 
     suspend fun getIvtATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     suspend fun getIvtATD(
         accounts: List<String>,
         type: String,
         start: Date,
         end: Date
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     suspend fun getIvtATCD(
         accounts: List<String>,
@@ -154,43 +154,43 @@ interface Repository {
         categories: List<String>,
         start: Date,
         end: Date
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
-    suspend fun getIvtD(start: Date, end: Date): Flow<List<ItemViewTransaction>>
+    suspend fun getIvtD(start: Date, end: Date): Flow<List<TranListItem>>
 
-    suspend fun getIvtT(type: String): Flow<List<ItemViewTransaction>>
+    suspend fun getIvtT(type: String): Flow<List<TranListItem>>
 
-    suspend fun getIvtTC(type: String, categories: List<String>): Flow<List<ItemViewTransaction>>
+    suspend fun getIvtTC(type: String, categories: List<String>): Flow<List<TranListItem>>
 
     suspend fun getIvtTCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
-    suspend fun getIvtTD(type: String, start: Date, end: Date): Flow<List<ItemViewTransaction>>
+    suspend fun getIvtTD(type: String, start: Date, end: Date): Flow<List<TranListItem>>
 
-    fun getLdIvt(): LiveData<List<ItemViewTransaction>>
+    fun getLdIvt(): LiveData<List<TranListItem>>
 
-    fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtA(accounts: List<String>): LiveData<List<TranListItem>>
 
-    fun getLdIvtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<TranListItem>>
 
-    fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<TranListItem>>
 
     fun getLdIvtATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
     fun getLdIvtATD(
         accounts: List<String>,
         type: String,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
     fun getLdIvtATCD(
         accounts: List<String>,
@@ -198,20 +198,20 @@ interface Repository {
         categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
-    fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtD(start: Date, end: Date): LiveData<List<TranListItem>>
 
-    fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtT(type: String): LiveData<List<TranListItem>>
 
-    fun getLdIvtTC(type: String, categories: List<String>): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtTC(type: String, categories: List<String>): LiveData<List<TranListItem>>
 
     fun getLdIvtTCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
-    fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<TranListItem>>
 }

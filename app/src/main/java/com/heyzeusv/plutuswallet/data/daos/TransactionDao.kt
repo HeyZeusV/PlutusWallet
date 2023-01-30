@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import java.util.Date
 import kotlinx.coroutines.flow.Flow
@@ -247,7 +247,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT id, title, date, total, account, type, category 
               FROM `transaction`
               ORDER BY date ASC""")
-    abstract fun getIvt(): Flow<List<ItemViewTransaction>>
+    abstract fun getIvt(): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [accounts].
@@ -256,7 +256,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account IN (:accounts)
               ORDER BY date ASC""")
-    abstract fun getIvtA(accounts: List<String>): Flow<List<ItemViewTransaction>>
+    abstract fun getIvtA(accounts: List<String>): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [accounts] and between given [start]/[end] dates.
@@ -269,7 +269,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         accounts: List<String>,
         start: Date,
         end: Date
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [accounts] and [type].
@@ -278,7 +278,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account IN (:accounts) AND type=(:type)
               ORDER BY date ASC""")
-    abstract fun getIvtAT(accounts: List<String>, type: String): Flow<List<ItemViewTransaction>>
+    abstract fun getIvtAT(accounts: List<String>, type: String): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [accounts], [type], and [categories].
@@ -291,7 +291,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [accounts], [type], and between given [start]/[end] dates.
@@ -305,7 +305,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         type: String,
         start: Date,
         end: Date
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [accounts], [type], [categories],
@@ -322,7 +322,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         categories: List<String>,
         start: Date,
         end: Date
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT between given [start]/[end] dates.
@@ -331,7 +331,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getIvtD(start: Date, end: Date): Flow<List<ItemViewTransaction>>
+    abstract fun getIvtD(start: Date, end: Date): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [type].
@@ -340,7 +340,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type)
               ORDER BY date ASC""")
-    abstract fun getIvtT(type: String): Flow<List<ItemViewTransaction>>
+    abstract fun getIvtT(type: String): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [type] and [categories].
@@ -349,7 +349,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND category IN (:categories)
               ORDER BY date ASC""")
-    abstract fun getIvtTC(type: String, categories: List<String>): Flow<List<ItemViewTransaction>>
+    abstract fun getIvtTC(type: String, categories: List<String>): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [type], [categories],
@@ -364,7 +364,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         categories: List<String>,
         start: Date,
         end: Date
-    ): Flow<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
      *  Returns list of IVT of given [type] and between given [start]/[end] dates.
@@ -373,7 +373,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getIvtTD(type: String, start: Date, end: Date): Flow<List<ItemViewTransaction>>
+    abstract fun getIvtTD(type: String, start: Date, end: Date): Flow<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT.
@@ -381,7 +381,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT id, title, date, total, account, type, category 
               FROM `transaction`
               ORDER BY date ASC""")
-    abstract fun getLdIvt(): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvt(): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [accounts].
@@ -390,7 +390,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account IN (:accounts)
               ORDER BY date ASC""")
-    abstract fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtA(accounts: List<String>): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [accounts] and between given [start]/[end] dates.
@@ -403,7 +403,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         accounts: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [accounts] and [type].
@@ -412,7 +412,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE account IN (:accounts) AND type=(:type)
               ORDER BY date ASC""")
-    abstract fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [accounts], [type], and [categories].
@@ -425,7 +425,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [accounts], [type], and between given [start]/[end] dates.
@@ -439,7 +439,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         type: String,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [accounts], [type], [categories],
@@ -456,7 +456,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT between given [start]/[end] dates.
@@ -465,7 +465,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtD(start: Date, end: Date): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [type].
@@ -474,7 +474,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type)
               ORDER BY date ASC""")
-    abstract fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtT(type: String): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [type] and [categories].
@@ -483,7 +483,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND category IN (:categories)
               ORDER BY date ASC""")
-    abstract fun getLdIvtTC(type: String, categories: List<String>): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtTC(type: String, categories: List<String>): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [type], [categories],
@@ -498,7 +498,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): LiveData<List<TranListItem>>
 
     /**
      *  Returns LD of list of IVT of given [type] and between given [start]/[end] dates.
@@ -507,5 +507,5 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    abstract fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<TranListItem>>
 }

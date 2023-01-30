@@ -14,7 +14,7 @@ import com.heyzeusv.plutuswallet.data.daos.TransactionDao
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -32,6 +32,7 @@ import java.math.BigDecimal
 import java.util.Date
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.first
 
 /**
  *  Testing queries in DAOs, no testing done on Insert/Update/Delete since those are provided.
@@ -134,7 +135,7 @@ class DatabaseTest {
         @DisplayName("Highest id in table or null if empty")
         fun getMaxId() {
 
-            assertEquals(4, runBlocking { tranDao.getMaxId() })
+            assertEquals(4, runBlocking { tranDao.getMaxId().first() })
         }
 
         @Test
@@ -239,7 +240,7 @@ class DatabaseTest {
             @DisplayName("LD of list of IVT of given account and type")
             fun getLdIvtAT() {
 
-                assertEquals(emptyList<ItemViewTransaction>(),
+                assertEquals(emptyList<TranListItem>(),
                     tranDao.getLdIvtAT(listOf("Cash"), "Income").blockingObserve())
             }
 
@@ -352,10 +353,10 @@ class DatabaseTest {
         private val tran4 = Transaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"), "Credit Card", "Expense", "Entertainment")
         private val tranList : List<Transaction> = listOf(tran1, tran2, tran3, tran4)
 
-        private val ivt1 = ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("100.10"), "Cash", "Expense", "Food")
-        private val ivt2 = ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"), "Cash", "Expense", "Food")
-        private val ivt3 = ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"), "Debit Card", "Income", "Salary")
-        private val ivt4 = ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"), "Credit Card", "Expense", "Entertainment")
+        private val ivt1 = TranListItem(1, "Party", Date(86400000), BigDecimal("100.10"), "Cash", "Expense", "Food")
+        private val ivt2 = TranListItem(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"), "Cash", "Expense", "Food")
+        private val ivt3 = TranListItem(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"), "Debit Card", "Income", "Salary")
+        private val ivt4 = TranListItem(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"), "Credit Card", "Expense", "Entertainment")
 
         @BeforeAll
         @JvmStatic

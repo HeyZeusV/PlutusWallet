@@ -52,6 +52,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -92,7 +93,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    private val tranListVM: TransactionListViewModel by viewModels()
     private val chartVM: ChartViewModel by viewModels()
     private val filterVM: FilterViewModel by viewModels()
     private val tranVM: TransactionViewModel by viewModels()
@@ -125,7 +125,6 @@ class MainActivity : BaseActivity() {
                 PlutusWalletTheme {
                     PlutusWalletApp(
                         sharedPref,
-                        tranListVM,
                         chartVM,
                         filterVM,
                         tranVM,
@@ -144,7 +143,6 @@ class MainActivity : BaseActivity() {
 @Composable
 fun PlutusWalletApp(
     sharedPref: SharedPreferences,
-    tranListVM: TransactionListViewModel,
     chartVM: ChartViewModel,
     filterVM: FilterViewModel,
     tranVM: TransactionViewModel,
@@ -163,8 +161,6 @@ fun PlutusWalletApp(
     val coroutineScope = rememberCoroutineScope()
 
     val filterInfo by filterVM.filterInfo.collectAsState()
-    val tranList by tranListVM.tranList.collectAsState()
-    val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
     val chartInfoList by chartVM.chartInfoList.collectAsState()
 
     val showFilter by filterVM.showFilter.collectAsState()
@@ -199,10 +195,10 @@ fun PlutusWalletApp(
     val categoryListPagerState = rememberPagerState()
 
     val setVM: SettingsViewModel = viewModel()
+    val setVals by setVM.setVals.collectAsState()
 
     PlutusWalletTheme {
         LaunchedEffect(key1 = filterInfo) {
-            tranListVM.updateTranList(filterInfo)
             chartVM.updateCatTotalsList(filterInfo)
         }
         LaunchedEffect(key1 = filterState) {
@@ -231,13 +227,13 @@ fun PlutusWalletApp(
                                 scaffoldState.drawerState.open()
                             }
                         } else {
-                            navController.navigateUp()
                             when (currentScreen) {
                                 TransactionDestination -> tranVM.updateSaveSuccess(false)
                                 AccountsDestination -> accountVM.updateAccountExists("")
                                 CategoriesDestination -> categoryVM.updateCategoryExists("")
                                 else -> {}
                             }
+                            navController.navigateUp()
                         }
                     },
                     onActionLeftPressed = {
@@ -283,9 +279,14 @@ fun PlutusWalletApp(
                 startDestination = OverviewDestination.route
             ) {
                 composable(OverviewDestination.route) {
+                    val tranListVM = hiltViewModel<TransactionListViewModel>()
+                    val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
                     tranListVM.futureTransactions()
                     OverviewScreen(
-                        tranList = tranList,
+                        filterInfo,
+                        setVals,
+                        tranListVM,
+                        tranListUpdateList = tranListVM::updateTranList,
                         tranListPreviousMaxId = tranListVM.previousMaxId,
                         tranListUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
                         tranListItemOnLongClick = tranListVM::updateDeleteDialog,

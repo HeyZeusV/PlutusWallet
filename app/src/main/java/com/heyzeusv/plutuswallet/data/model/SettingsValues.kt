@@ -14,5 +14,5 @@ data class SettingsValues(
     var integerFormatter: DecimalFormat = DecimalFormat("#,###"),
     var decimalNumber: String = "yes",
     var currencySymbolSide: String = "left",
-    var dateFormatter: DateFormat
+    var dateFormatter: DateFormat = DateFormat.getDateInstance(0)
 )

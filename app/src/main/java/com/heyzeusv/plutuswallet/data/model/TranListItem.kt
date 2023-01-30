@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.data.model
 
-import androidx.room.Ignore
 import java.math.BigDecimal
 import java.util.Date
 
@@ -16,7 +15,7 @@ import java.util.Date
  *  @param type     either "Expense" or "Income".
  *  @param category the name of category selected.
  */
-data class ItemViewTransaction(
+data class TranListItem(
     val id: Int,
     val title: String,
     val date: Date,
@@ -24,9 +23,17 @@ data class ItemViewTransaction(
     val account: String,
     val type: String,
     val category: String
-) {
-    @Ignore
-    var formattedTotal = ""
-    @Ignore
-    var formattedDate = ""
-}
+)
+
+/**
+ *  Object that holds above [TranListItem] while including additional [formattedTotal] and
+ *  [formattedDate]. [formattedTotal] and [formattedDate] used to be properties within
+*   [TranListItem], but updating those fields would not cause StateFlow to emit the
+ *  [TranListItem] with updated properties. However, by creating new [TranListItemFull] with
+ *  updated parameters, StateFlow will emit new values.
+ */
+data class TranListItemFull(
+    val transactionItem: TranListItem,
+    val formattedTotal: String,
+    val formattedDate: String
+)
