@@ -15,6 +15,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -26,17 +27,15 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ChartViewModel @Inject constructor(
     private val tranRepo: Repository,
-    val setVals: SettingsValues
+    val settingsValues: SettingsValues
 ) : ViewModel() {
 
     private val _catTotalsList = MutableStateFlow(emptyList<CategoryTotals>())
     val catTotalsList: StateFlow<List<CategoryTotals>> get() = _catTotalsList
-    fun updateCatTotalsList(filterInfo: FilterInfo) {
-        viewModelScope.launch {
-            filteredCategoryTotals(filterInfo).collect { list ->
-                _catTotalsList.value = list
-                prepareChartInformation()
-            }
+    suspend fun updateCatTotalsList(filterInfo: FilterInfo, setVals: SettingsValues) {
+        filteredCategoryTotals(filterInfo).collect { list ->
+            _catTotalsList.value = list
+            prepareChartInformation(setVals)
         }
     }
 
@@ -45,16 +44,21 @@ class ChartViewModel @Inject constructor(
     fun updateChartInfoList(newList: List<ChartInformation>) { _chartInfoList.value = newList }
 
     init {
-        updateCatTotalsList(FilterInfo())
+        viewModelScope.launch {
+            val ctList = filteredCategoryTotals(FilterInfo()).first()
+            _catTotalsList.value = ctList
+            prepareChartInformation(settingsValues)
+        }
     }
 
     /**
      *  Creates ChartInformation for both Expense and Income type Categories.
      *  It first splits list of CategoryTotals into 2, one for Expense, other for Income.
      *  Then it calculates the total of each list separately.
-     *  Lastly it creates ChartInformation using lists/total and updating StateFlow value.
+     *  Lastly it creates ChartInformation using lists and creating the total String using [setVals]
+     *  and updating StateFlow value.
      */
-    private fun prepareChartInformation() {
+    private fun prepareChartInformation(setVals: SettingsValues) {
         // split into type lists
         val exCTList = mutableListOf<CategoryTotals>()
         val inCTList = mutableListOf<CategoryTotals>()

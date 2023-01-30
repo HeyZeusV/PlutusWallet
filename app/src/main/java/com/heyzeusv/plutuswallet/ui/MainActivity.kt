@@ -93,7 +93,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    private val chartVM: ChartViewModel by viewModels()
     private val filterVM: FilterViewModel by viewModels()
     private val tranVM: TransactionViewModel by viewModels()
     private val accountVM: AccountViewModel by viewModels()
@@ -125,7 +124,6 @@ class MainActivity : BaseActivity() {
                 PlutusWalletTheme {
                     PlutusWalletApp(
                         sharedPref,
-                        chartVM,
                         filterVM,
                         tranVM,
                         accountVM,
@@ -143,7 +141,6 @@ class MainActivity : BaseActivity() {
 @Composable
 fun PlutusWalletApp(
     sharedPref: SharedPreferences,
-    chartVM: ChartViewModel,
     filterVM: FilterViewModel,
     tranVM: TransactionViewModel,
     accountVM: AccountViewModel,
@@ -161,7 +158,6 @@ fun PlutusWalletApp(
     val coroutineScope = rememberCoroutineScope()
 
     val filterInfo by filterVM.filterInfo.collectAsState()
-    val chartInfoList by chartVM.chartInfoList.collectAsState()
 
     val showFilter by filterVM.showFilter.collectAsState()
     val accountFilterSelected by filterVM.accountFilter.collectAsState()
@@ -198,9 +194,6 @@ fun PlutusWalletApp(
     val setVals by setVM.setVals.collectAsState()
 
     PlutusWalletTheme {
-        LaunchedEffect(key1 = filterInfo) {
-            chartVM.updateCatTotalsList(filterInfo)
-        }
         LaunchedEffect(key1 = filterState) {
             if (filterState != FilterState.VALID) {
                 scaffoldState.snackbarHostState.showSnackbar(filterStateMessage)
@@ -280,13 +273,16 @@ fun PlutusWalletApp(
             ) {
                 composable(OverviewDestination.route) {
                     val tranListVM = hiltViewModel<TransactionListViewModel>()
+                    val chartVM = hiltViewModel<ChartViewModel>()
+
                     val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
                     tranListVM.futureTransactions()
+
                     OverviewScreen(
                         filterInfo,
                         setVals,
                         tranListVM,
-                        tranListUpdateList = tranListVM::updateTranList,
+                        chartVM,
                         tranListPreviousMaxId = tranListVM.previousMaxId,
                         tranListUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
                         tranListItemOnLongClick = tranListVM::updateDeleteDialog,
@@ -300,7 +296,6 @@ fun PlutusWalletApp(
                             tranListVM.updateDeleteDialog(-1)
                         },
                         tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
-                        chartInfoList = chartInfoList,
                         showFilter = showFilter,
                         updateShowFilter = filterVM::updateShowFilter,
                         accountFilterSelected = accountFilterSelected,

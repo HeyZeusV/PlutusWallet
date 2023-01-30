@@ -83,6 +83,7 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
@@ -104,7 +105,7 @@ fun OverviewScreen(
     filterInfo: FilterInfo,
     setVals: SettingsValues,
     tranListVM: TransactionListViewModel,
-    tranListUpdateList: suspend (FilterInfo, SettingsValues) -> Unit,
+    chartVM: ChartViewModel,
     tranListPreviousMaxId: Int,
     tranListUpdatePreviousMaxId: (Int) -> Unit,
     tranListItemOnLongClick: (Int) -> Unit,
@@ -112,7 +113,6 @@ fun OverviewScreen(
     tranListShowDeleteDialog: Int,
     tranListDialogOnConfirm: (Int) -> Unit,
     tranListDialogOnDismiss: () -> Unit,
-    chartInfoList: List<ChartInformation>,
     showFilter: Boolean,
     updateShowFilter: (Boolean) -> Unit,
     accountFilterSelected: Boolean,
@@ -135,11 +135,18 @@ fun OverviewScreen(
     endDateOnClick: (Date) -> Unit,
     applyOnClick: () -> Unit
 ) {
+    val tranList by tranListVM.tranList.collectAsState()
+    val chartInfoList by chartVM.chartInfoList.collectAsState()
+
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
 
-    val tranList by tranListVM.tranList.collectAsState()
-
+    LaunchedEffect(key1 = filterInfo, key2 = setVals) {
+        tranListVM.updateTranList(filterInfo, setVals)
+    }
+    LaunchedEffect(key1 = filterInfo, key2 = setVals) {
+        chartVM.updateCatTotalsList(filterInfo, setVals)
+    }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -150,9 +157,6 @@ fun OverviewScreen(
                 .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
         )
         TransactionListCard(
-            filterInfo,
-            setVals,
-            tranListUpdateList,
             tranListPreviousMaxId = tranListPreviousMaxId,
             tranListUpdatePreviousMaxId = tranListUpdatePreviousMaxId,
             tranList = tranList,
@@ -356,9 +360,6 @@ fun ChartCard(
  */
 @Composable
 fun TransactionListCard(
-    filterInfo: FilterInfo,
-    setVals: SettingsValues,
-    tranListUpdateList: suspend (FilterInfo, SettingsValues) -> Unit,
     tranList: List<TranListItemFull>,
     tranListPreviousMaxId: Int,
     tranListUpdatePreviousMaxId: (Int) -> Unit,
@@ -371,9 +372,6 @@ fun TransactionListCard(
 ) {
     val tranListState = rememberLazyListState()
 
-    LaunchedEffect(key1 = filterInfo, key2 = setVals) {
-        tranListUpdateList(filterInfo, setVals)
-    }
     // scrolls to top of the list when new Transaction is added
     LaunchedEffect(key1 = tranList) {
         if (tranList.isNotEmpty()

@@ -63,7 +63,7 @@ internal class ChartViewModelTest {
         // adding extra Transactions
         repo.tranList.add(dd.tran1)
         repo.tranList.add(dd.tran3)
-        chartVM.updateCatTotalsList(FilterInfo())
+        chartVM.updateCatTotalsList(FilterInfo(), SettingsValues())
 
         val expectedExpenseCatTotalList = listOf(
             CategoryTotals("Food", BigDecimal("2100.20"), "Expense"),
@@ -91,7 +91,7 @@ internal class ChartViewModelTest {
         newIncomeCat.category = "Test Income Category"
         repo.tranList.add(newExpenseCat)
         repo.tranList.add(newIncomeCat)
-        chartVM.updateCatTotalsList(FilterInfo())
+        chartVM.updateCatTotalsList(FilterInfo(), SettingsValues())
 
         val expectedExpenseCatTotalList = listOf(
             CategoryTotals("Food", BigDecimal("1100.10"), "Expense"),
