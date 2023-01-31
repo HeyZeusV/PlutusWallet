@@ -5,18 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.databinding.FragmentTransactionListBinding
 import com.heyzeusv.plutuswallet.ui.base.BaseFragment
-import com.heyzeusv.plutuswallet.util.Key
-import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
-import com.heyzeusv.plutuswallet.util.PreferenceHelper.set
-import com.heyzeusv.plutuswallet.util.SettingsUtils
-import com.heyzeusv.plutuswallet.ui.cfl.CFLViewModel
 
 /**
  *  Will show list of Transactions depending on filters applied.
@@ -58,19 +52,5 @@ class TransactionListFragment : BaseFragment() {
         binding.tranlistRv.layoutManager = layoutManager
 
         return binding.root
-    }
-
-
-
-    override fun onResume() {
-        super.onResume()
-
-        // checks if there has been a change in settings, updates changes, and updates list
-        if (sharedPref[Key.KEY_TRAN_LIST_CHANGED, false]) {
-            setVals = SettingsUtils.prepareSettingValues(sharedPref)
-//            listVM.setVals = setVals
-            sharedPref[Key.KEY_TRAN_LIST_CHANGED] = false
-        }
-        listVM.futureTransactions()
     }
 }

@@ -334,7 +334,8 @@ fun ChartCard(
                             text = stringResource(R.string.cfl_no_transactions),
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
-                                .testTag("Empty Chart for page $page")
+                                .testTag("Empty Chart for page $page"),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }

@@ -3,12 +3,7 @@
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,8 +25,6 @@ abstract class BaseFragment : Fragment(), CoroutineScope {
     // SharedPreferences
     @Inject protected lateinit var sharedPref: SharedPreferences
 
-    @Inject protected lateinit var setVals: SettingsValues
-
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
 
@@ -46,14 +39,5 @@ abstract class BaseFragment : Fragment(), CoroutineScope {
         super.onDestroy()
 
         job.cancel()
-    }
-
-    /**
-     *  Returns View to be used by AlertDialog.
-     */
-    protected fun createAlertDialogView() : View {
-
-        return LayoutInflater.from(context)
-            .inflate(R.layout.dialog_input_field, view as ViewGroup, false)
     }
 }
