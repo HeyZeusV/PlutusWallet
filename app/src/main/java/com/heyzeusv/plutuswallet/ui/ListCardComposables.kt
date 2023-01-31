@@ -189,7 +189,7 @@ fun DataItem(
                 .testTag("${data.name} Edit"),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
-                contentColor = Color.White
+                contentColor = Color.Unspecified
             ),
             contentPadding = PaddingValues(all = 10.dp)
         ) {
@@ -206,7 +206,7 @@ fun DataItem(
             enabled = deletable,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
-                contentColor = Color.White
+                contentColor = Color.Unspecified
             ),
             contentPadding = PaddingValues(all = 10.dp)
         ) {
