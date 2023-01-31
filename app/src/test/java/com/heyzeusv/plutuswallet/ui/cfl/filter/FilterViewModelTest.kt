@@ -2,6 +2,7 @@ package com.heyzeusv.plutuswallet.ui.cfl.filter
 
 import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
+import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.ui.transaction.FilterSelectedAction.ADD
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.util.Date
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
@@ -30,17 +32,22 @@ internal class FilterViewModelTest {
     // what is being tested
     private lateinit var filterVM: FilterViewModel
 
-    @BeforeEach
-    fun setUpViewModel() {
+    // dummy data
+    private val dd = DummyDataUtil()
 
+    @BeforeEach
+    fun setUpViewModel() = runTest {
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
         filterVM = FilterViewModel(repo)
+        repo.accountNameListEmit(dd.accList.map { it.name })
+        repo.expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
+        repo.incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
     }
 
     @Test
     @DisplayName("Should retrieve data to be displayed in ChipGroups from Database at startup")
-    fun retrieveChipData() {
+    fun viewModelInit() {
 
         val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
         val expectedExCatList: MutableList<String> = mutableListOf("Entertainment", "Food", "Unused Expense")

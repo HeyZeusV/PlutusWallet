@@ -133,7 +133,7 @@ internal class CategoryViewModelTest {
         assert(repo.catList.containsAll(listOf(newExpenseCat, newIncomeCat)))
         assertEquals(expectedExpenseList, catVM.expenseCatList.value)
         assertEquals(expectedIncomeList, catVM.incomeCatList.value)
-        assertEquals(DataDialog(CREATE, -1, INCOME), catVM.showDialog.value)
+        assertEquals(DataDialog(EDIT, -1, INCOME), catVM.showDialog.value)
     }
 
     @Test

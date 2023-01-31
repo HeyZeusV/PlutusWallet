@@ -6,7 +6,6 @@ import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
-import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -96,7 +95,7 @@ internal class AccountViewModelTest {
 
         assert(repo.accList.contains(newAccount))
         assertEquals(expectedAccounts, accVM.accountList.value)
-        assertEquals(DataDialog(CREATE, -1), accVM.showDialog.value)
+        assertEquals(DataDialog(EDIT, -1), accVM.showDialog.value)
     }
 
     @Test
