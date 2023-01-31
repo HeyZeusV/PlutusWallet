@@ -67,6 +67,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.DataDialog
+import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
 import com.heyzeusv.plutuswallet.ui.category.CategoryViewModel
@@ -315,7 +316,7 @@ fun PlutusWalletApp(
                     arguments = TransactionDestination.arguments
                 ) { navBackStackEntry ->
                     val tranVM = hiltViewModel<TransactionViewModel>().apply {
-                        tranVMSetup(LocalContext.current)
+                        tranVMSetup(setVals, LocalContext.current)
                     }
                     val tranId =
                         navBackStackEntry.arguments?.getInt(TransactionDestination.id_arg) ?: 0
@@ -627,12 +628,16 @@ data class AppBarActions(
 )
 
 /**
+ *  Update SettingsValues in TransactionViewModel with updated [sv].
+ *
  *  TransactionViewModel requires several translated strings, but I don't want to have it hold
  *  context in order to get string resources. This extension function retrieves all strings
  *  required using the provided [context].
  */
-private fun TransactionViewModel.tranVMSetup(context: Context) {
+private fun TransactionViewModel.tranVMSetup(sv: SettingsValues, context: Context) {
     this.apply {
+        setVals = sv
+
         emptyTitle = context.getString(R.string.transaction_empty_title)
         accountCreate = context.getString(R.string.account_create)
         categoryCreate = context.getString(R.string.category_create)

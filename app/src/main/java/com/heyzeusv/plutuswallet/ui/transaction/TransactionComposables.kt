@@ -216,7 +216,7 @@ fun TransactionScreen(
                 onValueChanged = tranVM::updateTotalFieldValue,
                 label = stringResource(R.string.transaction_total),
                 maxLength = integerResource(
-                    if (tranVM.setVals.decimalPlaces) {
+                    if (tranVM.setVals.decimalNumber == "yes") {
                         R.integer.maxLengthTotalDecimal
                     } else {
                         R.integer.maxLengthTotalInteger

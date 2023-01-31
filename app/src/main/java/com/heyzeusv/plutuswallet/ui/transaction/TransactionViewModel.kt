@@ -15,7 +15,6 @@ import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
@@ -32,9 +31,10 @@ import kotlinx.coroutines.withContext
  */
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val tranRepo: Repository,
-    val setVals: SettingsValues
+    private val tranRepo: Repository
 ) : ViewModel() {
+
+    var setVals = SettingsValues()
 
     private var _tranId: Int = 0
     val tranId: Int get() = _tranId
@@ -185,7 +185,7 @@ class TransactionViewModel @Inject constructor(
      */
     fun setTranData(transaction: Transaction) {
         updateTitle(transaction.title)
-        updateDate(DateFormat.getDateInstance(setVals.dateFormat).format(transaction.date))
+        updateDate(setVals.dateFormatter.format(transaction.date))
         updateAccount(transaction.account)
         updateTotalFieldValue(transaction.total.toString())
         if (transaction.type == EXPENSE.type) {
@@ -228,7 +228,8 @@ class TransactionViewModel @Inject constructor(
 
             val totalFromFieldValue = totalFieldValue.value.text
             tran.total = when {
-                totalFromFieldValue.isEmpty() && setVals.decimalPlaces -> BigDecimal("0.00")
+                totalFromFieldValue.isEmpty() && setVals.decimalNumber == "yes" ->
+                    BigDecimal("0.00")
                 totalFromFieldValue.isEmpty() -> BigDecimal("0")
                 else -> BigDecimal(
                     totalFromFieldValue
@@ -340,9 +341,9 @@ class TransactionViewModel @Inject constructor(
 
         return when {
             // doesn't allow string to be empty
-            setVals.decimalPlaces && chars.isBlank() -> "0.00"
+            setVals.decimalNumber == "yes" && chars.isBlank() -> "0.00"
             // divides numbers by 100 in order to easily get decimal places
-            setVals.decimalPlaces -> BigDecimal(chars)
+            setVals.decimalNumber == "yes" -> BigDecimal(chars)
                 .divide(BigDecimal(100), 2, RoundingMode.HALF_UP).toString()
             // doesn't allow string to be empty
             chars.isBlank() -> "0"
@@ -414,6 +415,6 @@ class TransactionViewModel @Inject constructor(
         dateChanged = _transaction.value.date != newDate
         _transaction.value.date = newDate
         // turns date selected into Date type
-        updateDate(DateFormat.getDateInstance(setVals.dateFormat).format(newDate))
+        updateDate(setVals.dateFormatter.format(newDate))
     }
 }
