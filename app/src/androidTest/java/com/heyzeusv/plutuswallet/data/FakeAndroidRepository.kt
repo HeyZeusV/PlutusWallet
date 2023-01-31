@@ -67,13 +67,13 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getAccountNames(): Flow<List<String>> {
-//        val accNames: MutableList<String> = mutableListOf()
-//        for (acc: Account in accList) {
-//            accNames.add(acc.name)
-//        }
-//        accNames.sort()
-//        flow { emit(accNames) }
-        return accountNameListFLow
+        val accNames: MutableList<String> = mutableListOf()
+        for (acc: Account in accList) {
+            accNames.add(acc.name)
+        }
+        accNames.sort()
+        return flow { emit(accNames) }
+
     }
 
     override suspend fun getAccountsUsed(): Flow<List<Account>> {
@@ -130,13 +130,13 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> {
-//        val typeNameList: MutableList<String> = mutableListOf()
-//        for (cat: Category in catList.filter { it.type == type}) {
-//            typeNameList.add(cat.name)
-//        }
-//        typeNameList.sort()
-//        flow { emit(typeNameList) }
-        return if (type == EXPENSE.type) expenseCatNameListFlow else incomeCatNameListFlow
+        val typeNameList: MutableList<String> = mutableListOf()
+        for (cat: Category in catList.filter { it.type == type}) {
+            typeNameList.add(cat.name)
+        }
+        typeNameList.sort()
+        return flow { emit(typeNameList) }
+
     }
 
     override suspend fun getCategoriesUsedByType(type: String): Flow<List<Category>> {

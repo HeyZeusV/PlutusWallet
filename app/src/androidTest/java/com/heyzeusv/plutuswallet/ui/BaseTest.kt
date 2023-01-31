@@ -62,7 +62,7 @@ abstract class BaseTest {
             res = resources
             setContent {
                 val theme = sharedPref.getString(Key.KEY_THEME.key, "-1")!!.toInt()
-                val pwColors = when (theme) {
+                pwColors = when (theme) {
                     1 -> PWLightColors
                     2 -> PWDarkColors
                     else -> if (isSystemInDarkTheme()) PWDarkColors else PWLightColors

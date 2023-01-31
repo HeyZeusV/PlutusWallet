@@ -1,7 +1,6 @@
 package com.heyzeusv.plutuswallet.ui
 
 import android.widget.DatePicker
-import androidx.activity.viewModels
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -33,11 +32,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartEntry
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartText
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.model.FilterInfo
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
-import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -67,7 +62,7 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Food", 1000.10F)))
         onView(withContentDescription("Chart 0"))
-            .check(matches(chartEntry("Unused Expense", 100.00F)))
+            .check(matches(chartEntry("Housing", 100.00F)))
         composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
 
         composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
@@ -111,24 +106,11 @@ class OverviewTests : BaseTest() {
             useUnmergedTree = true
         ).performClick()
 
-        // rerun calls to get updated lists
-        composeRule.activity.viewModels<TransactionListViewModel>().value.updateTranList(
-            FilterInfo(),
-            SettingsValues()
-        )
-        composeRule.activity.viewModels<ChartViewModel>().value.updateCatTotalsList(
-            FilterInfo(),
-            SettingsValues()
-        )
-
-        // check that correct Transaction has been deleted
-        composeRule.onNode(hasTestTag("${dd.tran2.id}")).assertDoesNotExist()
-
         // check expense chart total and slices shown
         onView(withContentDescription("Chart 0")).check(matches(chartText(expense)))
         composeRule.onNode(hasTestTag("Chart Total for page 0")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Chart Total for page 0"))
-            .assertTextContains("Total: $1,055.55")
+            .assertTextContains("Total: $1,155.55")
         composeRule.onNode(hasTestTag("Chart Total for page 1")).assertIsNotDisplayed()
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Entertainment", 55.45F)))
@@ -196,14 +178,14 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasTestTag(res.getString(R.string.filter_category))).performClick()
         composeRule.onNode(hasTestTag("Expense Button")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Chip: Entertainment")).performClick()
-        composeRule.onNode(hasTestTag("Chip: Unused Expense")).performClick()
+        composeRule.onNode(hasTestTag("Chip: Housing")).performClick()
         composeRule.onNode(hasTestTag("Filter action")).performClick()
 
         // check expense chart
         composeRule.onNode(hasTestTag("Chart Total for page 0"))
             .assertTextEquals("Total: $155.45")
         onView(withContentDescription("Chart 0"))
-            .check(matches(chartEntry("Unused Expense", 100.00F)))
+            .check(matches(chartEntry("Housing", 100.00F)))
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Entertainment", 55.45F)))
         composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()

@@ -143,7 +143,7 @@ class TransactionTests : BaseTest() {
 
         // check that newly created item exists in dropdown menu
         composeRule.onNode(hasTestTag(res.getString(nodeId))).performClick()
-        composeRule.onNode(hasTestTag(newName)).assertExists()
+        composeRule.onNodeWithText(newName).assertExists()
     }
 
     @Test
