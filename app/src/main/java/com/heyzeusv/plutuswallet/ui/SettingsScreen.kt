@@ -67,7 +67,10 @@ fun SettingsScreen(
     var openDecimalDialog by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        elevation = 1.dp
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

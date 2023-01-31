@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -189,7 +188,7 @@ fun DataItem(
                 .testTag("${data.name} Edit"),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
-                contentColor = Color.Unspecified
+                contentColor = MaterialTheme.colors.surface
             ),
             contentPadding = PaddingValues(all = 10.dp)
         ) {
@@ -206,7 +205,7 @@ fun DataItem(
             enabled = deletable,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
-                contentColor = Color.Unspecified
+                contentColor = MaterialTheme.colors.surface
             ),
             contentPadding = PaddingValues(all = 10.dp)
         ) {

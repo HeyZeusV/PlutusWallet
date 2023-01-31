@@ -67,6 +67,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.preference.PreferenceManager
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
@@ -137,6 +138,11 @@ class MainActivity : BaseActivity() {
                         else -> isSystemInDarkTheme()
                     }
                 ) {
+                    val systemUiController = rememberSystemUiController()
+                    systemUiController.setSystemBarsColor(
+                        color = MaterialTheme.colors.primary,
+                        darkIcons = false
+                    )
                     PlutusWalletApp(
                         filterVM,
                         accountVM,
@@ -461,7 +467,7 @@ fun PWAppBar(
             }
         },
         backgroundColor = MaterialTheme.colors.primary,
-        elevation = 1.dp
+        elevation = 0.dp
     )
 }
 
