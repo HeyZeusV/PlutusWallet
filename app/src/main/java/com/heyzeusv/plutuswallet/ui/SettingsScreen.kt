@@ -253,6 +253,7 @@ fun Setting(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { openDialog = true }
+            .testTag(setting.name)
     ) {
         if (openDialog) {
             ListAlertDialog(
@@ -281,6 +282,7 @@ fun Setting(
             )
             Text(
                 text = optionSelectedDisplay,
+                modifier = Modifier.testTag("${setting.name} $optionSelectedDisplay"),
                 style = MaterialTheme.typography.subtitle2
             )
         }
@@ -329,7 +331,8 @@ fun ListAlertDialog(
                                         selected = (entry.key == selectedOption),
                                         role = Role.RadioButton,
                                         onClick = { onOptionSelected(entry.key) }
-                                    ),
+                                    )
+                                    .testTag(entry.value),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {

@@ -79,7 +79,7 @@ abstract class BaseTest {
                             filterVM = viewModels<FilterViewModel>().value,
                             accountVM = viewModels<AccountViewModel>().value,
                             categoryVM = viewModels<CategoryViewModel>().value,
-                            recreateActivity = { }
+                            recreateActivity = { composeRule.activity.recreate() }
                         )
                     }
                 }

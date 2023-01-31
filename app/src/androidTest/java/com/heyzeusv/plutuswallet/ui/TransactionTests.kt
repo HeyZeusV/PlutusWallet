@@ -336,15 +336,14 @@ class TransactionTests : BaseTest() {
         // check that the AlertDialog does appear again
         composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
     }
-
-    fun SemanticsNodeInteraction.assertEditTextEquals(value: String) : SemanticsNodeInteraction =
-        assert(hasEditTextExactly(value))
-
-    private fun hasEditTextExactly(value: String): SemanticsMatcher =
-        SemanticsMatcher("${SemanticsProperties.EditableText.name} is $value") { node ->
-            var actual = ""
-            node.config.getOrNull(SemanticsProperties.EditableText)?.let { actual = it.text }
-            return@SemanticsMatcher actual == value
-        }
 }
 
+fun SemanticsNodeInteraction.assertEditTextEquals(value: String) : SemanticsNodeInteraction =
+    assert(hasEditTextExactly(value))
+
+fun hasEditTextExactly(value: String): SemanticsMatcher =
+    SemanticsMatcher("${SemanticsProperties.EditableText.name} is $value") { node ->
+        var actual = ""
+        node.config.getOrNull(SemanticsProperties.EditableText)?.let { actual = it.text }
+        return@SemanticsMatcher actual == value
+    }

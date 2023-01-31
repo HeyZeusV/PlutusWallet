@@ -36,8 +36,7 @@ object TestAppModule {
 
     @Provides
     @Singleton
-    fun provideTestSettingsValues(@ApplicationContext appContext: Context): SettingsValues {
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(appContext)
+    fun provideTestSettingsValues(sharedPref: SharedPreferences): SettingsValues {
         return SettingsUtils.prepareSettingValues(sharedPref)
     }
 }
