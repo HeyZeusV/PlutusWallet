@@ -1,7 +1,5 @@
 package com.heyzeusv.plutuswallet.data
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
@@ -43,27 +41,10 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     private val incomeCatUsedListFLow = MutableSharedFlow<List<Category>>()
     suspend fun incomeCatUsedListEmit(value: List<Category>) = incomeCatUsedListFLow.emit(value)
 
-    private val accListLD = MutableLiveData(accList.sortedBy { it.name })
-    private val catExListLD =
-        MutableLiveData(catList.filter { it.type == "Expense" }.sortedBy { it.name })
-    private val catInListLD =
-        MutableLiveData(catList.filter { it.type == "Income" }.sortedBy { it.name })
-    private val ivtListLD = MutableLiveData<List<TranListItem>>(emptyList())
-
     fun resetLists() {
         accList = dd.accList
         catList = dd.catList
         tranList = dd.tranList
-    }
-
-    override suspend fun getAccountNamesAsync(): MutableList<String> {
-
-        val accNames: MutableList<String> = mutableListOf()
-        for (acc: Account in accList) {
-            accNames.add(acc.name)
-        }
-        accNames.sort()
-        return accNames
     }
 
     override suspend fun getAccountNames(): Flow<List<String>> {
@@ -92,42 +73,21 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     override suspend fun deleteAccount(account: Account) {
         accList.remove(account)
         accountListEmit(accList)
-        accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun insertAccount(account: Account) {
         accList.add(account)
         accountListEmit(accList)
         accountNameListEmit(accList.map { it.name })
-        accListLD.value = accList.sortedBy { it.name }
     }
 
     override suspend fun updateAccount(account: Account) {
         accList.replace(accList.find { it.id == account.id }!!, account)
         accountListEmit(accList)
-        accListLD.value = accList.sortedBy { it.name }
     }
 
-    override suspend fun getAccounts(): Flow<List<Account>> {
-//        flow { emit(accList.sortedBy { it.name }) }
-        return accountListFlow
-    }
+    override suspend fun getAccounts(): Flow<List<Account>> = accountListFlow
 
-    override fun getLDAccounts(): LiveData<List<Account>> {
-
-        accListLD.value = accList.sortedBy { it.name }
-        return accListLD
-    }
-
-    override suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String> {
-
-        val typeNameList: MutableList<String> = mutableListOf()
-        for (cat: Category in catList.filter { it.type == type}) {
-            typeNameList.add(cat.name)
-        }
-        typeNameList.sort()
-        return typeNameList
-    }
 
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> {
         val typeNameList: MutableList<String> = mutableListOf()
@@ -156,8 +116,6 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         catList.remove(category)
         expenseCatListEmit(dd.catList.filter { it.type == EXPENSE.type })
         incomeCatListEmit(dd.catList.filter { it.type == INCOME.type })
-        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
-        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
 
     override suspend fun insertCategory(category: Category) {
@@ -166,68 +124,16 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         incomeCatListEmit(dd.catList.filter { it.type == INCOME.type })
         expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
         incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
-        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
-        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
 
     override suspend fun updateCategory(category: Category) {
         catList.replace(catList.find { it.id == category.id }!!, category)
-        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
-        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
     }
 
     override suspend fun insertCategories(categories: List<Category>) {
         catList.addAll(categories)
         expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
         incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
-        catExListLD.postValue(catList.filter { it.type == "Expense" }.sortedBy { it.name })
-        catInListLD.postValue(catList.filter { it.type == "Income" }.sortedBy { it.name })
-    }
-
-    override fun getLDCategoriesByType(type: String): LiveData<List<Category>> {
-
-        return when (type) {
-            "Expense" -> catExListLD
-            else -> catInListLD
-        }
-    }
-
-    override suspend fun getDistinctAccountsAsync(): MutableList<String> {
-
-        val accList: MutableList<String> = mutableListOf()
-        for (tran: Transaction in tranList) {
-            accList.add(tran.account)
-        }
-
-        return accList.distinct().sorted() as MutableList<String>
-    }
-
-    override suspend fun getDistinctAccounts(): Flow<List<String>> {
-        val accList: MutableList<String> = mutableListOf()
-        for (tran: Transaction in tranList) {
-            accList.add(tran.account)
-        }
-
-        return flow { emit(accList.distinct().sorted()) }
-    }
-
-    override suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String> {
-
-        val catList: MutableList<String> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.type == type }) {
-            catList.add(tran.category)
-        }
-
-        return catList.distinct().sorted() as MutableList<String>
-    }
-
-    override suspend fun getDistinctCatsByType(type: String): Flow<List<String>> {
-        val catList: MutableList<String> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.type == type }) {
-            catList.add(tran.category)
-        }
-
-        return flow { emit(catList.distinct().sorted()) }
     }
 
     override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {
@@ -253,10 +159,6 @@ class FakeAndroidRepository @Inject constructor() : Repository {
 
     override suspend fun deleteTransaction(transaction: Transaction) {
         tranList.remove(transaction)
-        if (ivtListLD.value!!.isNotEmpty()) {
-            (ivtListLD.value as MutableList).removeIf { it.id == transaction.id }
-            ivtListLD.postValue(ivtListLD.value!!)
-        }
     }
 
     override suspend fun upsertTransaction(transaction: Transaction) {
@@ -271,11 +173,6 @@ class FakeAndroidRepository @Inject constructor() : Repository {
                 if (it == null) tranList.add(tran) else tranList.replace(it, tran)
             }
         }
-    }
-
-    override fun getLdTransaction(id: Int): LiveData<Transaction?> {
-
-        return MutableLiveData(tranList.find { it.id == id })
     }
 
     private fun getCatLists(): List<List<String>> {
@@ -307,112 +204,6 @@ class FakeAndroidRepository @Inject constructor() : Repository {
             }
         }
         return catTotals
-    }
-
-    override fun getLdCt(): LiveData<List<CategoryTotals>> {
-
-        val catLists: List<List<String>> = getCatLists()
-        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
-        for (cat: String in catLists[0]) {
-            val listOfTran: MutableList<Transaction> = mutableListOf()
-            for (tran: Transaction in tranList.filter { it.category == cat && it.type == "Expense" }) {
-                listOfTran.add(tran)
-            }
-            listOfTranLists.add(listOfTran)
-        }
-        for (cat: String in catLists[1]) {
-            val listOfTran: MutableList<Transaction> = mutableListOf()
-            for (tran: Transaction in tranList.filter { it.category == cat && it.type == "Income" }) {
-                listOfTran.add(tran)
-            }
-            listOfTranLists.add(listOfTran)
-        }
-
-        return MutableLiveData(createCatTotals(listOfTranLists))
-    }
-
-    override fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>> {
-
-        val catLists: List<List<String>> = getCatLists()
-        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
-        for (cat: String in catLists[0]) {
-            val listOfTran: MutableList<Transaction> = mutableListOf()
-            for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && accounts.contains(it.account)
-            }) {
-                listOfTran.add(tran)
-            }
-            listOfTranLists.add(listOfTran)
-        }
-        for (cat: String in catLists[1]) {
-            val listOfTran: MutableList<Transaction> = mutableListOf()
-            for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && accounts.contains(it.account)
-            }) {
-                listOfTran.add(tran)
-            }
-            listOfTranLists.add(listOfTran)
-        }
-
-        return MutableLiveData(createCatTotals(listOfTranLists))
-    }
-
-    override fun getLdCtAD(
-        accounts: List<String>,
-        start: Date,
-        end: Date
-    ): LiveData<List<CategoryTotals>> {
-
-        val catLists: List<List<String>> = getCatLists()
-        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
-        for (cat: String in catLists[0]) {
-            val listOfTran: MutableList<Transaction> = mutableListOf()
-            for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && accounts.contains(it.account) &&
-                        it.date >= start && it.date <= end
-            }) {
-                listOfTran.add(tran)
-            }
-            listOfTranLists.add(listOfTran)
-        }
-        for (cat: String in catLists[1]) {
-            val listOfTran: MutableList<Transaction> = mutableListOf()
-            for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
-                        it.date >= start && it.date <= end
-            }) {
-                listOfTran.add(tran)
-            }
-            listOfTranLists.add(listOfTran)
-        }
-
-        return MutableLiveData(createCatTotals(listOfTranLists))
-    }
-
-    override fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>> {
-
-        val catLists: List<List<String>> = getCatLists()
-        val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
-        for (cat: String in catLists[0]) {
-            val listOfTran: MutableList<Transaction> = mutableListOf()
-            for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && it.date >= start && it.date <= end
-            }) {
-                listOfTran.add(tran)
-            }
-            listOfTranLists.add(listOfTran)
-        }
-        for (cat: String in catLists[1]) {
-            val listOfTran: MutableList<Transaction> = mutableListOf()
-            for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && it.date >= start && it.date <= end
-            }) {
-                listOfTran.add(tran)
-            }
-            listOfTranLists.add(listOfTran)
-        }
-
-        return MutableLiveData(createCatTotals(listOfTranLists))
     }
 
     override suspend fun getCt(): Flow<List<CategoryTotals>> {
@@ -638,321 +429,107 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         return flow { emit(createCatTotals(listOfTranLists)) }
     }
 
-    override fun getLdIvt(): LiveData<List<TranListItem>> {
+    override suspend fun getTli(): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        ivtListLD.value = ivtList
-        return ivtListLD
+        return flow { emit(TliList) }
     }
 
-    override fun getLdIvtA(accounts: List<String>): LiveData<List<TranListItem>> {
+    override suspend fun getTliA(accounts: List<String>): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        ivtListLD.value = ivtList
-        return ivtListLD
+        return flow { emit(TliList) }
     }
 
-    override fun getLdIvtAD(
-        accounts: List<String>,
-        start: Date,
-        end: Date
-    ): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.date >= start && it.date <= end
-        }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtAT(
-        accounts: List<String>,
-        type: String
-    ): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter { accounts.contains(it.account) && it.type == type }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtATC(
-        accounts: List<String>,
-        type: String,
-        categories: List<String>
-    ): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.type == type && categories.contains(it.category)
-        }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtATD(
-        accounts: List<String>,
-        type: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.type == type && it.date >= start && it.date <= end
-        }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtATCD(
-        accounts: List<String>,
-        type: String,
-        categories: List<String>,
-        start: Date,
-        end: Date
-    ): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.type == type && categories.contains(it.category) &&
-                    it.date >= start && it.date <= end
-        }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtD(start: Date, end: Date): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.date in start..end }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtT(type: String): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.type == type }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtTC(
-        type: String,
-        categories: List<String>
-    ): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.type == type && categories.contains(it.category) }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtTCD(
-        type: String,
-        categories: List<String>,
-        start: Date,
-        end: Date
-    ): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter {
-            it.type == type && categories.contains(it.category) && it.date >= start && it.date <= end
-        }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override fun getLdIvtTD(
-        type: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter {
-            it.type == type  && it.date >= start && it.date <= end }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        ivtListLD.value = ivtList
-        return ivtListLD
-    }
-
-    override suspend fun getIvt(): Flow<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        return flow { emit(ivtList) }
-    }
-
-    override suspend fun getIvtA(accounts: List<String>): Flow<List<TranListItem>> {
-
-        val ivtList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
-            val ivt = TranListItem(
-                tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
-            )
-            ivtList.add(ivt)
-        }
-
-        return flow { emit(ivtList) }
-    }
-
-    override suspend fun getIvtAD(
+    override suspend fun getTliAD(
         accounts: List<String>,
         start: Date,
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.date >= start && it.date <= end
         }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtAT(
+    override suspend fun getTliAT(
         accounts: List<String>,
         type: String
     ): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) && it.type == type }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtATC(
+    override suspend fun getTliATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
     ): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && categories.contains(it.category)
         }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtATD(
+    override suspend fun getTliATD(
         accounts: List<String>,
         type: String,
         start: Date,
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && it.date >= start && it.date <= end
         }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtATCD(
+    override suspend fun getTliATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
@@ -960,97 +537,97 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && categories.contains(it.category) &&
                     it.date >= start && it.date <= end
         }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtD(start: Date, end: Date): Flow<List<TranListItem>> {
+    override suspend fun getTliD(start: Date, end: Date): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.date in start..end }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtT(type: String): Flow<List<TranListItem>> {
+    override suspend fun getTliT(type: String): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtTC(
+    override suspend fun getTliTC(
         type: String,
         categories: List<String>
     ): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type && categories.contains(it.category) }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtTCD(
+    override suspend fun getTliTCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             it.type == type && categories.contains(it.category) && it.date >= start && it.date <= end
         }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 
-    override suspend fun getIvtTD(
+    override suspend fun getTliTD(
         type: String,
         start: Date,
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val ivtList: MutableList<TranListItem> = mutableListOf()
+        val TliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             it.type == type  && it.date >= start && it.date <= end }) {
-            val ivt = TranListItem(
+            val Tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            ivtList.add(ivt)
+            TliList.add(Tli)
         }
 
-        return flow { emit(ivtList) }
+        return flow { emit(TliList) }
     }
 }

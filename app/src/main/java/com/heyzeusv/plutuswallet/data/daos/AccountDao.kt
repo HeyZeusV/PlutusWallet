@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.data.daos
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.Account
@@ -16,14 +15,6 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 abstract class AccountDao : BaseDao<Account>() {
-
-    /**
-     *  Returns a list of Account names in alphabetical order.
-     */
-    @Query("""SELECT name
-              FROM `account`
-              ORDER BY name ASC""")
-    abstract suspend fun getAccountNamesAsync(): MutableList<String>
 
     /**
      *  Returns a list of Account names in alphabetical order.
@@ -56,12 +47,4 @@ abstract class AccountDao : BaseDao<Account>() {
               FROM `account`
               ORDER BY name ASC""")
     abstract fun getAccounts(): Flow<List<Account>>
-
-    /**
-     *  Returns LD of list of all Accounts in order of name.
-     */
-    @Query("""SELECT *
-              FROM `account`
-              ORDER BY name ASC""")
-    abstract fun getLDAccounts(): LiveData<List<Account>>
 }

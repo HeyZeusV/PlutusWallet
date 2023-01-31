@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.data.daos
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.Category
@@ -16,15 +15,6 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 abstract class CategoryDao : BaseDao<Category>() {
-
-    /**
-     *  Returns list of Category names of [type] in alphabetical order.
-     */
-    @Query("""SELECT name
-              FROM category
-              WHERE type=(:type)
-              ORDER BY name ASC""")
-    abstract suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String>
 
     /**
      *  Returns list of Category names of [type] in alphabetical order.
@@ -60,13 +50,4 @@ abstract class CategoryDao : BaseDao<Category>() {
               WHERE type=(:type)
               ORDER BY name ASC""")
     abstract fun getCategoriesByType(type: String): Flow<List<Category>>
-
-    /**
-     *  Returns LD of list that holds all Categories of [type] in order of name.
-     */
-    @Query("""SELECT *
-              FROM category
-              WHERE type=(:type)
-              ORDER BY name ASC""")
-    abstract fun getLDCategoriesByType(type: String): LiveData<List<Category>>
 }
