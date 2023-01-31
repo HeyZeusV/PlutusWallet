@@ -169,7 +169,12 @@ fun SettingsScreen(
                 optionSelectedDisplay = decimalNumberSelectedValue,
                 updateOptionSelectedDisplay = { decimalNumberSelectedValue = it },
                 sharedPref,
-            ) { openDecimalDialog = true }
+            ) {
+                val currentValue = sharedPref[Key.KEY_DECIMAL_NUMBER, "yes"]
+                if (currentValue != it) {
+                    openDecimalDialog = true
+                }
+            }
             SettingSetup(DATE_FORMAT, sharedPref) {
                 sharedPref[DATE_FORMAT.key] = it
                 setVM.updateDateFormatter(try { it.toInt() } catch (e: NumberFormatException) { 0 })
