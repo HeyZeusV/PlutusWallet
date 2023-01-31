@@ -38,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Surface
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
@@ -58,7 +57,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
@@ -163,13 +161,12 @@ fun TransactionScreen(
             navController.navigateUp()
         }
     )
-    Surface(
+    Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(all = dimensionResource(R.dimen.cardFullPadding)),
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colors.onBackground,
-        elevation = dimensionResource(R.dimen.cardElevation)
+        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
             modifier = Modifier
@@ -324,7 +321,8 @@ fun TransactionTextInput(
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.secondary,
-                focusedLabelColor = MaterialTheme.colors.secondary
+                focusedLabelColor = MaterialTheme.colors.secondary,
+                unfocusedLabelColor = MaterialTheme.colors.secondary
             )
         )
         Row(
@@ -369,14 +367,14 @@ fun TransactionDate(
             onValueChange = { },
             modifier = modifier
                 .fillMaxWidth()
-                .testTag(label)
-            ,
+                .testTag(label),
             readOnly = true,
             label = { Text(text = label) },
             interactionSource = source,
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.secondary,
-                focusedLabelColor = MaterialTheme.colors.secondary
+                focusedLabelColor = MaterialTheme.colors.secondary,
+                unfocusedLabelColor = MaterialTheme.colors.secondary
             )
         )
     }
@@ -442,14 +440,15 @@ fun TransactionDropDownMenu(
                         tint = if (expanded) {
                             MaterialTheme.colors.secondary
                         } else {
-                            colorResource(R.color.colorButtonUnselected)
+                            LocalPWColors.current.unselected
                         }
                     )
                 },
                 interactionSource = source,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = MaterialTheme.colors.secondary,
-                    focusedLabelColor = MaterialTheme.colors.secondary
+                    focusedLabelColor = MaterialTheme.colors.secondary,
+                    unfocusedLabelColor = MaterialTheme.colors.secondary
                 )
             )
             DropdownMenu(
@@ -538,7 +537,9 @@ fun InputAlertDialog(
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             textColor = MaterialTheme.colors.onSurface,
                             focusedBorderColor = MaterialTheme.colors.secondary,
-                            focusedLabelColor = MaterialTheme.colors.secondary
+                            focusedLabelColor = MaterialTheme.colors.secondary,
+                            unfocusedLabelColor = MaterialTheme.colors.secondary,
+                            errorLabelColor = MaterialTheme.colors.error
                         )
                     )
                     if (isError) {
@@ -628,7 +629,8 @@ fun TransactionNumberInput(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.secondary,
-                focusedLabelColor = MaterialTheme.colors.secondary
+                focusedLabelColor = MaterialTheme.colors.secondary,
+                unfocusedLabelColor = MaterialTheme.colors.secondary
             )
         )
         Text(

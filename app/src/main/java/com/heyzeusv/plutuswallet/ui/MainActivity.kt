@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -79,6 +80,7 @@ import com.heyzeusv.plutuswallet.ui.overview.OverviewScreen
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.ui.theme.PWLightColors
+import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.ui.transaction.FilterState
@@ -107,10 +109,25 @@ class MainActivity : BaseActivity() {
 
         setContent {
             val theme = sharedPref[Key.KEY_THEME, "-1"].toInt()
-            val pwColors = when (theme) {
-                1 -> PWLightColors
-                2 -> PWDarkColors
-                else -> if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
+            val pwColors: PlutusWalletColors
+            when (theme) {
+                1 -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    pwColors = PWLightColors
+                }
+                2 -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    pwColors = PWDarkColors
+                }
+                else -> {
+                    pwColors = if (isSystemInDarkTheme()) {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                        PWDarkColors
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        PWLightColors
+                    }
+                }
             }
             CompositionLocalProvider(LocalPWColors provides pwColors) {
                 PlutusWalletTheme(
