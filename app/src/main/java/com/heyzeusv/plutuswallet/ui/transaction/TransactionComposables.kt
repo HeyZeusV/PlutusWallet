@@ -657,8 +657,8 @@ fun PlutusWalletButtonChip(
     label: String,
     showIcon: Boolean,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White,
-    selectedBackgroundColor: Color = Color.White,
+    backgroundColor: Color = Color.Unspecified,
+    selectedBackgroundColor: Color = Color.Unspecified,
     selectedTextColor: Color = MaterialTheme.colors.secondary,
 ) {
     FilterChip(

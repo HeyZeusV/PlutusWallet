@@ -37,6 +37,7 @@ import androidx.compose.material.ChipDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
+import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -601,7 +602,8 @@ fun FilterCard(
                         targetOffsetY = { -filterComposeSize.height.toInt() - 50 }
                     )
                 )
-                .testTag("Filter Card")
+                .testTag("Filter Card"),
+            elevation = 8.dp
         ) {
             Column(
                 modifier = Modifier.padding(all = 8.dp)
@@ -811,7 +813,10 @@ fun FilterCard(
                         .height(dimensionResource(R.dimen.f_button_chip_height))
                         .testTag("Filter action"),
                     selectedBackgroundColor = MaterialTheme.colors.secondary,
-                    selectedTextColor = MaterialTheme.colors.onBackground
+                    selectedTextColor = LocalElevationOverlay.current?.apply(
+                        color = MaterialTheme.colors.surface,
+                        elevation = 8.dp
+                    ) ?: MaterialTheme.colors.surface
                 )
             }
         }
@@ -846,7 +851,7 @@ fun PlutusWalletChip(
                 text = label,
                 modifier = Modifier,
                 color = if (selected) {
-                    MaterialTheme.colors.secondary
+                    MaterialTheme.colors.onPrimary
                 } else {
                     LocalPWColors.current.unselected
                 },
