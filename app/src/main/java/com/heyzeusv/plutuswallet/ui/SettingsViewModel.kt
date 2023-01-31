@@ -37,6 +37,21 @@ class SettingsViewModel @Inject constructor(
         updateSetVals(_setVals.value.copy(currencySymbolSide = newSide))
     }
 
+    fun updateNumberSymbols(newThousands: Char, newDecimal: Char) {
+        customSymbols.groupingSeparator = newThousands
+        customSymbols.decimalSeparator = newDecimal
+        updateSetVals(_setVals.value.copy(
+            thousandsSymbol = newThousands,
+            decimalSymbol = newDecimal,
+            decimalFormatter = DecimalFormat(decimalPattern, customSymbols).apply {
+                roundingMode = RoundingMode.HALF_UP
+            },
+            integerFormatter = DecimalFormat(integerPattern, customSymbols).apply {
+                roundingMode = RoundingMode.HALF_UP
+            }
+        ))
+    }
+
     fun updateThousandsSymbol(newSymbol: Char) {
         customSymbols.groupingSeparator = newSymbol
         updateSetVals(_setVals.value.copy(

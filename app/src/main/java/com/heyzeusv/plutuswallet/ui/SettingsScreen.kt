@@ -81,8 +81,10 @@ fun SettingsScreen(
                         val oldThousands = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
                         sharedPref[Key.KEY_THOUSANDS_SYMBOL] = oldDecimal
                         sharedPref[Key.KEY_DECIMAL_SYMBOL] = oldThousands
-                        setVM.updateDecimalSymbol(SettingsUtils.getSeparatorSymbol(oldDecimal))
-                        setVM.updateThousandsSymbol(SettingsUtils.getSeparatorSymbol(oldThousands))
+                        setVM.updateNumberSymbols(
+                            newThousands = SettingsUtils.getSeparatorSymbol(oldDecimal),
+                            newDecimal = SettingsUtils.getSeparatorSymbol(oldThousands)
+                        )
                         openSwitchDialog = false
                     },
                     onDismissText = stringResource(R.string.alert_dialog_cancel),
