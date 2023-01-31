@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.theme
 
+import android.annotation.SuppressLint
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Stable
@@ -76,11 +77,14 @@ val LightColors = lightColors(
     onBackground = Color.White
 )
 
+@SuppressLint("ConflictingOnColor")
 val DarkColors = darkColors(
     primary = PurpleBase,
     primaryVariant = PurpleDark,
     onPrimary = Color.White,
     secondary = GreenBase,
+    background = PurpleDark,
+    surface = PurpleBase,
     error = ErrorDark
 )
 

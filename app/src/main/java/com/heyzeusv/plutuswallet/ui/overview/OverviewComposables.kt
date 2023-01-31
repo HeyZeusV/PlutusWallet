@@ -15,7 +15,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
@@ -65,7 +64,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -299,8 +297,7 @@ fun ChartCard(
                                 // size of percent value
                                 dataSet.valueTextSize = 13f
                                 // color of percent value
-                                dataSet.valueTextColor =
-                                    ContextCompat.getColor(pieChart.context, R.color.colorChartText)
+                                dataSet.valueTextColor = chartLabelColor
                                 // colors used for slices
                                 dataSet.colors = chartColorLists[page]
                                 // no highlights so no shift needed
@@ -493,7 +490,6 @@ fun TransactionListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colors.surface)
         ) {
             Column(
                 modifier = Modifier

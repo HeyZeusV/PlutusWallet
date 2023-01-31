@@ -25,6 +25,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -440,7 +441,9 @@ fun PWAppBar(
                     )
                 }
             }
-        }
+        },
+        backgroundColor = MaterialTheme.colors.primary,
+        elevation = 1.dp
     )
 }
 
@@ -475,12 +478,11 @@ fun PWDrawer(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.onBackground)
+            .background(MaterialTheme.colors.primary)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colors.primary)
                 .padding(vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -489,7 +491,8 @@ fun PWDrawer(
                 contentDescription = stringResource(R.string.app_icon),
                 modifier = Modifier
                     .scale(1.5f)
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = 8.dp)
+                    ,
                 tint = Color.Unspecified
             )
             Text(
@@ -498,36 +501,45 @@ fun PWDrawer(
                 style = MaterialTheme.typography.h4
             )
         }
-        LazyColumn(
+        Surface(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
+                .fillMaxSize()
+                .background(MaterialTheme.colors.surface)
         ) {
-            items(PWDrawerItems.values()) { item ->
-                PWDrawerItem(
-                    onClick = {
-                        when(item) {
-                            PWDrawerItems.ACCOUNTS -> {
-                                closeDrawer()
-                                navController.navigateSingleTopTo(AccountsDestination.route)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                items(PWDrawerItems.values()) { item ->
+                    PWDrawerItem(
+                        onClick = {
+                            when (item) {
+                                PWDrawerItems.ACCOUNTS -> {
+                                    closeDrawer()
+                                    navController.navigateSingleTopTo(AccountsDestination.route)
+                                }
+
+                                PWDrawerItems.CATEGORIES -> {
+                                    closeDrawer()
+                                    navController.navigateSingleTopTo(CategoriesDestination.route)
+                                }
+
+                                PWDrawerItems.ABOUT -> {
+                                    closeDrawer()
+                                    navController.navigateSingleTopTo(AboutDestination.route)
+                                }
+
+                                PWDrawerItems.SETTINGS -> {
+                                    closeDrawer()
+                                    navController.navigateSingleTopTo(SettingsDestination.route)
+                                }
                             }
-                            PWDrawerItems.CATEGORIES -> {
-                                closeDrawer()
-                                navController.navigateSingleTopTo(CategoriesDestination.route)
-                            }
-                            PWDrawerItems.ABOUT -> {
-                                closeDrawer()
-                                navController.navigateSingleTopTo(AboutDestination.route)
-                            }
-                            PWDrawerItems.SETTINGS -> {
-                                closeDrawer()
-                                navController.navigateSingleTopTo(SettingsDestination.route)
-                            }
-                        }
-                    },
-                    icon = item.icon,
-                    label = stringResource(item.labelId)
-                )
+                        },
+                        icon = item.icon,
+                        label = stringResource(item.labelId)
+                    )
+                }
             }
         }
     }
