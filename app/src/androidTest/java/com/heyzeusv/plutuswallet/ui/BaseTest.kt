@@ -1,19 +1,19 @@
 package com.heyzeusv.plutuswallet.ui
 
+import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.category.CategoryViewModel
-import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.filter.FilterViewModel
-import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.ui.theme.PWLightColors
@@ -21,7 +21,7 @@ import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletColors
 import com.heyzeusv.plutuswallet.ui.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
+import com.heyzeusv.plutuswallet.util.Key
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import java.math.RoundingMode
@@ -47,6 +47,7 @@ abstract class BaseTest {
     lateinit var repo: FakeAndroidRepository
     protected lateinit var pwColors: PlutusWalletColors
     protected lateinit var res: Resources
+    protected lateinit var sharedPref: SharedPreferences
 
     val dd = DummyDataUtil()
     val dateFormatter: DateFormat = DateFormat.getDateInstance(0)
@@ -57,18 +58,28 @@ abstract class BaseTest {
     fun setUp() = runTest {
         hiltRule.inject()
         composeRule.activity.apply {
+            sharedPref = PreferenceManager.getDefaultSharedPreferences(baseContext)
             res = resources
             setContent {
-                pwColors = if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
+                val theme = sharedPref.getString(Key.KEY_THEME.key, "-1")!!.toInt()
+                val pwColors = when (theme) {
+                    1 -> PWLightColors
+                    2 -> PWDarkColors
+                    else -> if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
+                }
                 CompositionLocalProvider(LocalPWColors provides pwColors) {
-                    PlutusWalletTheme {
+                    PlutusWalletTheme(
+                        darkTheme = when (theme) {
+                            1 -> false
+                            2 -> true
+                            else -> isSystemInDarkTheme()
+                        }
+                    ) {
                         PlutusWalletApp(
-                            tranListVM = viewModels<TransactionListViewModel>().value,
-                            chartVM = viewModels<ChartViewModel>().value,
                             filterVM = viewModels<FilterViewModel>().value,
-                            tranVM = viewModels<TransactionViewModel>().value,
                             accountVM = viewModels<AccountViewModel>().value,
-                            categoryVM = viewModels<CategoryViewModel>().value
+                            categoryVM = viewModels<CategoryViewModel>().value,
+                            recreateActivity = { }
                         )
                     }
                 }

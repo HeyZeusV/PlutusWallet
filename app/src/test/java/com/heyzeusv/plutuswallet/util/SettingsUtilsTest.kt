@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.util
 
-import org.junit.Assert
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -10,6 +9,7 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import org.junit.jupiter.api.Assertions.assertEquals
 
 internal class SettingsUtilsTest {
 
@@ -45,9 +45,9 @@ internal class SettingsUtilsTest {
                 val num2 = BigDecimal("4381812")
                 val num3 = BigDecimal("9828.33")
 
-                Assert.assertEquals("12-347", formatter1.format(num1))
-                Assert.assertEquals("4-381-812", formatter1.format(num2))
-                Assert.assertEquals("9-828", formatter1.format(num3))
+                assertEquals("12-347", formatter1.format(num1))
+                assertEquals("4-381-812", formatter1.format(num2))
+                assertEquals("9-828", formatter1.format(num3))
             }
         }
 
@@ -63,9 +63,9 @@ internal class SettingsUtilsTest {
                 val num2 = BigDecimal("328910.2")
                 val num3 = BigDecimal("9876")
 
-                Assert.assertEquals("12 345,67", formatter2.format(num1))
-                Assert.assertEquals("328 910,20", formatter2.format(num2))
-                Assert.assertEquals("9 876,00", formatter2.format(num3))
+                assertEquals("12 345,67", formatter2.format(num1))
+                assertEquals("328 910,20", formatter2.format(num2))
+                assertEquals("9 876,00", formatter2.format(num3))
             }
         }
     }

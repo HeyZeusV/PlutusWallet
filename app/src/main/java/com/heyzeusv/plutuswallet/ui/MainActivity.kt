@@ -3,7 +3,6 @@ package com.heyzeusv.plutuswallet.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
@@ -63,6 +62,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.preference.PreferenceManager
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
@@ -105,15 +105,21 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val pwColors = when (sharedPref[Key.KEY_THEME, "-1"].toInt()) {
+            val theme = sharedPref[Key.KEY_THEME, "-1"].toInt()
+            val pwColors = when (theme) {
                 1 -> PWLightColors
                 2 -> PWDarkColors
                 else -> if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
             }
             CompositionLocalProvider(LocalPWColors provides pwColors) {
-                PlutusWalletTheme {
+                PlutusWalletTheme(
+                    darkTheme = when (theme) {
+                        1 -> false
+                        2 -> true
+                        else -> isSystemInDarkTheme()
+                    }
+                ) {
                     PlutusWalletApp(
-                        sharedPref,
                         filterVM,
                         accountVM,
                         categoryVM,
@@ -129,7 +135,6 @@ class MainActivity : BaseActivity() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PlutusWalletApp(
-    sharedPref: SharedPreferences,
     filterVM: FilterViewModel,
     accountVM: AccountViewModel,
     categoryVM: CategoryViewModel,
@@ -184,195 +189,206 @@ fun PlutusWalletApp(
     val setVM: SettingsViewModel = viewModel()
     val setVals by setVM.setVals.collectAsState()
 
-    PlutusWalletTheme {
-        LaunchedEffect(key1 = filterState) {
-            if (filterState != FilterState.VALID) {
-                scaffoldState.snackbarHostState.showSnackbar(filterStateMessage)
-                filterVM.updateFilterState(FilterState.VALID)
-            }
+    LaunchedEffect(key1 = filterState) {
+        if (filterState != FilterState.VALID) {
+            scaffoldState.snackbarHostState.showSnackbar(filterStateMessage)
+            filterVM.updateFilterState(FilterState.VALID)
         }
-        BackPressHandler(
-            onBackPressed =  {
-                if (scaffoldState.drawerState.isOpen) {
-                    coroutineScope.launch { scaffoldState.drawerState.close() }
-                } else if (!navController.navigateUp()) {
-                    activity.finish()
-                }
-                appBarActions.onNavPressed.invoke()
+    }
+    BackPressHandler(
+        onBackPressed = {
+            if (scaffoldState.drawerState.isOpen) {
+                coroutineScope.launch { scaffoldState.drawerState.close() }
+            } else if (!navController.navigateUp()) {
+                activity.finish()
             }
-        )
-        Scaffold(
-            scaffoldState = scaffoldState,
-            topBar = {
-                PWAppBar(
-                    currentScreen = currentScreen,
-                    onNavPressed = {
-                        if (currentScreen == OverviewDestination) {
-                            coroutineScope.launch {
-                                scaffoldState.drawerState.open()
-                            }
-                        } else {
-                            when (currentScreen) {
-                                AccountsDestination -> accountVM.updateAccountExists("")
-                                CategoriesDestination -> categoryVM.updateCategoryExists("")
-                                else -> {}
-                            }
-                            navController.navigateUp()
-                        }
-                    },
-                    onActionLeftPressed = {
-                        when (currentScreen) {
-                            OverviewDestination -> { filterVM.updateShowFilter(!showFilter) }
-                            else -> {}
-                        }
-                    },
-                    onActionRightPressed = {
-                        when (currentScreen) {
-                            OverviewDestination -> {
-                                navController.navigateToTransactionWithId(0)
-                            }
-                            TransactionDestination -> { appBarActions.onActionRightPressed.invoke() }
-                            AccountsDestination -> { accountVM.updateDialog(DataDialog(CREATE, 0)) }
-                            CategoriesDestination -> {
-                                val type =
-                                    if (categoryListPagerState.currentPage == 0) EXPENSE else INCOME
-                                categoryVM.updateDialog(DataDialog(CREATE, 0, type))
-                            }
-                            else -> {}
-                        }
-                    }
-                )
-            },
-            // TODO: Make PWDrawer a child composable that opens/closes using AnimateVisibility
-            drawerContent = {
-                PWDrawer(
-                    closeDrawer = {
+            appBarActions.onNavPressed.invoke()
+        }
+    )
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            PWAppBar(
+                currentScreen = currentScreen,
+                onNavPressed = {
+                    if (currentScreen == OverviewDestination) {
                         coroutineScope.launch {
-                            scaffoldState.drawerState.close()
+                            scaffoldState.drawerState.open()
                         }
+                    } else {
+                        when (currentScreen) {
+                            AccountsDestination -> accountVM.updateAccountExists("")
+                            CategoriesDestination -> categoryVM.updateCategoryExists("")
+                            else -> {}
+                        }
+                        navController.navigateUp()
+                    }
+                },
+                onActionLeftPressed = {
+                    when (currentScreen) {
+                        OverviewDestination -> {
+                            filterVM.updateShowFilter(!showFilter)
+                        }
+
+                        else -> {}
+                    }
+                },
+                onActionRightPressed = {
+                    when (currentScreen) {
+                        OverviewDestination -> {
+                            navController.navigateToTransactionWithId(0)
+                        }
+
+                        TransactionDestination -> {
+                            appBarActions.onActionRightPressed.invoke()
+                        }
+
+                        AccountsDestination -> {
+                            accountVM.updateDialog(DataDialog(CREATE, 0))
+                        }
+
+                        CategoriesDestination -> {
+                            val type =
+                                if (categoryListPagerState.currentPage == 0) EXPENSE else INCOME
+                            categoryVM.updateDialog(DataDialog(CREATE, 0, type))
+                        }
+
+                        else -> {}
+                    }
+                }
+            )
+        },
+        // TODO: Make PWDrawer a child composable that opens/closes using AnimateVisibility
+        drawerContent = {
+            PWDrawer(
+                closeDrawer = {
+                    coroutineScope.launch {
+                        scaffoldState.drawerState.close()
+                    }
+                },
+                navController
+            )
+        },
+        drawerGesturesEnabled = false,
+        backgroundColor = MaterialTheme.colors.background
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = OverviewDestination.route
+        ) {
+            composable(OverviewDestination.route) {
+                val tranListVM = hiltViewModel<TransactionListViewModel>()
+                val chartVM = hiltViewModel<ChartViewModel>()
+
+                val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
+                tranListVM.futureTransactions()
+
+                OverviewScreen(
+                    filterInfo,
+                    setVals,
+                    tranListVM,
+                    chartVM,
+                    tranListPreviousMaxId = tranListVM.previousMaxId,
+                    tranListUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
+                    tranListItemOnLongClick = tranListVM::updateDeleteDialog,
+                    tranListItemOnClick = { tranId ->
+                        navController.navigateToTransactionWithId(tranId)
                     },
+                    tranListShowDeleteDialog = tranListShowDeleteDialog,
+                    tranListDialogOnConfirm = { tranId ->
+                        tranListVM.deleteTransaction(tranId)
+                        tranListVM.updateDeleteDialog(-1)
+                    },
+                    tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
+                    showFilter = showFilter,
+                    updateShowFilter = filterVM::updateShowFilter,
+                    accountFilterSelected = accountFilterSelected,
+                    accountFilterOnClick = filterVM::updateAccountFilter,
+                    accountNameList,
+                    accountSelected,
+                    accountChipOnClick = filterVM::updateAccountSelected,
+                    categoryFilterSelected = categoryFilterSelected,
+                    categoryFilterOnClick = filterVM::updateCategoryFilter,
+                    filterTypeSelected,
+                    filterUpdateTypeSelected = filterVM::updateTypeSelected,
+                    categoryList = if (filterTypeSelected == EXPENSE)
+                        expenseCatNameList else incomeCatNameList,
+                    categorySelected = if (filterTypeSelected == EXPENSE)
+                        expenseCatSelected else incomeCatSelected,
+                    categoryChipOnClick = if (filterTypeSelected == EXPENSE)
+                        filterVM::updateExpenseCatSelected else filterVM::updateIncomeCatSelected,
+                    dateFilterSelected,
+                    dateFilterOnClick = filterVM::updateDateFilter,
+                    startDateString,
+                    startDateOnClick = filterVM::updateStartDateString,
+                    endDateString,
+                    endDateOnClick = filterVM::updateEndDateString,
+                    applyOnClick = filterVM::applyFilter
+                )
+            }
+            composable(
+                route = TransactionDestination.routeWithArg,
+                arguments = TransactionDestination.arguments
+            ) { navBackStackEntry ->
+                val tranVM = hiltViewModel<TransactionViewModel>().apply {
+                    tranVMSetup(setVals, LocalContext.current)
+                }
+                val tranId =
+                    navBackStackEntry.arguments?.getInt(TransactionDestination.id_arg) ?: 0
+
+                TransactionScreen(
+                    tranVM,
+                    tranId,
+                    appBarActionSetup = { appBarActions = it },
+                    snackbarHostState = scaffoldState.snackbarHostState,
                     navController
                 )
-            },
-            drawerGesturesEnabled = false,
-            backgroundColor = MaterialTheme.colors.background
-        ) {
-            NavHost(
-                navController = navController,
-                startDestination = OverviewDestination.route
-            ) {
-                composable(OverviewDestination.route) {
-                    val tranListVM = hiltViewModel<TransactionListViewModel>()
-                    val chartVM = hiltViewModel<ChartViewModel>()
-
-                    val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
-                    tranListVM.futureTransactions()
-
-                    OverviewScreen(
-                        filterInfo,
-                        setVals,
-                        tranListVM,
-                        chartVM,
-                        tranListPreviousMaxId = tranListVM.previousMaxId,
-                        tranListUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
-                        tranListItemOnLongClick = tranListVM::updateDeleteDialog,
-                        tranListItemOnClick = { tranId ->
-                            navController.navigateToTransactionWithId(tranId)
-                        },
-                        tranListShowDeleteDialog = tranListShowDeleteDialog,
-                        tranListDialogOnConfirm = { tranId ->
-                            tranListVM.deleteTransaction(tranId)
-                            tranListVM.updateDeleteDialog(-1)
-                        },
-                        tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
-                        showFilter = showFilter,
-                        updateShowFilter = filterVM::updateShowFilter,
-                        accountFilterSelected = accountFilterSelected,
-                        accountFilterOnClick = filterVM::updateAccountFilter,
-                        accountNameList,
-                        accountSelected,
-                        accountChipOnClick = filterVM::updateAccountSelected,
-                        categoryFilterSelected = categoryFilterSelected,
-                        categoryFilterOnClick = filterVM::updateCategoryFilter,
-                        filterTypeSelected,
-                        filterUpdateTypeSelected = filterVM::updateTypeSelected,
-                        categoryList = if (filterTypeSelected == EXPENSE)
-                            expenseCatNameList else incomeCatNameList,
-                        categorySelected = if (filterTypeSelected == EXPENSE)
-                            expenseCatSelected else incomeCatSelected,
-                        categoryChipOnClick = if (filterTypeSelected == EXPENSE)
-                            filterVM::updateExpenseCatSelected else filterVM::updateIncomeCatSelected,
-                        dateFilterSelected,
-                        dateFilterOnClick = filterVM::updateDateFilter,
-                        startDateString,
-                        startDateOnClick = filterVM::updateStartDateString,
-                        endDateString,
-                        endDateOnClick = filterVM::updateEndDateString,
-                        applyOnClick = filterVM::applyFilter
-                    )
-                }
-                composable(
-                    route = TransactionDestination.routeWithArg,
-                    arguments = TransactionDestination.arguments
-                ) { navBackStackEntry ->
-                    val tranVM = hiltViewModel<TransactionViewModel>().apply {
-                        tranVMSetup(setVals, LocalContext.current)
-                    }
-                    val tranId =
-                        navBackStackEntry.arguments?.getInt(TransactionDestination.id_arg) ?: 0
-
-                    TransactionScreen(
-                        tranVM,
-                        tranId,
-                        appBarActionSetup = { appBarActions = it },
-                        snackbarHostState = scaffoldState.snackbarHostState,
-                        navController
-                    )
-                }
-                composable(AccountsDestination.route){
-                    ListCard(
-                        pagerState = accountListPagerState,
-                        snackbarHostState = scaffoldState.snackbarHostState,
-                        dataLists = listOf(accountList),
-                        usedDataLists = listOf(accountsUsedList),
-                        onClick = accountVM::updateDialog,
-                        showDialog = accountListShowDialog,
-                        createDialogTitle = stringResource(R.string.alert_dialog_create_account),
-                        createDialogOnConfirm = accountVM::createNewAccount,
-                        deleteDialogTitle = stringResource(R.string.alert_dialog_delete_account),
-                        deleteDialogOnConfirm = accountVM::deleteAccount,
-                        editDialogTitle = stringResource(R.string.alert_dialog_edit_account),
-                        editDialogOnConfirm = accountVM::editAccount,
-                        dialogOnDismiss = accountVM::updateDialog,
-                        existsName = accountListExistsName
-                    )
-                }
-                composable(CategoriesDestination.route) {
-                    val expenseSubtitle = stringResource(R.string.type_expense)
-                    val incomeSubtitle = stringResource(R.string.type_income)
-                    ListCard(
-                        pagerState = categoryListPagerState,
-                        snackbarHostState = scaffoldState.snackbarHostState,
-                        dataLists = listOf(expenseCatList, incomeCatList),
-                        usedDataLists = listOf(expenseCatUsedList, incomeCatUsedList),
-                        listSubtitles = listOf(expenseSubtitle, incomeSubtitle),
-                        onClick = categoryVM::updateDialog,
-                        showDialog = categoryListShowDialog,
-                        createDialogTitle = stringResource(R.string.alert_dialog_create_category),
-                        createDialogOnConfirm = categoryVM::createNewCategory,
-                        deleteDialogTitle = stringResource(R.string.alert_dialog_delete_category),
-                        deleteDialogOnConfirm = categoryVM::deleteCategory,
-                        editDialogTitle = stringResource(R.string.alert_dialog_edit_category),
-                        editDialogOnConfirm = categoryVM::editCategory,
-                        dialogOnDismiss = categoryVM::updateDialog,
-                        existsName = categoryListExists
-                    )
-                }
-                composable(SettingsDestination.route) {
-                    SettingsScreen(setVM, sharedPref, recreateActivity)
-                }
-                composable(AboutDestination.route) { AboutScreen() }
             }
+            composable(AccountsDestination.route) {
+                ListCard(
+                    pagerState = accountListPagerState,
+                    snackbarHostState = scaffoldState.snackbarHostState,
+                    dataLists = listOf(accountList),
+                    usedDataLists = listOf(accountsUsedList),
+                    onClick = accountVM::updateDialog,
+                    showDialog = accountListShowDialog,
+                    createDialogTitle = stringResource(R.string.alert_dialog_create_account),
+                    createDialogOnConfirm = accountVM::createNewAccount,
+                    deleteDialogTitle = stringResource(R.string.alert_dialog_delete_account),
+                    deleteDialogOnConfirm = accountVM::deleteAccount,
+                    editDialogTitle = stringResource(R.string.alert_dialog_edit_account),
+                    editDialogOnConfirm = accountVM::editAccount,
+                    dialogOnDismiss = accountVM::updateDialog,
+                    existsName = accountListExistsName
+                )
+            }
+            composable(CategoriesDestination.route) {
+                val expenseSubtitle = stringResource(R.string.type_expense)
+                val incomeSubtitle = stringResource(R.string.type_income)
+                ListCard(
+                    pagerState = categoryListPagerState,
+                    snackbarHostState = scaffoldState.snackbarHostState,
+                    dataLists = listOf(expenseCatList, incomeCatList),
+                    usedDataLists = listOf(expenseCatUsedList, incomeCatUsedList),
+                    listSubtitles = listOf(expenseSubtitle, incomeSubtitle),
+                    onClick = categoryVM::updateDialog,
+                    showDialog = categoryListShowDialog,
+                    createDialogTitle = stringResource(R.string.alert_dialog_create_category),
+                    createDialogOnConfirm = categoryVM::createNewCategory,
+                    deleteDialogTitle = stringResource(R.string.alert_dialog_delete_category),
+                    deleteDialogOnConfirm = categoryVM::deleteCategory,
+                    editDialogTitle = stringResource(R.string.alert_dialog_edit_category),
+                    editDialogOnConfirm = categoryVM::editCategory,
+                    dialogOnDismiss = categoryVM::updateDialog,
+                    existsName = categoryListExists
+                )
+            }
+            composable(SettingsDestination.route) {
+                val sharedPref =
+                    PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
+                SettingsScreen(setVM, sharedPref, recreateActivity)
+            }
+            composable(AboutDestination.route) { AboutScreen() }
         }
     }
 }

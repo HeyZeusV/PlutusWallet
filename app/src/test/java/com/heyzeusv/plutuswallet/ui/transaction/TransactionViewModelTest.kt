@@ -37,7 +37,7 @@ internal class TransactionViewModelTest {
     fun setUpViewModel() = runTest {
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
-        tranVM = TransactionViewModel(repo, SettingsValues())
+        tranVM = TransactionViewModel(repo)
         tranVM.updatePeriodList(mutableListOf("Days", "Weeks", "Months", "Years"))
         repo.accountNameListEmit(dd.accList.map { it.name })
         repo.expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })

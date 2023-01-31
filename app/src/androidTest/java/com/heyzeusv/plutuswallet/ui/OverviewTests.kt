@@ -34,6 +34,7 @@ import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartEntry
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartText
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
+import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.cfl.chart.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.cfl.tranlist.TransactionListViewModel
@@ -47,8 +48,8 @@ class OverviewTests : BaseTest() {
 
     @Test
     fun overview_startUp() {
-        val expense = composeRule.activity.baseContext.resources.getString(R.string.type_expense)
-        val income = composeRule.activity.baseContext.resources.getString(R.string.type_income)
+        val expense = res.getString(R.string.type_expense)
+        val income = res.getString(R.string.type_income)
 
         // check that we are on Overview screen
         composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
@@ -111,8 +112,14 @@ class OverviewTests : BaseTest() {
         ).performClick()
 
         // rerun calls to get updated lists
-        composeRule.activity.viewModels<TransactionListViewModel>().value.updateTranList(FilterInfo())
-        composeRule.activity.viewModels<ChartViewModel>().value.updateCatTotalsList(FilterInfo())
+        composeRule.activity.viewModels<TransactionListViewModel>().value.updateTranList(
+            FilterInfo(),
+            SettingsValues()
+        )
+        composeRule.activity.viewModels<ChartViewModel>().value.updateCatTotalsList(
+            FilterInfo(),
+            SettingsValues()
+        )
 
         // check that correct Transaction has been deleted
         composeRule.onNode(hasTestTag("${dd.tran2.id}")).assertDoesNotExist()
