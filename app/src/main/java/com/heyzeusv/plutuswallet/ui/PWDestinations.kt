@@ -9,6 +9,8 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.heyzeusv.plutuswallet.R
 
 /**
@@ -49,6 +51,12 @@ object TransactionDestination: PWDestination {
     override val title = R.string.transaction
     override val actionRightIcon = Icons.Filled.Save
     override val actionRightDescription = R.string.transaction_save
+
+    const val id_arg = "transaction_id"
+    val arguments = listOf(
+        navArgument(id_arg) { type = NavType.IntType }
+    )
+    val routeWithArg = "${route}/{${id_arg}}"
 }
 
 object AccountsDestination: PWDestination {

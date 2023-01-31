@@ -2,6 +2,7 @@ package com.heyzeusv.plutuswallet.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
@@ -39,8 +40,10 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -94,25 +97,11 @@ import kotlinx.coroutines.launch
 class MainActivity : BaseActivity() {
 
     private val filterVM: FilterViewModel by viewModels()
-    private val tranVM: TransactionViewModel by viewModels()
     private val accountVM: AccountViewModel by viewModels()
     private val categoryVM: CategoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        tranVM.apply {
-            emptyTitle = getString(R.string.transaction_empty_title)
-            accountCreate = getString(R.string.account_create)
-            categoryCreate = getString(R.string.category_create)
-            // array used by Period DropDownMenu
-            updatePeriodList(
-                mutableListOf(
-                    getString(R.string.period_days), getString(R.string.period_weeks),
-                    getString(R.string.period_months), getString(R.string.period_years)
-                )
-            )
-        }
 
         setContent {
             val pwColors = when (sharedPref[Key.KEY_THEME, "-1"].toInt()) {
@@ -125,7 +114,6 @@ class MainActivity : BaseActivity() {
                     PlutusWalletApp(
                         sharedPref,
                         filterVM,
-                        tranVM,
                         accountVM,
                         categoryVM,
                         recreateActivity = { recreate() }
@@ -142,7 +130,6 @@ class MainActivity : BaseActivity() {
 fun PlutusWalletApp(
     sharedPref: SharedPreferences,
     filterVM: FilterViewModel,
-    tranVM: TransactionViewModel,
     accountVM: AccountViewModel,
     categoryVM: CategoryViewModel,
     recreateActivity: () -> Unit
@@ -150,8 +137,11 @@ fun PlutusWalletApp(
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
-    val currentScreen =
-        PWScreens.find { it.route == currentDestination?.route } ?: OverviewDestination
+    val currentScreen = PWScreens.find {
+        currentDestination?.route?.contains(it.route) ?: false
+    } ?: OverviewDestination
+    var appBarActions by remember { mutableStateOf(AppBarActions()) }
+
     val activity = LocalContext.current as Activity
 
     val scaffoldState = rememberScaffoldState()
@@ -207,6 +197,7 @@ fun PlutusWalletApp(
                 } else if (!navController.navigateUp()) {
                     activity.finish()
                 }
+                appBarActions.onNavPressed.invoke()
             }
         )
         Scaffold(
@@ -221,7 +212,6 @@ fun PlutusWalletApp(
                             }
                         } else {
                             when (currentScreen) {
-                                TransactionDestination -> tranVM.updateSaveSuccess(false)
                                 AccountsDestination -> accountVM.updateAccountExists("")
                                 CategoriesDestination -> categoryVM.updateCategoryExists("")
                                 else -> {}
@@ -238,10 +228,9 @@ fun PlutusWalletApp(
                     onActionRightPressed = {
                         when (currentScreen) {
                             OverviewDestination -> {
-                                tranVM.retrieveTransaction(0)
-                                navController.navigateSingleTopTo(TransactionDestination.route)
+                                navController.navigateToTransactionWithId(0)
                             }
-                            TransactionDestination -> { tranVM.saveTransaction() }
+                            TransactionDestination -> { appBarActions.onActionRightPressed.invoke() }
                             AccountsDestination -> { accountVM.updateDialog(DataDialog(CREATE, 0)) }
                             CategoriesDestination -> {
                                 val type =
@@ -287,8 +276,7 @@ fun PlutusWalletApp(
                         tranListUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
                         tranListItemOnLongClick = tranListVM::updateDeleteDialog,
                         tranListItemOnClick = { tranId ->
-                            tranVM.retrieveTransaction(tranId)
-                            navController.navigateSingleTopTo(TransactionDestination.route)
+                            navController.navigateToTransactionWithId(tranId)
                         },
                         tranListShowDeleteDialog = tranListShowDeleteDialog,
                         tranListDialogOnConfirm = { tranId ->
@@ -322,11 +310,22 @@ fun PlutusWalletApp(
                         applyOnClick = filterVM::applyFilter
                     )
                 }
-                composable(route = TransactionDestination.route) {
+                composable(
+                    route = TransactionDestination.routeWithArg,
+                    arguments = TransactionDestination.arguments
+                ) { navBackStackEntry ->
+                    val tranVM = hiltViewModel<TransactionViewModel>().apply {
+                        tranVMSetup(LocalContext.current)
+                    }
+                    val tranId =
+                        navBackStackEntry.arguments?.getInt(TransactionDestination.id_arg) ?: 0
+
                     TransactionScreen(
-                        tranVM = tranVM,
+                        tranVM,
+                        tranId,
+                        appBarActionSetup = { appBarActions = it },
                         snackbarHostState = scaffoldState.snackbarHostState,
-                        navController = navController
+                        navController
                     )
                 }
                 composable(AccountsDestination.route){
@@ -596,6 +595,9 @@ fun BackPressHandler(
     }
 }
 
+/**
+ *  Navigates app to [route]
+ */
 fun NavHostController.navigateSingleTopTo(route: String) =
     this.navigate(route) {
         // pressing back from any screen would pop back stack to Overview
@@ -605,3 +607,41 @@ fun NavHostController.navigateSingleTopTo(route: String) =
         // previous data and state is saved
         restoreState = true
     }
+
+/**
+ *  Used whenever navigating to TransactionScreen, opens the Transaction screen while passing
+ *  [tranId] as argument to determine which Transaction to open
+ */
+fun NavHostController.navigateToTransactionWithId(tranId: Int) {
+    this.navigateSingleTopTo("${TransactionDestination.route}/$tranId")
+}
+
+/**
+ *  Data class that is passed to each screen to determine the AppBar actions when pressed on the
+ *  specified screen.
+ */
+data class AppBarActions(
+    val onNavPressed: () -> Unit = { },
+    val onActionLeftPressed: () -> Unit = { },
+    val onActionRightPressed: () -> Unit = { }
+)
+
+/**
+ *  TransactionViewModel requires several translated strings, but I don't want to have it hold
+ *  context in order to get string resources. This extension function retrieves all strings
+ *  required using the provided [context].
+ */
+private fun TransactionViewModel.tranVMSetup(context: Context) {
+    this.apply {
+        emptyTitle = context.getString(R.string.transaction_empty_title)
+        accountCreate = context.getString(R.string.account_create)
+        categoryCreate = context.getString(R.string.category_create)
+        // array used by Period DropDownMenu
+        updatePeriodList(
+            mutableListOf(
+                context.getString(R.string.period_days), context.getString(R.string.period_weeks),
+                context.getString(R.string.period_months), context.getString(R.string.period_years)
+            )
+        )
+    }
+}

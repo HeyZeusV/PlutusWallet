@@ -48,6 +48,8 @@ class TransactionViewModel @Inject constructor(
     // used to tell if date has been edited for re-repeating Transactions
     private var dateChanged = false
 
+    var retrieveTransaction = true
+
     private val _transaction = MutableStateFlow(Transaction())
     val transaction: StateFlow<Transaction> get() = _transaction
 
@@ -174,6 +176,7 @@ class TransactionViewModel @Inject constructor(
                 _tranId = if (it == null) 0 else tranId
             }
             setTranData(transaction.value)
+            retrieveTransaction = false
         }
     }
 

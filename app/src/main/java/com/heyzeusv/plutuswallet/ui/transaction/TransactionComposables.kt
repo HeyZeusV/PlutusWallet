@@ -71,6 +71,7 @@ import androidx.navigation.NavController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataInterface
+import com.heyzeusv.plutuswallet.ui.AppBarActions
 import com.heyzeusv.plutuswallet.ui.BackPressHandler
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
@@ -89,9 +90,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun TransactionScreen(
     tranVM: TransactionViewModel,
+    tranId: Int,
+    appBarActionSetup: (AppBarActions) -> Unit,
     snackbarHostState: SnackbarHostState,
     navController: NavController
 ) {
+    if (tranVM.retrieveTransaction) {
+        tranVM.retrieveTransaction(tranId)
+    }
+
     // used for SnackBar
     val saveSuccess by tranVM.saveSuccess.collectAsState()
     val saveSuccessMessage = stringResource(R.string.snackbar_saved)
@@ -130,8 +137,16 @@ fun TransactionScreen(
     LaunchedEffect(key1 = saveSuccess) {
         if (saveSuccess) {
             snackbarHostState.showSnackbar(saveSuccessMessage)
+            tranVM.updateSaveSuccess(false)
         }
     }
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = { tranVM.retrieveTransaction = true },
+            onActionRightPressed = { tranVM.saveTransaction() }
+        )
+    )
     if (showFutureDialog) {
         PWAlertDialog(
             onConfirmText = stringResource(R.string.alert_dialog_yes),
