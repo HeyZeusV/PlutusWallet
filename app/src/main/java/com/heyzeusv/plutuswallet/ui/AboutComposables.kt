@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -57,13 +58,12 @@ import java.io.InputStreamReader
 @OptIn(ExperimentalUnitApi::class)
 @Composable
 fun AboutScreen() {
-    Surface(
+    Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(all = dimensionResource(R.dimen.cardFullPadding)),
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colors.onBackground,
-        elevation = dimensionResource(R.dimen.cardElevation)
+        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
             modifier = Modifier

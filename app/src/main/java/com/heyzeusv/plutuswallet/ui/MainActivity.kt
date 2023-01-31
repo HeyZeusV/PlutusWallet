@@ -288,6 +288,7 @@ fun PlutusWalletApp(
             )
         },
         drawerGesturesEnabled = false,
+        drawerScrimColor = LocalPWColors.current.backgroundOverlay,
         backgroundColor = MaterialTheme.colors.background
     ) {
         NavHost(
