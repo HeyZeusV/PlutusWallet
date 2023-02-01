@@ -1,12 +1,14 @@
 package com.heyzeusv.plutuswallet.util
 
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
 
@@ -51,6 +53,7 @@ fun PWAlertDialog(
         title = {
             Text(
                 text = title,
+                color = MaterialTheme.colors.onSurface,
                 style = MaterialTheme.typography.subtitle1
             )
         },
@@ -59,6 +62,10 @@ fun PWAlertDialog(
                 text = message,
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f)
             )
-        }
+        },
+        backgroundColor = LocalElevationOverlay.current?.apply(
+            color = MaterialTheme.colors.surface,
+            elevation = 8.dp
+        ) ?: MaterialTheme.colors.surface
     )
 }
