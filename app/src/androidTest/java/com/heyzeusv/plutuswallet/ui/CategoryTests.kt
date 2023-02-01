@@ -14,10 +14,10 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Category
-import com.heyzeusv.plutuswallet.ui.category.CategoryViewModel
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.ui.list.CategoryViewModel
+import com.heyzeusv.plutuswallet.util.TransactionType
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 

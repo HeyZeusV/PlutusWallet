@@ -6,11 +6,12 @@ import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.DataDialog
-import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.CREATE
-import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.EDIT
-import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction.DELETE
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.ui.list.CategoryViewModel
+import com.heyzeusv.plutuswallet.util.DataListSelectedAction.CREATE
+import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
+import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals

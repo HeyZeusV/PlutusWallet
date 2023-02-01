@@ -3,9 +3,9 @@ package com.heyzeusv.plutuswallet.data.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.heyzeusv.plutuswallet.ui.transaction.DataListSelectedAction
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.DataListSelectedAction
+import com.heyzeusv.plutuswallet.util.TransactionType
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 
 /**
  *  Representation of Category table.

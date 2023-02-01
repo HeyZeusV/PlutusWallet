@@ -11,7 +11,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.ui.account.AccountViewModel
+import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 

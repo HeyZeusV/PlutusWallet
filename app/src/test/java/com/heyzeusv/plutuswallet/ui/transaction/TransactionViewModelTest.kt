@@ -7,8 +7,8 @@ import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName

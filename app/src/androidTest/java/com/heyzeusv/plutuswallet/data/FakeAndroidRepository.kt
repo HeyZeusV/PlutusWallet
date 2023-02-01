@@ -5,8 +5,8 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.replace
 import java.math.BigDecimal
 import java.util.Date

@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.heyzeusv.plutuswallet.ui.theme.LocalPWColors
-import com.heyzeusv.plutuswallet.ui.theme.alertDialogButton
+import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
+import com.heyzeusv.plutuswallet.util.theme.alertDialogButton
 
 /**
  *  Composable for a standard AlertDialog with [title] that displays [message].
