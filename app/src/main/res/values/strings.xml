@@ -4,12 +4,13 @@
     <string name="about_by_name">By Jesus E. Valdes</string>
     <string name="about_changelog">Changelog</string>
     <string name="about_contact_me">Questions, comments, or concerns? \nFeel free to email me at</string>
-    <string name="about_email" translatable="false"><![CDATA[<a href=\"mailto:heyzeusvapps@gmail.com?subject=Plutus\' Wallet\">heyzeusvapps@gmail.com</a>]]></string>
+    <string name="about_email_link" translatable="false">mailto:heyzeusvapps@gmail.com?subject=Plutus\' Wallet</string>
+    <string name="app_email" translatable="false">heyzeusvapps@gmail.com</string>
     <string name="about_external_libraries">External Libraries Used</string>
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="about_version" translatable="false">v3.3.0</string>
+    <string name="about_version" translatable="false">v4.0.0</string>
     <string name="account_create">Create New Account</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
@@ -23,24 +24,23 @@
     <string name="alert_dialog_yes">Yes</string>
     <string name="app_icon">App Icon</string>
     <string name="app_name" translatable="false">Plutus\' Wallet</string>
+    <string name="blank_string" translatable="false"> </string>
     <string name="category_all">All</string>
     <string name="category_create">Create New Category</string>
     <string name="cfl_no_transactions">No transactions fulfill the filters being applied!</string>
-    <string name="filter_account">Account:</string>
+    <string name="filter_account">Account</string>
     <string name="filter_apply">Apply</string>
-    <string name="filter_category">Category:</string>
-    <string name="filter_date">Date:</string>
+    <string name="filter_category">Category</string>
+    <string name="filter_date">Date</string>
     <string name="filter_date_warning">End date must be after start date!!</string>
     <string name="filter_end">End</string>
     <string name="filter_type">Type</string>
     <string name="filter_reset">Reset</string>
     <string name="filter_start">Start</string>
-    <string name="chart_total">Total:&#160;</string>
+    <string name="chart_total">"Total: "</string>
     <string name="chart_amount" translatable="false">%1$s%2$s</string>
-    <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
-    <string name="library_circleindicator" translatable="false">CircleIndicator</string>
     <string name="library_mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>
-    <string name="library_mpandroidchart_github" translatable="false"><![CDATA[<a href=\"https://github.com/PhilJay/MPAndroidChart\">GitHub</a>]]></string>
+    <string name="library_mpandroidchart_github" translatable="false">https://github.com/PhilJay/MPAndroidChart</string>
     <string name="period_days">Days</string>
     <string name="period_months">Months</string>
     <string name="period_weeks">Weeks</string>
@@ -55,8 +55,8 @@
     <string name="preferences_decimal_places_summary_on">Decimal places can be used.</string>
     <string name="preferences_decimal_symbol">Decimal Separator Symbol</string>
     <string name="preferences_language">Language</string>
-    <string name="preferences_number_decimal">Decimal Places</string>
-    <string name="preferences_symbol_side">Currency Symbol Side</string>
+    <string name="preferences_decimal_number">Decimal Places</string>
+    <string name="preferences_currency_symbol_side">Currency Symbol Side</string>
     <string name="preferences_symbol_side_summary_off">Currency symbol will appear on right side.</string>
     <string name="preferences_symbol_side_summary_on">Currency symbol will appear on left side.</string>
     <string name="preferences_thousands_symbol">Thousands Separator Symbol</string>
@@ -65,6 +65,7 @@
     <string name="total_number" translatable="false">%1$s</string>
     <string name="total_number_symbol" translatable="false">%1$s%2$s</string>
     <string name="transaction_account">Account</string>
+    <string name="transaction_blank_hint" translatable="false"> </string>
     <string name="transaction_category">Category</string>
     <string name="transaction_date">Date</string>
     <string name="transaction_empty_title">"Transaction "</string>
@@ -98,7 +99,8 @@
     <string name="cfl_overview">Overview</string>
     <string name="cfl_drawer_description">Open Navigation Drawer</string>
     <string name="navigate_back">Navigate Back</string>
-    <string name="app_github" translatable="false"><![CDATA[<a href=\"https://github.com/HeyZeusV/PlutusWallet\">GitHub</a>]]></string>
+    <string name="app_github_link" translatable="false">https://github.com/HeyZeusV/PlutusWallet</string>
+    <string name="about_github" translatable="false">GitHub</string>
     <string name="preferences_theme">Theme</string>
     <string name="preferences_theme_light">Light</string>
     <string name="preferences_theme_dark">Dark</string>
@@ -106,6 +108,11 @@
     <string name="alert_dialog_input_error">Can\'t be blank!</string>
     <string name="transaction_period">Period</string>
     <string name="cfl_menu_filter">Edit Filter</string>
-    <string name="filter_no_chip_account">Please select at least one account!!</string>
-    <string name="filter_no_chip_category">Please select at least one category!!</string>
+    <string name="filter_no_selected_account">Please select at least one account!!</string>
+    <string name="filter_no_selected_category">Please select at least one category!!</string>
+    <string name="filter_no_selected_dates">Please select start and end dates!!</string>
+    <string name="data_edit">Edit</string>
+    <string name="data_delete">Delete</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_privacy_policy_link" translatable="false">https://doc-hosting.flycricket.io/plutus-wallet-privacy-policy/2b4e7d61-0f8b-4e18-9634-d94fc965faf9/privacy</string>
 </resources>

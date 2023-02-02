@@ -21,3 +21,8 @@ data class ItemViewChart(
     val fCatName: List<String> = listOf(""),
     val fType: String = ""
 )
+
+data class ChartInformation(
+    val ctList: List<CategoryTotals> = emptyList(),
+    var totalText: String = ""
+)

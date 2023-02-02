@@ -53,7 +53,7 @@ abstract class BaseDao<T> {
      *  Inserts [obj] into table if it doesn't exist.
      *  Updates [obj] from table if it does exist.
      */
-    @androidx.room.Transaction
+    @Transaction
     open suspend fun upsert(obj: T) {
 
         val id: Long = insert(obj)

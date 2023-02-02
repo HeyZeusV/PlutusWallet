@@ -22,16 +22,16 @@
     <string name="category_all">Todas</string>
     <string name="category_create">Crear nueva categoría</string>
     <string name="cfl_no_transactions">¡Ninguna transacción para realizar el filtro aplicado!</string>
-    <string name="filter_account">Cuenta:</string>
+    <string name="filter_account">Cuenta</string>
     <string name="filter_apply">Aplicar</string>
-    <string name="filter_category">Categoría:</string>
-    <string name="filter_date">Fecha:</string>
+    <string name="filter_category">Categoría</string>
+    <string name="filter_date">Fecha</string>
     <string name="filter_date_warning">¡La fecha de finalización debe ser posterior a la fecha de inicio!</string>
     <string name="filter_end">Fin</string>
     <string name="filter_reset">Reiniciar</string>
     <string name="filter_start">Comienzo</string>
     <string name="filter_type">Tipo</string>
-    <string name="chart_total">Total:&#160;</string>
+    <string name="chart_total">"Total: "</string>
     <string name="period_days">Días</string>
     <string name="period_months">Meses</string>
     <string name="period_weeks">Semanas</string>
@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">Se pueden usar lugares decimales.</string>
     <string name="preferences_decimal_symbol">Símbolo separador decimal</string>
     <string name="preferences_language">Idioma</string>
-    <string name="preferences_number_decimal">Lugares decimales</string>
-    <string name="preferences_symbol_side">Lado del símbolo de moneda</string>
+    <string name="preferences_decimal_number">Lugares decimales</string>
+    <string name="preferences_currency_symbol_side">Lado del símbolo de moneda</string>
     <string name="preferences_symbol_side_summary_off">El símbolo de moneda aparecerá en el lado derecho.</string>
     <string name="preferences_symbol_side_summary_on">El símbolo de moneda aparecerá en el lado izquierdo.</string>
     <string name="preferences_thousands_symbol">Símbolo del separador de miles</string>
@@ -94,6 +94,10 @@
     <string name="alert_dialog_input_error">¡No puede estar en blanco!</string>
     <string name="transaction_period">Período</string>
     <string name="cfl_menu_filter">Editar filtro</string>
-    <string name="filter_no_chip_account">Por favor, seleccione al menos una cuenta.</string>
-    <string name="filter_no_chip_category">Por favor, seleccione al menos una categoría.</string>
+    <string name="filter_no_selected_account">Por favor, seleccione al menos una cuenta.</string>
+    <string name="filter_no_selected_category">Por favor, seleccione al menos una categoría.</string>
+    <string name="filter_no_selected_dates">Por favor, seleccione las fechas de inicio y finalización.</string>
+    <string name="data_edit">Editar</string>
+    <string name="data_delete">Eliminar</string>
+    <string name="about_privacy_policy">Política de privacidad</string>
 </resources>

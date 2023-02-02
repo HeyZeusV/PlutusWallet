@@ -22,16 +22,16 @@
     <string name="category_all">सब</string>
     <string name="category_create">नई श्रेणी बनाएँ</string>
     <string name="cfl_no_transactions">लागू किए जा रहे फ़िल्टर को कोई भी लेनदेन पूरा नहीं करता है!</string>
-    <string name="filter_account">लेखा:</string>
+    <string name="filter_account">लेखा</string>
     <string name="filter_apply">लागू</string>
-    <string name="filter_category">वर्ग:</string>
-    <string name="filter_date">दिनांक:</string>
+    <string name="filter_category">वर्ग</string>
+    <string name="filter_date">दिनांक</string>
     <string name="filter_date_warning">अंतिम तिथि प्रारंभ तिथि के बाद होनी चाहिए !!</string>
     <string name="filter_end">समाप्त</string>
     <string name="filter_reset">रीसेट</string>
     <string name="filter_start">शुरू</string>
     <string name="filter_type">प्रकार</string>
-    <string name="chart_total">संपूर्ण:&#160;</string>
+    <string name="chart_total">"संपूर्ण: "</string>
     <string name="period_days">दिन</string>
     <string name="period_months">महीने</string>
     <string name="period_weeks">सप्ताह</string>
@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">दशमलव स्थानों का उपयोग किया जा सकता है।</string>
     <string name="preferences_decimal_symbol">दशमलव विभाजक प्रतीक</string>
     <string name="preferences_language">हिन्दी</string>
-    <string name="preferences_number_decimal">दशमलव स्थान</string>
-    <string name="preferences_symbol_side">मुद्रा प्रतीक पक्ष</string>
+    <string name="preferences_decimal_number">दशमलव स्थान</string>
+    <string name="preferences_currency_symbol_side">मुद्रा प्रतीक पक्ष</string>
     <string name="preferences_symbol_side_summary_off">मुद्रा का प्रतीक दाईं ओर दिखाई देगा।</string>
     <string name="preferences_symbol_side_summary_on">मुद्रा प्रतीक बाईं ओर दिखाई देगा।</string>
     <string name="preferences_thousands_symbol">हजारों विभाजक प्रतीक</string>
@@ -94,6 +94,10 @@
     <string name="transaction_period">अवधि</string>
     <string name="transaction_memo">मेमो</string>
     <string name="cfl_menu_filter">फ़िल्टर संपादित करें</string>
-    <string name="filter_no_chip_account">कृपया कम से कम एक खाते का चयन करें !!</string>
-    <string name="filter_no_chip_category">"कृपया कम से कम एक श्रेणी का चयन करें !! "</string>
+    <string name="filter_no_selected_account">कृपया कम से कम एक खाते का चयन करें !!</string>
+    <string name="filter_no_selected_category">"कृपया कम से कम एक श्रेणी का चयन करें !! "</string>
+    <string name="filter_no_selected_dates">कृपया प्रारंभ और समाप्ति दिनांक चुनें!!</string>
+    <string name="data_edit">संपादन करना</string>
+    <string name="data_delete">मिटाना</string>
+    <string name="about_privacy_policy">गोपनीयता नीति</string>
 </resources>

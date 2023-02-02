@@ -1,12 +1,12 @@
 package com.heyzeusv.plutuswallet.data.daos
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import java.util.Date
+import kotlinx.coroutines.flow.Flow
 
 /**
  *  Queries that can be applied to Transaction table.
@@ -18,21 +18,6 @@ import java.util.Date
  */
 @Dao
 abstract class TransactionDao : BaseDao<Transaction>() {
-
-    /**
-     *  Returns list of unique Accounts.
-     */
-    @Query("""SELECT DISTINCT account
-              FROM `transaction`""")
-    abstract suspend fun getDistinctAccounts(): MutableList<String>
-
-    /**
-     *  Returns list of unique Categories of [type].
-     */
-    @Query("""SELECT DISTINCT category
-              FROM `transaction`
-              WHERE type=(:type)""")
-    abstract suspend fun getDistinctCatsByType(type: String): MutableList<String>
 
     /**
      *  Returns list of all Transactions with futureDate before [currentDate]
@@ -48,7 +33,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      */
     @Query("""SELECT MAX(id)
               FROM `transaction`""")
-    abstract suspend fun getMaxId() : Int?
+    abstract fun getMaxId() : Flow<Int?>
 
     /**
      *  Returns Transaction with given [id].
@@ -56,29 +41,20 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT *
               FROM `transaction`
               WHERE id=(:id)""")
-    abstract suspend fun getTransaction(id: Int): Transaction
-
-    /**
-     *  Returns LD of Transaction with given [id].
-     */
-    @Query("""SELECT * 
-              FROM `transaction`
-              WHERE id=(:id)""")
-    abstract fun getLDTransaction(id: Int): LiveData<Transaction?>
+    abstract suspend fun getTransaction(id: Int): Transaction?
 
     /**
      *  Following Query function names will use the following abbreviations and Object types.
-     *  Ld  = LiveData
      *  Ct  = CategoryTotals
-     *  Ivt = ItemViewTransaction
+     *  Tli = TranListItem
      *  A   = Account
      *  C   = Category
      *  D   = Date
      *  T   = Type
      *
-     *  CategoryTotals(CT): Used for ChartFragment contains Category and Total sum of
+     *  CategoryTotals(CT): Used for ChartScreen contains Category and Total sum of
      *                      chosen Category.
-     *  ItemViewTransaction(IVT): Used For TransListFragment contains only what is needed
+     *  TranListItem(TLI): Used For TranListScreen contains only what is needed
      *                            to be displayed. Queries are ordered by date.
      *
      *  List of parameters since many repeat
@@ -90,112 +66,170 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *
      */
     /**
-     *  Returns LD of list of CT w/ non-zero total.
+     *  Returns list of CT w/ non-zero total.
      */
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getLdCt(): LiveData<List<CategoryTotals>>
+    abstract fun getCt(): Flow<List<CategoryTotals>>
 
     /**
-     *  Returns LD of list of CT of given [accounts] w/ non-zero total.
+     *  Returns list of CT of given [accounts] w/ non-zero total.
      */
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
               WHERE account IN (:accounts)
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>>
+    abstract fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>>
 
     /**
-     *  Returns LD of list of CT between given [start]/[end] dates.
+     *  Returns list of CT of given [accounts] and given [categories] with [type].
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND type=(:type) AND category IN (:categories)
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtAC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+    ): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [accounts] and between given [start]/[end] dates.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND date BETWEEN :start AND :end
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtAD(accounts: List<String>, start: Date, end: Date): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [accounts], given [categories] with [type],
+     *  and between given [start]/[end] dates.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE account IN (:accounts) AND type=(:type) AND category IN (:categories) 
+                AND date BETWEEN :start AND :end
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtACD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [categories] with [type].
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE type=(:type) AND category IN (:categories)
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtC(type: String, categories: List<String>): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT of given [categories] with [type] and between given [start]/[end] dates.
+     */
+    @Query("""SELECT category, SUM(total) AS total, type
+              FROM `transaction` 
+              WHERE type=(:type) AND category IN (:categories) 
+                AND date BETWEEN :start AND :end
+              GROUP BY category, type
+              HAVING SUM(total) > 0""")
+    abstract fun getCtCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<CategoryTotals>>
+
+    /**
+     *  Returns list of CT between given [start]/[end] dates.
      */
     @Query("""SELECT category, SUM(total) AS total, type
               FROM `transaction` 
               WHERE date BETWEEN :start AND :end
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
+    abstract fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
 
     /**
-     *  Returns LD of list of CT of given [accounts] and between given [start]/[end] dates.
-     */
-    @Query("""SELECT category, SUM(total) AS total, type
-              FROM `transaction` 
-              WHERE account IN (:accounts) AND date BETWEEN :start AND :end
-              GROUP BY category, type
-              HAVING SUM(total) > 0""")
-    abstract fun getLdCtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<CategoryTotals>>
-
-    /**
-     *  Returns LD of list of IVT.
+     *  Returns list of TLI.
      */
     @Query("""SELECT id, title, date, total, account, type, category 
               FROM `transaction`
               ORDER BY date ASC""")
-    abstract fun getLdIvt(): LiveData<List<ItemViewTransaction>>
+    abstract fun getTli(): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [accounts].
+     *  Returns list of TLI of given [accounts].
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE account IN (:accounts)
               ORDER BY date ASC""")
-    abstract fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>
+    abstract fun getTliA(accounts: List<String>): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [accounts] and between given [start]/[end] dates.
+     *  Returns list of TLI of given [accounts] and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE account IN (:accounts) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtAD(
+    abstract fun getTliAD(
         accounts: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [accounts] and [type].
+     *  Returns list of TLI of given [accounts] and [type].
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE account IN (:accounts) AND type=(:type)
               ORDER BY date ASC""")
-    abstract fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getTliAT(accounts: List<String>, type: String): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [accounts], [type], and [categories].
+     *  Returns list of TLI of given [accounts], [type], and [categories].
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE account IN (:accounts) AND type=(:type) AND category IN (:categories)
               ORDER BY date ASC""")
-    abstract fun getLdIvtATC(
+    abstract fun getTliATC(
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): LiveData<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [accounts], [type], and between given [start]/[end] dates.
+     *  Returns list of TLI of given [accounts], [type], and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE account IN (:accounts) AND type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtATD(
+    abstract fun getTliATD(
         accounts: List<String>,
         type: String,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [accounts], [type], [categories],
+     *  Returns list of TLI of given [accounts], [type], [categories],
      *  and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
@@ -203,62 +237,62 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               WHERE account IN (:accounts) AND type=(:type) 
                 AND category IN (:categories) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtATCD(
+    abstract fun getTliATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT between given [start]/[end] dates.
+     *  Returns list of TLI between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    abstract fun getTliD(start: Date, end: Date): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [type].
+     *  Returns list of TLI of given [type].
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE type=(:type)
               ORDER BY date ASC""")
-    abstract fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
+    abstract fun getTliT(type: String): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [type] and [categories].
+     *  Returns list of TLI of given [type] and [categories].
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE type=(:type) AND category IN (:categories)
               ORDER BY date ASC""")
-    abstract fun getLdIvtTC(type: String, categories: List<String>): LiveData<List<ItemViewTransaction>>
+    abstract fun getTliTC(type: String, categories: List<String>): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [type], [categories],
+     *  Returns list of TLI of given [type], [categories],
      *  and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE type=(:type) AND category IN (:categories) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtTCD(
+    abstract fun getTliTCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): Flow<List<TranListItem>>
 
     /**
-     *  Returns LD of list of IVT of given [type] and between given [start]/[end] dates.
+     *  Returns list of TLI of given [type] and between given [start]/[end] dates.
      */
     @Query("""SELECT id, title, date, total, account, type, category  
               FROM `transaction` 
               WHERE type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    abstract fun getTliTD(type: String, start: Date, end: Date): Flow<List<TranListItem>>
 }

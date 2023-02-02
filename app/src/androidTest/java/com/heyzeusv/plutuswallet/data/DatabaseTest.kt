@@ -1,10 +1,6 @@
 package com.heyzeusv.plutuswallet.data
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -14,7 +10,7 @@ import com.heyzeusv.plutuswallet.data.daos.TransactionDao
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -30,14 +26,14 @@ import org.junit.runner.RunWith
 import java.io.IOException
 import java.math.BigDecimal
 import java.util.Date
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 
 /**
  *  Testing queries in DAOs, no testing done on Insert/Update/Delete since those are provided.
- *  LD  = LiveData
  *  CT  = CategoryTotals
- *  IVT = ItemViewTransaction
+ *  TLI = TranListItem
  */
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
@@ -46,110 +42,105 @@ class DatabaseTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Nested
     @DisplayName("Account Queries")
     inner class AccountQueries {
 
         @Test
         @DisplayName("List of Account names in alphabetical order")
-        fun getAccountNames() {
+        fun getAccountNames() = runTest {
+            val expected = listOf("Cash", "Credit Card", "Debit Card", "Unused Account")
 
-            val expected : MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card")
-            assertEquals(expected, runBlocking { accDao.getAccountNames()  })
+            assertEquals(expected, accDao.getAccountNames().first())
+        }
+
+        @Test
+        @DisplayName("StateFlow that emits list of Accounts in use")
+        fun getAccountsUsed() = runTest {
+            val expected = listOf(acc3, acc1, acc2)
+
+            assertEquals(expected, accDao.getAccountsUsed().first())
         }
 
         @Test
         @DisplayName("Size of table")
-        fun getAccountSize() {
-
-            assertEquals(3, runBlocking { accDao.getAccountSize() })
+        fun getAccountSize() = runTest {
+            assertEquals(4, accDao.getAccountSize())
         }
 
         @Test
-        @DisplayName("LD of list of all Accounts in order of name")
-        fun getLDAccounts() {
+        @DisplayName("StateFlow that emits list of all Accounts in order of name")
+        fun getAccounts() = runTest {
+            val expected = listOf(acc3, acc1, acc2, acc4)
 
-            val ldAccList : List<Account> = accDao.getLDAccounts().blockingObserve()!!
-            assertEquals(listOf(acc3, acc1, acc2), ldAccList)
+            assertEquals(expected, accDao.getAccounts().first())
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Nested
     @DisplayName("Category Queries")
     inner class CategoryQueries {
 
         @Test
         @DisplayName("List of Category names of type in alphabetical order")
-        fun getCategoryNamesByType() {
+        fun getCategoryNamesByType() = runTest {
+            val expected : MutableList<String> =
+                mutableListOf("Entertainment", "Food", "Unused Expense")
 
-            val expected : MutableList<String> = mutableListOf("Entertainment", "Food")
-            assertEquals(expected, runBlocking { catDao.getCategoryNamesByType("Expense") })
+            assertEquals(expected, catDao.getCategoryNamesByType("Expense").first())
         }
+
+        @Test
+        @DisplayName("StateFlow that emits list of Categories in use by type")
+        fun getCategoriesUsedByType() = runTest {
+            val expected = listOf(cat2, cat1)
+
+            assertEquals(expected, catDao.getCategoriesUsedByType("Expense").first())
+        }
+
 
         @Test
         @DisplayName("Size of table")
-        fun getAccountSize() {
+        fun getCategorySize() = runTest {
 
-            assertEquals(3, runBlocking { catDao.getCategorySize() })
+            assertEquals(4, catDao.getCategorySize())
         }
 
         @Test
-        @DisplayName("LD of list that holds all Categories of type in order of name")
-        fun getLDCategoriesByType() {
+        @DisplayName("StateFlow that emits list that holds all Categories of type in order of name")
+        fun getCategoriesByType() = runTest {
+            val expected = listOf(cat2, cat1, cat4)
 
-            val ldCatList : List<Category> = catDao.getLDCategoriesByType("Expense").blockingObserve()!!
-            assertEquals(listOf(cat2, cat1), ldCatList)
+            assertEquals(expected, catDao.getCategoriesByType("Expense").first())
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Nested
     @DisplayName("Transaction Queries")
     inner class TransactionQueries {
 
         @Test
-        @DisplayName("List of unique Accounts")
-        fun getDistinctAccounts() {
-
-            val expected : List<String> = listOf("Cash", "Credit Card", "Debit Card")
-            assertEquals(expected, runBlocking { tranDao.getDistinctAccounts() })
-        }
-
-        @Test
-        @DisplayName("List of unique Categories of type")
-        fun getDistinctCatsByType() {
-
-            val expected : List<String> = listOf("Entertainment", "Food")
-            assertEquals(expected, runBlocking { tranDao.getDistinctCatsByType("Expense") })
-        }
-
-        @Test
         @DisplayName("List of all Transactions with futureDate before Date given and futureTCreated is false.")
-        fun getFutureTransactions() {
-
+        fun getFutureTransactions() = runTest {
             val expected : List<Transaction> = listOf(tran2)
-            assertEquals(expected, runBlocking { tranDao.getFutureTransactions(Date(86400000 * 4)) })
+
+            assertEquals(expected, tranDao.getFutureTransactions(Date(86400000 * 4)))
         }
 
         @Test
         @DisplayName("Highest id in table or null if empty")
-        fun getMaxId() {
-
-            assertEquals(4, runBlocking { tranDao.getMaxId() })
+        fun getMaxId() = runTest {
+            assertEquals(4, tranDao.getMaxId().first())
         }
 
         @Test
         @DisplayName("Transaction with given id")
-        fun getTransaction() {
+        fun getTransaction() = runTest {
 
-            assertEquals(tran3, runBlocking { tranDao.getTransaction(3) })
-        }
-
-        @Test
-        @DisplayName("LD of Transaction with given id")
-        fun getLDTransaction() {
-
-            val tran : Transaction = tranDao.getLDTransaction(2).blockingObserve()!!
-            assertEquals(tran2, tran)
+            assertEquals(tran3, tranDao.getTransaction(3))
         }
 
         @Nested
@@ -157,175 +148,225 @@ class DatabaseTest {
         inner class CategoryTotalsQueries {
 
             @Test
-            @DisplayName("LD of list of CT w/ non-zero total")
-            fun getLdCt() {
-
+            @DisplayName("StateFlow that emits list of CT w/ non-zero total")
+            fun getCt() = runTest {
                 val expected: List<CategoryTotals> =
                     listOf(
                         CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense"),
                         CategoryTotals("Food", BigDecimal("200.1"), "Expense"),
                         CategoryTotals("Salary", BigDecimal("2000.32"), "Income")
                     )
-                assertEquals(expected, tranDao.getLdCt().blockingObserve()!!)
+
+                assertEquals(expected, tranDao.getCt().first())
             }
 
             @Test
-            @DisplayName("LD of list of CT of given account w/ non-zero total")
-            fun getLdCtA() {
-
+            @DisplayName("StateFlow that emits list of CT of given account w/ non-zero total")
+            fun getCtA() = runTest {
                 val expected: List<CategoryTotals> =
                     listOf(CategoryTotals("Food", BigDecimal("200.1"), "Expense"))
-                assertEquals(expected, tranDao.getLdCtA(listOf("Cash")).blockingObserve()!!)
+
+                assertEquals(expected, tranDao.getCtA(listOf("Cash")).first())
             }
 
             @Test
-            @DisplayName("LD of list of CT between given dates")
-            fun getLdCtD() {
-
-                val expected: List<CategoryTotals> =
-                    listOf(CategoryTotals("Food", BigDecimal("100.1"), "Expense"))
-                assertEquals(
-                    expected,
-                    tranDao.getLdCtD(Date(0), Date(86400010)).blockingObserve()!!
-                )
-            }
-
-            @Test
-            @DisplayName("LD of list of CT of given account and between given dates")
-            fun getLdCtAD() {
-
+            @DisplayName("StateFlow that emits list of CT of given account and between given dates")
+            fun getCtAD() = runTest {
                 val expected: List<CategoryTotals> =
                     listOf(CategoryTotals("Salary", BigDecimal("2000.32"), "Income"))
+                
                 assertEquals(
-                    expected, tranDao.getLdCtAD(
-                        listOf("Debit Card"), Date(86400000 * 3),
-                        Date(86400010 * 4)
-                    ).blockingObserve()!!
+                    expected, 
+                    tranDao.getCtAD(listOf("Debit Card"), Date(86400000 * 3), Date(86400010 * 4))
+                        .first()
                 )
+            }
+
+            @Test
+            @DisplayName("StateFlow that emits list of CT of given account, given categories," +
+                    " and between given dates")
+            fun getCtACD() = runTest {
+                val expected: List<CategoryTotals> =
+                    listOf(CategoryTotals("Salary", BigDecimal("2000.32"), "Income"))
+
+                assertEquals(
+                    expected,
+                    tranDao.getCtACD(
+                        listOf("Debit Card"), "Income", listOf("Salary"),
+                        Date(86400000 * 3), Date(86400010 * 4)).first()
+                )
+            }
+
+            @Test
+            @DisplayName("StateFlow that emits list of CT of given categories")
+            fun getCtC() = runTest {
+                val expected: List<CategoryTotals> =
+                    listOf(CategoryTotals("Salary", BigDecimal("2000.32"), "Income"))
+
+                assertEquals(expected, tranDao.getCtC("Income", listOf("Salary")).first())
+            }
+
+            @Test
+            @DisplayName("StateFlow that emits list of CT of given categories, " +
+                    "and between given dates")
+            fun getCtCD() = runTest {
+                val expected: List<CategoryTotals> =
+                    listOf(CategoryTotals("Salary", BigDecimal("2000.32"), "Income"))
+
+                assertEquals(
+                    expected,
+                    tranDao.getCtCD(
+                        "Income", listOf("Salary"), Date(86400000 * 3), Date(86400010 * 4)
+                    ).first()
+                )
+            }
+
+            @Test
+            @DisplayName("StateFlow that emits list of CT between given dates")
+            fun getCtD() = runTest {
+                val expected: List<CategoryTotals> =
+                    listOf(CategoryTotals("Food", BigDecimal("100.1"), "Expense"))
+
+                assertEquals(expected, tranDao.getCtD(Date(0), Date(86400010)).first())
             }
         }
 
         @Nested
-        @DisplayName("IVT Queries")
-        inner class IVTQueries {
+        @DisplayName("TLI Queries")
+        inner class TLIQueries {
 
             /**
              *  All of these queries are ordered by date.
              */
-
             @Test
-            @DisplayName("LD of list of IVT")
-            fun getLdIvt() {
+            @DisplayName("StateFlow that emits list of TLI")
+            fun getTli() = runTest {
+                val expected = listOf(tli1, tli2, tli3, tli4)
 
-                assertEquals(listOf(ivt1, ivt2, ivt3, ivt4), tranDao.getLdIvt().blockingObserve())
+                assertEquals(expected, tranDao.getTli().first())
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given account")
-            fun getLdIvtA() {
+            @DisplayName("StateFlow that emits list of TLI of given account")
+            fun getTliA() = runTest {
+                val expected = listOf(tli1, tli2)
 
-                assertEquals(listOf(ivt1, ivt2), tranDao.getLdIvtA(listOf("Cash")).blockingObserve())
+                assertEquals(expected, tranDao.getTliA(listOf("Cash")).first())
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given account and between given dates")
-            fun getLdIvtAD() {
+            @DisplayName("StateFlow that emits list of TLI of given account and between given dates")
+            fun getTliAD() = runTest {
+                val expected = listOf(tli2)
 
-                assertEquals(listOf(ivt2),
-                    tranDao.getLdIvtAD(listOf("Cash"), Date(86400010), Date(86400010 * 2)).blockingObserve())
+                assertEquals(
+                    expected,
+                    tranDao.getTliAD(listOf("Cash"), Date(86400010), Date(86400010 * 2)).first()
+                )
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given account and type")
-            fun getLdIvtAT() {
-
-                assertEquals(emptyList<ItemViewTransaction>(),
-                    tranDao.getLdIvtAT(listOf("Cash"), "Income").blockingObserve())
+            @DisplayName("StateFlow that emits list of TLI of given account and type")
+            fun getTliAT() = runTest {
+                assertEquals(
+                    emptyList<TranListItem>(),
+                    tranDao.getTliAT(listOf("Cash"), "Income").first()
+                )
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given account, type, and category")
-            fun getLdIvtATC() {
+            @DisplayName("StateFlow that emits list of TLI of given account, type, and category")
+            fun getTliATC() = runTest {
+                val expected = listOf(tli1, tli2)
 
-                assertEquals(listOf(ivt1, ivt2),
-                    tranDao.getLdIvtATC(listOf("Cash"), "Expense", listOf("Food")).blockingObserve())
+                assertEquals(
+                    expected,
+                    tranDao.getTliATC(listOf("Cash"), "Expense", listOf("Food")).first()
+                )
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given account, type, and between given dates")
-            fun getLdIvtATD() {
+            @DisplayName("StateFlow that emits list of TLI of given account, type, " +
+                    "and between given dates")
+            fun getTliATD() = runTest {
+                val expected = listOf(tli2)
 
-                assertEquals(listOf(ivt2), tranDao.getLdIvtATD(listOf("Cash"), "Expense",
-                    Date(86400010), Date(86400010 * 2)).blockingObserve())
+                assertEquals(
+                    expected,
+                    tranDao.getTliATD(
+                        listOf("Cash"), "Expense", Date(86400010), Date(86400010 * 2)
+                    ).first()
+                )
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given account, type, category, and between given dates")
-            fun getLdIvtATCD() {
+            @DisplayName("StateFlow that emits list of TLI of given account, type, category, " +
+                    "and between given dates")
+            fun getTliATCD() = runTest {
+                val expected = listOf(tli2)
 
-                assertEquals(listOf(ivt2), tranDao.getLdIvtATCD(listOf("Cash"), "Expense",
-                    listOf("Food"), Date(86400010), Date(86400010 * 2)).blockingObserve())
+                assertEquals(
+                    expected,
+                    tranDao.getTliATCD(
+                        listOf("Cash"), "Expense", listOf("Food"),
+                        Date(86400010), Date(86400010 * 2)
+                    ).first()
+                )
             }
 
             @Test
-            @DisplayName("LD of list of IVT between given dates")
-            fun getLdIvtD() {
+            @DisplayName("StateFlow that emits list of TLI between given dates")
+            fun getTliD() = runTest {
+                val expected = listOf(tli3, tli4)
 
-                assertEquals(listOf(ivt3, ivt4),
-                    tranDao.getLdIvtD(Date(86400010 * 3), Date(86400010 * 6)).blockingObserve())
+                assertEquals(
+                    expected,
+                    tranDao.getTliD(Date(86400010 * 3), Date(86400010 * 6)).first()
+                )
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given type")
-            fun getLdIvtT() {
+            @DisplayName("StateFlow that emits list of TLI of given type")
+            fun getTliT() = runTest {
+                val expected = listOf(tli3)
 
-                assertEquals(listOf(ivt3), tranDao.getLdIvtT("Income").blockingObserve())
+                assertEquals(expected, tranDao.getTliT("Income").first())
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given type and category")
-            fun getLdIvtTC() {
+            @DisplayName("StateFlow that emits list of TLI of given type and category")
+            fun getTliTC() = runTest {
+                val expected = listOf(tli3)
 
-                assertEquals(listOf(ivt3), tranDao.getLdIvtTC("Income", listOf("Salary")).blockingObserve())
+                assertEquals(expected, tranDao.getTliTC("Income", listOf("Salary")).first())
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given type, category, and between given dates")
-            fun getLdIvtTCD() {
+            @DisplayName("StateFlow that emits list of TLI of given type, category, " +
+                    "and between given dates")
+            fun getTliTCD() = runTest {
+                val expected = listOf(tli3)
 
-                assertEquals(listOf(ivt3), tranDao.getLdIvtTCD("Income", listOf("Salary"),
-                    Date(86400010 * 3), Date(86400010 * 6)).blockingObserve())
+                assertEquals(
+                    expected,
+                    tranDao.getTliTCD(
+                        "Income", listOf("Salary"),
+                        Date(86400010 * 3), Date(86400010 * 6)
+                    ).first()
+                )
             }
 
             @Test
-            @DisplayName("LD of list of IVT of given type and between given dates")
-            fun getLdIvtTD() {
+            @DisplayName("StateFlow that emits list of TLI of given type and between given dates")
+            fun getTliTD() = runTest {
+                val expected = listOf(tli1, tli2, tli4)
 
-                assertEquals(listOf(ivt1, ivt2, ivt4),
-                    tranDao.getLdIvtTD("Expense", Date(0), Date(86400010 * 6)).blockingObserve())
+                assertEquals(
+                    expected,
+                    tranDao.getTliTD("Expense", Date(0), Date(86400010 * 6)).first()
+                )
             }
         }
-    }
-
-    /**
-     *  LiveData make queries asynchronous, but they need to be synchronous for unit tests.
-     *  Taken from [link](https://stackoverflow.com/questions/44270688/unit-testing-room-and-livedata?rq=1)
-     */
-    private fun <T> LiveData<T>.blockingObserve() : T? {
-        var value : T? = null
-        val latch = CountDownLatch(1)
-
-        val observer = Observer { t : T ->
-            value = t
-            latch.countDown()
-        }
-
-        Handler(Looper.getMainLooper()).post {
-            observeForever(observer)
-        }
-
-        latch.await(2, TimeUnit.SECONDS)
-        return value
     }
 
     companion object {
@@ -339,12 +380,14 @@ class DatabaseTest {
         private val acc1 = Account(1, "Credit Card")
         private val acc2 = Account(2, "Debit Card")
         private val acc3 = Account(3, "Cash")
-        private val accList : List<Account> = listOf(acc1, acc2, acc3)
+        private val acc4 = Account(4, "Unused Account")
+        private val accList : List<Account> = listOf(acc1, acc2, acc3, acc4)
 
         private val cat1 = Category(1, "Food", "Expense")
         private val cat2 = Category(2, "Entertainment", "Expense")
         private val cat3 = Category(3, "Salary", "Income")
-        private val catList : List<Category> = listOf(cat1, cat2, cat3)
+        private val cat4 = Category(4, "Unused Expense", "Expense")
+        private val catList : List<Category> = listOf(cat1, cat2, cat3, cat4)
 
         private val tran1 = Transaction(1, "Party", Date(86400000), BigDecimal("100.10"), "Cash", "Expense", "Food", "", true, 1, 0, Date(86400000 * 2), true)
         private val tran2 = Transaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"), "Cash", "Expense", "Food", "", true, 1, 0, Date(86400000 * 3), false)
@@ -352,10 +395,10 @@ class DatabaseTest {
         private val tran4 = Transaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"), "Credit Card", "Expense", "Entertainment")
         private val tranList : List<Transaction> = listOf(tran1, tran2, tran3, tran4)
 
-        private val ivt1 = ItemViewTransaction(1, "Party", Date(86400000), BigDecimal("100.10"), "Cash", "Expense", "Food")
-        private val ivt2 = ItemViewTransaction(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"), "Cash", "Expense", "Food")
-        private val ivt3 = ItemViewTransaction(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"), "Debit Card", "Income", "Salary")
-        private val ivt4 = ItemViewTransaction(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"), "Credit Card", "Expense", "Entertainment")
+        private val tli1 = TranListItem(1, "Party", Date(86400000), BigDecimal("100.10"), "Cash", "Expense", "Food")
+        private val tli2 = TranListItem(2, "Party2", Date(86400000 * 2), BigDecimal("100.00"), "Cash", "Expense", "Food")
+        private val tli3 = TranListItem(3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"), "Debit Card", "Income", "Salary")
+        private val tli4 = TranListItem(4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"), "Credit Card", "Expense", "Entertainment")
 
         @BeforeAll
         @JvmStatic

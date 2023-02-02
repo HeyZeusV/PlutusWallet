@@ -1,18 +1,20 @@
 package com.heyzeusv.plutuswallet.data
 
-import androidx.lifecycle.LiveData
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.ItemViewTransaction
+import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import java.util.Date
+import kotlinx.coroutines.flow.Flow
 
 interface Repository {
     /**
      *  Account Queries
      */
-    suspend fun getAccountNamesAsync(): MutableList<String>
+    suspend fun getAccountNames(): Flow<List<String>>
+
+    suspend fun getAccountsUsed(): Flow<List<Account>>
 
     suspend fun getAccountSizeAsync(): Int
 
@@ -22,12 +24,14 @@ interface Repository {
 
     suspend fun updateAccount(account: Account)
 
-    fun getLDAccounts(): LiveData<List<Account>>
+    suspend fun getAccounts(): Flow<List<Account>>
 
     /**
      *  Category Queries
      */
-    suspend fun getCategoryNamesByTypeAsync(type: String): MutableList<String>
+    suspend fun getCategoryNamesByType(type: String): Flow<List<String>>
+
+    suspend fun getCategoriesUsedByType(type: String): Flow<List<Category>>
 
     suspend fun getCategorySizeAsync(): Int
 
@@ -39,20 +43,16 @@ interface Repository {
 
     suspend fun insertCategories(categories: List<Category>)
 
-    fun getLDCategoriesByType(type: String): LiveData<List<Category>>
+    suspend fun getCategoriesByType(type: String): Flow<List<Category>>
 
     /**
      *  Transaction Queries
      */
-    suspend fun getDistinctAccountsAsync(): MutableList<String>
-
-    suspend fun getDistinctCatsByTypeAsync(type: String): MutableList<String>
-
     suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction>
 
-    suspend fun getMaxIdAsync(): Int?
+    suspend fun getMaxId(): Flow<Int?>
 
-    suspend fun getTransactionAsync(id: Int): Transaction
+    suspend fun getTransactionAsync(id: Int): Transaction?
 
     suspend fun deleteTransaction(transaction: Transaction)
 
@@ -61,65 +61,85 @@ interface Repository {
     suspend fun upsertTransactions(transactions: List<Transaction>)
 
     /**
-     *  Ld  = LiveData
      *  Ct  = CategoryTotals
-     *  Ivt = ItemViewTransaction
+     *  Tli = TranListItem
      *  A   = Account
      *  C   = Category
      *  D   = Date
      *  T   = Type
      */
-    fun getLdTransaction(id: Int): LiveData<Transaction?>
+    suspend fun getCt(): Flow<List<CategoryTotals>>
 
-    fun getLdCt(): LiveData<List<CategoryTotals>>
+    suspend fun getCtA(accounts: List<String>): Flow<List<CategoryTotals>>
 
-    fun getLdCtA(accounts: List<String>): LiveData<List<CategoryTotals>>
-
-    fun getLdCtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<CategoryTotals>>
-
-    fun getLdCtD(start: Date, end: Date): LiveData<List<CategoryTotals>>
-
-    fun getLdIvt(): LiveData<List<ItemViewTransaction>>
-
-    fun getLdIvtA(accounts: List<String>): LiveData<List<ItemViewTransaction>>
-
-    fun getLdIvtAD(accounts: List<String>, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
-
-    fun getLdIvtAT(accounts: List<String>, type: String): LiveData<List<ItemViewTransaction>>
-
-    fun getLdIvtATC(
+    suspend fun getCtAC(
         accounts: List<String>,
         type: String,
         categories: List<String>
-    ): LiveData<List<ItemViewTransaction>>
+    ): Flow<List<CategoryTotals>>
 
-    fun getLdIvtATD(
-        accounts: List<String>,
-        type: String,
-        start: Date,
-        end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    suspend fun getCtAD(accounts: List<String>, start: Date, end: Date): Flow<List<CategoryTotals>>
 
-    fun getLdIvtATCD(
+    suspend fun getCtACD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): Flow<List<CategoryTotals>>
 
-    fun getLdIvtD(start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    suspend fun getCtC(type: String, categories: List<String>): Flow<List<CategoryTotals>>
 
-    fun getLdIvtT(type: String): LiveData<List<ItemViewTransaction>>
-
-    fun getLdIvtTC(type: String, categories: List<String>): LiveData<List<ItemViewTransaction>>
-
-    fun getLdIvtTCD(
+    suspend fun getCtCD(
         type: String,
         categories: List<String>,
         start: Date,
         end: Date
-    ): LiveData<List<ItemViewTransaction>>
+    ): Flow<List<CategoryTotals>>
 
-    fun getLdIvtTD(type: String, start: Date, end: Date): LiveData<List<ItemViewTransaction>>
+    suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
+
+    suspend fun getTli(): Flow<List<TranListItem>>
+
+    suspend fun getTliA(accounts: List<String>): Flow<List<TranListItem>>
+
+    suspend fun getTliAD(accounts: List<String>, start: Date, end: Date): Flow<List<TranListItem>>
+
+    suspend fun getTliAT(accounts: List<String>, type: String): Flow<List<TranListItem>>
+
+    suspend fun getTliATC(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>
+    ): Flow<List<TranListItem>>
+
+    suspend fun getTliATD(
+        accounts: List<String>,
+        type: String,
+        start: Date,
+        end: Date
+    ): Flow<List<TranListItem>>
+
+    suspend fun getTliATCD(
+        accounts: List<String>,
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<TranListItem>>
+
+    suspend fun getTliD(start: Date, end: Date): Flow<List<TranListItem>>
+
+    suspend fun getTliT(type: String): Flow<List<TranListItem>>
+
+    suspend fun getTliTC(type: String, categories: List<String>): Flow<List<TranListItem>>
+
+    suspend fun getTliTCD(
+        type: String,
+        categories: List<String>,
+        start: Date,
+        end: Date
+    ): Flow<List<TranListItem>>
+
+    suspend fun getTliTD(type: String, start: Date, end: Date): Flow<List<TranListItem>>
 }

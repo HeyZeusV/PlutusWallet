@@ -6,16 +6,30 @@ apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'de.mannodermaus.android-junit5'
 
 android {
+    signingConfigs {
+        release {
+            def props = new Properties()
+
+            def fileInputStream = new FileInputStream(file('../signing.properties'))
+            props.load(fileInputStream)
+            fileInputStream.close()
+
+            storeFile = file(props['storeFilePath'])
+                storePassword = props['storePassword']
+                keyPassword = props['keyPassword']
+                keyAlias = props['keyAlias']
+        }
+    }
     compileSdkVersion rootProject.compileSdkVersion
     defaultConfig {
+        testInstrumentationRunnerArguments runnerBuilder: 'de.mannodermaus.junit5.AndroidJUnit5Builder'
         applicationId "com.heyzeusv.plutuswallet"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 25
-        versionName "3.3.0"
+        versionCode 26
+        versionName "4.0.0"
         testInstrumentationRunner "com.heyzeusv.plutuswallet.CustomTestRunner"
-        testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
-        resConfigs "en", "es", "de", "hi", "ja", "ko", "th"
+        resConfigs 'en', 'es', 'de', 'hi', 'ja', 'ko', 'th'
         javaCompileOptions {
             annotationProcessorOptions {
                 // location to save schemas to
@@ -27,35 +41,37 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
+            applicationIdSuffix ".dev"
             pseudoLocalesEnabled true
         }
     }
     buildFeatures {
+        compose true
         dataBinding true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion composeCompilerVersion
+    }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
-        String sharedTestDir = 'src/sharedTest/java'
-        test {
-            java.srcDir sharedTestDir
-        }
-        androidTest {
-            java.srcDir sharedTestDir
-        }
     }
     packagingOptions {
-        exclude "META-INF/LICENSE*"
-        exclude 'META-INF/AL2.0'
-        exclude 'META-INF/LGPL2.1'
+        jniLibs {
+            excludes += ['META-INF/LICENSE*']
+        }
+        resources {
+            excludes += ['META-INF/LICENSE*', 'META-INF/AL2.0', 'META-INF/LGPL2.1']
+        }
     }
     testOptions {
         animationsDisabled true
@@ -64,6 +80,7 @@ android {
             returnDefaultValues = true
         }
     }
+    namespace 'com.heyzeusv.plutuswallet'
 }
 
 repositories {
@@ -72,12 +89,31 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    //noinspection GradleDependency SDK 33
     implementation "androidx.core:core-ktx:$coreKtxVersion"
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
-    // CircleIndicator
-    implementation "me.relex:circleindicator:$circleIndicator"
+    //noinspection GradleDependency SDK 33
+    implementation "androidx.activity:activity-compose:$activityComposeVersion"
+    // Accompanist
+    implementation "com.google.accompanist:accompanist-flowlayout:0.25.0"
+    implementation "com.google.accompanist:accompanist-pager:0.25.0"
+    implementation "com.google.accompanist:accompanist-pager-indicators:0.25.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.0"
+    // Compose
+    implementation "androidx.compose.animation:animation:$composeVersion"
+    implementation "androidx.compose.foundation:foundation:$composeVersion"
+    implementation "androidx.compose.foundation:foundation-layout:$composeVersion"
+    implementation "androidx.compose.material:material:$composeVersion"
+    implementation "androidx.compose.material:material-icons-extended:$composeVersion"
+    //noinspection GradleDependency SDK 33
+    implementation "androidx.compose.material3:material3:$composeMaterial3Version"
+    //noinspection GradleDependency SDK 33
+    implementation "androidx.compose.material3:material3-window-size-class:$composeMaterial3Version"
+    implementation "androidx.compose.runtime:runtime:$composeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
+    implementation "androidx.compose.ui:ui:$composeVersion"
+    implementation "androidx.compose.ui:ui-tooling-preview:$composeVersion"
     // ConstraintLayout
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     // CoRoutines
@@ -85,8 +121,9 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
     // Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
-    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+    androidTestImplementation project(path: ':app')
+    kapt "com.google.dagger:hilt-compiler:$hiltVersion"
     kapt "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleExtVersion"
@@ -98,6 +135,7 @@ dependencies {
     // MPAndroidChart
     implementation "com.github.PhilJay:MPAndroidChart:$mpAndroidChartVersion"
     // Navigation
+    implementation "androidx.navigation:navigation-compose:$navigationVersion"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
     // Preferences
@@ -119,7 +157,6 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params:$jupiterVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jupiterVersion"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$jupiterVersion"
-    testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
     testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
@@ -141,8 +178,6 @@ dependencies {
 
     // Dependencies for Android unit tests
     androidTestImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
-    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineVersion"
 
     // AndroidX Test - Instrumented testing
@@ -160,6 +195,10 @@ dependencies {
     androidTestImplementation "de.mannodermaus.junit5:android-test-core:$junit5Version"
     androidTestRuntimeOnly "de.mannodermaus.junit5:android-test-runner:$junit5Version"
     androidTestImplementation "org.junit.jupiter:junit-jupiter-api:$jupiterVersion"
+    // Compose testing
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
+    debugImplementation "androidx.compose.ui:ui-tooling:$composeVersion"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
     // Hilt testing
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hiltVersion"
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hiltVersion"
@@ -168,6 +207,7 @@ dependencies {
     androidTestImplementation "androidx.navigation:navigation-testing:$navigationVersion"
 
     // Resolve conflicts between main and test APK:
+    //noinspection GradleDependency SDK 33
     androidTestImplementation "androidx.annotation:annotation:$androidXAnnotations"
     androidTestImplementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
     androidTestImplementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"

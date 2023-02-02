@@ -1,9 +1,9 @@
 package com.heyzeusv.plutuswallet.data.daos
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.Account
+import kotlinx.coroutines.flow.Flow
 
 /**
  *  Queries that can be applied to Account table.
@@ -20,22 +20,31 @@ abstract class AccountDao : BaseDao<Account>() {
      *  Returns a list of Account names in alphabetical order.
      */
     @Query("""SELECT name
-              FROM account
+              FROM `account`
               ORDER BY name ASC""")
-    abstract suspend fun getAccountNames(): MutableList<String>
+    abstract fun getAccountNames(): Flow<List<String>>
+
+    /**
+     *  Returns a list of Accounts used by a Transaction
+     */
+    @Query("""SELECT DISTINCT `account`.id, `account`.name
+              FROM `account`
+              INNER JOIN `transaction` ON `transaction`.account = `account`.name
+              ORDER BY name ASC""")
+    abstract fun getAccountsUsed(): Flow<List<Account>>
 
     /**
      *  Returns the size of table.
      */
     @Query("""SELECT COUNT(*)
-              FROM account""")
+              FROM `account`""")
     abstract suspend fun getAccountSize(): Int
 
     /**
-     *  Returns LD of list of all Accounts in order of name.
+     *  Returns flow that emits list of all Accounts in order of name.
      */
     @Query("""SELECT *
-              FROM account
+              FROM `account`
               ORDER BY name ASC""")
-    abstract fun getLDAccounts(): LiveData<List<Account>>
+    abstract fun getAccounts(): Flow<List<Account>>
 }

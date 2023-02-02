@@ -17,6 +17,6 @@ import androidx.room.PrimaryKey
                          unique = true)])
 data class Account(
     @PrimaryKey(autoGenerate = true)
-    var id: Int,
-    var name: String
-)
+    override val id: Int,
+    override var name: String
+) : DataInterface

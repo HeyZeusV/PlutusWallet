@@ -3,6 +3,9 @@ package com.heyzeusv.plutuswallet.data.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.heyzeusv.plutuswallet.util.DataListSelectedAction
+import com.heyzeusv.plutuswallet.util.TransactionType
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 
 /**
  *  Representation of Category table.
@@ -18,7 +21,18 @@ import androidx.room.PrimaryKey
                          unique = true)])
 data class Category(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    var name: String,
+    override val id: Int,
+    override var name: String,
     var type: String
+) : DataInterface
+
+interface DataInterface {
+    val id: Int
+    var name: String
+}
+
+data class DataDialog(
+    val action: DataListSelectedAction,
+    val id: Int,
+    val type: TransactionType = EXPENSE
 )

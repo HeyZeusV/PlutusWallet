@@ -1,9 +1,9 @@
 package com.heyzeusv.plutuswallet.data.daos
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.Category
+import kotlinx.coroutines.flow.Flow
 
 /**
  *  Queries that can be applied to Category table.
@@ -23,7 +23,17 @@ abstract class CategoryDao : BaseDao<Category>() {
               FROM category
               WHERE type=(:type)
               ORDER BY name ASC""")
-    abstract suspend fun getCategoryNamesByType(type: String): MutableList<String>
+    abstract fun getCategoryNamesByType(type: String): Flow<List<String>>
+
+    /**
+     *  Returns list of Categories used by a Transaction
+     */
+    @Query("""SELECT DISTINCT `category`.id, `category`.name, `category`.type
+              FROM `category`
+              INNER JOIN `transaction` ON `transaction`.category = `category`.name
+              WHERE `category`.type=(:type)
+              ORDER BY `category`.name ASC""")
+    abstract fun getCategoriesUsedByType(type: String): Flow<List<Category>>
 
     /**
      *  Returns the size of table.
@@ -33,11 +43,11 @@ abstract class CategoryDao : BaseDao<Category>() {
     abstract suspend fun getCategorySize(): Int
 
     /**
-     *  Returns LD of list that holds all Categories of [type] in order of name.
+     *  Returns flow that emits list of Categories of [type] in order of name.
      */
     @Query("""SELECT *
               FROM category
               WHERE type=(:type)
               ORDER BY name ASC""")
-    abstract fun getLDCategoriesByType(type: String): LiveData<List<Category>>
+    abstract fun getCategoriesByType(type: String): Flow<List<Category>>
 }

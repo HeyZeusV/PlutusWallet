@@ -22,16 +22,16 @@
     <string name="category_all">Alle</string>
     <string name="category_create">Neue Kategorie erstellen</string>
     <string name="cfl_no_transactions">Keine Transaktionen erfüllen die angewendeten Filter!</string>
-    <string name="filter_account">Konto:</string>
+    <string name="filter_account">Konto</string>
     <string name="filter_apply">Anwenden</string>
-    <string name="filter_category">Kategorie:</string>
-    <string name="filter_date">Datum:</string>
+    <string name="filter_category">Kategorie</string>
+    <string name="filter_date">Datum</string>
     <string name="filter_date_warning">Das Enddatum muss nach dem Startdatum liegen !!</string>
     <string name="filter_end">Ende</string>
     <string name="filter_reset">Rücksetzen</string>
     <string name="filter_start">Anfang</string>
     <string name="filter_type">Art</string>
-    <string name="chart_total">Gesamt:&#160;</string>
+    <string name="chart_total">"Gesamt: "</string>
     <string name="period_days">Tage</string>
     <string name="period_months">Monate</string>
     <string name="period_weeks">Wochen</string>
@@ -45,8 +45,8 @@
     <string name="preferences_decimal_places_summary_on">Nachkommastellen können verwendet werden.</string>
     <string name="preferences_decimal_symbol">Dezimaltrennzeichen</string>
     <string name="preferences_language">Sprache</string>
-    <string name="preferences_number_decimal">Nachkommastellen</string>
-    <string name="preferences_symbol_side">Währungssymbol Seite</string>
+    <string name="preferences_decimal_number">Nachkommastellen</string>
+    <string name="preferences_currency_symbol_side">Währungssymbol Seite</string>
     <string name="preferences_symbol_side_summary_off">Das Währungssymbol wird auf der rechten Seite angezeigt.</string>
     <string name="preferences_symbol_side_summary_on">Das Währungssymbol erscheint auf der linken Seite.</string>
     <string name="preferences_thousands_symbol">Tausendertrennzeichen</string>
@@ -94,6 +94,10 @@
     <string name="alert_dialog_input_error">Kann nicht leer sein!</string>
     <string name="transaction_period">Zeitraum</string>
     <string name="cfl_menu_filter">Filter bearbeiten</string>
-    <string name="filter_no_chip_account">Bitte wählen Sie mindestens ein Konto aus !!</string>
-    <string name="filter_no_chip_category">"Bitte wählen Sie mindestens eine Kategorie aus !! "</string>
+    <string name="filter_no_selected_account">Bitte wählen Sie mindestens ein Konto aus !!</string>
+    <string name="filter_no_selected_category">"Bitte wählen Sie mindestens eine Kategorie aus !! "</string>
+    <string name="filter_no_selected_dates">Bitte Start- und Enddatum auswählen!!</string>
+    <string name="data_edit">Bearbeiten</string>
+    <string name="data_delete">löschen</string>
+    <string name="about_privacy_policy">Datenschutz-Bestimmungen</string>
 </resources>
