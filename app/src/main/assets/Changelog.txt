@@ -1,3 +1,6 @@
+v4.0.0
+-Change: Update to use Jetpack Compose, which is Android's modern toolkit for building native UI. App functionality is the same.
+
 v3.3.0
 -Change: Filter has been completely redesigned!! Can be found with new filter button in the top bar in the Overview page.
 -Enhancement: Select multiple Accounts and Categories when applying a filter.

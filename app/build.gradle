@@ -6,14 +6,28 @@ apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'de.mannodermaus.android-junit5'
 
 android {
+    signingConfigs {
+        release {
+            def props = new Properties()
+
+            def fileInputStream = new FileInputStream(file('../signing.properties'))
+            props.load(fileInputStream)
+            fileInputStream.close()
+
+            storeFile = file(props['storeFilePath'])
+                storePassword = props['storePassword']
+                keyPassword = props['keyPassword']
+                keyAlias = props['keyAlias']
+        }
+    }
     compileSdkVersion rootProject.compileSdkVersion
     defaultConfig {
         testInstrumentationRunnerArguments runnerBuilder: 'de.mannodermaus.junit5.AndroidJUnit5Builder'
         applicationId "com.heyzeusv.plutuswallet"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 25
-        versionName "3.3.0"
+        versionCode 26
+        versionName "4.0.0"
         testInstrumentationRunner "com.heyzeusv.plutuswallet.CustomTestRunner"
         resConfigs 'en', 'es', 'de', 'hi', 'ja', 'ko', 'th'
         javaCompileOptions {
@@ -27,6 +41,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             applicationIdSuffix ".dev"
@@ -49,13 +64,6 @@ android {
     }
     sourceSets {
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
-        String sharedTestDir = 'src/sharedTest/java'
-        test {
-            java.srcDir sharedTestDir
-        }
-        androidTest {
-            java.srcDir sharedTestDir
-        }
     }
     packagingOptions {
         jniLibs {
