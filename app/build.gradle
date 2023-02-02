@@ -92,8 +92,6 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager:0.25.0"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.25.0"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.0"
-    // CircleIndicator
-    implementation "me.relex:circleindicator:$circleIndicator"
     // Compose
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.foundation:foundation:$composeVersion"

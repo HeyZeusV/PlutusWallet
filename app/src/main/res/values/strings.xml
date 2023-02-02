@@ -39,8 +39,6 @@
     <string name="filter_start">Start</string>
     <string name="chart_total">"Total: "</string>
     <string name="chart_amount" translatable="false">%1$s%2$s</string>
-    <string name="library_circleIndicator_github" translatable="false"><![CDATA[<a href=\"https://github.com/ongakuer/CircleIndicator\">GitHub</a>]]></string>
-    <string name="library_circleindicator" translatable="false">CircleIndicator</string>
     <string name="library_mpandroidchart" tools:ignore="ExtraTranslation" translatable="false">MPAndroidChart</string>
     <string name="library_mpandroidchart_github" translatable="false">https://github.com/PhilJay/MPAndroidChart</string>
     <string name="period_days">Days</string>
