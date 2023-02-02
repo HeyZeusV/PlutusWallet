@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.account
 
-import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
+@ExtendWith(TestCoroutineExtension::class)
 internal class AccountViewModelTest {
 
     // test Fake

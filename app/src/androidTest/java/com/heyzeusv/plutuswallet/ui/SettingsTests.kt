@@ -280,7 +280,7 @@ class SettingsTests : BaseTest() {
 }
 
 ///**
-// *  Data class holding translated Fragment title strings and the [language] itself.
+// *  Data class holding translated Screen strings and the [language] itself.
 // */
 //data class LanguageTitles(
 //    val language: String,

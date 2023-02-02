@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.cfl.tranlist
 
-import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
@@ -21,7 +20,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
+@ExtendWith(TestCoroutineExtension::class)
 internal class TransactionListViewModelTest {
 
     // test Fake

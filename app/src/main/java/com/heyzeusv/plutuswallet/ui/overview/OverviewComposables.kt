@@ -243,79 +243,81 @@ fun ChartCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (chartInfo.ctList.isNotEmpty()) {
-                        /**
-                         *  Library used for PieChart is most likely never going to be updated to
-                         *  be Composable. Will be looking for new library or possibly make own.
-                         */
-                        AndroidView(
-                            factory = { context ->
-                                PieChart(context).apply {
-                                    // displays translated type in center of chart
-                                    centerText = if (page == 0) {
-                                        context.resources.getString(R.string.type_expense)
-                                    } else {
-                                        context.resources.getString(R.string.type_income)
+                        Surface(modifier = Modifier.weight(0.8f)) {
+                            /**
+                             *  Library used for PieChart is most likely never going to be updated to
+                             *  be Composable. Will be looking for new library or possibly make own.
+                             */
+                            AndroidView(
+                                factory = { context ->
+                                    PieChart(context).apply {
+                                        // displays translated type in center of chart
+                                        centerText = if (page == 0) {
+                                            context.resources.getString(R.string.type_expense)
+                                        } else {
+                                            context.resources.getString(R.string.type_income)
+                                        }
+                                        // don't want a description so make it blank
+                                        description.text = ""
+                                        // don't want legend so disable it
+                                        legend.isEnabled = false
+                                        // true = doughnut chart
+                                        isDrawHoleEnabled = true
+                                        // color of labels
+                                        setEntryLabelColor(chartLabelColor)
+                                        // size of Category labels
+                                        setEntryLabelTextSize(14.5f)
+                                        // color of center hole
+                                        setHoleColor(chartCenterHoleColor)
+                                        // size of center text
+                                        setCenterTextSize(15f)
+                                        // color of center text
+                                        setCenterTextColor(chartLabelColor)
+                                        // true = display center text
+                                        setDrawCenterText(true)
+                                        // true = use percent values
+                                        setUsePercentValues(true)
+                                        contentDescription = "Chart $page"
                                     }
-                                    // don't want a description so make it blank
-                                    description.text = ""
-                                    // don't want legend so disable it
-                                    legend.isEnabled = false
-                                    // true = doughnut chart
-                                    isDrawHoleEnabled = true
-                                    // color of labels
-                                    setEntryLabelColor(chartLabelColor)
-                                    // size of Category labels
-                                    setEntryLabelTextSize(14.5f)
-                                    // color of center hole
-                                    setHoleColor(chartCenterHoleColor)
-                                    // size of center text
-                                    setCenterTextSize(15f)
-                                    // color of center text
-                                    setCenterTextColor(chartLabelColor)
-                                    // true = display center text
-                                    setDrawCenterText(true)
-                                    // true = use percent values
-                                    setUsePercentValues(true)
-                                    contentDescription = "Chart $page"
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .weight(0.8f),
-                            update = { pieChart: PieChart ->
-                                // list of entries to be displayed in PieChart
-                                val pieEntries: List<PieEntry> = chartInfo.ctList.map { catTotal ->
-                                    PieEntry(catTotal.total.toFloat(), catTotal.category)
-                                }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                update = { pieChart: PieChart ->
+                                    // list of entries to be displayed in PieChart
+                                    val pieEntries: List<PieEntry> =
+                                        chartInfo.ctList.map { catTotal ->
+                                            PieEntry(catTotal.total.toFloat(), catTotal.category)
+                                        }
 
-                                // PieDataSet set up
-                                val dataSet = PieDataSet(pieEntries, "Transactions")
-                                // distance between slices
-                                dataSet.sliceSpace = 2.5f
-                                // size of percent value
-                                dataSet.valueTextSize = 13f
-                                // color of percent value
-                                dataSet.valueTextColor = chartLabelColor
-                                // colors used for slices
-                                dataSet.colors = chartColorLists[page]
-                                // no highlights so no shift needed
-                                dataSet.selectionShift = 0f
+                                    // PieDataSet set up
+                                    val dataSet = PieDataSet(pieEntries, "Transactions")
+                                    // distance between slices
+                                    dataSet.sliceSpace = 2.5f
+                                    // size of percent value
+                                    dataSet.valueTextSize = 13f
+                                    // color of percent value
+                                    dataSet.valueTextColor = chartLabelColor
+                                    // colors used for slices
+                                    dataSet.colors = chartColorLists[page]
+                                    // no highlights so no shift needed
+                                    dataSet.selectionShift = 0f
 
-                                // PieData set up
-                                val pData = PieData(dataSet)
-                                // makes values in form of percentages
-                                pData.setValueFormatter(PercentFormatter(pieChart))
-                                // PieChart set up
-                                pieChart.data = pData
+                                    // PieData set up
+                                    val pData = PieData(dataSet)
+                                    // makes values in form of percentages
+                                    pData.setValueFormatter(PercentFormatter(pieChart))
+                                    // PieChart set up
+                                    pieChart.data = pData
 
-                                val highlights: MutableList<Highlight> = mutableListOf()
-                                chartInfo.ctList.forEachIndexed { i, _ ->
-                                    highlights.add(Highlight(i.toFloat(), 0, 0))
+                                    val highlights: MutableList<Highlight> = mutableListOf()
+                                    chartInfo.ctList.forEachIndexed { i, _ ->
+                                        highlights.add(Highlight(i.toFloat(), 0, 0))
+                                    }
+                                    pieChart.highlightValues(highlights.toTypedArray())
                                 }
-                                pieChart.highlightValues(highlights.toTypedArray())
-                            }
-                        )
+                            )
+                        }
                         val totalPrefix = stringResource(R.string.chart_total)
                         MarqueeText(
                             text = "$totalPrefix${chartInfo.totalText}",
