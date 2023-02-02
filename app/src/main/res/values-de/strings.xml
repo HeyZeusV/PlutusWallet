@@ -99,4 +99,5 @@
     <string name="filter_no_selected_dates">Bitte Start- und Enddatum auswählen!!</string>
     <string name="data_edit">Bearbeiten</string>
     <string name="data_delete">löschen</string>
+    <string name="about_privacy_policy">Datenschutz-Bestimmungen</string>
 </resources>

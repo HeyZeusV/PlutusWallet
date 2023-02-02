@@ -99,4 +99,5 @@
     <string name="filter_no_selected_dates">कृपया प्रारंभ और समाप्ति दिनांक चुनें!!</string>
     <string name="data_edit">संपादन करना</string>
     <string name="data_delete">मिटाना</string>
+    <string name="about_privacy_policy">गोपनीयता नीति</string>
 </resources>

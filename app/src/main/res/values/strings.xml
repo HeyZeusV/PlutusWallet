@@ -113,4 +113,6 @@
     <string name="filter_no_selected_dates">Please select start and end dates!!</string>
     <string name="data_edit">Edit</string>
     <string name="data_delete">Delete</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_privacy_policy_link" translatable="false">https://doc-hosting.flycricket.io/plutus-wallet-privacy-policy/2b4e7d61-0f8b-4e18-9634-d94fc965faf9/privacy</string>
 </resources>

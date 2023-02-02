@@ -71,9 +71,11 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
+import com.heyzeusv.plutuswallet.ui.about.AboutScreen
 import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
 import com.heyzeusv.plutuswallet.ui.list.CategoryViewModel
+import com.heyzeusv.plutuswallet.ui.list.ListCard
 import com.heyzeusv.plutuswallet.ui.overview.ChartViewModel
 import com.heyzeusv.plutuswallet.ui.overview.FilterViewModel
 import com.heyzeusv.plutuswallet.ui.overview.TransactionListViewModel

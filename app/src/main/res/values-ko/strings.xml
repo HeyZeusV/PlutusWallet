@@ -99,4 +99,5 @@
     <string name="filter_no_selected_dates">시작일과 종료일을 선택해주세요!!</string>
     <string name="data_edit">편집하다</string>
     <string name="data_delete">삭제</string>
+    <string name="about_privacy_policy">개인 정보 정책</string>
 </resources>

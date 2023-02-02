@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.ui
+package com.heyzeusv.plutuswallet.ui.about
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
@@ -89,6 +89,10 @@ fun AboutScreen() {
             HyperlinkText(
                 text = stringResource(R.string.about_github),
                 link = stringResource(R.string.app_github_link)
+            )
+            HyperlinkText(
+                text = stringResource(R.string.about_privacy_policy),
+                link = stringResource(R.string.about_privacy_policy_link)
             )
             TextCenterAlign(text = stringResource(R.string.about_special_thanks))
             TextCenterAlign(text = stringResource(R.string.about_contact_me))

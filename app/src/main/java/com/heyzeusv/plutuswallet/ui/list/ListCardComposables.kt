@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.ui
+package com.heyzeusv.plutuswallet.ui.list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
