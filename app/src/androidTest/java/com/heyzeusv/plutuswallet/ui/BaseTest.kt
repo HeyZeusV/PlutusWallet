@@ -8,7 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.preference.PreferenceManager
-import com.heyzeusv.plutuswallet.data.DummyDataUtil
+import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
@@ -49,7 +49,7 @@ abstract class BaseTest {
     protected lateinit var res: Resources
     protected lateinit var sharedPref: SharedPreferences
 
-    val dd = DummyDataUtil()
+    val dd = DummyAndroidDataUtil()
     val dateFormatter: DateFormat = DateFormat.getDateInstance(0)
     val totalFormatter = DecimalFormat("#,##0.00").apply { roundingMode = RoundingMode.HALF_UP }
 

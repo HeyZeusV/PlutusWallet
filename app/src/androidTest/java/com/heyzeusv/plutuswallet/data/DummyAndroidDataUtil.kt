@@ -6,7 +6,7 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 import java.math.BigDecimal
 import java.util.Date
 
-class DummyDataUtil {
+class DummyAndroidDataUtil {
 
     // dummy data
     val acc1 = Account(1, "Credit Card")

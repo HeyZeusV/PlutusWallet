@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.flow
 
 class FakeAndroidRepository @Inject constructor() : Repository {
 
-    val dd = DummyDataUtil()
+    val dd = DummyAndroidDataUtil()
     var accList: MutableList<Account> = dd.accList
     var catList: MutableList<Category> = dd.catList
     var tranList: MutableList<Transaction> = dd.tranList
