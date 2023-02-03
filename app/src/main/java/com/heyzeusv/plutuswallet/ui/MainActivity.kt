@@ -238,7 +238,6 @@ fun PlutusWalletApp(
             } else if (!navController.navigateUp()) {
                 activity.finish()
             }
-            appBarActions.onNavPressed.invoke()
         }
     )
     Scaffold(
@@ -252,6 +251,7 @@ fun PlutusWalletApp(
                             scaffoldState.drawerState.open()
                         }
                     } else {
+                        appBarActions.onNavPressed.invoke()
                         when (currentScreen) {
                             AccountsDestination -> accountVM.updateAccountExists("")
                             CategoriesDestination -> categoryVM.updateCategoryExists("")
@@ -378,7 +378,7 @@ fun PlutusWalletApp(
                     tranId,
                     appBarActionSetup = { appBarActions = it },
                     snackbarHostState = scaffoldState.snackbarHostState,
-                    navController
+                    onBackPress = { navController.navigateUp() }
                 )
             }
             composable(AccountsDestination.route) {

@@ -63,7 +63,7 @@ internal class TransactionViewModelTest {
 
         assertEquals("Thursday, January 1, 1970", tranVM.date.value)
         assertEquals("Cash", tranVM.account.value)
-        assertEquals("$1,000.10", tranVM.totalFieldValue.value.text)
+        assertEquals("$1,000.10", tranVM.total.value.text)
         assertEquals(EXPENSE, tranVM.typeSelected.value)
         assertEquals("Food", tranVM.expenseCat.value)
         assertEquals(true, tranVM.repeat.value)
@@ -90,7 +90,7 @@ internal class TransactionViewModelTest {
 
         tranVM.retrieveTransaction(dd.tran1.id)
         tranVM.updateAccount(expectedTran.account)
-        tranVM.updateTotalFieldValue(expectedTran.total.toString())
+        tranVM.updateTotal(expectedTran.total.toString())
         tranVM.updateTypeSelected(INCOME)
         tranVM.updateIncomeCat(expectedTran.category)
         tranVM.updateRepeat(expectedTran.repeating)
@@ -127,7 +127,7 @@ internal class TransactionViewModelTest {
         // in order to get dateChanged == true
         tranVM.onDateSelected(expectedTran.date)
         tranVM.updateAccount(expectedTran.account)
-        tranVM.updateTotalFieldValue(expectedTran.total.toString())
+        tranVM.updateTotal(expectedTran.total.toString())
         tranVM.updateTypeSelected(INCOME)
         tranVM.updateIncomeCat(expectedTran.category)
         tranVM.updateRepeat(expectedTran.repeating)

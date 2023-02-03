@@ -37,9 +37,6 @@ class TransactionViewModel @Inject constructor(
 
     var setVals = SettingsValues()
 
-    private var _tranId: Int = 0
-    val tranId: Int get() = _tranId
-
     // string resources received from MainActivity
     var emptyTitle = ""
     var accountCreate = "Create New Account"
@@ -67,12 +64,12 @@ class TransactionViewModel @Inject constructor(
     val account: StateFlow<String> get() = _account
     fun updateAccount(newValue: String) { _account.value = newValue }
 
-    private val _totalFieldValue = MutableStateFlow(TextFieldValue())
-    val totalFieldValue: StateFlow<TextFieldValue> get() = _totalFieldValue
-    fun updateTotalFieldValue(newValue: String) {
+    private val _total = MutableStateFlow(TextFieldValue())
+    val total: StateFlow<TextFieldValue> get() = _total
+    fun updateTotal(newValue: String) {
         val removedSymbols = BigDecimal(removeSymbols(newValue))
         val formattedTotal = removedSymbols.prepareTotalText(setVals)
-        _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
+        _total.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
 
     private val _typeSelected = MutableStateFlow(EXPENSE)
@@ -99,10 +96,10 @@ class TransactionViewModel @Inject constructor(
     val period: StateFlow<String> get() = _period
     fun updatePeriod(newValue: String) { _period.value = newValue }
 
-    private val _frequencyFieldValue = MutableStateFlow(TextFieldValue())
-    val frequencyFieldValue: StateFlow<TextFieldValue> get() = _frequencyFieldValue
-    fun updateFrequencyFieldValue(newValue: String) {
-        _frequencyFieldValue.value = TextFieldValue(newValue, TextRange(newValue.length))
+    private val _frequency = MutableStateFlow(TextFieldValue())
+    val frequency: StateFlow<TextFieldValue> get() = _frequency
+    fun updateFrequency(newValue: String) {
+        _frequency.value = TextFieldValue(newValue, TextRange(newValue.length))
     }
 
     // Lists used by Spinners
@@ -174,7 +171,6 @@ class TransactionViewModel @Inject constructor(
         viewModelScope.launch {
             tranRepo.getTransactionAsync(tranId).let {
                 _transaction.value = it ?: Transaction()
-                _tranId = if (it == null) 0 else tranId
             }
             setTranData(transaction.value)
             retrieveTransaction = false
@@ -188,7 +184,7 @@ class TransactionViewModel @Inject constructor(
         updateTitle(transaction.title)
         updateDate(setVals.dateFormatter.format(transaction.date))
         updateAccount(transaction.account)
-        updateTotalFieldValue(transaction.total.toString())
+        updateTotal(transaction.total.toString())
         if (transaction.type == EXPENSE.type) {
             updateTypeSelected(EXPENSE)
             updateExpenseCat(transaction.category)
@@ -207,7 +203,7 @@ class TransactionViewModel @Inject constructor(
                 else -> it[3]
             })
         }
-        updateFrequencyFieldValue(transaction.frequency.toString())
+        updateFrequency(transaction.frequency.toString())
     }
 
     /**
@@ -216,9 +212,8 @@ class TransactionViewModel @Inject constructor(
     fun saveTransaction() {
         transaction.value.let { tran: Transaction ->
             // assigns new id if new Transaction
-            if (_tranId == 0) {
+            if (tran.id == 0) {
                 tran.id = maxId + 1
-                _tranId = tran.id
             }
 
             // gives Transaction simple title if user doesn't enter any
@@ -227,7 +222,7 @@ class TransactionViewModel @Inject constructor(
             // is empty if account hasn't been changed so defaults to first account
             tran.account = account.value.ifBlank { accountList.value[0] }
 
-            val totalFromFieldValue = totalFieldValue.value.text
+            val totalFromFieldValue = total.value.text
             tran.total = when {
                 totalFromFieldValue.isEmpty() && setVals.decimalNumber == "yes" ->
                     BigDecimal("0.00")
@@ -252,7 +247,7 @@ class TransactionViewModel @Inject constructor(
             tran.repeating = repeat.value
             if (tran.repeating) tran.futureDate = createFutureDate()
             tran.period = periodList.value.indexOf(period.value)
-            val frequencyFromFieldValue = frequencyFieldValue.value.text
+            val frequencyFromFieldValue = frequency.value.text
             // frequency must always be at least 1
             tran.frequency = when {
                 frequencyFromFieldValue.isBlank() || frequencyFromFieldValue.toInt() < 1 -> 1
