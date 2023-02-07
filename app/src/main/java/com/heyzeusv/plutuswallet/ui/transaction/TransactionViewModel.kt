@@ -74,15 +74,27 @@ class TransactionViewModel @Inject constructor(
 
     private val _typeSelected = MutableStateFlow(EXPENSE)
     val typeSelected: StateFlow<TransactionType> get() = _typeSelected
-    fun updateTypeSelected(newValue: TransactionType) { _typeSelected.value = newValue }
+    fun updateTypeSelected(newValue: TransactionType) {
+        _typeSelected.value = newValue
+        updateSelectedCat()
+        updateSelectedCatList()
+    }
 
-    private val _expenseCat = MutableStateFlow("")
-    val expenseCat: StateFlow<String> get() = _expenseCat
-    fun updateExpenseCat(newValue: String) { _expenseCat.value = newValue }
-
-    private val _incomeCat = MutableStateFlow("")
-    val incomeCat: StateFlow<String> get() = _incomeCat
-    fun updateIncomeCat(newValue: String) { _incomeCat.value = newValue }
+    private var expenseCat = ""
+    private var incomeCat = ""
+    private val _selectedCat = MutableStateFlow("")
+    val selectedCat: StateFlow<String> get() = _selectedCat
+    fun updateSelectedCat(newValue: String) {
+        _selectedCat.value = newValue
+        if (_typeSelected.value == EXPENSE) {
+            expenseCat = newValue
+        } else {
+            incomeCat = newValue
+        }
+    }
+    private fun updateSelectedCat() {
+        _selectedCat.value = if (typeSelected.value == EXPENSE) expenseCat else incomeCat
+    }
 
     private val _memo = MutableStateFlow("")
     val memo: StateFlow<String> get() = _memo
@@ -102,23 +114,33 @@ class TransactionViewModel @Inject constructor(
         _frequency.value = TextFieldValue(newValue, TextRange(newValue.length))
     }
 
-    // Lists used by Spinners
+    // Lists used by DropDownMenus
     private val _accountList = MutableStateFlow(listOf(""))
     val accountList: StateFlow<List<String>> get() = _accountList
     fun updateAccountList(newList: List<String>) {
         _accountList.value = newList + listOf(accountCreate)
     }
 
-    private val _expenseCatList = MutableStateFlow(listOf(""))
-    val expenseCatList: StateFlow<List<String>> get() = _expenseCatList
-    fun updateExpenseCatList(newList: List<String>) {
-        _expenseCatList.value = newList + listOf(categoryCreate)
+    private var expenseCatList = listOf("")
+    private fun updateExpenseCatList(newList: List<String>) {
+        expenseCatList = newList
+        updateSelectedCatList()
     }
 
-    private val _incomeCatList = MutableStateFlow(listOf(""))
-    val incomeCatList: StateFlow<List<String>> get() = _incomeCatList
-    fun updateIncomeCatList(newList: List<String>) {
-        _incomeCatList.value = newList + listOf(categoryCreate)
+    private var incomeCatList = listOf("")
+    private fun updateIncomeCatList(newList: List<String>) {
+        incomeCatList = newList
+        updateSelectedCatList()
+    }
+
+    private val _selectedCatList = MutableStateFlow(listOf(""))
+    val selectedCatList: StateFlow<List<String>> get() = _selectedCatList
+    private fun updateSelectedCatList() {
+        _selectedCatList.value = if (typeSelected.value == EXPENSE) {
+            expenseCatList
+        } else {
+            incomeCatList
+        } + listOf(categoryCreate)
     }
 
     private val _periodList = MutableStateFlow(mutableListOf(""))
@@ -131,13 +153,9 @@ class TransactionViewModel @Inject constructor(
     val showAccountDialog: StateFlow<Boolean> get() = _showAccountDialog
     fun updateAccountDialog(newValue: Boolean) { _showAccountDialog.value = newValue }
 
-    private val _showExpenseDialog = MutableStateFlow(false)
-    val showExpenseDialog: StateFlow<Boolean> get() = _showExpenseDialog
-    fun updateExpenseDialog(newValue: Boolean) { _showExpenseDialog.value = newValue }
-
-    private val _showIncomeDialog = MutableStateFlow(false)
-    val showIncomeDialog: StateFlow<Boolean> get() = _showIncomeDialog
-    fun updateIncomeDialog(newValue: Boolean) { _showIncomeDialog.value = newValue }
+    private val _showCategoryDialog = MutableStateFlow(false)
+    val showCategoryDialog: StateFlow<Boolean> get() = _showCategoryDialog
+    fun updateCategoryDialog(newValue: Boolean) { _showCategoryDialog.value = newValue }
 
     private val _showFutureDialog = MutableStateFlow(false)
     val showFutureDialog: StateFlow<Boolean> get() = _showFutureDialog
@@ -185,13 +203,8 @@ class TransactionViewModel @Inject constructor(
         updateDate(setVals.dateFormatter.format(transaction.date))
         updateAccount(transaction.account)
         updateTotal(transaction.total.toString())
-        if (transaction.type == EXPENSE.type) {
-            updateTypeSelected(EXPENSE)
-            updateExpenseCat(transaction.category)
-        } else {
-            updateTypeSelected(INCOME)
-            updateIncomeCat(transaction.category)
-        }
+        updateTypeSelected(if (transaction.type == EXPENSE.type) EXPENSE else INCOME)
+        updateSelectedCat(transaction.category)
         updateMemo(transaction.memo)
         updateRepeat(transaction.repeating)
         periodList.value.let {
@@ -236,22 +249,18 @@ class TransactionViewModel @Inject constructor(
             }
 
             tran.type = typeSelected.value.type
-            // cat values are empty if they haven't been changed so defaults to first category
-            tran.category = when (typeSelected.value) {
-                EXPENSE -> expenseCat.value.ifBlank { expenseCatList.value[0] }
-                INCOME -> incomeCat.value.ifBlank { incomeCatList.value[0] }
-            }
+            tran.category = selectedCat.value.ifBlank { selectedCatList.value[0] }
 
             tran.memo = memo.value
 
             tran.repeating = repeat.value
             if (tran.repeating) tran.futureDate = createFutureDate()
             tran.period = periodList.value.indexOf(period.value)
-            val frequencyFromFieldValue = frequency.value.text
+            val frequencyValue = frequency.value.text
             // frequency must always be at least 1
             tran.frequency = when {
-                frequencyFromFieldValue.isBlank() || frequencyFromFieldValue.toInt() < 1 -> 1
-                else -> frequencyFromFieldValue.toInt()
+                frequencyValue.isBlank() || frequencyValue.toInt() < 1 -> 1
+                else -> frequencyValue.toInt()
             }
 
             // Coroutine that Save/Updates/warns user of FutureDate
@@ -373,7 +382,7 @@ class TransactionViewModel @Inject constructor(
         // checks which type is currently selected
         when (typeSelected.value) {
             EXPENSE -> {
-                expenseCatList.value.let {
+                expenseCatList.let {
                     // create if doesn't exist
                     if (!it.contains(name)) {
                         viewModelScope.launch {
@@ -383,11 +392,9 @@ class TransactionViewModel @Inject constructor(
                         }
                     }
                 }
-                updateExpenseCat(name)
-                updateExpenseDialog(false)
             }
             INCOME -> {
-                incomeCatList.value.let {
+                incomeCatList.let {
                     // create if doesn't exist
                     if (!it.contains(name)) {
                         viewModelScope.launch {
@@ -397,10 +404,10 @@ class TransactionViewModel @Inject constructor(
                         }
                     }
                 }
-                updateIncomeCat(name)
-                updateIncomeDialog(false)
             }
         }
+        updateSelectedCat(name)
+        updateCategoryDialog(false)
     }
 
     /**

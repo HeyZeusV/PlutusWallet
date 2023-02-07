@@ -118,8 +118,7 @@ fun TransactionScreen(
     val account by tranVM.account.collectAsState()
     val total by tranVM.total.collectAsState()
     val typeSelected by tranVM.typeSelected.collectAsState()
-    val expenseCat by tranVM.expenseCat.collectAsState()
-    val incomeCat by tranVM.incomeCat.collectAsState()
+    val selectedCat by tranVM.selectedCat.collectAsState()
     val memo by tranVM.memo.collectAsState()
     val repeat by tranVM.repeat.collectAsState()
     val period by tranVM.period.collectAsState()
@@ -127,14 +126,12 @@ fun TransactionScreen(
 
     // drop down menu lists
     val accountList by tranVM.accountList.collectAsState()
-    val expenseCatList by tranVM.expenseCatList.collectAsState()
-    val incomeCatList by tranVM.incomeCatList.collectAsState()
+    val selectedCatList by tranVM.selectedCatList.collectAsState()
     val periodList by tranVM.periodList.collectAsState()
 
     // determine which dialog to display
     val showAccountDialog by tranVM.showAccountDialog.collectAsState()
-    val showExpenseDialog by tranVM.showExpenseDialog.collectAsState()
-    val showIncomeDialog by tranVM.showIncomeDialog.collectAsState()
+    val showCategoryDialog by tranVM.showCategoryDialog.collectAsState()
     val showFutureDialog by tranVM.showFutureDialog.collectAsState()
 
     // set up AppBar actions
@@ -167,10 +164,8 @@ fun TransactionScreen(
         totalMaxLength,
         typeSelected,
         tranVM::updateTypeSelected,
-        expenseCat,
-        tranVM::updateExpenseCat,
-        incomeCat,
-        tranVM::updateIncomeCat,
+        selectedCat,
+        tranVM::updateSelectedCat,
         memo,
         tranVM::updateMemo,
         repeat,
@@ -180,16 +175,13 @@ fun TransactionScreen(
         frequency,
         tranVM::updateFrequency,
         accountList,
-        expenseCatList,
-        incomeCatList,
+        selectedCatList,
         periodList,
         showAccountDialog,
         tranVM::updateAccountDialog,
         accountDialogOnConfirm = tranVM::insertAccount,
-        showExpenseDialog,
-        tranVM::updateExpenseDialog,
-        showIncomeDialog,
-        tranVM::updateIncomeDialog,
+        showCategoryDialog,
+        tranVM::updateCategoryDialog,
         categoryDialogOnConfirm = tranVM::insertCategory,
         showFutureDialog,
         futureDialogOnConfirm = { tranVM.futureDialogConfirm() },
@@ -217,10 +209,8 @@ fun TransactionScreen(
     totalMaxLength: Int,
     typeSelected: TransactionType,
     updateTypeSelected: (TransactionType) -> Unit,
-    expenseCat: String,
-    updateExpenseCat: (String) -> Unit,
-    incomeCat: String,
-    updateIncomeCat: (String) -> Unit,
+    selectedCat: String,
+    updateSelectedCat: (String) -> Unit,
     memo: String,
     updateMemo: (String) -> Unit,
     repeat: Boolean,
@@ -230,16 +220,13 @@ fun TransactionScreen(
     frequency: TextFieldValue,
     updateFrequency: (String) -> Unit,
     accountList: List<String>,
-    expenseCatList: List<String>,
-    incomeCatList: List<String>,
+    selectedCatList: List<String>,
     periodList: List<String>,
     showAccountDialog: Boolean,
     updateAccountDialog: (Boolean) -> Unit,
     accountDialogOnConfirm: (String) -> Unit,
-    showExpenseDialog: Boolean,
-    updateExpenseDialog: (Boolean) -> Unit,
-    showIncomeDialog: Boolean,
-    updateIncomeDialog: (Boolean) -> Unit,
+    showCategoryDialog: Boolean,
+    updateCategoryDialog: (Boolean) -> Unit,
     categoryDialogOnConfirm: (String) -> Unit,
     showFutureDialog: Boolean,
     futureDialogOnConfirm: () -> Unit,
@@ -319,42 +306,21 @@ fun TransactionScreen(
                     top = dimensionResource(R.dimen.textFToViewTopPadding)
                 )
             )
-            when (typeSelected) {
-                TransactionType.EXPENSE -> {
-                    TransactionCategories(
-                        typeSelected = typeSelected,
-                        chipExpenseOnClick = { updateTypeSelected(TransactionType.EXPENSE) },
-                        chipIncomeOnClick = { updateTypeSelected(TransactionType.INCOME) },
-                        dropDownValue = expenseCat,
-                        dropDownList = expenseCatList,
-                        dropDownOnClick = updateExpenseCat,
-                        showInputDialog = showExpenseDialog,
-                        updateInputDialog = { updateExpenseDialog(true) },
-                        dialogOnConfirm = categoryDialogOnConfirm,
-                        dialogOnDismiss = { updateExpenseDialog(false) },
-                        modifier = Modifier.padding(
-                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
-                        )
-                    )
-                }
-                TransactionType.INCOME -> {
-                    TransactionCategories(
-                        typeSelected = typeSelected,
-                        chipExpenseOnClick = { updateTypeSelected(TransactionType.EXPENSE) },
-                        chipIncomeOnClick = { updateTypeSelected(TransactionType.INCOME) },
-                        dropDownValue = incomeCat,
-                        dropDownList = incomeCatList,
-                        dropDownOnClick = updateIncomeCat,
-                        showInputDialog = showIncomeDialog,
-                        updateInputDialog = { updateIncomeDialog(true) },
-                        dialogOnConfirm = categoryDialogOnConfirm,
-                        dialogOnDismiss = { updateIncomeDialog(false) },
-                        modifier = Modifier.padding(
-                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
-                        )
-                    )
-                }
-            }
+            TransactionCategories(
+                typeSelected = typeSelected,
+                chipExpenseOnClick = { updateTypeSelected(TransactionType.EXPENSE) },
+                chipIncomeOnClick = { updateTypeSelected(TransactionType.INCOME) },
+                dropDownValue = selectedCat,
+                dropDownList = selectedCatList,
+                dropDownOnClick = updateSelectedCat,
+                showInputDialog = showCategoryDialog,
+                updateInputDialog = { updateCategoryDialog(true) },
+                dialogOnConfirm = categoryDialogOnConfirm,
+                dialogOnDismiss = { updateCategoryDialog(false) },
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                )
+            )
             TransactionTextInput(
                 value = memo,
                 onValueChanged = { updateMemo(it) },
