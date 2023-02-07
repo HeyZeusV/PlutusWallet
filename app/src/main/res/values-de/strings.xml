@@ -100,4 +100,6 @@
     <string name="data_edit">Bearbeiten</string>
     <string name="data_delete">löschen</string>
     <string name="about_privacy_policy">Datenschutz-Bestimmungen</string>
+    <string name="icon_cd_expandcollapse">Erweitern oder reduzieren</string>
+    <string name="icon_cd_inputError">Eingabe Fehler</string>
 </resources>

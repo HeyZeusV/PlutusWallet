@@ -100,4 +100,6 @@
     <string name="data_edit">편집하다</string>
     <string name="data_delete">삭제</string>
     <string name="about_privacy_policy">개인 정보 정책</string>
+    <string name="icon_cd_expandcollapse">확장 또는 축소</string>
+    <string name="icon_cd_inputError">입력 오류</string>
 </resources>

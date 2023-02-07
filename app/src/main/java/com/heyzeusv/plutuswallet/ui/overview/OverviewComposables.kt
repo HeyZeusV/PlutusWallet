@@ -82,10 +82,10 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.ui.PWButtonChip
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.theme.chipTextStyle
-import com.heyzeusv.plutuswallet.ui.transaction.PlutusWalletButtonChip
 import com.heyzeusv.plutuswallet.util.FilterSelectedAction
 import com.heyzeusv.plutuswallet.util.FilterSelectedAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterSelectedAction.REMOVE
@@ -608,7 +608,7 @@ fun FilterCard(
             Column(
                 modifier = Modifier.padding(all = 8.dp)
             ) {
-                PlutusWalletButtonChip(
+                PWButtonChip(
                     selected = accountFilterSelected,
                     onClick = { accountFilterOnClick(!accountFilterSelected) },
                     label = stringResource(R.string.filter_account),
@@ -662,7 +662,7 @@ fun FilterCard(
                         }
                     }
                 }
-                PlutusWalletButtonChip(
+                PWButtonChip(
                     selected = categoryFilterSelected,
                     onClick = { categoryFilterOnClick(!categoryFilterSelected) },
                     label = stringResource(R.string.filter_category),
@@ -689,7 +689,7 @@ fun FilterCard(
                             .onGloballyPositioned { categoryComposeSize = it.size.toSize() },
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PlutusWalletButtonChip(
+                        PWButtonChip(
                             selected = true,
                             onClick = { filterUpdateTypeSelected(filterTypeSelected.opposite()) },
                             label = typeSelectedLabel,
@@ -732,7 +732,7 @@ fun FilterCard(
                         }
                     }
                 }
-                PlutusWalletButtonChip(
+                PWButtonChip(
                     selected = dateFilterSelected,
                     onClick = { dateFilterOnClick(!dateFilterSelected) },
                     label = stringResource(R.string.filter_date),
@@ -759,7 +759,7 @@ fun FilterCard(
                             .onGloballyPositioned { dateComposeSize = it.size.toSize() },
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PlutusWalletButtonChip(
+                        PWButtonChip(
                             selected = true,
                             onClick = {
                                 DateUtils.datePickerDialog(
@@ -778,7 +778,7 @@ fun FilterCard(
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
                                 .testTag("Filter Start Date"),
                         )
-                        PlutusWalletButtonChip(
+                        PWButtonChip(
                             selected = true,
                             onClick = {
                                 DateUtils.datePickerDialog(
@@ -800,7 +800,7 @@ fun FilterCard(
                         )
                     }
                 }
-                PlutusWalletButtonChip(
+                PWButtonChip(
                     selected = true,
                     onClick = applyOnClick,
                     label = if (noFilters) {

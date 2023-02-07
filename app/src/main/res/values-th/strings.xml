@@ -100,4 +100,6 @@
     <string name="data_edit">แก้ไข</string>
     <string name="data_delete">ลบ</string>
     <string name="about_privacy_policy">นโยบายความเป็นส่วนตัว</string>
+    <string name="icon_cd_expandcollapse">ขยายหรือยุบ</string>
+    <string name="icon_cd_inputError">ข้อผิดพลาดในการป้อนข้อมูล</string>
 </resources>

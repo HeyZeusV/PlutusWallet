@@ -100,4 +100,6 @@
     <string name="data_edit">Editar</string>
     <string name="data_delete">Eliminar</string>
     <string name="about_privacy_policy">Política de privacidad</string>
+    <string name="icon_cd_expandcollapse">Expandir o contraer</string>
+    <string name="icon_cd_inputError">Error de entrada</string>
 </resources>

@@ -40,11 +40,11 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
-import com.heyzeusv.plutuswallet.ui.transaction.InputAlertDialog
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
+import com.heyzeusv.plutuswallet.util.PWInputAlertDialog
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -74,7 +74,7 @@ fun ListCard(
         }
     }
     if (showDialog.action == CREATE) {
-        InputAlertDialog(
+        PWInputAlertDialog(
             title = createDialogTitle,
             onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
             onConfirm = createDialogOnConfirm
@@ -136,7 +136,7 @@ fun ListCard(
                                         )
                                     }
                                     EDIT -> {
-                                        InputAlertDialog(
+                                        PWInputAlertDialog(
                                             title = editDialogTitle,
                                             onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
                                             data = data,

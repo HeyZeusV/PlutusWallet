@@ -100,4 +100,6 @@
     <string name="data_edit">संपादन करना</string>
     <string name="data_delete">मिटाना</string>
     <string name="about_privacy_policy">गोपनीयता नीति</string>
+    <string name="icon_cd_expandcollapse">विस्तृत या संक्षिप्त करें</string>
+    <string name="icon_cd_inputError">इनपुट त्रुटि</string>
 </resources>
