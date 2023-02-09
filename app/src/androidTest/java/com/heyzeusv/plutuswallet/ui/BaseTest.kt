@@ -13,7 +13,6 @@ import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.list.CategoryViewModel
-import com.heyzeusv.plutuswallet.ui.overview.FilterViewModel
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.util.theme.PWLightColors
@@ -76,7 +75,6 @@ abstract class BaseTest {
                         }
                     ) {
                         PlutusWalletApp(
-                            filterVM = viewModels<FilterViewModel>().value,
                             accountVM = viewModels<AccountViewModel>().value,
                             categoryVM = viewModels<CategoryViewModel>().value,
                             recreateActivity = { composeRule.activity.recreate() }

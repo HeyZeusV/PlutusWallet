@@ -186,7 +186,7 @@ fun TransactionScreen(
 
 /**
  *  Composable that displays TransactionScreen.
- *  All the data has been hoisting into above [TransactionScreen] those allowing for easier testing.
+ *  All the data has been hoisted into above [TransactionScreen] thus allowing for easier testing.
  */
 @Composable
 fun TransactionScreen(

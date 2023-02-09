@@ -26,16 +26,17 @@ import kotlinx.coroutines.launch
  */
 @HiltViewModel
 class ChartViewModel @Inject constructor(
-    private val tranRepo: Repository,
-    val settingsValues: SettingsValues
+    private val tranRepo: Repository
 ) : ViewModel() {
+
+    var setVals = SettingsValues()
 
     private val _catTotalsList = MutableStateFlow(emptyList<CategoryTotals>())
     val catTotalsList: StateFlow<List<CategoryTotals>> get() = _catTotalsList
-    suspend fun updateCatTotalsList(filterInfo: FilterInfo, setVals: SettingsValues) {
+    suspend fun updateCatTotalsList(filterInfo: FilterInfo) {
         filteredCategoryTotals(filterInfo).collect { list ->
             _catTotalsList.value = list
-            prepareChartInformation(setVals)
+            prepareChartInformation()
         }
     }
 
@@ -47,7 +48,7 @@ class ChartViewModel @Inject constructor(
         viewModelScope.launch {
             val ctList = filteredCategoryTotals(FilterInfo()).first()
             _catTotalsList.value = ctList
-            prepareChartInformation(settingsValues)
+            prepareChartInformation()
         }
     }
 
@@ -55,10 +56,10 @@ class ChartViewModel @Inject constructor(
      *  Creates ChartInformation for both Expense and Income type Categories.
      *  It first splits list of CategoryTotals into 2, one for Expense, other for Income.
      *  Then it calculates the total of each list separately.
-     *  Lastly it creates ChartInformation using lists and creating the total String using [setVals]
+     *  Lastly it creates ChartInformation using lists and creating the total String using setVals
      *  and updating StateFlow value.
      */
-    private fun prepareChartInformation(setVals: SettingsValues) {
+    private fun prepareChartInformation() {
         // split into type lists
         val exCTList = mutableListOf<CategoryTotals>()
         val inCTList = mutableListOf<CategoryTotals>()

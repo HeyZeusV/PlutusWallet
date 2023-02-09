@@ -7,7 +7,6 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.overview.TransactionListViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,7 +35,7 @@ internal class TransactionListViewModelTest {
     fun setUpViewModel() {
         // reset fake repo with dummy data and pass it to ViewModel
         repo.clearAccCatLists()
-        tlVM = TransactionListViewModel(repo, SettingsValues())
+        tlVM = TransactionListViewModel(repo)
     }
 
     @Test

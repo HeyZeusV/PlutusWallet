@@ -38,7 +38,6 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -94,7 +93,6 @@ import com.heyzeusv.plutuswallet.util.AccountsDestination
 import com.heyzeusv.plutuswallet.util.CategoriesDestination
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.CREATE
-import com.heyzeusv.plutuswallet.util.FilterState
 import com.heyzeusv.plutuswallet.util.OverviewDestination
 import com.heyzeusv.plutuswallet.util.PWDestination
 import com.heyzeusv.plutuswallet.util.PWScreens
@@ -113,7 +111,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    private val filterVM: FilterViewModel by viewModels()
     private val accountVM: AccountViewModel by viewModels()
     private val categoryVM: CategoryViewModel by viewModels()
 
@@ -156,7 +153,6 @@ class MainActivity : BaseActivity() {
                         darkIcons = false
                     )
                     PlutusWalletApp(
-                        filterVM,
                         accountVM,
                         categoryVM,
                         recreateActivity = { recreate() }
@@ -171,7 +167,6 @@ class MainActivity : BaseActivity() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PlutusWalletApp(
-    filterVM: FilterViewModel,
     accountVM: AccountViewModel,
     categoryVM: CategoryViewModel,
     recreateActivity: () -> Unit
@@ -188,24 +183,6 @@ fun PlutusWalletApp(
 
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
-
-    val filterInfo by filterVM.filterInfo.collectAsState()
-
-    val showFilter by filterVM.showFilter.collectAsState()
-    val accountFilterSelected by filterVM.accountFilter.collectAsState()
-    val accountNameList by filterVM.accountList.collectAsState()
-    val accountSelected by filterVM.accountSelected.collectAsState()
-    val categoryFilterSelected by filterVM.categoryFilter.collectAsState()
-    val filterTypeSelected by filterVM.typeSelected.collectAsState()
-    val expenseCatNameList by filterVM.expenseCatList.collectAsState()
-    val expenseCatSelected by filterVM.expenseCatSelected.collectAsState()
-    val incomeCatNameList by filterVM.incomeCatList.collectAsState()
-    val incomeCatSelected by filterVM.incomeCatSelected.collectAsState()
-    val dateFilterSelected by filterVM.dateFilter.collectAsState()
-    val startDateString by filterVM.startDateString.collectAsState()
-    val endDateString by filterVM.endDateString.collectAsState()
-    val filterState by filterVM.filterState.collectAsState()
-    val filterStateMessage = stringResource(filterState.stringId)
 
     val accountList by accountVM.accountList.collectAsState()
     val accountsUsedList by accountVM.accountsUsedList.collectAsState()
@@ -225,12 +202,6 @@ fun PlutusWalletApp(
     val setVM: SettingsViewModel = viewModel()
     val setVals by setVM.setVals.collectAsState()
 
-    LaunchedEffect(key1 = filterState) {
-        if (filterState != FilterState.VALID) {
-            scaffoldState.snackbarHostState.showSnackbar(filterStateMessage)
-            filterVM.updateFilterState(FilterState.VALID)
-        }
-    }
     BackPressHandler(
         onBackPressed = {
             if (scaffoldState.drawerState.isOpen) {
@@ -246,43 +217,22 @@ fun PlutusWalletApp(
             PWAppBar(
                 currentScreen = currentScreen,
                 onNavPressed = {
-                    if (currentScreen == OverviewDestination) {
-                        coroutineScope.launch {
-                            scaffoldState.drawerState.open()
-                        }
-                    } else {
+                    coroutineScope.launch {
                         appBarActions.onNavPressed.invoke()
-                        when (currentScreen) {
-                            AccountsDestination -> accountVM.updateAccountExists("")
-                            CategoriesDestination -> categoryVM.updateCategoryExists("")
-                            else -> {}
-                        }
-                        navController.navigateUp()
                     }
-                },
-                onActionLeftPressed = {
                     when (currentScreen) {
-                        OverviewDestination -> {
-                            filterVM.updateShowFilter(!showFilter)
-                        }
-
+                        AccountsDestination -> accountVM.updateAccountExists("")
+                        CategoriesDestination -> categoryVM.updateCategoryExists("")
                         else -> {}
                     }
                 },
+                onActionLeftPressed = { appBarActions.onActionLeftPressed.invoke() },
                 onActionRightPressed = {
+                    appBarActions.onActionRightPressed.invoke()
                     when (currentScreen) {
-                        OverviewDestination -> {
-                            navController.navigateToTransactionWithId(0)
-                        }
-
-                        TransactionDestination -> {
-                            appBarActions.onActionRightPressed.invoke()
-                        }
-
                         AccountsDestination -> {
                             accountVM.updateDialog(DataDialog(CREATE, 0))
                         }
-
                         CategoriesDestination -> {
                             val type =
                                 if (categoryListPagerState.currentPage == 0) EXPENSE else INCOME
@@ -314,53 +264,21 @@ fun PlutusWalletApp(
             startDestination = OverviewDestination.route
         ) {
             composable(OverviewDestination.route) {
-                val tranListVM = hiltViewModel<TransactionListViewModel>()
-                val chartVM = hiltViewModel<ChartViewModel>()
+                val tranListVM = hiltViewModel<TransactionListViewModel>().apply {
+                    this.setVals = setVals
+                }
+                val chartVM = hiltViewModel<ChartViewModel>().apply { this.setVals = setVals }
+                val filterVM = hiltViewModel<FilterViewModel>()
 
-                val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
                 tranListVM.futureTransactions()
 
                 OverviewScreen(
-                    filterInfo,
-                    setVals,
                     tranListVM,
                     chartVM,
-                    tranListPreviousMaxId = tranListVM.previousMaxId,
-                    tranListUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
-                    tranListItemOnLongClick = tranListVM::updateDeleteDialog,
-                    tranListItemOnClick = { tranId ->
-                        navController.navigateToTransactionWithId(tranId)
-                    },
-                    tranListShowDeleteDialog = tranListShowDeleteDialog,
-                    tranListDialogOnConfirm = { tranId ->
-                        tranListVM.deleteTransaction(tranId)
-                        tranListVM.updateDeleteDialog(-1)
-                    },
-                    tranListDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
-                    showFilter = showFilter,
-                    updateShowFilter = filterVM::updateShowFilter,
-                    accountFilterSelected = accountFilterSelected,
-                    accountFilterOnClick = filterVM::updateAccountFilter,
-                    accountNameList,
-                    accountSelected,
-                    accountChipOnClick = filterVM::updateAccountSelected,
-                    categoryFilterSelected = categoryFilterSelected,
-                    categoryFilterOnClick = filterVM::updateCategoryFilter,
-                    filterTypeSelected,
-                    filterUpdateTypeSelected = filterVM::updateTypeSelected,
-                    categoryList = if (filterTypeSelected == EXPENSE)
-                        expenseCatNameList else incomeCatNameList,
-                    categorySelected = if (filterTypeSelected == EXPENSE)
-                        expenseCatSelected else incomeCatSelected,
-                    categoryChipOnClick = if (filterTypeSelected == EXPENSE)
-                        filterVM::updateExpenseCatSelected else filterVM::updateIncomeCatSelected,
-                    dateFilterSelected,
-                    dateFilterOnClick = filterVM::updateDateFilter,
-                    startDateString,
-                    startDateOnClick = filterVM::updateStartDateString,
-                    endDateString,
-                    endDateOnClick = filterVM::updateEndDateString,
-                    applyOnClick = filterVM::applyFilter
+                    filterVM,
+                    appBarActionSetup = { appBarActions = it },
+                    scaffoldState = scaffoldState,
+                    navController = navController
                 )
             }
             composable(
@@ -686,7 +604,7 @@ fun NavHostController.navigateToTransactionWithId(tranId: Int) {
  *  specified screen.
  */
 data class AppBarActions(
-    val onNavPressed: () -> Unit = { },
+    val onNavPressed: suspend () -> Unit = { },
     val onActionLeftPressed: () -> Unit = { },
     val onActionRightPressed: () -> Unit = { }
 )

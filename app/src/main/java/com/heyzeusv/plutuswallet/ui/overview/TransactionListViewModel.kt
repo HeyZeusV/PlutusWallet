@@ -36,16 +36,17 @@ private const val INCOME = "Income"
  */
 @HiltViewModel
 class TransactionListViewModel @Inject constructor(
-    private val tranRepo: Repository,
-    val settingsValues: SettingsValues
+    private val tranRepo: Repository
 ) : ViewModel() {
+
+    var setVals = SettingsValues()
 
     // ItemViewTransaction list to be displayed by RecyclerView
     private val _tranList = MutableStateFlow(emptyList<TranListItemFull>())
     val tranList: StateFlow<List<TranListItemFull>> get() = _tranList
-    suspend fun updateTranList(filter: FilterInfo, setVals: SettingsValues) {
+    suspend fun updateTranList(filter: FilterInfo) {
         filteredTransactionList(filter).collect { list ->
-            createTLIFullList(list, setVals)
+            createTLIFullList(list)
         }
     }
 
@@ -67,7 +68,7 @@ class TransactionListViewModel @Inject constructor(
         initializeTables()
         viewModelScope.launch {
             val tlItem = filteredTransactionList(FilterInfo()).first()
-            createTLIFullList(tlItem, settingsValues)
+            createTLIFullList(tlItem)
         }
     }
 
@@ -80,6 +81,7 @@ class TransactionListViewModel @Inject constructor(
                 tranRepo.deleteTransaction(it)
             }
         }
+        updateDeleteDialog(-1)
     }
 
     /**
@@ -126,7 +128,7 @@ class TransactionListViewModel @Inject constructor(
      *  creating a formattedTotal and formattedDate for the new [TranListItemFull] item using
      *  [setVals].
      */
-    private fun createTLIFullList(list: List<TranListItem>, setVals: SettingsValues) {
+    private fun createTLIFullList(list: List<TranListItem>) {
         val tranItemList = mutableListOf<TranListItemFull>()
         for (tlItem in list) {
             val formattedTotal = tlItem.total.prepareTotalText(setVals)

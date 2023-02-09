@@ -39,6 +39,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
 import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -65,6 +66,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -80,9 +82,10 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.ui.AppBarActions
 import com.heyzeusv.plutuswallet.ui.PWButtonChip
+import com.heyzeusv.plutuswallet.ui.navigateToTransactionWithId
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.theme.chipTextStyle
@@ -90,60 +93,154 @@ import com.heyzeusv.plutuswallet.util.FilterSelectedAction
 import com.heyzeusv.plutuswallet.util.FilterSelectedAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterSelectedAction.REMOVE
 import com.heyzeusv.plutuswallet.util.TransactionType
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.DateUtils
+import com.heyzeusv.plutuswallet.util.FilterState
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.delay
 
+/**
+ *  Composable that displays Overview Card.
+ *  Data that is displayed is retrieved from [tranListVM], [chartVM], and [filterVM].
+ *  [appBarActionSetup] determines what to do when an action item is pressed from the AppBar.
+ *  [scaffoldState] is used to display SnackBar and open Drawer.
+ *  [navController] is used to navigate to Transaction screen with id argument.
+ */
+@Composable
+fun OverviewScreen(
+    tranListVM: TransactionListViewModel,
+    chartVM: ChartViewModel,
+    filterVM: FilterViewModel,
+    appBarActionSetup: (AppBarActions) -> Unit,
+    scaffoldState: ScaffoldState,
+    navController: NavHostController
+) {
+
+    val tlTranList by tranListVM.tranList.collectAsState()
+    val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
+
+    val cChartInfoList by chartVM.chartInfoList.collectAsState()
+
+    val filterInfo by filterVM.filterInfo.collectAsState()
+    val fShowFilter by filterVM.showFilter.collectAsState()
+    val fAccountFilterSelected by filterVM.accountFilter.collectAsState()
+    val fAccountNameList by filterVM.accountList.collectAsState()
+    val fAccountSelected by filterVM.accountSelected.collectAsState()
+    val fCategoryFilterSelected by filterVM.categoryFilter.collectAsState()
+    val fTypeSelected by filterVM.typeSelected.collectAsState()
+    val fExpenseCatNameList by filterVM.expenseCatList.collectAsState()
+    val fExpenseCatSelected by filterVM.expenseCatSelected.collectAsState()
+    val fIncomeCatNameList by filterVM.incomeCatList.collectAsState()
+    val fIncomeCatSelected by filterVM.incomeCatSelected.collectAsState()
+    val fDateFilterSelected by filterVM.dateFilter.collectAsState()
+    val fStartDateString by filterVM.startDateString.collectAsState()
+    val fEndDateString by filterVM.endDateString.collectAsState()
+    val filterState by filterVM.filterState.collectAsState()
+    val filterStateMessage = stringResource(filterState.stringId)
+
+    LaunchedEffect(key1 = filterState) {
+        if (filterState != FilterState.VALID) {
+            scaffoldState.snackbarHostState.showSnackbar(filterStateMessage)
+            filterVM.updateFilterState(FilterState.VALID)
+        }
+    }
+
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = { scaffoldState.drawerState.open() },
+            onActionLeftPressed = { filterVM.updateShowFilter(!fShowFilter) },
+            onActionRightPressed = { navController.navigateToTransactionWithId(0) }
+        )
+    )
+
+    OverviewScreen(
+        filterInfo,
+        tlPreviousMaxId = tranListVM.previousMaxId,
+        tlUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
+        tlTranList,
+        tlUpdateTranList = tranListVM::updateTranList,
+        tlItemOnLongClick = tranListVM::updateDeleteDialog,
+        tlItemOnClick = { tranId -> navController.navigateToTransactionWithId(tranId) },
+        tlShowDeleteDialog = tranListShowDeleteDialog,
+        tlDialogOnConfirm = { tranId -> tranListVM.deleteTransaction(tranId) },
+        tlDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
+        cChartInfoList,
+        cUpdateCatTotalsList = chartVM::updateCatTotalsList,
+        fShowFilter,
+        fUpdateShowFilter = filterVM::updateShowFilter,
+        fAccountFilterSelected,
+        fAccountFilterOnClick = filterVM::updateAccountFilter,
+        fAccountNameList,
+        fAccountSelected,
+        fAccountChipOnClick = filterVM::updateAccountSelected,
+        fCategoryFilterSelected,
+        fCategoryFilterOnClick = filterVM::updateCategoryFilter,
+        fTypeSelected,
+        fUpdateTypeSelected = filterVM::updateTypeSelected,
+        fCategoryList = if (fTypeSelected == EXPENSE) fExpenseCatNameList else fIncomeCatNameList,
+        fCategorySelected = if (fTypeSelected == EXPENSE) fExpenseCatSelected else fIncomeCatSelected,
+        fCategoryChipOnClick = if (fTypeSelected == EXPENSE)
+            filterVM::updateExpenseCatSelected else filterVM::updateIncomeCatSelected,
+        fDateFilterSelected,
+        fDateFilterOnClick = filterVM::updateDateFilter,
+        fStartDateString,
+        fStartDateOnClick = filterVM::updateStartDateString,
+        fEndDateString,
+        fEndDateOnClick = filterVM::updateEndDateString,
+        fApplyOnClick = filterVM::applyFilter
+    )
+}
+
+/**
+ *  Composable that displays OverviewScreen.
+ *  All the data has been hoisted into above [OverviewScreen] thus allowing for easier testing.
+ */
 @Composable
 fun OverviewScreen(
     filterInfo: FilterInfo,
-    setVals: SettingsValues,
-    tranListVM: TransactionListViewModel,
-    chartVM: ChartViewModel,
-    tranListPreviousMaxId: Int,
-    tranListUpdatePreviousMaxId: (Int) -> Unit,
-    tranListItemOnLongClick: (Int) -> Unit,
-    tranListItemOnClick: (Int) -> Unit,
-    tranListShowDeleteDialog: Int,
-    tranListDialogOnConfirm: (Int) -> Unit,
-    tranListDialogOnDismiss: () -> Unit,
-    showFilter: Boolean,
-    updateShowFilter: (Boolean) -> Unit,
-    accountFilterSelected: Boolean,
-    accountFilterOnClick: (Boolean) -> Unit,
-    accountList: List<String>,
-    accountSelected: List<String>,
-    accountChipOnClick: (String, FilterSelectedAction) -> Unit,
-    categoryFilterSelected: Boolean,
-    categoryFilterOnClick: (Boolean) -> Unit,
-    filterTypeSelected: TransactionType,
-    filterUpdateTypeSelected: (TransactionType) -> Unit,
-    categoryList: List<String>,
-    categorySelected: List<String>,
-    categoryChipOnClick: (String, FilterSelectedAction) -> Unit,
-    dateFilterSelected: Boolean,
-    dateFilterOnClick: (Boolean) -> Unit,
-    startDateString: String,
-    startDateOnClick: (Date) -> Unit,
-    endDateString: String,
-    endDateOnClick: (Date) -> Unit,
-    applyOnClick: () -> Unit
+    tlPreviousMaxId: Int,
+    tlUpdatePreviousMaxId: (Int) -> Unit,
+    tlTranList: List<TranListItemFull>,
+    tlUpdateTranList: suspend (FilterInfo) -> Unit,
+    tlItemOnLongClick: (Int) -> Unit,
+    tlItemOnClick: (Int) -> Unit,
+    tlShowDeleteDialog: Int,
+    tlDialogOnConfirm: (Int) -> Unit,
+    tlDialogOnDismiss: () -> Unit,
+    chartInfoList: List<ChartInformation>,
+    cUpdateCatTotalsList: suspend (FilterInfo) -> Unit,
+    fShowFilter: Boolean,
+    fUpdateShowFilter: (Boolean) -> Unit,
+    fAccountFilterSelected: Boolean,
+    fAccountFilterOnClick: (Boolean) -> Unit,
+    fAccountNameList: List<String>,
+    fAccountSelected: List<String>,
+    fAccountChipOnClick: (String, FilterSelectedAction) -> Unit,
+    fCategoryFilterSelected: Boolean,
+    fCategoryFilterOnClick: (Boolean) -> Unit,
+    fTypeSelected: TransactionType,
+    fUpdateTypeSelected: (TransactionType) -> Unit,
+    fCategoryList: List<String>,
+    fCategorySelected: List<String>,
+    fCategoryChipOnClick: (String, FilterSelectedAction) -> Unit,
+    fDateFilterSelected: Boolean,
+    fDateFilterOnClick: (Boolean) -> Unit,
+    fStartDateString: String,
+    fStartDateOnClick: (Date) -> Unit,
+    fEndDateString: String,
+    fEndDateOnClick: (Date) -> Unit,
+    fApplyOnClick: () -> Unit
 ) {
-    val tranList by tranListVM.tranList.collectAsState()
-    val chartInfoList by chartVM.chartInfoList.collectAsState()
 
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
 
-    LaunchedEffect(key1 = filterInfo, key2 = setVals) {
-        tranListVM.updateTranList(filterInfo, setVals)
-    }
-    LaunchedEffect(key1 = filterInfo, key2 = setVals) {
-        chartVM.updateCatTotalsList(filterInfo, setVals)
-    }
+    LaunchedEffect(key1 = filterInfo) { tlUpdateTranList(filterInfo) }
+    LaunchedEffect(key1 = filterInfo) { cUpdateCatTotalsList(filterInfo) }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -154,41 +251,41 @@ fun OverviewScreen(
                 .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
         )
         TransactionListCard(
-            tranListPreviousMaxId = tranListPreviousMaxId,
-            tranListUpdatePreviousMaxId = tranListUpdatePreviousMaxId,
-            tranList = tranList,
-            tranListItemOnLongClick = tranListItemOnLongClick,
-            tranListItemOnClick = tranListItemOnClick,
-            tranListShowDeleteDialog = tranListShowDeleteDialog,
-            tranListDialogOnConfirm = tranListDialogOnConfirm,
-            tranListDialogOnDismiss = tranListDialogOnDismiss,
+            tranListPreviousMaxId = tlPreviousMaxId,
+            tranListUpdatePreviousMaxId = tlUpdatePreviousMaxId,
+            tranList = tlTranList,
+            tranListItemOnLongClick = tlItemOnLongClick,
+            tranListItemOnClick = tlItemOnClick,
+            tranListShowDeleteDialog = tlShowDeleteDialog,
+            tranListDialogOnConfirm = tlDialogOnConfirm,
+            tranListDialogOnDismiss = tlDialogOnDismiss,
             modifier = Modifier
                 .weight(0.6f)
                 .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad)
         )
     }
     FilterCard(
-        showFilter,
-        updateShowFilter,
-        accountFilterSelected,
-        accountFilterOnClick,
-        accountList,
-        accountSelected,
-        accountChipOnClick,
-        categoryFilterSelected,
-        categoryFilterOnClick,
-        filterTypeSelected,
-        filterUpdateTypeSelected,
-        categoryList,
-        categorySelected,
-        categoryChipOnClick,
-        dateFilterSelected,
-        dateFilterOnClick,
-        startDateString,
-        startDateOnClick,
-        endDateString,
-        endDateOnClick,
-        applyOnClick
+        fShowFilter,
+        fUpdateShowFilter,
+        fAccountFilterSelected,
+        fAccountFilterOnClick,
+        fAccountNameList,
+        fAccountSelected,
+        fAccountChipOnClick,
+        fCategoryFilterSelected,
+        fCategoryFilterOnClick,
+        fTypeSelected,
+        fUpdateTypeSelected,
+        fCategoryList,
+        fCategorySelected,
+        fCategoryChipOnClick,
+        fDateFilterSelected,
+        fDateFilterOnClick,
+        fStartDateString,
+        fStartDateOnClick,
+        fEndDateString,
+        fEndDateOnClick,
+        fApplyOnClick
     )
 }
 
@@ -878,7 +975,7 @@ fun FilterCardPreview() {
             accountChipOnClick = { _, _ -> },
             categoryFilterSelected = categoryFilterSelected,
             categoryFilterOnClick = { categoryFilterSelected = !categoryFilterSelected},
-            filterTypeSelected = TransactionType.EXPENSE,
+            filterTypeSelected = EXPENSE,
             filterUpdateTypeSelected = { },
             categoryList = listOf("Preview"),
             categorySelected = listOf(),
