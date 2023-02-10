@@ -31,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -75,16 +74,16 @@ import kotlinx.coroutines.launch
  *  Composable that displays Transaction Card.
  *  Data that is displayed is retrieved from [tranVM]. [tranId] is passed in through Navigation.
  *  [appBarActionSetup] determines what to do when an action item is pressed from the AppBar.
- *  [snackbarHostState] is used to display Snackbar on successful save.
- *  [onBackPress] navigates back to OverviewScreen.
+ *  [showSnackbar] display Snackbar on successful save.
+ *  [navigateUp] allows for navigation back to OverviewScreen.
  */
 @Composable
 fun TransactionScreen(
     tranVM: TransactionViewModel,
     tranId: Int,
     appBarActionSetup: (AppBarActions) -> Unit,
-    snackbarHostState: SnackbarHostState,
-    onBackPress: () -> Unit
+    showSnackbar: suspend (String) -> Unit,
+    navigateUp: () -> Unit
 ) {
     if (tranVM.retrieveTransaction) {
         tranVM.retrieveTransaction(tranId)
@@ -130,17 +129,16 @@ fun TransactionScreen(
             onNavPressed = {
                 tranVM.updateSaveSuccess(false)
                 tranVM.retrieveTransaction = true
+                navigateUp()
             },
             onActionRightPressed = { tranVM.saveTransaction() }
         )
     )
-    BackPressHandler(
-        onBackPressed = {
-            tranVM.updateSaveSuccess(false)
-            tranVM.retrieveTransaction = true
-            onBackPress()
-        }
-    )
+    BackPressHandler {
+        tranVM.updateSaveSuccess(false)
+        tranVM.retrieveTransaction = true
+        navigateUp()
+    }
     TransactionScreen(
         transaction,
         title,
@@ -178,7 +176,7 @@ fun TransactionScreen(
         futureDialogOnDismiss = { tranVM.futureDialogDismiss() },
         saveSuccess,
         onSaveSuccess = {
-            snackbarHostState.showSnackbar(saveSuccessMessage)
+            showSnackbar(saveSuccessMessage)
             tranVM.updateSaveSuccess(false)
         }
     )

@@ -202,15 +202,6 @@ fun PlutusWalletApp(
     val setVM: SettingsViewModel = viewModel()
     val setVals by setVM.setVals.collectAsState()
 
-    BackPressHandler(
-        onBackPressed = {
-            if (scaffoldState.drawerState.isOpen) {
-                coroutineScope.launch { scaffoldState.drawerState.close() }
-            } else if (!navController.navigateUp()) {
-                activity.finish()
-            }
-        }
-    )
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -277,8 +268,10 @@ fun PlutusWalletApp(
                     chartVM,
                     filterVM,
                     appBarActionSetup = { appBarActions = it },
-                    scaffoldState = scaffoldState,
-                    navController = navController
+                    showSnackbar = { msg -> scaffoldState.snackbarHostState.showSnackbar(msg) },
+                    drawerState = scaffoldState.drawerState,
+                    navigateToTransaction = { id -> navController.navigateToTransactionWithId(id) },
+                    activityFinish = { activity.finish() }
                 )
             }
             composable(
@@ -295,8 +288,8 @@ fun PlutusWalletApp(
                     tranVM,
                     tranId,
                     appBarActionSetup = { appBarActions = it },
-                    snackbarHostState = scaffoldState.snackbarHostState,
-                    onBackPress = { navController.navigateUp() }
+                    showSnackbar = { msg -> scaffoldState.snackbarHostState.showSnackbar(msg) },
+                    navigateUp = { navController.navigateUp() }
                 )
             }
             composable(AccountsDestination.route) {

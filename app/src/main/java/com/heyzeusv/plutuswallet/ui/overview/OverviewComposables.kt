@@ -35,11 +35,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.DrawerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
 import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +48,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +67,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.NavHostController
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -85,10 +85,10 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.ui.AppBarActions
+import com.heyzeusv.plutuswallet.ui.BackPressHandler
 import com.heyzeusv.plutuswallet.ui.PWButton
 import com.heyzeusv.plutuswallet.ui.PreviewHelper
 import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
-import com.heyzeusv.plutuswallet.ui.navigateToTransactionWithId
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.theme.chipTextStyle
@@ -104,13 +104,14 @@ import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  *  Composable that displays Overview Card.
  *  Data that is displayed is retrieved from [tranListVM], [chartVM], and [filterVM].
  *  [appBarActionSetup] determines what to do when an action item is pressed from the AppBar.
- *  [scaffoldState] is used to display SnackBar and open Drawer.
- *  [navController] is used to navigate to Transaction screen with id argument.
+ *  [showSnackbar] is used to display SnackBar. [drawerState] is to open/close drawer.
+ *  [navigateToTransaction] navigates to Transaction screen with id argument.
  */
 @Composable
 fun OverviewScreen(
@@ -118,9 +119,12 @@ fun OverviewScreen(
     chartVM: ChartViewModel,
     filterVM: FilterViewModel,
     appBarActionSetup: (AppBarActions) -> Unit,
-    scaffoldState: ScaffoldState,
-    navController: NavHostController
+    showSnackbar: suspend (String) -> Unit,
+    drawerState: DrawerState,
+    navigateToTransaction: (Int) -> Unit,
+    activityFinish: () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
 
     val tlTranList by tranListVM.tranList.collectAsState()
     val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
@@ -144,19 +148,25 @@ fun OverviewScreen(
 
     LaunchedEffect(key1 = filterState) {
         if (filterState != FilterState.VALID) {
-            scaffoldState.snackbarHostState.showSnackbar(filterStateMessage)
+            showSnackbar(filterStateMessage)
             filterVM.updateFilterState(FilterState.VALID)
         }
     }
-
     // set up AppBar actions
     appBarActionSetup(
         AppBarActions(
-            onNavPressed = { scaffoldState.drawerState.open() },
+            onNavPressed = { drawerState.open() },
             onActionLeftPressed = { filterVM.updateShowFilter(!fShowFilter) },
-            onActionRightPressed = { navController.navigateToTransactionWithId(0) }
+            onActionRightPressed = { navigateToTransaction(0) }
         )
     )
+    BackPressHandler {
+        when {
+            drawerState.isOpen -> coroutineScope.launch { drawerState.close() }
+            fShowFilter -> filterVM.updateShowFilter(false)
+            else -> activityFinish()
+        }
+    }
     OverviewScreen(
         filterInfo,
         tlPreviousMaxId = tranListVM.previousMaxId,
@@ -164,7 +174,7 @@ fun OverviewScreen(
         tlTranList,
         tlUpdateTranList = tranListVM::updateTranList,
         tlItemOnLongClick = tranListVM::updateDeleteDialog,
-        tlItemOnClick = { tranId -> navController.navigateToTransactionWithId(tranId) },
+        tlItemOnClick = { tranId -> navigateToTransaction(tranId) },
         tlShowDeleteDialog = tranListShowDeleteDialog,
         tlDeleteDialogOnConfirm = { tranId -> tranListVM.deleteTransaction(tranId) },
         tlDeleteDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },

@@ -45,9 +45,7 @@ class TransactionListViewModel @Inject constructor(
     private val _tranList = MutableStateFlow(emptyList<TranListItemFull>())
     val tranList: StateFlow<List<TranListItemFull>> get() = _tranList
     suspend fun updateTranList(filter: FilterInfo) {
-        filteredTransactionList(filter).collect { list ->
-            createTLIFullList(list)
-        }
+        filteredTransactionList(filter).collect { list -> createTLIFullList(list) }
     }
 
     private val _showDeleteDialog = MutableStateFlow(-1)
@@ -173,7 +171,7 @@ class TransactionListViewModel @Inject constructor(
             if (futureTranList.isNotEmpty()) {
                 val ready: MutableList<Transaction> = tranUpsertAsync(futureTranList).await()
                 tranRepo.upsertTransactions(ready)
-                // recursive call in order to create Transactions until all futureDates are past Date()
+                // recursive call to create Transactions until all futureDates are past Date()
                 if (moreToCreate) futureTransactions()
             }
         }
@@ -253,12 +251,16 @@ class TransactionListViewModel @Inject constructor(
                 tranRepo.getTliATD(fi.accountNames, fi.type, fi.start, fi.end)
             fi.account && fi.category && fi.date ->
                 tranRepo.getTliATCD(fi.accountNames, fi.type, fi.categoryNames, fi.start, fi.end)
-            fi.account && fi.category && fi.categoryNames.contains("All") -> tranRepo.getTliAT(fi.accountNames, fi.type)
-            fi.account && fi.category -> tranRepo.getTliATC(fi.accountNames, fi.type, fi.categoryNames)
+            fi.account && fi.category && fi.categoryNames.contains("All") ->
+                tranRepo.getTliAT(fi.accountNames, fi.type)
+            fi.account && fi.category ->
+                tranRepo.getTliATC(fi.accountNames, fi.type, fi.categoryNames)
             fi.account && fi.date -> tranRepo.getTliAD(fi.accountNames, fi.start, fi.end)
             fi.account -> tranRepo.getTliA(fi.accountNames)
-            fi.category && fi.date && fi.categoryNames.contains("All") -> tranRepo.getTliTD(fi.type, fi.start, fi.end)
-            fi.category && fi.date -> tranRepo.getTliTCD(fi.type, fi.categoryNames, fi.start, fi.end)
+            fi.category && fi.date && fi.categoryNames.contains("All") ->
+                tranRepo.getTliTD(fi.type, fi.start, fi.end)
+            fi.category && fi.date ->
+                tranRepo.getTliTCD(fi.type, fi.categoryNames, fi.start, fi.end)
             fi.category && fi.categoryNames.contains("All") -> tranRepo.getTliT(fi.type)
             fi.category -> tranRepo.getTliTC(fi.type, fi.categoryNames)
             fi.date -> tranRepo.getTliD(fi.start, fi.end)
