@@ -79,12 +79,15 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.ui.AppBarActions
 import com.heyzeusv.plutuswallet.ui.PWButtonChip
+import com.heyzeusv.plutuswallet.ui.PreviewHelper
+import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
 import com.heyzeusv.plutuswallet.ui.navigateToTransactionWithId
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
@@ -156,7 +159,6 @@ fun OverviewScreen(
             onActionRightPressed = { navController.navigateToTransactionWithId(0) }
         )
     )
-
     OverviewScreen(
         filterInfo,
         tlPreviousMaxId = tranListVM.previousMaxId,
@@ -524,48 +526,6 @@ fun TransactionListCard(
 }
 
 /**
- *  Composable for scrolling Text. Text will scroll indefinitely when it does not fit in given area.
- *  [text] is to be displayed using [style], [color], and [textAlign].
- */
-@Composable
-fun MarqueeText(
-    text: String,
-    style: TextStyle,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.onSurface,
-    textAlign: TextAlign? = null
-) {
-    val scrollState = rememberScrollState()
-    var animate by remember { mutableStateOf(true) }
-
-    LaunchedEffect(key1 = animate) {
-        scrollState.animateScrollTo(
-            value = scrollState.maxValue,
-            animationSpec = tween(
-                durationMillis = 4000,
-                delayMillis = 1000,
-                easing = CubicBezierEasing(0f, 0f, 0f, 0f)
-            )
-        )
-        delay(1000)
-        scrollState.scrollTo(0)
-        animate = !animate
-    }
-
-    Text(
-        text = text,
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState, false),
-        color = color,
-        textAlign = textAlign,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        style = style
-    )
-}
-
-/**
  *  Composable that displays a Transaction in [TranListItem] form. [transactionItemFormatted]
  *  contains the data to be displayed. [onLongClick] and [onClick] are used for deletion and
  *  selection respectively.
@@ -634,6 +594,48 @@ fun TransactionListItem(
             }
         }
     }
+}
+
+/**
+ *  Composable for scrolling Text. Text will scroll indefinitely when it does not fit in given area.
+ *  [text] is to be displayed using [style], [color], and [textAlign].
+ */
+@Composable
+fun MarqueeText(
+    text: String,
+    style: TextStyle,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.onSurface,
+    textAlign: TextAlign? = null
+) {
+    val scrollState = rememberScrollState()
+    var animate by remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = animate) {
+        scrollState.animateScrollTo(
+            value = scrollState.maxValue,
+            animationSpec = tween(
+                durationMillis = 4000,
+                delayMillis = 1000,
+                easing = CubicBezierEasing(0f, 0f, 0f, 0f)
+            )
+        )
+        delay(1000)
+        scrollState.scrollTo(0)
+        animate = !animate
+    }
+
+    Text(
+        text = text,
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState, false),
+        color = color,
+        textAlign = textAlign,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        style = style
+    )
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -960,28 +962,177 @@ fun PlutusWalletChip(
 
 @Preview
 @Composable
-fun FilterCardPreview() {
-    var accountFilterSelected = true
-    var categoryFilterSelected = false
-    var dateFilterSelected = true
+fun OverviewScreenPreview() {
+    val tlItem = TranListItemFull(
+        TranListItem(
+            10,
+            "Test Title",
+            Date(),
+            BigDecimal("100.00"),
+            "Test Account",
+            "Expense",
+            "Test Category"
+        ),
+        formattedDate = "Today O' Clock",
+        formattedTotal = "$100.00"
+    )
+    val chartInfo = ChartInformation(
+        ctList = listOf(
+            CategoryTotals(
+                "Test Category",
+                BigDecimal("300.00"),
+                "Expense"
+            )
+        ),
+        totalText = "$300.00"
+    )
+    PreviewHelper {
+        OverviewScreen(
+            filterInfo = FilterInfo(),
+            tlPreviousMaxId = 1,
+            tlUpdatePreviousMaxId = { },
+            tlTranList = listOf(tlItem, tlItem, tlItem),
+            tlUpdateTranList = { },
+            tlItemOnLongClick = { },
+            tlItemOnClick = { },
+            tlShowDeleteDialog = 0,
+            tlDialogOnConfirm = { },
+            tlDialogOnDismiss = { },
+            chartInfoList = listOf(chartInfo),
+            cUpdateCatTotalsList = { },
+            fShowFilter = false,
+            fUpdateShowFilter = { },
+            fAccountFilterSelected = false,
+            fAccountFilterOnClick = { },
+            fAccountNameList = listOf(),
+            fAccountSelected = listOf(),
+            fAccountChipOnClick = { _, _ -> },
+            fCategoryFilterSelected = false,
+            fCategoryFilterOnClick = { },
+            fTypeSelected = EXPENSE,
+            fUpdateTypeSelected = { },
+            fCategoryList = listOf(),
+            fCategorySelected = listOf(),
+            fCategoryChipOnClick = { _, _ -> },
+            fDateFilterSelected = false,
+            fDateFilterOnClick = { },
+            fStartDateString = "",
+            fStartDateOnClick = { },
+            fEndDateString = "",
+            fEndDateOnClick = { }
+        ) {
+
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ChartCardPreview() {
+    val chartInfo = ChartInformation(
+        ctList = listOf(
+            CategoryTotals(
+                "Test Category",
+                BigDecimal("300.00"),
+                "Expense"
+            )
+        ),
+        totalText = "$300.00"
+    )
+    PreviewHelperCard {
+        ChartCard(chartInfoList = listOf(chartInfo))
+    }
+}
+
+@Preview
+@Composable
+fun TransactionListCardPreview() {
+    val tlItem = TranListItemFull(
+        TranListItem(
+            10,
+            "Test Title",
+            Date(),
+            BigDecimal("100.00"),
+            "Test Account",
+            "Expense",
+            "Test Category"
+        ),
+        formattedDate = "Today O' Clock",
+        formattedTotal = "$100.00"
+    )
+    PreviewHelperCard {
+        TransactionListCard(
+            tranList = listOf(tlItem, tlItem, tlItem),
+            tranListPreviousMaxId = 1,
+            tranListUpdatePreviousMaxId = { },
+            tranListItemOnLongClick = { },
+            tranListItemOnClick = { },
+            tranListShowDeleteDialog = 0,
+            tranListDialogOnConfirm = { },
+            tranListDialogOnDismiss = { })
+    }
+}
+
+@Preview
+@Composable
+fun TransactionListItemPreview() {
+    val tlItem = TranListItemFull(
+        TranListItem(
+            10,
+            "Test Title",
+            Date(),
+            BigDecimal("100.00"),
+            "Test Account",
+            "Expense",
+            "Test Category"
+        ),
+        formattedDate = "Today O' Clock",
+        formattedTotal = "$100.00"
+    )
     PlutusWalletTheme {
+        TransactionListItem(
+            tlItem,
+            onLongClick = { },
+            onClick = { },
+        )
+    }
+}
+
+@Preview
+@Composable
+fun MarqueeTextPreview() {
+    PreviewHelperCard {
+        MarqueeText(
+            text = "Super duper uber gotta make this text even longer and longer",
+            style = MaterialTheme.typography.subtitle1
+        )
+    }
+}
+
+@Preview
+@Composable
+fun FilterCardPreview() {
+    val accountFilterSelected = true
+    val categoryFilterSelected = false
+    val dateFilterSelected = true
+    PreviewHelperCard {
         FilterCard(
             showFilter = true,
             updateShowFilter = { },
             accountFilterSelected = accountFilterSelected,
-            accountFilterOnClick = { accountFilterSelected = !accountFilterSelected },
+            accountFilterOnClick = { },
             accountList = listOf("Preview"),
             accountSelected = listOf(),
             accountChipOnClick = { _, _ -> },
             categoryFilterSelected = categoryFilterSelected,
-            categoryFilterOnClick = { categoryFilterSelected = !categoryFilterSelected},
+            categoryFilterOnClick = { },
             filterTypeSelected = EXPENSE,
             filterUpdateTypeSelected = { },
             categoryList = listOf("Preview"),
             categorySelected = listOf(),
             categoryChipOnClick = { _, _ -> },
             dateFilterSelected = dateFilterSelected,
-            dateFilterOnClick = { dateFilterSelected = !dateFilterSelected},
+            dateFilterOnClick = { },
             startDateString = "Start",
             startDateOnClick = { },
             endDateString = "End",
@@ -993,19 +1144,11 @@ fun FilterCardPreview() {
 
 @Preview
 @Composable
-fun TransactionListItemPreview() {
-    val ivTransaction = TranListItem(
-        0, "This is a very long title to test marquee text", Date(),
-        BigDecimal(1000000000000000000), "Account", "Expense", "Category"
-    )
-    val transactionItemFormatted = TranListItemFull(
-        ivTransaction, "$123.45", "Jan 1, 2000"
-    )
-    PlutusWalletTheme {
-        TransactionListItem(
-            transactionItemFormatted,
-            onLongClick = { },
-            onClick = { },
-        )
+fun PlutusWalletChipPreview() {
+    PreviewHelperCard {
+        Column {
+            PlutusWalletChip(selected = true, onClick = { }, label = "Selected")
+            PlutusWalletChip(selected = false, onClick = { }, label = "Unselected")
+        }
     }
 }
