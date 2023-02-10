@@ -36,7 +36,7 @@ import com.heyzeusv.plutuswallet.util.theme.chipTextStyle
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PWButtonChip(
+fun PWButton(
     selected: Boolean,
     onClick: () -> Unit,
     label: String,

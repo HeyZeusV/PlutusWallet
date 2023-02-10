@@ -85,7 +85,7 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.ui.AppBarActions
-import com.heyzeusv.plutuswallet.ui.PWButtonChip
+import com.heyzeusv.plutuswallet.ui.PWButton
 import com.heyzeusv.plutuswallet.ui.PreviewHelper
 import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
 import com.heyzeusv.plutuswallet.ui.navigateToTransactionWithId
@@ -168,8 +168,8 @@ fun OverviewScreen(
         tlItemOnLongClick = tranListVM::updateDeleteDialog,
         tlItemOnClick = { tranId -> navController.navigateToTransactionWithId(tranId) },
         tlShowDeleteDialog = tranListShowDeleteDialog,
-        tlDialogOnConfirm = { tranId -> tranListVM.deleteTransaction(tranId) },
-        tlDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
+        tlDeleteDialogOnConfirm = { tranId -> tranListVM.deleteTransaction(tranId) },
+        tlDeleteDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
         cChartInfoList,
         cUpdateCatTotalsList = chartVM::updateCatTotalsList,
         fShowFilter,
@@ -211,8 +211,8 @@ fun OverviewScreen(
     tlItemOnLongClick: (Int) -> Unit,
     tlItemOnClick: (Int) -> Unit,
     tlShowDeleteDialog: Int,
-    tlDialogOnConfirm: (Int) -> Unit,
-    tlDialogOnDismiss: () -> Unit,
+    tlDeleteDialogOnConfirm: (Int) -> Unit,
+    tlDeleteDialogOnDismiss: () -> Unit,
     chartInfoList: List<ChartInformation>,
     cUpdateCatTotalsList: suspend (FilterInfo) -> Unit,
     fShowFilter: Boolean,
@@ -253,14 +253,14 @@ fun OverviewScreen(
                 .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
         )
         TransactionListCard(
-            tranListPreviousMaxId = tlPreviousMaxId,
-            tranListUpdatePreviousMaxId = tlUpdatePreviousMaxId,
-            tranList = tlTranList,
-            tranListItemOnLongClick = tlItemOnLongClick,
-            tranListItemOnClick = tlItemOnClick,
-            tranListShowDeleteDialog = tlShowDeleteDialog,
-            tranListDialogOnConfirm = tlDialogOnConfirm,
-            tranListDialogOnDismiss = tlDialogOnDismiss,
+            tlTranList,
+            tlPreviousMaxId,
+            tlUpdatePreviousMaxId,
+            tlItemOnLongClick,
+            tlItemOnClick,
+            tlShowDeleteDialog,
+            tlDeleteDialogOnConfirm,
+            tlDeleteDialogOnDismiss,
             modifier = Modifier
                 .weight(0.6f)
                 .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad)
@@ -320,13 +320,8 @@ fun ChartCard(
         )
     )
 
-    Card(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            // TODO: Look into item scroll effects https://google.github.io/accompanist/pager/#item-scroll-effects
+    Card(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
                 count = 2,
                 modifier = Modifier
@@ -449,23 +444,23 @@ fun ChartCard(
 
 /**
  *  Composable that displays [tranList], list of Transactions, in [TranListItem] form.
- *  [tranListPreviousMaxId] is used to determine if a new Transaction was created in order to
- *  scroll to the top of the list automatically which is updated by [tranListUpdatePreviousMaxId].
- *  [tranListItemOnLongClick] and [tranListItemOnClick] are used for deletion and selection
- *  respectively. [tranListShowDeleteDialog] determines when to show AlertDialog, while
- *  [tranListDialogOnConfirm] and [tranListDialogOnDismiss] are used to confirm deletion or deny it
+ *  [previousMaxId] is used to determine if a new Transaction was created in order to
+ *  scroll to the top of the list automatically which is updated by [updatePreviousMaxId].
+ *  [itemOnLongClick] and [itemOnClick] are used for deletion and selection
+ *  respectively. [showDeleteDialog] determines when to show AlertDialog, while
+ *  [deleteDialogOnConfirm] and [deleteDialogOnDismiss] are used to confirm deletion or deny it
  *  respectively.
  */
 @Composable
 fun TransactionListCard(
     tranList: List<TranListItemFull>,
-    tranListPreviousMaxId: Int,
-    tranListUpdatePreviousMaxId: (Int) -> Unit,
-    tranListItemOnLongClick: (Int) -> Unit,
-    tranListItemOnClick: (Int) -> Unit,
-    tranListShowDeleteDialog: Int,
-    tranListDialogOnConfirm: (Int) -> Unit,
-    tranListDialogOnDismiss: () -> Unit,
+    previousMaxId: Int,
+    updatePreviousMaxId: (Int) -> Unit,
+    itemOnLongClick: (Int) -> Unit,
+    itemOnClick: (Int) -> Unit,
+    showDeleteDialog: Int,
+    deleteDialogOnConfirm: (Int) -> Unit,
+    deleteDialogOnDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tranListState = rememberLazyListState()
@@ -473,10 +468,10 @@ fun TransactionListCard(
     // scrolls to top of the list when new Transaction is added
     LaunchedEffect(key1 = tranList) {
         if (tranList.isNotEmpty()
-            && tranList[tranList.size - 1].transactionItem.id > tranListPreviousMaxId
+            && tranList[tranList.size - 1].transactionItem.id > previousMaxId
         ) {
             tranListState.animateScrollToItem(0)
-            tranListUpdatePreviousMaxId(tranList[tranList.size - 1].transactionItem.id)
+            updatePreviousMaxId(tranList[tranList.size - 1].transactionItem.id)
         }
     }
 
@@ -493,15 +488,15 @@ fun TransactionListCard(
                 )
                 TransactionListItem(
                     transactionItemFormatted,
-                    onLongClick = { tranListItemOnLongClick(transactionItem.id) },
-                    onClick = { tranListItemOnClick(transactionItem.id) },
+                    onLongClick = { itemOnLongClick(transactionItem.id) },
+                    onClick = { itemOnClick(transactionItem.id) },
                 )
-                if (tranListShowDeleteDialog == transactionItem.id) {
+                if (showDeleteDialog == transactionItem.id) {
                     PWAlertDialog(
                         onConfirmText = stringResource(R.string.alert_dialog_yes),
-                        onConfirm = { tranListDialogOnConfirm(transactionItem.id) },
+                        onConfirm = { deleteDialogOnConfirm(transactionItem.id) },
                         onDismissText = stringResource(R.string.alert_dialog_no),
-                        onDismiss = tranListDialogOnDismiss,
+                        onDismiss = deleteDialogOnDismiss,
                         title = stringResource(R.string.alert_dialog_delete_transaction),
                         message = stringResource(
                             R.string.alert_dialog_delete_warning,
@@ -512,9 +507,7 @@ fun TransactionListCard(
             }
         }
         if (tranList.isEmpty()) {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
+            Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = stringResource(R.string.cfl_no_transactions),
                     modifier = Modifier.testTag("Empty Transaction List"),
@@ -540,15 +533,10 @@ fun TransactionListItem(
     val transactionItem = transactionItemFormatted.transactionItem
     Surface(
         modifier = Modifier
-            .combinedClickable(
-                onLongClick = onLongClick, onClick = onClick
-            )
+            .combinedClickable(onLongClick = onLongClick, onClick = onClick)
             .testTag("${transactionItem.id}")
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -580,7 +568,7 @@ fun TransactionListItem(
                     text = transactionItemFormatted.formattedTotal,
                     style = MaterialTheme.typography.subtitle1,
                     color = when (transactionItem.type) {
-                        "Expense" -> LocalPWColors.current.expense
+                        EXPENSE.type -> LocalPWColors.current.expense
                         else -> LocalPWColors.current.income
                     },
                     textAlign = TextAlign.End
@@ -611,6 +599,7 @@ fun MarqueeText(
     val scrollState = rememberScrollState()
     var animate by remember { mutableStateOf(true) }
 
+    // animates text scroll effect forever
     LaunchedEffect(key1 = animate) {
         scrollState.animateScrollTo(
             value = scrollState.maxValue,
@@ -638,6 +627,21 @@ fun MarqueeText(
     )
 }
 
+/**
+ *  Composable that displays filter. [showFilter] is used to determine if filter should be displayed.
+ *  [updateShowFilter] is used to show/hide filter. [accountFilterSelected], [categoryFilterSelected],
+ *  and [dateFilterSelected] are used to determine which filters should be selected.
+ *  [accountFilterOnClick], [categoryFilterOnClick], [dateFilterOnClick] are used to select/deselect
+ *  filters. [accountList] are all accounts available while [accountSelected] is the list of accounts
+ *  which have been selected. [accountChipOnClick] determines action when individual account chip is
+ *  selected. [typeSelected] determines if Expense/Income categories should be displayed.
+ *  [updateTypeSelected] switches between Expense/Income lists. [categoryList] are all
+ *  categories available of type while [categorySelected] is the list of categories which have been
+ *  selected. [categoryChipOnClick] determines action when individual category chip is selected.
+ *  [startDateString] is displayed on start button which performs [startDateOnClick] when clicked.
+ *  [endDateString] is displayed on end button which performs [endDateOnClick] when clicked.
+ *  [applyOnClick] runs when apply/reset button is pressed.
+ */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FilterCard(
@@ -650,8 +654,8 @@ fun FilterCard(
     accountChipOnClick: (String, FilterSelectedAction) -> Unit,
     categoryFilterSelected: Boolean,
     categoryFilterOnClick: (Boolean) -> Unit,
-    filterTypeSelected: TransactionType,
-    filterUpdateTypeSelected: (TransactionType) -> Unit,
+    typeSelected: TransactionType,
+    updateTypeSelected: (TransactionType) -> Unit,
     categoryList: List<String>,
     categorySelected: List<String>,
     categoryChipOnClick: (String, FilterSelectedAction) -> Unit,
@@ -672,7 +676,7 @@ fun FilterCard(
     val view = LocalView.current
     val noFilters = !accountFilterSelected && !categoryFilterSelected && !dateFilterSelected
 
-    val typeSelectedLabel = stringResource(filterTypeSelected.stringId)
+    val typeSelectedLabel = stringResource(typeSelected.stringId)
 
     AnimatedVisibility(
         visible = showFilter,
@@ -707,7 +711,7 @@ fun FilterCard(
             Column(
                 modifier = Modifier.padding(all = 8.dp)
             ) {
-                PWButtonChip(
+                PWButton(
                     selected = accountFilterSelected,
                     onClick = { accountFilterOnClick(!accountFilterSelected) },
                     label = stringResource(R.string.filter_account),
@@ -747,7 +751,7 @@ fun FilterCard(
                             crossAxisSpacing = dimensionResource(R.dimen.f_chipGr_inVertPad)
                         ) {
                             for (account in accountList) {
-                                PlutusWalletChip(
+                                PWChip(
                                     selected = accountSelected.contains(account),
                                     onClick = {
                                         accountChipOnClick(
@@ -761,7 +765,7 @@ fun FilterCard(
                         }
                     }
                 }
-                PWButtonChip(
+                PWButton(
                     selected = categoryFilterSelected,
                     onClick = { categoryFilterOnClick(!categoryFilterSelected) },
                     label = stringResource(R.string.filter_category),
@@ -788,9 +792,9 @@ fun FilterCard(
                             .onGloballyPositioned { categoryComposeSize = it.size.toSize() },
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PWButtonChip(
+                        PWButton(
                             selected = true,
-                            onClick = { filterUpdateTypeSelected(filterTypeSelected.opposite()) },
+                            onClick = { updateTypeSelected(typeSelected.opposite()) },
                             label = typeSelectedLabel,
                             showIcon = false,
                             modifier = Modifier
@@ -816,7 +820,7 @@ fun FilterCard(
                                 crossAxisSpacing = dimensionResource(R.dimen.f_chipGr_inVertPad)
                             ) {
                                 categoryList.map { category ->
-                                    PlutusWalletChip(
+                                    PWChip(
                                         selected = categorySelected.contains(category),
                                         onClick = {
                                             categoryChipOnClick(
@@ -831,7 +835,7 @@ fun FilterCard(
                         }
                     }
                 }
-                PWButtonChip(
+                PWButton(
                     selected = dateFilterSelected,
                     onClick = { dateFilterOnClick(!dateFilterSelected) },
                     label = stringResource(R.string.filter_date),
@@ -858,7 +862,7 @@ fun FilterCard(
                             .onGloballyPositioned { dateComposeSize = it.size.toSize() },
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PWButtonChip(
+                        PWButton(
                             selected = true,
                             onClick = {
                                 DateUtils.datePickerDialog(
@@ -877,7 +881,7 @@ fun FilterCard(
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
                                 .testTag("Filter Start Date"),
                         )
-                        PWButtonChip(
+                        PWButton(
                             selected = true,
                             onClick = {
                                 DateUtils.datePickerDialog(
@@ -899,7 +903,7 @@ fun FilterCard(
                         )
                     }
                 }
-                PWButtonChip(
+                PWButton(
                     selected = true,
                     onClick = applyOnClick,
                     label = if (noFilters) {
@@ -922,16 +926,20 @@ fun FilterCard(
     }
 }
 
+/**
+ *  Composable for a text only Chip. [selected] determines if Chip has be selected. [onClick] is
+ *  performed when Chip is clicked. [label] is the text to be displayed in Chip.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PlutusWalletChip(
+fun PWChip(
     selected: Boolean,
     onClick: () -> Unit,
     label: String
 ) {
     FilterChip(
-        selected,
-        onClick,
+        selected = selected,
+        onClick = onClick,
         modifier = Modifier.testTag("Chip: $label"),
         border = BorderStroke(
             width = dimensionResource(R.dimen.f_chip_border_width),
@@ -996,8 +1004,8 @@ fun OverviewScreenPreview() {
             tlItemOnLongClick = { },
             tlItemOnClick = { },
             tlShowDeleteDialog = 0,
-            tlDialogOnConfirm = { },
-            tlDialogOnDismiss = { },
+            tlDeleteDialogOnConfirm = { },
+            tlDeleteDialogOnDismiss = { },
             chartInfoList = listOf(chartInfo),
             cUpdateCatTotalsList = { },
             fShowFilter = false,
@@ -1063,13 +1071,13 @@ fun TransactionListCardPreview() {
     PreviewHelperCard {
         TransactionListCard(
             tranList = listOf(tlItem, tlItem, tlItem),
-            tranListPreviousMaxId = 1,
-            tranListUpdatePreviousMaxId = { },
-            tranListItemOnLongClick = { },
-            tranListItemOnClick = { },
-            tranListShowDeleteDialog = 0,
-            tranListDialogOnConfirm = { },
-            tranListDialogOnDismiss = { })
+            previousMaxId = 1,
+            updatePreviousMaxId = { },
+            itemOnLongClick = { },
+            itemOnClick = { },
+            showDeleteDialog = 0,
+            deleteDialogOnConfirm = { },
+            deleteDialogOnDismiss = { })
     }
 }
 
@@ -1126,8 +1134,8 @@ fun FilterCardPreview() {
             accountChipOnClick = { _, _ -> },
             categoryFilterSelected = categoryFilterSelected,
             categoryFilterOnClick = { },
-            filterTypeSelected = EXPENSE,
-            filterUpdateTypeSelected = { },
+            typeSelected = EXPENSE,
+            updateTypeSelected = { },
             categoryList = listOf("Preview"),
             categorySelected = listOf(),
             categoryChipOnClick = { _, _ -> },
@@ -1144,11 +1152,11 @@ fun FilterCardPreview() {
 
 @Preview
 @Composable
-fun PlutusWalletChipPreview() {
+fun PWChipPreview() {
     PreviewHelperCard {
         Column {
-            PlutusWalletChip(selected = true, onClick = { }, label = "Selected")
-            PlutusWalletChip(selected = false, onClick = { }, label = "Unselected")
+            PWChip(selected = true, onClick = { }, label = "Selected")
+            PWChip(selected = false, onClick = { }, label = "Unselected")
         }
     }
 }

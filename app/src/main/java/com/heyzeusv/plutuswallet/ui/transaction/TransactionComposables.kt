@@ -60,7 +60,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.AppBarActions
 import com.heyzeusv.plutuswallet.ui.BackPressHandler
-import com.heyzeusv.plutuswallet.ui.PWButtonChip
+import com.heyzeusv.plutuswallet.ui.PWButton
 import com.heyzeusv.plutuswallet.ui.PreviewHelper
 import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
@@ -562,7 +562,7 @@ fun TransactionNumberInput(
 }
 
 /**
- *  Composable that brings together [PWButtonChip]s and [TransactionDropDownMenu] to handle
+ *  Composable that brings together [PWButton]s and [TransactionDropDownMenu] to handle
  *  Category selection. [typeSelected] determines which chip is currently selected, which is
  *  updated by [chipExpenseOnClick] and [chipIncomeOnClick]. [dropDownValue] is the currently
  *  selected value. [dropDownList] is the values displayed when the drop down menu is expanded.
@@ -593,7 +593,7 @@ fun TransactionCategories(
             ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            PWButtonChip(
+            PWButton(
                 selected = typeSelected == TransactionType.EXPENSE,
                 onClick = chipExpenseOnClick,
                 label = stringResource(R.string.type_expense),
@@ -602,7 +602,7 @@ fun TransactionCategories(
                     .height(dimensionResource(R.dimen.transaction_button_chip_height))
                     .weight(1f)
             )
-            PWButtonChip(
+            PWButton(
                 selected = typeSelected == TransactionType.INCOME,
                 onClick = chipIncomeOnClick,
                 label = stringResource(R.string.type_income),
@@ -631,7 +631,7 @@ fun TransactionCategories(
 }
 
 /**
- *  Composable that combines [PWButtonChip], [TransactionDropDownMenu], and
+ *  Composable that combines [PWButton], [TransactionDropDownMenu], and
  *  [TransactionNumberInput] to handle repeating Transactions. [newTransaction] determines if
  *  scroll down animation should occur. [chipSelected] determines if chip is selected.
  *  [chipOnClick] is called when chip is selected. [dropDownValue] is currently selected value from
@@ -662,7 +662,7 @@ fun TransactionRepeating(
     }
 
     Column(modifier = modifier) {
-        PWButtonChip(
+        PWButton(
             selected = chipSelected,
             onClick = chipOnClick,
             label = stringResource(R.string.transaction_repeat),
