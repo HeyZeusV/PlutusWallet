@@ -84,6 +84,9 @@ class TransactionViewModel @Inject constructor(
     private var incomeCat = ""
     private val _selectedCat = MutableStateFlow("")
     val selectedCat: StateFlow<String> get() = _selectedCat
+    private fun updateSelectedCat() {
+        _selectedCat.value = if (typeSelected.value == EXPENSE) expenseCat else incomeCat
+    }
     fun updateSelectedCat(newValue: String) {
         _selectedCat.value = newValue
         if (_typeSelected.value == EXPENSE) {
@@ -91,9 +94,6 @@ class TransactionViewModel @Inject constructor(
         } else {
             incomeCat = newValue
         }
-    }
-    private fun updateSelectedCat() {
-        _selectedCat.value = if (typeSelected.value == EXPENSE) expenseCat else incomeCat
     }
 
     private val _memo = MutableStateFlow("")

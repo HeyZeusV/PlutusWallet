@@ -134,10 +134,8 @@ fun OverviewScreen(
     val fAccountSelected by filterVM.accountSelected.collectAsState()
     val fCategoryFilterSelected by filterVM.categoryFilter.collectAsState()
     val fTypeSelected by filterVM.typeSelected.collectAsState()
-    val fExpenseCatNameList by filterVM.expenseCatList.collectAsState()
-    val fExpenseCatSelected by filterVM.expenseCatSelected.collectAsState()
-    val fIncomeCatNameList by filterVM.incomeCatList.collectAsState()
-    val fIncomeCatSelected by filterVM.incomeCatSelected.collectAsState()
+    val fCategoryList by filterVM.categoryList.collectAsState()
+    val fCategorySelectedList by filterVM.categorySelectedList.collectAsState()
     val fDateFilterSelected by filterVM.dateFilter.collectAsState()
     val fStartDateString by filterVM.startDateString.collectAsState()
     val fEndDateString by filterVM.endDateString.collectAsState()
@@ -183,10 +181,9 @@ fun OverviewScreen(
         fCategoryFilterOnClick = filterVM::updateCategoryFilter,
         fTypeSelected,
         fUpdateTypeSelected = filterVM::updateTypeSelected,
-        fCategoryList = if (fTypeSelected == EXPENSE) fExpenseCatNameList else fIncomeCatNameList,
-        fCategorySelected = if (fTypeSelected == EXPENSE) fExpenseCatSelected else fIncomeCatSelected,
-        fCategoryChipOnClick = if (fTypeSelected == EXPENSE)
-            filterVM::updateExpenseCatSelected else filterVM::updateIncomeCatSelected,
+        fCategoryList,
+        fCategorySelectedList,
+        fCategoryChipOnClick = filterVM::updateCategorySelectedList,
         fDateFilterSelected,
         fDateFilterOnClick = filterVM::updateDateFilter,
         fStartDateString,
@@ -636,7 +633,7 @@ fun MarqueeText(
  *  which have been selected. [accountChipOnClick] determines action when individual account chip is
  *  selected. [typeSelected] determines if Expense/Income categories should be displayed.
  *  [updateTypeSelected] switches between Expense/Income lists. [categoryList] are all
- *  categories available of type while [categorySelected] is the list of categories which have been
+ *  categories available of type while [categorySelectedList] is the list of categories which have been
  *  selected. [categoryChipOnClick] determines action when individual category chip is selected.
  *  [startDateString] is displayed on start button which performs [startDateOnClick] when clicked.
  *  [endDateString] is displayed on end button which performs [endDateOnClick] when clicked.
@@ -657,7 +654,7 @@ fun FilterCard(
     typeSelected: TransactionType,
     updateTypeSelected: (TransactionType) -> Unit,
     categoryList: List<String>,
-    categorySelected: List<String>,
+    categorySelectedList: List<String>,
     categoryChipOnClick: (String, FilterSelectedAction) -> Unit,
     dateFilterSelected: Boolean,
     dateFilterOnClick: (Boolean) -> Unit,
@@ -821,11 +818,11 @@ fun FilterCard(
                             ) {
                                 categoryList.map { category ->
                                     PWChip(
-                                        selected = categorySelected.contains(category),
+                                        selected = categorySelectedList.contains(category),
                                         onClick = {
                                             categoryChipOnClick(
                                                 category,
-                                                if (categorySelected.contains(category)) REMOVE else ADD
+                                                if (categorySelectedList.contains(category)) REMOVE else ADD
                                             )
                                         },
                                         label = category
@@ -1137,7 +1134,7 @@ fun FilterCardPreview() {
             typeSelected = EXPENSE,
             updateTypeSelected = { },
             categoryList = listOf("Preview"),
-            categorySelected = listOf(),
+            categorySelectedList = listOf(),
             categoryChipOnClick = { _, _ -> },
             dateFilterSelected = dateFilterSelected,
             dateFilterOnClick = { },
