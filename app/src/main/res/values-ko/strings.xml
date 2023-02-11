@@ -102,4 +102,6 @@
     <string name="about_privacy_policy">개인 정보 정책</string>
     <string name="icon_cd_expandcollapse">확장 또는 축소</string>
     <string name="icon_cd_inputError">입력 오류</string>
+    <string name="alert_dialog_closeapp">앱 닫기</string>
+    <string name="alert_dialog_closeapp_message">앱을 닫으시겠습니까?</string>
 </resources>

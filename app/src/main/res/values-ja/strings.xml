@@ -102,4 +102,6 @@
     <string name="about_privacy_policy">プライバシーポリシー</string>
     <string name="icon_cd_expandcollapse">展開または折りたたむ</string>
     <string name="icon_cd_inputError">入力エラー</string>
+    <string name="alert_dialog_closeapp">アプリを閉じる</string>
+    <string name="alert_dialog_closeapp_message">アプリを閉じますか？</string>
 </resources>

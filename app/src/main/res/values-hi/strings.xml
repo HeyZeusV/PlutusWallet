@@ -102,4 +102,6 @@
     <string name="about_privacy_policy">गोपनीयता नीति</string>
     <string name="icon_cd_expandcollapse">विस्तृत या संक्षिप्त करें</string>
     <string name="icon_cd_inputError">इनपुट त्रुटि</string>
+    <string name="alert_dialog_closeapp">ऐप बंद करें</string>
+    <string name="alert_dialog_closeapp_message">क्या आप ऐप को बंद करना चाहेंगे?</string>
 </resources>

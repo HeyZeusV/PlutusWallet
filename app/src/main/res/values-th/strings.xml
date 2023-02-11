@@ -102,4 +102,6 @@
     <string name="about_privacy_policy">นโยบายความเป็นส่วนตัว</string>
     <string name="icon_cd_expandcollapse">ขยายหรือยุบ</string>
     <string name="icon_cd_inputError">ข้อผิดพลาดในการป้อนข้อมูล</string>
+    <string name="alert_dialog_closeapp">ปิดแอพ</string>
+    <string name="alert_dialog_closeapp_message">คุณต้องการปิดแอปหรือไม่</string>
 </resources>

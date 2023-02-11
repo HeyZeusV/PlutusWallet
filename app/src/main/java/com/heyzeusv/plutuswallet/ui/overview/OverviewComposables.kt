@@ -125,6 +125,7 @@ fun OverviewScreen(
     activityFinish: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    var closeApp by remember { mutableStateOf(false) }
 
     val tlTranList by tranListVM.tranList.collectAsState()
     val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
@@ -164,8 +165,18 @@ fun OverviewScreen(
         when {
             drawerState.isOpen -> coroutineScope.launch { drawerState.close() }
             fShowFilter -> filterVM.updateShowFilter(false)
-            else -> activityFinish()
+            else -> closeApp = true
         }
+    }
+    if (closeApp) {
+        PWAlertDialog(
+            title = stringResource(R.string.alert_dialog_closeapp),
+            message = stringResource(R.string.alert_dialog_closeapp_message),
+            onConfirmText = stringResource(R.string.alert_dialog_yes),
+            onConfirm = { activityFinish() },
+            onDismissText = stringResource(R.string.alert_dialog_no),
+            onDismiss = { closeApp = false }
+        )
     }
     OverviewScreen(
         filterInfo,
@@ -500,15 +511,15 @@ fun TransactionListCard(
                 )
                 if (showDeleteDialog == transactionItem.id) {
                     PWAlertDialog(
-                        onConfirmText = stringResource(R.string.alert_dialog_yes),
-                        onConfirm = { deleteDialogOnConfirm(transactionItem.id) },
-                        onDismissText = stringResource(R.string.alert_dialog_no),
-                        onDismiss = deleteDialogOnDismiss,
                         title = stringResource(R.string.alert_dialog_delete_transaction),
                         message = stringResource(
                             R.string.alert_dialog_delete_warning,
                             transactionItem.title
-                        )
+                        ),
+                        onConfirmText = stringResource(R.string.alert_dialog_yes),
+                        onConfirm = { deleteDialogOnConfirm(transactionItem.id) },
+                        onDismissText = stringResource(R.string.alert_dialog_no),
+                        onDismiss = deleteDialogOnDismiss
                     )
                 }
             }

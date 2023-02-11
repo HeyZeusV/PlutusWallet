@@ -43,12 +43,12 @@ import com.heyzeusv.plutuswallet.util.theme.alertDialogButton
  */
 @Composable
 fun PWAlertDialog(
+    title: String,
+    message: String,
     onConfirmText: String,
     onConfirm: () -> Unit,
     onDismissText: String,
     onDismiss: () -> Unit,
-    title: String,
-    message: String,
     modifier: Modifier = Modifier
 ) {
     AlertDialog(

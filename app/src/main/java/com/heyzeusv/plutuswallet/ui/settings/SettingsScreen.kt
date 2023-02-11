@@ -78,6 +78,8 @@ fun SettingsScreen(
         ) {
             if (openSwitchDialog) {
                 PWAlertDialog(
+                    title = stringResource(R.string.alert_dialog_duplicate_symbols),
+                    message = stringResource(R.string.alert_dialog_duplicate_symbols_warning),
                     onConfirmText = stringResource(R.string.alert_dialog_switch),
                     onConfirm = {
                         val oldDecimal = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
@@ -91,14 +93,18 @@ fun SettingsScreen(
                         openSwitchDialog = false
                     },
                     onDismissText = stringResource(R.string.alert_dialog_cancel),
-                    onDismiss = { openSwitchDialog = false },
-                    title = stringResource(R.string.alert_dialog_duplicate_symbols),
-                    message = stringResource(R.string.alert_dialog_duplicate_symbols_warning)
+                    onDismiss = { openSwitchDialog = false }
                 )
             }
             if (openDecimalDialog) {
                 val current = sharedPref[Key.KEY_DECIMAL_NUMBER, "yes"]
                 PWAlertDialog(
+                    title = stringResource(R.string.alert_dialog_are_you_sure),
+                    message = if (current == "yes") {
+                        stringResource(R.string.alert_dialog_decimal_place_warning)
+                    } else {
+                        ""
+                    },
                     onConfirmText = stringResource(R.string.alert_dialog_switch),
                     onConfirm = {
                         when (current) {
@@ -114,13 +120,7 @@ fun SettingsScreen(
                         openDecimalDialog = false
                     },
                     onDismissText = stringResource(R.string.alert_dialog_cancel),
-                    onDismiss = { openDecimalDialog = false },
-                    title = stringResource(R.string.alert_dialog_are_you_sure),
-                    message = if (current == "yes") {
-                        stringResource(R.string.alert_dialog_decimal_place_warning)
-                    } else {
-                        ""
-                    }
+                    onDismiss = { openDecimalDialog = false }
                 )
             }
             SettingSetup(THEME, sharedPref) {

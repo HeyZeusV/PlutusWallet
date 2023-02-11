@@ -124,15 +124,15 @@ fun ListCard(
                                 when (showDialog.action) {
                                     DELETE -> {
                                         PWAlertDialog(
-                                            onConfirmText = stringResource(R.string.alert_dialog_yes),
-                                            onConfirm = { deleteDialogOnConfirm(data) },
-                                            onDismissText = stringResource(R.string.alert_dialog_no),
-                                            onDismiss = { dialogOnDismiss(DataDialog(DELETE, -1)) },
                                             title = deleteDialogTitle,
                                             message = stringResource(
                                                 R.string.alert_dialog_delete_warning,
                                                 data.name
-                                            )
+                                            ),
+                                            onConfirmText = stringResource(R.string.alert_dialog_yes),
+                                            onConfirm = { deleteDialogOnConfirm(data) },
+                                            onDismissText = stringResource(R.string.alert_dialog_no),
+                                            onDismiss = { dialogOnDismiss(DataDialog(DELETE, -1)) }
                                         )
                                     }
                                     EDIT -> {

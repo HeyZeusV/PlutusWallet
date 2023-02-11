@@ -233,12 +233,12 @@ fun TransactionScreen(
     LaunchedEffect(key1 = saveSuccess) { if (saveSuccess) onSaveSuccess() }
     if (showFutureDialog) {
         PWAlertDialog(
+            title = stringResource(R.string.alert_dialog_future_transaction),
+            message = stringResource(R.string.alert_dialog_future_transaction_warning),
             onConfirmText = stringResource(R.string.alert_dialog_yes),
             onConfirm = { futureDialogOnConfirm() },
             onDismissText = stringResource(R.string.alert_dialog_no),
-            onDismiss = { futureDialogOnDismiss() },
-            title = stringResource(R.string.alert_dialog_future_transaction),
-            message = stringResource(R.string.alert_dialog_future_transaction_warning)
+            onDismiss = { futureDialogOnDismiss() }
         )
     }
     Card(

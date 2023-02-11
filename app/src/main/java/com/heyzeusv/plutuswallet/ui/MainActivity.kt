@@ -154,8 +154,7 @@ class MainActivity : BaseActivity() {
                     )
                     PlutusWalletApp(
                         accountVM,
-                        categoryVM,
-                        recreateActivity = { recreate() }
+                        categoryVM
                     )
                 }
             }
@@ -168,8 +167,7 @@ class MainActivity : BaseActivity() {
 @Composable
 fun PlutusWalletApp(
     accountVM: AccountViewModel,
-    categoryVM: CategoryViewModel,
-    recreateActivity: () -> Unit
+    categoryVM: CategoryViewModel
 ) {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
@@ -271,7 +269,7 @@ fun PlutusWalletApp(
                     showSnackbar = { msg -> scaffoldState.snackbarHostState.showSnackbar(msg) },
                     drawerState = scaffoldState.drawerState,
                     navigateToTransaction = { id -> navController.navigateToTransactionWithId(id) },
-                    activityFinish = { activity.finish() }
+                    activityFinish = { activity.finishAndRemoveTask() }
                 )
             }
             composable(
@@ -334,7 +332,7 @@ fun PlutusWalletApp(
             composable(SettingsDestination.route) {
                 val sharedPref =
                     PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
-                SettingsScreen(setVM, sharedPref, recreateActivity)
+                SettingsScreen(setVM, sharedPref) { activity.recreate() }
             }
             composable(AboutDestination.route) { AboutScreen() }
         }
