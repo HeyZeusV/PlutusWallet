@@ -21,6 +21,7 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     var accList: MutableList<Account> = dd.accList
     var catList: MutableList<Category> = dd.catList
     var tranList: MutableList<Transaction> = dd.tranList
+    var accUsedList: List<Account> = listOf()
 
     private val accountListFlow = MutableSharedFlow<List<Account>>()
     suspend fun accountListEmit(value: List<Account>) = accountListFlow.emit(value.sortedBy { it.name })
@@ -58,12 +59,14 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     }
 
     override suspend fun getAccountsUsed(): Flow<List<Account>> {
-//        val accUsed: MutableList<String> = mutableListOf()
-//        for (tran: Transaction in tranList) {
-//            accUsed.add(tran.account)
-//        }
-//        flow { emit(accList.filter { accUsed.contains(it.name) }.distinct()) }
-        return accountsUsedListFlow
+        val accUsed: MutableList<String> = mutableListOf()
+        for (tran: Transaction in tranList) {
+            accUsed.add(tran.account)
+        }
+        val distinctAccUsed = accList.filter { accUsed.contains(it.name) }.distinct()
+        accUsedList = distinctAccUsed
+        return flow { emit(distinctAccUsed) }
+//        return accountsUsedListFlow
     }
 
     override suspend fun getAccountSizeAsync(): Int {
@@ -86,7 +89,9 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         accountListEmit(accList)
     }
 
-    override suspend fun getAccounts(): Flow<List<Account>> = accountListFlow
+    override suspend fun getAccounts(): Flow<List<Account>> {
+        return flow { emit(dd.accList.sortedBy { it.name }) }
+    }
 
 
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> {
@@ -431,28 +436,28 @@ class FakeAndroidRepository @Inject constructor() : Repository {
 
     override suspend fun getTli(): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliA(accounts: List<String>): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliAD(
@@ -461,17 +466,17 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.date >= start && it.date <= end
         }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliAT(
@@ -479,15 +484,15 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         type: String
     ): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) && it.type == type }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliATC(
@@ -496,17 +501,17 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         categories: List<String>
     ): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && categories.contains(it.category)
         }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliATD(
@@ -516,17 +521,17 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && it.date >= start && it.date <= end
         }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliATCD(
@@ -537,44 +542,44 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && categories.contains(it.category) &&
                     it.date >= start && it.date <= end
         }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliD(start: Date, end: Date): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.date in start..end }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliT(type: String): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliTC(
@@ -582,15 +587,15 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         categories: List<String>
     ): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type && categories.contains(it.category) }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliTCD(
@@ -600,17 +605,17 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             it.type == type && categories.contains(it.category) && it.date >= start && it.date <= end
         }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 
     override suspend fun getTliTD(
@@ -619,15 +624,15 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         end: Date
     ): Flow<List<TranListItem>> {
 
-        val TliList: MutableList<TranListItem> = mutableListOf()
+        val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             it.type == type  && it.date >= start && it.date <= end }) {
-            val Tli = TranListItem(
+            val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
-            TliList.add(Tli)
+            tliList.add(tli)
         }
 
-        return flow { emit(TliList) }
+        return flow { emit(tliList) }
     }
 }

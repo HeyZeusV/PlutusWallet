@@ -111,7 +111,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
-    private val accountVM: AccountViewModel by viewModels()
     private val categoryVM: CategoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -153,7 +152,6 @@ class MainActivity : BaseActivity() {
                         darkIcons = false
                     )
                     PlutusWalletApp(
-                        accountVM,
                         categoryVM
                     )
                 }
@@ -166,7 +164,6 @@ class MainActivity : BaseActivity() {
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PlutusWalletApp(
-    accountVM: AccountViewModel,
     categoryVM: CategoryViewModel
 ) {
     val navController = rememberNavController()
@@ -182,17 +179,12 @@ fun PlutusWalletApp(
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
-    val accountList by accountVM.accountList.collectAsState()
-    val accountsUsedList by accountVM.accountsUsedList.collectAsState()
-    val accountListShowDialog by accountVM.showDialog.collectAsState()
-    val accountListExistsName by accountVM.accountExists.collectAsState()
-
     val expenseCatList by categoryVM.expenseCatList.collectAsState()
     val incomeCatList by categoryVM.incomeCatList.collectAsState()
     val expenseCatUsedList by categoryVM.expenseCatUsedList.collectAsState()
     val incomeCatUsedList by categoryVM.incomeCatUsedList.collectAsState()
     val categoryListShowDialog by categoryVM.showDialog.collectAsState()
-    val categoryListExists by categoryVM.categoryExists.collectAsState()
+//    val categoryListExists by categoryVM.categoryExists.collectAsState()
 
     val accountListPagerState = rememberPagerState()
     val categoryListPagerState = rememberPagerState()
@@ -210,7 +202,6 @@ fun PlutusWalletApp(
                         appBarActions.onNavPressed.invoke()
                     }
                     when (currentScreen) {
-                        AccountsDestination -> accountVM.updateAccountExists("")
                         CategoriesDestination -> categoryVM.updateCategoryExists("")
                         else -> {}
                     }
@@ -219,9 +210,6 @@ fun PlutusWalletApp(
                 onActionRightPressed = {
                     appBarActions.onActionRightPressed.invoke()
                     when (currentScreen) {
-                        AccountsDestination -> {
-                            accountVM.updateDialog(DataDialog(CREATE, 0))
-                        }
                         CategoriesDestination -> {
                             val type =
                                 if (categoryListPagerState.currentPage == 0) EXPENSE else INCOME
@@ -291,32 +279,24 @@ fun PlutusWalletApp(
                 )
             }
             composable(AccountsDestination.route) {
+                val accountVM = hiltViewModel<AccountViewModel>()
                 ListCard(
+                    viewModel = accountVM,
+                    appBarActionSetup = { appBarActions = it },
+                    showSnackbar = { msg -> scaffoldState.snackbarHostState.showSnackbar(msg) },
+                    navigateUp = { navController.navigateUp() },
                     pagerState = accountListPagerState,
-                    snackbarHostState = scaffoldState.snackbarHostState,
-                    dataLists = listOf(accountList),
-                    usedDataLists = listOf(accountsUsedList),
-                    onClick = accountVM::updateDialog,
-                    showDialog = accountListShowDialog,
-                    createDialogTitle = stringResource(R.string.alert_dialog_create_account),
-                    createDialogOnConfirm = accountVM::createNewAccount,
-                    deleteDialogTitle = stringResource(R.string.alert_dialog_delete_account),
-                    deleteDialogOnConfirm = accountVM::deleteAccount,
-                    editDialogTitle = stringResource(R.string.alert_dialog_edit_account),
-                    editDialogOnConfirm = accountVM::editAccount,
-                    dialogOnDismiss = accountVM::updateDialog,
-                    existsName = accountListExistsName
                 )
             }
             composable(CategoriesDestination.route) {
-                val expenseSubtitle = stringResource(R.string.type_expense)
-                val incomeSubtitle = stringResource(R.string.type_income)
+//                val expenseSubtitle = stringResource(R.string.type_expense)
+//                val incomeSubtitle = stringResource(R.string.type_income)
                 ListCard(
                     pagerState = categoryListPagerState,
-                    snackbarHostState = scaffoldState.snackbarHostState,
+//                    snackbarHostState = scaffoldState.snackbarHostState,
                     dataLists = listOf(expenseCatList, incomeCatList),
                     usedDataLists = listOf(expenseCatUsedList, incomeCatUsedList),
-                    listSubtitles = listOf(expenseSubtitle, incomeSubtitle),
+                    listSubtitles = listOf(R.string.type_expense, R.string.type_income),
                     onClick = categoryVM::updateDialog,
                     showDialog = categoryListShowDialog,
                     createDialogTitle = stringResource(R.string.alert_dialog_create_category),
@@ -326,7 +306,7 @@ fun PlutusWalletApp(
                     editDialogTitle = stringResource(R.string.alert_dialog_edit_category),
                     editDialogOnConfirm = categoryVM::editCategory,
                     dialogOnDismiss = categoryVM::updateDialog,
-                    existsName = categoryListExists
+//                    itemExists = categoryListExists
                 )
             }
             composable(SettingsDestination.route) {

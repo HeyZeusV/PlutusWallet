@@ -107,10 +107,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- *  Composable that displays Overview Card.
+ *  Composable that displays Overview screen.
  *  Data that is displayed is retrieved from [tranListVM], [chartVM], and [filterVM].
  *  [appBarActionSetup] determines what to do when an action item is pressed from the AppBar.
- *  [showSnackbar] is used to display SnackBar. [drawerState] is to open/close drawer.
+ *  [showSnackbar] is used to display Snackbar. [drawerState] is to open/close drawer.
  *  [navigateToTransaction] navigates to Transaction screen with id argument.
  */
 @Composable
@@ -216,7 +216,7 @@ fun OverviewScreen(
 }
 
 /**
- *  Composable that displays OverviewScreen.
+ *  Composable that displays Overview screen.
  *  All the data has been hoisted into above [OverviewScreen] thus allowing for easier testing.
  */
 @Composable

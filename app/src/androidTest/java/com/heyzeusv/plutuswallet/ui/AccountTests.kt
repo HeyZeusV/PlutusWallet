@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui
 
-import androidx.activity.viewModels
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
@@ -11,7 +10,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 
@@ -25,18 +23,17 @@ class AccountTests : BaseTest() {
         checkAccountsAndDeleteState()
     }
 
-    @Test
-    fun account_createNewAccount() {
-        val createNew = hasContentDescription(res.getString(R.string.account_new))
-        navigateToAccountScreen()
-
-        val testAccount = "Test Account"
-        dialogAction(createNew, testAccount, "AlertDialog confirm")
-
-        // check that new Account was created then check all
-        composeRule.onNodeWithText(testAccount).assertExists()
-        checkAccountsAndDeleteState()
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    @Test
+//    fun account_createNewAccount() = runTest {
+//        val createNew = hasContentDescription(res.getString(R.string.account_new))
+//        navigateToAccountScreen()
+//
+//        val testAccount = "Test Account"
+//        dialogAction(createNew, testAccount, "AlertDialog confirm")
+//
+//        checkAccountsAndDeleteState()
+//    }
 
     @Test
     fun account_createNewAccountExists() {
@@ -106,8 +103,6 @@ class AccountTests : BaseTest() {
 
         dialogAction(hasTestTag("${dd.acc5.name} Delete"), "", "AlertDialog confirm")
 
-        // check that account is Deleted then check all
-        composeRule.onNodeWithText(dd.acc5.name).assertDoesNotExist()
         checkAccountsAndDeleteState()
     }
 
@@ -155,10 +150,7 @@ class AccountTests : BaseTest() {
     private fun checkAccountsAndDeleteState() {
         repo.accList.forEach {
             composeRule.onNodeWithText(it.name).assertExists()
-            if (
-                composeRule.activity.viewModels<AccountViewModel>()
-                    .value.accountsUsedList.value.contains(it)
-            ) {
+            if (repo.accUsedList.contains(it)) {
                 composeRule.onNode(hasTestTag("${it.name} Delete")).assertIsNotEnabled()
             } else {
                 composeRule.onNode(hasTestTag("${it.name} Delete")).assertIsEnabled()

@@ -11,7 +11,6 @@ import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.list.CategoryViewModel
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PWDarkColors
@@ -75,9 +74,7 @@ abstract class BaseTest {
                         }
                     ) {
                         PlutusWalletApp(
-                            accountVM = viewModels<AccountViewModel>().value,
-                            categoryVM = viewModels<CategoryViewModel>().value,
-                            recreateActivity = { composeRule.activity.recreate() }
+                            categoryVM = viewModels<CategoryViewModel>().value
                         )
                     }
                 }

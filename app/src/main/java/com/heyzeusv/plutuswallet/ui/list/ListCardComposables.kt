@@ -16,13 +16,14 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -39,21 +40,88 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
+import com.heyzeusv.plutuswallet.ui.AppBarActions
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import com.heyzeusv.plutuswallet.util.PWInputAlertDialog
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 
+/**
+ *  Composable that displays List card.
+ *  Data that is displayed is retrieved from [viewModel]. [appBarActionSetup] determines what to do
+ *  when an action item is pressed from the AppBar. [showSnackbar] is used to display Snackbar.
+ *  [navigateUp] returns user back to OverviewScreen. [pagerState] is used to determine which page
+ *  the user is currently viewing.
+ */
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun ListCard(
+    viewModel: ListViewModel,
+    appBarActionSetup: (AppBarActions) -> Unit,
+    showSnackbar: suspend (String) -> Unit,
+    navigateUp: () -> Unit,
+    pagerState: PagerState
+) {
+    val itemExists by viewModel.itemExists.collectAsState()
+    val existsMessage = stringResource(R.string.snackbar_exists, itemExists)
+
+    val firstItemList by viewModel.firstItemList.collectAsState()
+    val secondItemList by viewModel.secondItemList.collectAsState()
+    val firstUsedItemList by viewModel.firstUsedItemList.collectAsState()
+    val secondUsedItemList by viewModel.secondUsedItemList.collectAsState()
+    val showDialog by viewModel.showDialog.collectAsState()
+
+    LaunchedEffect(key1 = itemExists) {
+        if (itemExists.isNotBlank()) showSnackbar(existsMessage)
+    }
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = {
+                viewModel.updateItemExists("")
+                navigateUp()
+            },
+            onActionRightPressed = {
+                val type = when (pagerState.currentPage) {
+                    0 -> EXPENSE
+                    else -> INCOME
+                }
+                viewModel.updateDialog(DataDialog(CREATE, 0, type))
+            }
+        )
+    )
+    ListCard(
+        pagerState = pagerState,
+        dataLists = listOf(firstItemList, secondItemList),
+        usedDataLists = listOf(firstUsedItemList, secondUsedItemList),
+        listSubtitles = viewModel.listSubtitleStringIds,
+        onClick = viewModel::updateDialog,
+        showDialog = showDialog,
+        createDialogTitle = stringResource(viewModel.createItemStringId),
+        createDialogOnConfirm = viewModel::insertItem,
+        deleteDialogTitle = stringResource(viewModel.deleteItemStringId),
+        deleteDialogOnConfirm = viewModel::deleteItem,
+        editDialogTitle = stringResource(viewModel.editItemStringId),
+        editDialogOnConfirm = viewModel::editItem,
+        dialogOnDismiss = viewModel::updateDialog
+    )
+}
+
+/**
+ *  Composable that displays List card.
+ *  All the data has been hoisted into above [ListCard] thus allowing for easier testing.
+ */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ListCard(
     pagerState: PagerState,
-    snackbarHostState: SnackbarHostState,
     dataLists: List<List<DataInterface>>,
     usedDataLists: List<List<DataInterface>>,
-    listSubtitles: List<String> = emptyList(),
+    listSubtitles: List<Int>,
     onClick: (DataDialog) -> Unit,
     showDialog: DataDialog,
     createDialogTitle: String,
@@ -63,16 +131,9 @@ fun ListCard(
     editDialogTitle: String,
     editDialogOnConfirm: (DataInterface, String) -> Unit,
     dialogOnDismiss: (DataDialog) -> Unit,
-    existsName: String
 ) {
     val dataListsSize = dataLists.size
-    val existsMessage = stringResource(R.string.snackbar_exists, existsName)
 
-    LaunchedEffect(key1 = existsName) {
-        if (existsName.isNotBlank()) {
-            snackbarHostState.showSnackbar(existsMessage)
-        }
-    }
     if (showDialog.action == CREATE) {
         PWInputAlertDialog(
             title = createDialogTitle,
@@ -97,7 +158,7 @@ fun ListCard(
                 Column {
                     if (listSubtitles.isNotEmpty()) {
                         Text(
-                            text = listSubtitles[page],
+                            text = stringResource(listSubtitles[page]),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(all = 12.dp)
