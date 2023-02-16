@@ -36,12 +36,14 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
+import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
 import com.heyzeusv.plutuswallet.ui.AppBarActions
-import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
 import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
@@ -168,9 +170,7 @@ fun ListCard(
                             style = MaterialTheme.typography.h5
                         )
                     }
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(dataLists[page]) { data ->
                             DataItem(
                                 data = data,
@@ -224,6 +224,10 @@ fun ListCard(
     }
 }
 
+/**
+ *  Composable that displays [data]. If [deletable] is true, then user can press right button for
+ *  [deleteOnClick]. [editOnClick], the left button, is always available for the user.
+ */
 @Composable
 fun DataItem(
     data: DataInterface,
@@ -234,8 +238,7 @@ fun DataItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-        ,
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -279,14 +282,39 @@ fun DataItem(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
+@Preview
+@Composable
+fun ListCardPreview() {
+    val exCat = Category(0, "Test EX Cat", "Expense")
+    val inCat = Category(0, "Test IN Cat", "Income")
+    PreviewHelperCard {
+        ListCard(
+            pagerState = rememberPagerState(),
+            dataLists = listOf(listOf(exCat, exCat), listOf(inCat, inCat)),
+            usedDataLists = listOf(listOf(exCat), emptyList()),
+            listSubtitles = listOf(R.string.type_expense, R.string.type_income),
+            onClick = { },
+            showDialog = DataDialog(EDIT, -1, EXPENSE),
+            createDialogTitle = "Create Title",
+            createDialogOnConfirm = { },
+            deleteDialogTitle = "Delete Title",
+            deleteDialogOnConfirm = { },
+            editDialogTitle = "Edit Title",
+            editDialogOnConfirm = { _, _ -> },
+            dialogOnDismiss = { }
+        )
+    }
+}
+
 @Preview
 @Composable
 fun PreviewDataItem() {
-    PlutusWalletTheme {
+    PreviewHelperCard {
         DataItem(
             data = Account(0, "Preview"),
             deletable = false,
-            editOnClick = { /*TODO*/ },
+            editOnClick = { },
             deleteOnClick = { }
         )
     }
