@@ -8,7 +8,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -68,7 +67,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.about.AboutScreen
 import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
@@ -92,14 +90,11 @@ import com.heyzeusv.plutuswallet.util.AboutDestination
 import com.heyzeusv.plutuswallet.util.AccountsDestination
 import com.heyzeusv.plutuswallet.util.CategoriesDestination
 import com.heyzeusv.plutuswallet.util.Key
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.CREATE
 import com.heyzeusv.plutuswallet.util.OverviewDestination
 import com.heyzeusv.plutuswallet.util.PWDestination
 import com.heyzeusv.plutuswallet.util.PWScreens
 import com.heyzeusv.plutuswallet.util.SettingsDestination
 import com.heyzeusv.plutuswallet.util.TransactionDestination
-import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -110,8 +105,6 @@ import kotlinx.coroutines.launch
  */
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
-
-    private val categoryVM: CategoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,9 +144,7 @@ class MainActivity : BaseActivity() {
                         color = MaterialTheme.colors.primary,
                         darkIcons = false
                     )
-                    PlutusWalletApp(
-                        categoryVM
-                    )
+                    PlutusWalletApp()
                 }
             }
         }
@@ -163,9 +154,7 @@ class MainActivity : BaseActivity() {
 @OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun PlutusWalletApp(
-    categoryVM: CategoryViewModel
-) {
+fun PlutusWalletApp() {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
@@ -179,13 +168,6 @@ fun PlutusWalletApp(
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
-    val expenseCatList by categoryVM.expenseCatList.collectAsState()
-    val incomeCatList by categoryVM.incomeCatList.collectAsState()
-    val expenseCatUsedList by categoryVM.expenseCatUsedList.collectAsState()
-    val incomeCatUsedList by categoryVM.incomeCatUsedList.collectAsState()
-    val categoryListShowDialog by categoryVM.showDialog.collectAsState()
-//    val categoryListExists by categoryVM.categoryExists.collectAsState()
-
     val accountListPagerState = rememberPagerState()
     val categoryListPagerState = rememberPagerState()
 
@@ -197,28 +179,9 @@ fun PlutusWalletApp(
         topBar = {
             PWAppBar(
                 currentScreen = currentScreen,
-                onNavPressed = {
-                    coroutineScope.launch {
-                        appBarActions.onNavPressed.invoke()
-                    }
-                    when (currentScreen) {
-                        CategoriesDestination -> categoryVM.updateCategoryExists("")
-                        else -> {}
-                    }
-                },
+                onNavPressed = { coroutineScope.launch { appBarActions.onNavPressed.invoke() }},
                 onActionLeftPressed = { appBarActions.onActionLeftPressed.invoke() },
-                onActionRightPressed = {
-                    appBarActions.onActionRightPressed.invoke()
-                    when (currentScreen) {
-                        CategoriesDestination -> {
-                            val type =
-                                if (categoryListPagerState.currentPage == 0) EXPENSE else INCOME
-                            categoryVM.updateDialog(DataDialog(CREATE, 0, type))
-                        }
-
-                        else -> {}
-                    }
-                }
+                onActionRightPressed = { appBarActions.onActionRightPressed.invoke() }
             )
         },
         // TODO: Make PWDrawer a child composable that opens/closes using AnimateVisibility
@@ -289,24 +252,13 @@ fun PlutusWalletApp(
                 )
             }
             composable(CategoriesDestination.route) {
-//                val expenseSubtitle = stringResource(R.string.type_expense)
-//                val incomeSubtitle = stringResource(R.string.type_income)
+                val categoryVM = hiltViewModel<CategoryViewModel>()
                 ListCard(
-                    pagerState = categoryListPagerState,
-//                    snackbarHostState = scaffoldState.snackbarHostState,
-                    dataLists = listOf(expenseCatList, incomeCatList),
-                    usedDataLists = listOf(expenseCatUsedList, incomeCatUsedList),
-                    listSubtitles = listOf(R.string.type_expense, R.string.type_income),
-                    onClick = categoryVM::updateDialog,
-                    showDialog = categoryListShowDialog,
-                    createDialogTitle = stringResource(R.string.alert_dialog_create_category),
-                    createDialogOnConfirm = categoryVM::createNewCategory,
-                    deleteDialogTitle = stringResource(R.string.alert_dialog_delete_category),
-                    deleteDialogOnConfirm = categoryVM::deleteCategory,
-                    editDialogTitle = stringResource(R.string.alert_dialog_edit_category),
-                    editDialogOnConfirm = categoryVM::editCategory,
-                    dialogOnDismiss = categoryVM::updateDialog,
-//                    itemExists = categoryListExists
+                    viewModel = categoryVM,
+                    appBarActionSetup = { appBarActions = it },
+                    showSnackbar = { msg -> scaffoldState .snackbarHostState.showSnackbar(msg) },
+                    navigateUp = { navController.navigateUp() },
+                    pagerState = categoryListPagerState
                 )
             }
             composable(SettingsDestination.route) {

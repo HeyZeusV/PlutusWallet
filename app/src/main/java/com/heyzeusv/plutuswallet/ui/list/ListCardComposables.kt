@@ -157,12 +157,13 @@ fun ListCard(
             ) { page ->
                 Column {
                     if (listSubtitles.isNotEmpty()) {
+                        val subtitle = stringResource(listSubtitles[page])
                         Text(
-                            text = stringResource(listSubtitles[page]),
+                            text = subtitle,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(all = 12.dp)
-                                .testTag("List Subtitle ${listSubtitles[page]}"),
+                                .testTag("List Subtitle $subtitle"),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.h5
                         )

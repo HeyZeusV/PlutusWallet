@@ -2,6 +2,7 @@ package com.heyzeusv.plutuswallet.ui.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.DataDialog
@@ -25,27 +26,38 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
     private val tranRepo: Repository
-) : ViewModel() {
+) : ViewModel(), ListViewModel {
 
+    // string ids used by Composables
+    override val createItemStringId: Int = R.string.alert_dialog_create_category
+    override val deleteItemStringId: Int = R.string.alert_dialog_delete_category
+    override val editItemStringId: Int = R.string.alert_dialog_edit_category
+    override val listSubtitleStringIds: List<Int> =
+        listOf(R.string.type_expense, R.string.type_income)
+
+    // Categories to be displayed
     private val _expenseCatList = MutableStateFlow(listOf<Category>())
-    val expenseCatList: StateFlow<List<Category>> get() = _expenseCatList
+    override val firstItemList: StateFlow<List<Category>> get() = _expenseCatList
 
     private val _incomeCatList = MutableStateFlow(listOf<Category>())
-    val incomeCatList: StateFlow<List<Category>> get() = _incomeCatList
+    override val secondItemList: StateFlow<List<Category>> get() = _incomeCatList
 
+    // Categories that are tied to Transactions
     private val _expenseCatUsedList = MutableStateFlow(listOf<Category>())
-    val expenseCatUsedList: StateFlow<List<Category>> get() = _expenseCatUsedList
+    override val firstUsedItemList: StateFlow<List<Category>> get() = _expenseCatUsedList
 
     private val _incomeCatUsedList = MutableStateFlow(listOf<Category>())
-    val incomeCatUsedList: StateFlow<List<Category>> get() = _incomeCatUsedList
+    override val secondUsedItemList: StateFlow<List<Category>> get() = _incomeCatUsedList
 
-    private val _showDialog = MutableStateFlow(DataDialog(DELETE, -1))
-    val showDialog: StateFlow<DataDialog> get() = _showDialog
-    fun updateDialog(newValue: DataDialog) { _showDialog.value = newValue }
-
+    // name of Category that already exists
     private val _categoryExists = MutableStateFlow("")
-    val categoryExists: StateFlow<String> get() = _categoryExists
-    fun updateCategoryExists(newValue: String) { _categoryExists.value = newValue }
+    override val itemExists: StateFlow<String> get() = _categoryExists
+    override fun updateItemExists(value: String) { _categoryExists.value = value }
+
+    // display different dialog depending on Action
+    private val _showDialog = MutableStateFlow(DataDialog(DELETE, -1))
+    override val showDialog: StateFlow<DataDialog> get() = _showDialog
+    override fun updateDialog(newValue: DataDialog) { _showDialog.value = newValue }
 
     init {
         viewModelScope.launch {
@@ -63,27 +75,27 @@ class CategoryViewModel @Inject constructor(
     }
 
     /**
-     *  Removes [category] from database.
+     *  Removes [item] from database.
      */
-    fun deleteCategory(category: DataInterface) {
+    override fun deleteItem(item: DataInterface) {
         viewModelScope.launch {
-            tranRepo.deleteCategory(category as Category)
+            tranRepo.deleteCategory(item as Category)
         }
         updateDialog(DataDialog(DELETE, -1))
     }
 
     /**
-     *  If name exists, creates Snackbar telling user so, else updates [category] with [newName]
+     *  If name exists, creates Snackbar telling user so, else updates [item] with [newName]
      */
-    fun editCategory(data: DataInterface, newName: String) {
-        val category = (data as Category)
+    override fun editItem(item: DataInterface, newName: String) {
+        val category = (item as Category)
         val exists = if (category.type == EXPENSE.type) {
             _expenseCatList.value.find { it.name == newName }
         } else {
             _incomeCatList.value.find { it.name == newName }
         }
         if (exists != null) {
-            updateCategoryExists(newName)
+            updateItemExists(newName)
         } else {
             viewModelScope.launch {
                 category.name = newName
@@ -96,7 +108,7 @@ class CategoryViewModel @Inject constructor(
     /**
      *  If Category exists, creates SnackBar telling user so, else creates Category with [name].
      */
-    fun createNewCategory(name: String) {
+    override fun insertItem(name: String) {
         // use type passed along with DataDialog to determine if Expense or Income Category
         val type = showDialog.value.type
         val exists = if (type == EXPENSE) {
@@ -105,7 +117,7 @@ class CategoryViewModel @Inject constructor(
             _incomeCatList.value.find { it.name == name }
         }
         if (exists != null) {
-            updateCategoryExists(name)
+            updateItemExists(name)
         } else {
             viewModelScope.launch {
                 val newCategory = Category(0, name, type.type)

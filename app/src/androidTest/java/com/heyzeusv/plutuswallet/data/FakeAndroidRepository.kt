@@ -22,6 +22,8 @@ class FakeAndroidRepository @Inject constructor() : Repository {
     var catList: MutableList<Category> = dd.catList
     var tranList: MutableList<Transaction> = dd.tranList
     var accUsedList: List<Account> = listOf()
+    var exCatUsedList: List<Category> = listOf()
+    var inCatUsedList: List<Category> = listOf()
 
     private val accountListFlow = MutableSharedFlow<List<Account>>()
     suspend fun accountListEmit(value: List<Account>) = accountListFlow.emit(value.sortedBy { it.name })
@@ -93,7 +95,6 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         return flow { emit(dd.accList.sortedBy { it.name }) }
     }
 
-
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> {
         val typeNameList: MutableList<String> = mutableListOf()
         for (cat: Category in catList.filter { it.type == type}) {
@@ -101,15 +102,27 @@ class FakeAndroidRepository @Inject constructor() : Repository {
         }
         typeNameList.sort()
         return flow { emit(typeNameList) }
-
     }
 
     override suspend fun getCategoriesUsedByType(type: String): Flow<List<Category>> {
-        return if (type == EXPENSE.type) expenseCatUsedListFlow else incomeCatUsedListFLow
+        val usedList: MutableList<String> = mutableListOf()
+        for (tran: Transaction in tranList) {
+            if (tran.type == type) usedList.add(tran.category)
+        }
+        val distinctCatUsed = catList.filter { usedList.contains(it.name) }.distinct()
+        if (type == EXPENSE.type) {
+            exCatUsedList = distinctCatUsed
+        } else {
+            inCatUsedList = distinctCatUsed
+        }
+        return flow { emit(distinctCatUsed) }
+//        return if (type == EXPENSE.type) expenseCatUsedListFlow else incomeCatUsedListFLow
     }
 
     override suspend fun getCategoriesByType(type: String): Flow<List<Category>> {
-        return if (type == EXPENSE.type) expenseCatListFlow else incomeCatListFlow
+        val typeList = catList.filter { it.type == type }
+        return flow { emit(typeList) }
+//        return if (type == EXPENSE.type) expenseCatListFlow else incomeCatListFlow
     }
 
     override suspend fun getCategorySizeAsync(): Int {

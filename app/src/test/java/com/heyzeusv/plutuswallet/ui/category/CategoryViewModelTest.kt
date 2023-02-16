@@ -60,10 +60,10 @@ internal class CategoryViewModelTest {
         val expectedIncomeList = listOf(dd.cat3, dd.cat6, dd.cat4)
         val expectedIncomeUsedList = listOf(dd.cat3)
 
-        assertEquals(expectedExpenseList, catVM.expenseCatList.value)
-        assertEquals(expectedExpenseUsedList, catVM.expenseCatUsedList.value)
-        assertEquals(expectedIncomeList, catVM.incomeCatList.value)
-        assertEquals(expectedIncomeUsedList, catVM.incomeCatUsedList.value)
+        assertEquals(expectedExpenseList, catVM.firstItemList.value)
+        assertEquals(expectedExpenseUsedList, catVM.firstUsedItemList.value)
+        assertEquals(expectedIncomeList, catVM.secondItemList.value)
+        assertEquals(expectedIncomeUsedList, catVM.secondUsedItemList.value)
     }
 
 
@@ -74,12 +74,12 @@ internal class CategoryViewModelTest {
         val expectedIncomeList = listOf(dd.cat3, dd.cat4)
 
         catVM.updateDialog(DataDialog(DELETE, 5, EXPENSE))
-        catVM.deleteCategory(dd.cat5)
+        catVM.deleteItem(dd.cat5)
         catVM.updateDialog(DataDialog(DELETE, 6, INCOME))
-        catVM.deleteCategory(dd.cat6)
+        catVM.deleteItem(dd.cat6)
 
-        assertEquals(expectedExpenseList, catVM.expenseCatList.value)
-        assertEquals(expectedIncomeList, catVM.incomeCatList.value)
+        assertEquals(expectedExpenseList, catVM.firstItemList.value)
+        assertEquals(expectedIncomeList, catVM.secondItemList.value)
         assertEquals(DataDialog(DELETE, -1), catVM.showDialog.value)
     }
 
@@ -94,27 +94,27 @@ internal class CategoryViewModelTest {
         val expectedIncomeUsedList = listOf(dd.cat3)
 
         catVM.updateDialog(DataDialog(EDIT, 1, EXPENSE))
-        catVM.editCategory(dd.cat1, expenseCat.name)
+        catVM.editItem(dd.cat1, expenseCat.name)
         catVM.updateDialog(DataDialog(EDIT, 6, INCOME))
-        catVM.editCategory(dd.cat6, incomeCat.name)
+        catVM.editItem(dd.cat6, incomeCat.name)
 
-        assertEquals(expectedExpenseList, catVM.expenseCatList.value)
-        assertEquals(expectedExpenseUsedList, catVM.expenseCatUsedList.value)
-        assertEquals(expectedIncomeList, catVM.incomeCatList.value)
-        assertEquals(expectedIncomeUsedList, catVM.incomeCatUsedList.value)
+        assertEquals(expectedExpenseList, catVM.firstItemList.value)
+        assertEquals(expectedExpenseUsedList, catVM.firstUsedItemList.value)
+        assertEquals(expectedIncomeList, catVM.secondItemList.value)
+        assertEquals(expectedIncomeUsedList, catVM.secondUsedItemList.value)
         assertEquals(DataDialog(EDIT, -1), catVM.showDialog.value)
     }
 
     @Test
     @DisplayName("Should edit Category with an existing name which updates accountExists")
     fun editCategoryExists() {
-        catVM.editCategory(dd.cat1, dd.cat5.name)
+        catVM.editItem(dd.cat1, dd.cat5.name)
 
-        assertEquals(dd.cat5.name, catVM.categoryExists.value)
+        assertEquals(dd.cat5.name, catVM.itemExists.value)
 
-        catVM.editCategory(dd.cat3, dd.cat6.name)
+        catVM.editItem(dd.cat3, dd.cat6.name)
 
-        assertEquals(dd.cat6.name, catVM.categoryExists.value)
+        assertEquals(dd.cat6.name, catVM.itemExists.value)
     }
 
     @Test
@@ -126,13 +126,13 @@ internal class CategoryViewModelTest {
         val expectedIncomeList = listOf(newIncomeCat, dd.cat3, dd.cat6, dd.cat4)
 
         catVM.updateDialog(DataDialog(CREATE, 0, EXPENSE))
-        catVM.createNewCategory(newExpenseCat.name)
+        catVM.insertItem(newExpenseCat.name)
         catVM.updateDialog(DataDialog(CREATE, 0, INCOME))
-        catVM.createNewCategory(newIncomeCat.name)
+        catVM.insertItem(newIncomeCat.name)
 
         assert(repo.catList.containsAll(listOf(newExpenseCat, newIncomeCat)))
-        assertEquals(expectedExpenseList, catVM.expenseCatList.value)
-        assertEquals(expectedIncomeList, catVM.incomeCatList.value)
+        assertEquals(expectedExpenseList, catVM.firstItemList.value)
+        assertEquals(expectedIncomeList, catVM.secondItemList.value)
         assertEquals(DataDialog(EDIT, -1, INCOME), catVM.showDialog.value)
     }
 
@@ -140,13 +140,13 @@ internal class CategoryViewModelTest {
     @DisplayName("Should insert a Category with an existing name which updates categoryExists")
     fun createNewCategoryExists() {
         catVM.updateDialog(DataDialog(CREATE, 0, EXPENSE))
-        catVM.createNewCategory(dd.cat5.name)
+        catVM.insertItem(dd.cat5.name)
 
-        assertEquals(dd.cat5.name, catVM.categoryExists.value)
+        assertEquals(dd.cat5.name, catVM.itemExists.value)
 
         catVM.updateDialog(DataDialog(CREATE, 0, INCOME))
-        catVM.createNewCategory(dd.cat6.name)
+        catVM.insertItem(dd.cat6.name)
 
-        assertEquals(dd.cat6.name, catVM.categoryExists.value)
+        assertEquals(dd.cat6.name, catVM.itemExists.value)
     }
 }

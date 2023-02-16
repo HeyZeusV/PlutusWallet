@@ -3,7 +3,6 @@ package com.heyzeusv.plutuswallet.ui
 import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -11,7 +10,6 @@ import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.ui.list.CategoryViewModel
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.util.theme.PWLightColors
@@ -73,9 +71,7 @@ abstract class BaseTest {
                             else -> isSystemInDarkTheme()
                         }
                     ) {
-                        PlutusWalletApp(
-                            categoryVM = viewModels<CategoryViewModel>().value
-                        )
+                        PlutusWalletApp()
                     }
                 }
             }
