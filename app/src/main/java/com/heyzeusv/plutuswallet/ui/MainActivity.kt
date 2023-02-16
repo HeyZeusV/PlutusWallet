@@ -62,7 +62,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.preference.PreferenceManager
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -261,11 +260,7 @@ fun PlutusWalletApp() {
                     pagerState = categoryListPagerState
                 )
             }
-            composable(SettingsDestination.route) {
-                val sharedPref =
-                    PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
-                SettingsScreen(setVM, sharedPref) { activity.recreate() }
-            }
+            composable(SettingsDestination.route) { SettingsScreen(setVM) { activity.recreate() }}
             composable(AboutDestination.route) { AboutScreen() }
         }
     }

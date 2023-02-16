@@ -26,16 +26,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.ui.PreviewHelper
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.alertDialogButton
 import com.heyzeusv.plutuswallet.util.Key
@@ -57,9 +61,33 @@ import java.lang.NumberFormatException
 @Composable
 fun SettingsScreen(
     setVM: SettingsViewModel,
-    sharedPref: SharedPreferences,
     recreateActivity: () -> Unit
 ) {
+    SettingsScreen(
+        recreateActivity,
+        setVM::updateNumberSymbols,
+        setVM::updateDecimalNumber,
+        setVM::updateCurrencySymbol,
+        setVM::updateCurrencySymbolSide,
+        setVM::updateThousandsSymbol,
+        setVM::updateDecimalSymbol,
+        setVM::updateDateFormatter
+    )
+}
+
+@Composable
+fun SettingsScreen(
+    recreateActivity: () -> Unit,
+    updateNumberSymbols: (Char, Char) -> Unit,
+    updateDecimalNumber: (String) -> Unit,
+    updateCurrencySymbol: (String) -> Unit,
+    updateCurrencySymbolSide: (String) -> Unit,
+    updateThousandsSymbol: (Char) -> Unit,
+    updateDecimalSymbol: (Char) -> Unit,
+    updateDateFormatter: (Int) -> Unit
+) {
+    val sharedPref = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
+
     var decimalSymbolSelectedValue by remember { mutableStateOf("") }
     var thousandsSymbolSelectedValue by remember { mutableStateOf("") }
     var decimalNumberSelectedValue by remember { mutableStateOf("") }
@@ -86,9 +114,9 @@ fun SettingsScreen(
                         val oldThousands = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
                         sharedPref[Key.KEY_THOUSANDS_SYMBOL] = oldDecimal
                         sharedPref[Key.KEY_DECIMAL_SYMBOL] = oldThousands
-                        setVM.updateNumberSymbols(
-                            newThousands = SettingsUtils.getSeparatorSymbol(oldDecimal),
-                            newDecimal = SettingsUtils.getSeparatorSymbol(oldThousands)
+                        updateNumberSymbols(
+                            SettingsUtils.getSeparatorSymbol(oldDecimal),
+                            SettingsUtils.getSeparatorSymbol(oldThousands)
                         )
                         openSwitchDialog = false
                     },
@@ -110,11 +138,11 @@ fun SettingsScreen(
                         when (current) {
                             "yes" -> {
                                 sharedPref[Key.KEY_DECIMAL_NUMBER] = "no"
-                                setVM.updateDecimalNumber("no")
+                                updateDecimalNumber("no")
                             }
                             "no" -> {
                                 sharedPref[Key.KEY_DECIMAL_NUMBER] = "yes"
-                                setVM.updateDecimalNumber("yes")
+                                updateDecimalNumber("yes")
                             }
                         }
                         openDecimalDialog = false
@@ -129,12 +157,12 @@ fun SettingsScreen(
             }
             SettingSetup(CURRENCY_SYMBOL, sharedPref) {
                 sharedPref[CURRENCY_SYMBOL.key] = it
-                setVM.updateCurrencySymbol(SettingsUtils.getCurrencySymbol(it))
+                updateCurrencySymbol(SettingsUtils.getCurrencySymbol(it))
             }
             SettingSetup(CURRENCY_SYMBOL_SIDE, sharedPref) {
                 sharedPref[CURRENCY_SYMBOL_SIDE.key] = it
-                setVM.updateCurrencySymbolSide(it)
-             }
+                updateCurrencySymbolSide(it)
+            }
             SettingSetup(
                 THOUSANDS_SYMBOL,
                 optionSelectedDisplay = thousandsSymbolSelectedValue,
@@ -147,7 +175,7 @@ fun SettingsScreen(
                 } else {
                     sharedPref[THOUSANDS_SYMBOL.key] = it
                     val newThousandsSymbol = SettingsUtils.getSeparatorSymbol(it)
-                    setVM.updateThousandsSymbol(newThousandsSymbol)
+                    updateThousandsSymbol(newThousandsSymbol)
                     thousandsSymbolSelectedValue = "\"$newThousandsSymbol\""
                 }
             }
@@ -163,7 +191,7 @@ fun SettingsScreen(
                 } else {
                     sharedPref[DECIMAL_SYMBOL.key] = it
                     val newDecimalSymbol = SettingsUtils.getSeparatorSymbol(it)
-                    setVM.updateDecimalSymbol(newDecimalSymbol)
+                    updateDecimalSymbol(newDecimalSymbol)
                     decimalSymbolSelectedValue = "\"$newDecimalSymbol\""
                 }
             }
@@ -180,7 +208,7 @@ fun SettingsScreen(
             }
             SettingSetup(DATE_FORMAT, sharedPref) {
                 sharedPref[DATE_FORMAT.key] = it
-                setVM.updateDateFormatter(try { it.toInt() } catch (e: NumberFormatException) { 0 })
+                updateDateFormatter(try { it.toInt() } catch (e: NumberFormatException) { 0 })
             }
             SettingSetup(LANGUAGE, sharedPref) {
                 sharedPref[LANGUAGE.key] = it
@@ -377,5 +405,50 @@ fun ListAlertDialog(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun SettingsScreenPreview() {
+    PreviewHelper {
+        SettingsScreen(
+            recreateActivity = { },
+            updateNumberSymbols = { _, _ -> },
+            updateDecimalNumber = { },
+            updateCurrencySymbol = { },
+            updateCurrencySymbolSide = { },
+            updateThousandsSymbol = { },
+            updateDecimalSymbol = { },
+            updateDateFormatter = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SettingPreview() {
+    PreviewHelper {
+        Setting(
+            setting = THOUSANDS_SYMBOL,
+            optionsMap = mapOf("period" to ".", "comma" to ","),
+            optionSelectedValue = "comma",
+            optionSelectedDisplay = ",",
+            onConfirm = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ListAlertDialogPreview() {
+    PreviewHelper {
+        ListAlertDialog(
+            title = "List Alert Dialog Test",
+            initialValue = "comma",
+            options = mapOf("period" to ".", "comma" to ","),
+            onConfirm = { },
+            onDismiss = { }
+        )
     }
 }
