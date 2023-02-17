@@ -46,6 +46,11 @@ import com.heyzeusv.plutuswallet.util.SettingOptions.THOUSANDS_SYMBOL
 import com.heyzeusv.plutuswallet.util.SettingsUtils
 import java.lang.NumberFormatException
 
+/**
+ *  Composable that displays Settings screen.
+ *  Data that is displayed is retrieved from [setVM]. [recreateActivity] is by language and theme
+ *  settings in order to immediately cause recomposition.
+ */
 @Composable
 fun SettingsScreen(
     setVM: SettingsViewModel,
@@ -63,6 +68,10 @@ fun SettingsScreen(
     )
 }
 
+/**
+ *  Composable that displays Settings screen.
+ *  All the data has been hoisted into above [SettingsScreen] thus allowing for easier testing.
+ */
 @Composable
 fun SettingsScreen(
     recreateActivity: () -> Unit,
@@ -207,6 +216,13 @@ fun SettingsScreen(
     }
 }
 
+/**
+ *  Helper function for setting up [Setting] Composable. [setting] is option that will be used here.
+ *  [sharedPref] is used to retrieve the current value. [onConfirm] determines how to handle user
+ *  confirmation.
+ *  This version is used when no additional dialogs are required when selecting a different value
+ *  for [setting].
+ */
 @Composable
 fun SettingSetup(
     setting: SettingOptions,
@@ -234,6 +250,14 @@ fun SettingSetup(
     )
 }
 
+/**
+ *  Helper function for setting up [Setting] Composable. [setting] is option that will be used here.
+ *  [optionSelectedDisplay] is the String that tells the user the currently selected option.
+ *  [updateOptionSelectedDisplay] is used to update [optionSelectedDisplay]. [sharedPref] is used
+ *  to retrieve the current value. [onConfirm] determines how to handle user confirmation.
+ *  This version is used when additional dialogs are required when selecting a different value
+ *  for [setting].
+ */
 @Composable
 fun SettingSetup(
     setting: SettingOptions,
@@ -258,6 +282,13 @@ fun SettingSetup(
     )
 }
 
+/**
+ *  Composable that displays a single [setting]. [optionsMap] is the map of values that user will be
+ *  able to select from. [optionSelectedValue] is the currently selected key.
+ *  [optionSelectedDisplay] is value that is paired to [optionSelectedValue] in [optionsMap].
+ *  [optionSelectedDisplay] is also displayed to the user before selecting. [onConfirm] determines
+ *  how to handle user confirmation.
+ */
 @Composable
 fun Setting(
     setting: SettingOptions,
