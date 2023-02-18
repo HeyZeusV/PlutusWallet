@@ -51,12 +51,27 @@ import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.PreviewHelper
 import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
+import com.heyzeusv.plutuswallet.util.AppBarActions
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
+/**
+ *  Composable that displays About Card.
+ *  [appBarActionSetup] determines what to do when an action item is pressed from the AppBar.
+ *  [navigateUp] allows for navigation back to OverviewScreen.
+ */
 @Composable
-fun AboutScreen() {
+fun AboutScreen(
+    appBarActionSetup: (AppBarActions) -> Unit,
+    navigateUp: () -> Unit
+) {
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = { navigateUp() }
+        )
+    )
     Card(
         modifier = Modifier
             .fillMaxSize()
@@ -271,7 +286,7 @@ private fun loadFile(file: String, context: Context): String {
 @Composable
 fun AboutScreenPreview() {
     PreviewHelper {
-        AboutScreen()
+        AboutScreen({ }, { })
     }
 }
 

@@ -1,5 +1,11 @@
 package com.heyzeusv.plutuswallet.util
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.PermDeviceInformation
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.heyzeusv.plutuswallet.R
 
 enum class TransactionType(val type: String, val stringId: Int) {
@@ -7,6 +13,13 @@ enum class TransactionType(val type: String, val stringId: Int) {
     INCOME("Income", R.string.type_income);
 
     fun opposite(): TransactionType = if (this == EXPENSE) INCOME else EXPENSE
+}
+
+enum class PWDrawerItems(val icon: ImageVector, val labelId: Int, val route: String) {
+    ACCOUNTS(Icons.Filled.AccountBalance, R.string.accounts, AccountsDestination.route),
+    CATEGORIES(Icons.Filled.Category, R.string.categories, CategoriesDestination.route),
+    SETTINGS(Icons.Filled.Settings, R.string.settings, SettingsDestination.route),
+    ABOUT(Icons.Filled.PermDeviceInformation, R.string.about, AboutDestination.route)
 }
 
 enum class FilterState(val stringId: Int) {

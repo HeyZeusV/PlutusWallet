@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.PreviewHelper
+import com.heyzeusv.plutuswallet.util.AppBarActions
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PWListAlertDialog
 import com.heyzeusv.plutuswallet.util.PWAlertDialog
@@ -48,14 +49,24 @@ import java.lang.NumberFormatException
 
 /**
  *  Composable that displays Settings screen.
- *  Data that is displayed is retrieved from [setVM]. [recreateActivity] is by language and theme
- *  settings in order to immediately cause recomposition.
+ *  Data that is displayed is retrieved from [setVM]. [appBarActionSetup] determines what to do
+ *  when an action item is pressed from the AppBar. [navigateUp] allows for navigation back to
+ *  OverviewScreen. [recreateActivity] is by language and theme settings in order to immediately
+ *  cause recomposition.
  */
 @Composable
 fun SettingsScreen(
     setVM: SettingsViewModel,
+    appBarActionSetup: (AppBarActions) -> Unit,
+    navigateUp: () -> Unit,
     recreateActivity: () -> Unit
 ) {
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = { navigateUp() }
+        )
+    )
     SettingsScreen(
         recreateActivity,
         setVM::updateNumberSymbols,

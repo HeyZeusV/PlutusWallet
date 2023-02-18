@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
@@ -30,9 +29,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.PermDeviceInformation
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -56,8 +52,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -66,7 +60,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.about.AboutScreen
 import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
 import com.heyzeusv.plutuswallet.ui.base.BaseActivity
@@ -85,23 +78,24 @@ import com.heyzeusv.plutuswallet.util.theme.PlutusWalletColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionScreen
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
+import com.heyzeusv.plutuswallet.ui.transaction.tranVMSetup
 import com.heyzeusv.plutuswallet.util.AboutDestination
 import com.heyzeusv.plutuswallet.util.AccountsDestination
+import com.heyzeusv.plutuswallet.util.AppBarActions
 import com.heyzeusv.plutuswallet.util.CategoriesDestination
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.OverviewDestination
 import com.heyzeusv.plutuswallet.util.PWDestination
+import com.heyzeusv.plutuswallet.util.PWDrawerItems
 import com.heyzeusv.plutuswallet.util.PWScreens
 import com.heyzeusv.plutuswallet.util.SettingsDestination
 import com.heyzeusv.plutuswallet.util.TransactionDestination
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
+import com.heyzeusv.plutuswallet.util.navigateSingleTopTo
+import com.heyzeusv.plutuswallet.util.navigateToTransactionWithId
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-/**
- *  Handles the loading and replacement of fragments into their containers, as well as
- *  starting Settings/About Activities.
- */
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
@@ -138,6 +132,7 @@ class MainActivity : BaseActivity() {
                         else -> isSystemInDarkTheme()
                     }
                 ) {
+                    // set status bar color
                     val systemUiController = rememberSystemUiController()
                     systemUiController.setSystemBarsColor(
                         color = MaterialTheme.colors.primary,
@@ -150,6 +145,10 @@ class MainActivity : BaseActivity() {
     }
 }
 
+/**
+ *  Main Composable of entire app. Contains a Scaffold which handles AppBar and Drawer. Its content
+ *  is a NavHost which handles which Screen Composables to display.
+ */
 @OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -160,6 +159,7 @@ fun PlutusWalletApp() {
     val currentScreen = PWScreens.find {
         currentDestination?.route?.contains(it.route) ?: false
     } ?: OverviewDestination
+
     var appBarActions by remember { mutableStateOf(AppBarActions()) }
 
     val activity = LocalContext.current as Activity
@@ -186,12 +186,8 @@ fun PlutusWalletApp() {
         // TODO: Make PWDrawer a child composable that opens/closes using AnimateVisibility
         drawerContent = {
             PWDrawer(
-                closeDrawer = {
-                    coroutineScope.launch {
-                        scaffoldState.drawerState.close()
-                    }
-                },
-                navController
+                closeDrawer = { coroutineScope.launch { scaffoldState.drawerState.close() }},
+                navigateTo = { navController.navigateSingleTopTo(it) }
             )
         },
         drawerGesturesEnabled = false,
@@ -260,12 +256,31 @@ fun PlutusWalletApp() {
                     pagerState = categoryListPagerState
                 )
             }
-            composable(SettingsDestination.route) { SettingsScreen(setVM) { activity.recreate() }}
-            composable(AboutDestination.route) { AboutScreen() }
+            composable(SettingsDestination.route) {
+                SettingsScreen(
+                    setVM,
+                    appBarActionSetup = { appBarActions = it },
+                    navigateUp = { navController.navigateUp() },
+                    recreateActivity = { activity.recreate() }
+                )
+            }
+            composable(AboutDestination.route) {
+                AboutScreen(
+                    appBarActionSetup = { appBarActions = it },
+                    navigateUp = { navController.navigateUp() }
+                )
+            }
         }
     }
 }
 
+/**
+ *  Composable for top app bar that is displayed throughout the app. [currentScreen] provides
+ *  various information: title, icons/descriptions for navigation, left, and right actions.
+ *  [onNavPressed] handles action when navigation button is pressed. [onActionLeftPressed] handles
+ *  action when left action button is pressed. [onActionRightPressed] handles action when right
+ *  action button is pressed.
+ */
 @Composable
 fun PWAppBar(
     currentScreen: PWDestination,
@@ -273,6 +288,7 @@ fun PWAppBar(
     onActionLeftPressed: () -> Unit,
     onActionRightPressed: () -> Unit,
 ) {
+    // retrieve string resources
     val actionLeftDescription = stringResource(currentScreen.actionLeftDescription)
     val actionRightDescription = stringResource(currentScreen.actionRightDescription)
     val title = stringResource(currentScreen.title)
@@ -319,33 +335,16 @@ fun PWAppBar(
     )
 }
 
-@Preview
-@Composable
-fun PWAppBarPreview() {
-    PlutusWalletTheme {
-        PWAppBar(
-            currentScreen = OverviewDestination,
-            onNavPressed = { },
-            onActionLeftPressed = { },
-            onActionRightPressed = { },
-        )
-    }
-}
-
 /**
- *  Might have to remove later, depending on Navigation
+ *  Composable for Drawer, which is displayed when navigation button on top app bar is pressed on
+ *  Overview screen. [closeDrawer] allows for closure of Drawer when item is pressed without having
+ *  to pass DrawerState. [navigateTo] allows for navigation to various screens depending on
+ *  [PWDestination.route] passed.
  */
-enum class PWDrawerItems(val icon: ImageVector, val labelId: Int) {
-    ACCOUNTS(Icons.Filled.AccountBalance, R.string.accounts),
-    CATEGORIES(Icons.Filled.Category, R.string.categories),
-    SETTINGS(Icons.Filled.Settings, R.string.settings),
-    ABOUT(Icons.Filled.PermDeviceInformation, R.string.about)
-}
-
 @Composable
 fun PWDrawer(
     closeDrawer: () -> Unit,
-    navController: NavHostController
+    navigateTo: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -363,8 +362,7 @@ fun PWDrawer(
                 contentDescription = stringResource(R.string.app_icon),
                 modifier = Modifier
                     .scale(1.5f)
-                    .padding(bottom = 8.dp)
-                    ,
+                    .padding(bottom = 8.dp),
                 tint = Color.Unspecified
             )
             Text(
@@ -386,27 +384,8 @@ fun PWDrawer(
                 items(PWDrawerItems.values()) { item ->
                     PWDrawerItem(
                         onClick = {
-                            when (item) {
-                                PWDrawerItems.ACCOUNTS -> {
-                                    closeDrawer()
-                                    navController.navigateSingleTopTo(AccountsDestination.route)
-                                }
-
-                                PWDrawerItems.CATEGORIES -> {
-                                    closeDrawer()
-                                    navController.navigateSingleTopTo(CategoriesDestination.route)
-                                }
-
-                                PWDrawerItems.ABOUT -> {
-                                    closeDrawer()
-                                    navController.navigateSingleTopTo(AboutDestination.route)
-                                }
-
-                                PWDrawerItems.SETTINGS -> {
-                                    closeDrawer()
-                                    navController.navigateSingleTopTo(SettingsDestination.route)
-                                }
-                            }
+                            closeDrawer()
+                            navigateTo(item.route)
                         },
                         icon = item.icon,
                         label = stringResource(item.labelId)
@@ -417,18 +396,10 @@ fun PWDrawer(
     }
 }
 
-@Preview
-@Composable
-fun PWDrawerPreview() {
-    val previewNavHostController = rememberNavController()
-    PlutusWalletTheme {
-        PWDrawer(
-            {},
-            previewNavHostController
-        )
-    }
-}
-
+/**
+ *  Composable for individual Drawer item. [onClick] determines action when item is pressed. [icon]
+ *  represents the screen item is for. [label] is name of the screen item is for.
+ */
 @Composable
 fun PWDrawerItem(
     onClick: () -> Unit,
@@ -459,18 +430,6 @@ fun PWDrawerItem(
     }
 }
 
-@Preview
-@Composable
-fun PWDrawerItemPreview() {
-    PlutusWalletTheme {
-        PWDrawerItem(
-            onClick = { /*TODO*/ },
-            icon = Icons.Filled.AccountBalance,
-            label = stringResource(R.string.accounts)
-        )
-    }
-}
-
 /**
  *  Executes [onBackPressed] whenever bottom navigation back button is pressed
  *  Found here: [https://www.valueof.io/blog/intercept-back-press-button-in-jetpack-compose]
@@ -496,57 +455,35 @@ fun BackPressHandler(
     }
 }
 
-/**
- *  Navigates app to [route]
- */
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) {
-        // pressing back from any screen would pop back stack to Overview
-        popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) { saveState = true }
-        // only 1 copy of a destination is ever created
-        launchSingleTop = true
-        // previous data and state is saved
-        restoreState = true
+@Preview
+@Composable
+fun PWAppBarPreview() {
+    PlutusWalletTheme {
+        PWAppBar(
+            currentScreen = OverviewDestination,
+            onNavPressed = { },
+            onActionLeftPressed = { },
+            onActionRightPressed = { },
+        )
     }
-
-/**
- *  Used whenever navigating to TransactionScreen, opens the Transaction screen while passing
- *  [tranId] as argument to determine which Transaction to open
- */
-fun NavHostController.navigateToTransactionWithId(tranId: Int) {
-    this.navigateSingleTopTo("${TransactionDestination.route}/$tranId")
 }
 
-/**
- *  Data class that is passed to each screen to determine the AppBar actions when pressed on the
- *  specified screen.
- */
-data class AppBarActions(
-    val onNavPressed: suspend () -> Unit = { },
-    val onActionLeftPressed: () -> Unit = { },
-    val onActionRightPressed: () -> Unit = { }
-)
+@Preview
+@Composable
+fun PWDrawerPreview() {
+    PlutusWalletTheme {
+        PWDrawer({ }, { })
+    }
+}
 
-/**
- *  Update SettingsValues in TransactionViewModel with updated [sv].
- *
- *  TransactionViewModel requires several translated strings, but I don't want to have it hold
- *  context in order to get string resources. This extension function retrieves all strings
- *  required using the provided [context].
- */
-private fun TransactionViewModel.tranVMSetup(sv: SettingsValues, context: Context) {
-    this.apply {
-        setVals = sv
-
-        emptyTitle = context.getString(R.string.transaction_empty_title)
-        accountCreate = context.getString(R.string.account_create)
-        categoryCreate = context.getString(R.string.category_create)
-        // array used by Period DropDownMenu
-        updatePeriodList(
-            mutableListOf(
-                context.getString(R.string.period_days), context.getString(R.string.period_weeks),
-                context.getString(R.string.period_months), context.getString(R.string.period_years)
-            )
+@Preview
+@Composable
+fun PWDrawerItemPreview() {
+    PlutusWalletTheme {
+        PWDrawerItem(
+            onClick = { },
+            icon = Icons.Filled.AccountBalance,
+            label = stringResource(R.string.accounts)
         )
     }
 }

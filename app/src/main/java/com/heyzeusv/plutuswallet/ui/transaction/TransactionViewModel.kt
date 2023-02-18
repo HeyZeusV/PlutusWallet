@@ -1,9 +1,11 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
+import android.content.Context
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
@@ -419,5 +421,29 @@ class TransactionViewModel @Inject constructor(
         _transaction.value.date = newDate
         // turns date selected into Date type
         updateDate(setVals.dateFormatter.format(newDate))
+    }
+}
+
+/**
+ *  Update SettingsValues in TransactionViewModel with updated [sv].
+ *
+ *  TransactionViewModel requires several translated strings, but I don't want to have it hold
+ *  context in order to get string resources. This extension function retrieves all strings
+ *  required using the provided [context].
+ */
+fun TransactionViewModel.tranVMSetup(sv: SettingsValues, context: Context) {
+    this.apply {
+        setVals = sv
+
+        emptyTitle = context.getString(R.string.transaction_empty_title)
+        accountCreate = context.getString(R.string.account_create)
+        categoryCreate = context.getString(R.string.category_create)
+        // array used by Period DropDownMenu
+        updatePeriodList(
+            mutableListOf(
+                context.getString(R.string.period_days), context.getString(R.string.period_weeks),
+                context.getString(R.string.period_months), context.getString(R.string.period_years)
+            )
+        )
     }
 }
