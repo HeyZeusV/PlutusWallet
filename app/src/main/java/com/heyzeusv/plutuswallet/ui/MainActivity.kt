@@ -7,10 +7,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +29,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -72,9 +69,6 @@ import com.heyzeusv.plutuswallet.ui.overview.OverviewScreen
 import com.heyzeusv.plutuswallet.ui.settings.SettingsScreen
 import com.heyzeusv.plutuswallet.ui.settings.SettingsViewModel
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
-import com.heyzeusv.plutuswallet.util.theme.PWDarkColors
-import com.heyzeusv.plutuswallet.util.theme.PWLightColors
-import com.heyzeusv.plutuswallet.util.theme.PlutusWalletColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionScreen
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
@@ -104,42 +98,14 @@ class MainActivity : BaseActivity() {
 
         setContent {
             val theme = sharedPref[Key.KEY_THEME, "-1"].toInt()
-            val pwColors: PlutusWalletColors
-            when (theme) {
-                1 -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    pwColors = PWLightColors
-                }
-                2 -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    pwColors = PWDarkColors
-                }
-                else -> {
-                    pwColors = if (isSystemInDarkTheme()) {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                        PWDarkColors
-                    } else {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                        PWLightColors
-                    }
-                }
-            }
-            CompositionLocalProvider(LocalPWColors provides pwColors) {
-                PlutusWalletTheme(
-                    darkTheme = when (theme) {
-                        1 -> false
-                        2 -> true
-                        else -> isSystemInDarkTheme()
-                    }
-                ) {
-                    // set status bar color
-                    val systemUiController = rememberSystemUiController()
-                    systemUiController.setSystemBarsColor(
-                        color = MaterialTheme.colors.primary,
-                        darkIcons = false
-                    )
-                    PlutusWalletApp()
-                }
+            PlutusWalletTheme(theme) {
+                // set status bar color
+                val systemUiController = rememberSystemUiController()
+                systemUiController.setSystemBarsColor(
+                    color = MaterialTheme.colors.primary,
+                    darkIcons = false
+                )
+                PlutusWalletApp()
             }
         }
     }
