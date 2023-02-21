@@ -93,9 +93,9 @@ import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.theme.chipTextStyle
 import com.heyzeusv.plutuswallet.util.AppBarActions
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.ADD
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.REMOVE
+import com.heyzeusv.plutuswallet.util.FilterChipAction
+import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
+import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.DateUtils
@@ -239,14 +239,14 @@ fun OverviewScreen(
     fAccountFilterOnClick: (Boolean) -> Unit,
     fAccountNameList: List<String>,
     fAccountSelected: List<String>,
-    fAccountChipOnClick: (String, FilterSelectedAction) -> Unit,
+    fAccountChipOnClick: (String, FilterChipAction) -> Unit,
     fCategoryFilterSelected: Boolean,
     fCategoryFilterOnClick: (Boolean) -> Unit,
     fTypeSelected: TransactionType,
     fUpdateTypeSelected: (TransactionType) -> Unit,
     fCategoryList: List<String>,
     fCategorySelected: List<String>,
-    fCategoryChipOnClick: (String, FilterSelectedAction) -> Unit,
+    fCategoryChipOnClick: (String, FilterChipAction) -> Unit,
     fDateFilterSelected: Boolean,
     fDateFilterOnClick: (Boolean) -> Unit,
     fStartDateString: String,
@@ -669,14 +669,14 @@ fun FilterCard(
     accountFilterOnClick: (Boolean) -> Unit,
     accountList: List<String>,
     accountSelected: List<String>,
-    accountChipOnClick: (String, FilterSelectedAction) -> Unit,
+    accountChipOnClick: (String, FilterChipAction) -> Unit,
     categoryFilterSelected: Boolean,
     categoryFilterOnClick: (Boolean) -> Unit,
     typeSelected: TransactionType,
     updateTypeSelected: (TransactionType) -> Unit,
     categoryList: List<String>,
     categorySelectedList: List<String>,
-    categoryChipOnClick: (String, FilterSelectedAction) -> Unit,
+    categoryChipOnClick: (String, FilterChipAction) -> Unit,
     dateFilterSelected: Boolean,
     dateFilterOnClick: (Boolean) -> Unit,
     startDateString: String,

@@ -8,13 +8,24 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.heyzeusv.plutuswallet.R
 
+/**
+ *  Enum to ensure that type from Transaction object is always either Expense or Income. [type] is
+ *  English string version of Expense/Income which gets saved to Database. [stringId] is the
+ *  string resource id of the translated version of Expense/Income which gets displayed to user.
+ */
 enum class TransactionType(val type: String, val stringId: Int) {
     EXPENSE("Expense", R.string.type_expense),
     INCOME("Income", R.string.type_income);
 
+    // used to quickly switch between Expense/Income
     fun opposite(): TransactionType = if (this == EXPENSE) INCOME else EXPENSE
 }
 
+/**
+ *  Enum for the available options when user opens Drawer. [icon] is the visual representation of
+ *  item that is displayed next to label. [labelId] is the translated string resource id of item.
+ *  [route] is used by Navigation to determine where item leads user to.
+ */
 enum class PWDrawerItems(val icon: ImageVector, val labelId: Int, val route: String) {
     ACCOUNTS(Icons.Filled.AccountBalance, R.string.accounts, AccountsDestination.route),
     CATEGORIES(Icons.Filled.Category, R.string.categories, CategoriesDestination.route),
@@ -22,6 +33,10 @@ enum class PWDrawerItems(val icon: ImageVector, val labelId: Int, val route: Str
     ABOUT(Icons.Filled.PermDeviceInformation, R.string.about, AboutDestination.route)
 }
 
+/**
+ *  Enum for the possible states of Filter when user presses "Apply" button. [stringId] is the
+ *  string resource id of translated string that is displayed by Snackbar when state is an error.
+ */
 enum class FilterState(val stringId: Int) {
     VALID(R.string.blank_string),
     NO_SELECTED_ACCOUNT(R.string.filter_no_selected_account),
@@ -30,17 +45,31 @@ enum class FilterState(val stringId: Int) {
     INVALID_DATE_RANGE(R.string.filter_date_warning)
 }
 
-enum class FilterSelectedAction {
+/**
+ *  Enum for the possible actions on the Chips in Filter.
+ */
+enum class FilterChipAction {
     ADD,
     REMOVE
 }
 
-enum class DataListSelectedAction {
+/**
+ *  Enum for the possible actions possible on List screen items.
+ */
+enum class ListItemAction {
     CREATE,
     DELETE,
     EDIT
 }
 
+/**
+ *  Enum for the available settings in the Settings screen. [titleId] is the string resource id for
+ *  the name of the setting. [valueArrayId] is the string array resource id for the values that get
+ *  saved to SharedPreferences after user selects an option. [displayArrayId] is the string array
+ *  resource id for the values that get shown to user. Can be seen as [valueArrayId] are the keys
+ *  while [displayArrayId] are the values in a map. [key] is [Key] object which holds the
+ *  SharedPreferences key for the setting.
+ */
 enum class SettingOptions(
     val titleId: Int,
     val valueArrayId: Int,

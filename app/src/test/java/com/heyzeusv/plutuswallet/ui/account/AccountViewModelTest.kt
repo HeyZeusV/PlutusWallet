@@ -6,8 +6,8 @@ import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
+import com.heyzeusv.plutuswallet.util.ListItemAction.DELETE
+import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals

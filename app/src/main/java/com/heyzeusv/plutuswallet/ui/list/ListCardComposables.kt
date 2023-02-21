@@ -46,9 +46,9 @@ import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
 import com.heyzeusv.plutuswallet.ui.PWAlertDialog
 import com.heyzeusv.plutuswallet.ui.PWInputAlertDialog
 import com.heyzeusv.plutuswallet.util.AppBarActions
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.CREATE
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
+import com.heyzeusv.plutuswallet.util.ListItemAction.CREATE
+import com.heyzeusv.plutuswallet.util.ListItemAction.DELETE
+import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 

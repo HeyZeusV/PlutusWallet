@@ -7,8 +7,8 @@ import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.DataDialog
 import com.heyzeusv.plutuswallet.data.model.DataInterface
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
+import com.heyzeusv.plutuswallet.util.ListItemAction.DELETE
+import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import dagger.hilt.android.lifecycle.HiltViewModel

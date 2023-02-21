@@ -5,7 +5,7 @@ import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.ui.overview.FilterViewModel
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.ADD
+import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterState.INVALID_DATE_RANGE
 import com.heyzeusv.plutuswallet.util.FilterState.NO_SELECTED_ACCOUNT
 import com.heyzeusv.plutuswallet.util.FilterState.NO_SELECTED_CATEGORY

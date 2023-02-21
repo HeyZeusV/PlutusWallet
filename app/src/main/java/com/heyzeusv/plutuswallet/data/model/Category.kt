@@ -3,7 +3,7 @@ package com.heyzeusv.plutuswallet.data.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction
+import com.heyzeusv.plutuswallet.util.ListItemAction
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 
@@ -32,7 +32,7 @@ interface DataInterface {
 }
 
 data class DataDialog(
-    val action: DataListSelectedAction,
+    val action: ListItemAction,
     val id: Int,
     val type: TransactionType = EXPENSE
 )

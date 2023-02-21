@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.Repository
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.ADD
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.REMOVE
+import com.heyzeusv.plutuswallet.util.FilterChipAction
+import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
+import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
 import com.heyzeusv.plutuswallet.util.FilterState
 import com.heyzeusv.plutuswallet.util.FilterState.INVALID_DATE_RANGE
 import com.heyzeusv.plutuswallet.util.FilterState.NO_SELECTED_ACCOUNT
@@ -91,7 +91,7 @@ class FilterViewModel @Inject constructor(
     // selected items
     private val _accountSelected = MutableStateFlow(listOf<String>())
     val accountSelected: StateFlow<List<String>> get() = _accountSelected
-    fun updateAccountSelected(value: String, action: FilterSelectedAction) {
+    fun updateAccountSelected(value: String, action: FilterChipAction) {
         _accountSelected.value = when (action) {
             ADD -> _accountSelected.value + value
             REMOVE -> _accountSelected.value - value
@@ -112,7 +112,7 @@ class FilterViewModel @Inject constructor(
             _categorySelectedList.value = incomeCatSelectedList
         }
     }
-    fun updateCategorySelectedList(value: String, action: FilterSelectedAction) {
+    fun updateCategorySelectedList(value: String, action: FilterChipAction) {
         _categorySelectedList.value = when (action) {
             ADD -> _categorySelectedList.value + value
             REMOVE -> _categorySelectedList.value - value

@@ -4,13 +4,11 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.util.theme.PWLightColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletColors
@@ -63,16 +61,8 @@ abstract class BaseTest {
                     2 -> PWDarkColors
                     else -> if (isSystemInDarkTheme()) PWDarkColors else PWLightColors
                 }
-                CompositionLocalProvider(LocalPWColors provides pwColors) {
-                    PlutusWalletTheme(
-                        darkTheme = when (theme) {
-                            1 -> false
-                            2 -> true
-                            else -> isSystemInDarkTheme()
-                        }
-                    ) {
-                        PlutusWalletApp()
-                    }
+                PlutusWalletTheme {
+                    PlutusWalletApp()
                 }
             }
         }
