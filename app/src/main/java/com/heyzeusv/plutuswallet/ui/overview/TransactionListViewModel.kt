@@ -2,7 +2,7 @@ package com.heyzeusv.plutuswallet.ui.overview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.data.Repository
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.TranListItem
@@ -36,7 +36,7 @@ private const val INCOME = "Income"
  */
 @HiltViewModel
 class TransactionListViewModel @Inject constructor(
-    private val tranRepo: Repository
+    private val tranRepo: PWRepositoryInterface
 ) : ViewModel() {
 
     var setVals = SettingsValues()

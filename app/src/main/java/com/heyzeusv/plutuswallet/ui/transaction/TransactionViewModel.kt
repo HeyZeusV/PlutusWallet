@@ -6,7 +6,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.Repository
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
@@ -34,7 +34,7 @@ import kotlinx.coroutines.withContext
  */
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val tranRepo: Repository
+    private val tranRepo: PWRepositoryInterface
 ) : ViewModel() {
 
     var setVals = SettingsValues()

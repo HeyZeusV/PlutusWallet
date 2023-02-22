@@ -2,7 +2,7 @@ package com.heyzeusv.plutuswallet.ui.overview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.data.Repository
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.FilterChipAction
@@ -33,7 +33,7 @@ private const val MIDNIGHT_MILLI = 86399999
  */
 @HiltViewModel
 class FilterViewModel @Inject constructor(
-    private val tranRepo: Repository
+    private val tranRepo: PWRepositoryInterface
 ) : ViewModel() {
 
     private val _showFilter = MutableStateFlow(false)

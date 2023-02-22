@@ -371,7 +371,7 @@ class DatabaseTest {
 
     companion object {
 
-        private lateinit var db : TransactionDatabase
+        private lateinit var db : PWDatabase
 
         private lateinit var accDao  : AccountDao
         private lateinit var catDao  : CategoryDao
@@ -405,7 +405,7 @@ class DatabaseTest {
         fun createDb() {
 
             val context : Context = ApplicationProvider.getApplicationContext()
-            db = Room.inMemoryDatabaseBuilder(context, TransactionDatabase::class.java).build()
+            db = Room.inMemoryDatabaseBuilder(context, PWDatabase::class.java).build()
             accDao  = db.accountDao()
             catDao  = db.categoryDao()
             tranDao = db.transactionDao()

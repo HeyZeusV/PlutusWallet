@@ -8,7 +8,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
-import com.heyzeusv.plutuswallet.data.Repository
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.util.theme.PWDarkColors
 import com.heyzeusv.plutuswallet.util.theme.PWLightColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletColors
@@ -37,7 +37,7 @@ abstract class BaseTest {
     @get:Rule(order = 2)
     var composeRule = createAndroidComposeRule<MainActivity>()
 
-    @Inject lateinit var fakeRepo: Repository
+    @Inject lateinit var fakeRepo: PWRepositoryInterface
     lateinit var repo: FakeAndroidRepository
     protected lateinit var pwColors: PlutusWalletColors
     protected lateinit var res: Resources

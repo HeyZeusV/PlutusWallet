@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 
-class FakeAndroidRepository @Inject constructor() : Repository {
+class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
     val dd = DummyAndroidDataUtil()
     var accList: MutableList<Account> = dd.accList

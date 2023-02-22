@@ -18,7 +18,7 @@ class MigrationTests {
     @get:Rule
     val helper : MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
-        TransactionDatabase::class.java.canonicalName,
+        PWDatabase::class.java.canonicalName,
         FrameworkSQLiteOpenHelperFactory()
     )
 

@@ -23,8 +23,8 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
                       Transaction::class],
           version = 24,
           exportSchema = true)
-@TypeConverters(TransactionTypeConverters::class)
-abstract class TransactionDatabase : RoomDatabase() {
+@TypeConverters(PWTypeConverters::class)
+abstract class PWDatabase : RoomDatabase() {
 
     abstract fun accountDao(): AccountDao
     abstract fun categoryDao(): CategoryDao

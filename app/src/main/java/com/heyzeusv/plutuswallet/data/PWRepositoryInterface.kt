@@ -8,7 +8,10 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 import java.util.Date
 import kotlinx.coroutines.flow.Flow
 
-interface Repository {
+/**
+ *  Interface containing all the queries required to be implemented by a repository.
+ */
+interface PWRepositoryInterface {
     /**
      *  Account Queries
      */
