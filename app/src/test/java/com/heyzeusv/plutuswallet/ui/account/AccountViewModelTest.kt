@@ -4,7 +4,7 @@ import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
-import com.heyzeusv.plutuswallet.data.model.DataDialog
+import com.heyzeusv.plutuswallet.data.model.ListDialog
 import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
 import com.heyzeusv.plutuswallet.util.ListItemAction.DELETE
 import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
@@ -56,11 +56,11 @@ internal class AccountViewModelTest {
     fun deleteAccount() = runTest {
         val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2)
 
-        accVM.updateDialog(DataDialog(DELETE, 4))
+        accVM.updateDialog(ListDialog(DELETE, 4))
         accVM.deleteItem(dd.acc4)
 
         assertEquals(expectedAccounts, accVM.firstItemList.value)
-        assertEquals(DataDialog(DELETE, -1), accVM.showDialog.value)
+        assertEquals(ListDialog(DELETE, -1), accVM.showDialog.value)
     }
 
     @Test
@@ -69,12 +69,12 @@ internal class AccountViewModelTest {
         val expectedAccounts = listOf( dd.acc3, dd.acc2, Account(1, "Test"), dd.acc4)
         val expectedAccountsUsed = listOf(Account(1, "Test"), dd.acc2, dd.acc3)
 
-        accVM.updateDialog(DataDialog(EDIT, 1))
+        accVM.updateDialog(ListDialog(EDIT, 1))
         accVM.editItem(dd.acc1, "Test")
 
         assertEquals(expectedAccounts, accVM.firstItemList.value)
         assertEquals(expectedAccountsUsed, accVM.firstUsedItemList.value)
-        assertEquals(DataDialog(EDIT, -1), accVM.showDialog.value)
+        assertEquals(ListDialog(EDIT, -1), accVM.showDialog.value)
     }
 
     @Test
@@ -95,7 +95,7 @@ internal class AccountViewModelTest {
 
         assert(repo.accList.contains(newAccount))
         assertEquals(expectedAccounts, accVM.firstItemList.value)
-        assertEquals(DataDialog(EDIT, -1), accVM.showDialog.value)
+        assertEquals(ListDialog(EDIT, -1), accVM.showDialog.value)
     }
 
     @Test

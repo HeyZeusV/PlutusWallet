@@ -40,8 +40,8 @@ import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
-import com.heyzeusv.plutuswallet.data.model.DataDialog
-import com.heyzeusv.plutuswallet.data.model.DataInterface
+import com.heyzeusv.plutuswallet.data.model.ListDialog
+import com.heyzeusv.plutuswallet.data.model.ListItemInterface
 import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
 import com.heyzeusv.plutuswallet.ui.PWAlertDialog
 import com.heyzeusv.plutuswallet.ui.PWInputAlertDialog
@@ -92,7 +92,7 @@ fun ListCard(
                     0 -> EXPENSE
                     else -> INCOME
                 }
-                viewModel.updateDialog(DataDialog(CREATE, 0, type))
+                viewModel.updateDialog(ListDialog(CREATE, 0, type))
             }
         )
     )
@@ -121,25 +121,25 @@ fun ListCard(
 @Composable
 fun ListCard(
     pagerState: PagerState,
-    dataLists: List<List<DataInterface>>,
-    usedDataLists: List<List<DataInterface>>,
+    dataLists: List<List<ListItemInterface>>,
+    usedDataLists: List<List<ListItemInterface>>,
     listSubtitles: List<Int>,
-    onClick: (DataDialog) -> Unit,
-    showDialog: DataDialog,
+    onClick: (ListDialog) -> Unit,
+    showDialog: ListDialog,
     createDialogTitle: String,
     createDialogOnConfirm: (String) -> Unit,
     deleteDialogTitle: String,
-    deleteDialogOnConfirm: (DataInterface) -> Unit,
+    deleteDialogOnConfirm: (ListItemInterface) -> Unit,
     editDialogTitle: String,
-    editDialogOnConfirm: (DataInterface, String) -> Unit,
-    dialogOnDismiss: (DataDialog) -> Unit,
+    editDialogOnConfirm: (ListItemInterface, String) -> Unit,
+    dialogOnDismiss: (ListDialog) -> Unit,
 ) {
     val dataListsSize = dataLists.size
 
     if (showDialog.action == CREATE) {
         PWInputAlertDialog(
             title = createDialogTitle,
-            onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
+            onDismiss = { dialogOnDismiss(ListDialog(EDIT, -1)) },
             onConfirm = createDialogOnConfirm
         )
     }
@@ -175,8 +175,8 @@ fun ListCard(
                             DataItem(
                                 data = data,
                                 deletable = !usedDataLists[page].contains(data),
-                                editOnClick = { onClick(DataDialog(EDIT, data.id)) },
-                                deleteOnClick = { onClick(DataDialog(DELETE, data.id)) }
+                                editOnClick = { onClick(ListDialog(EDIT, data.id)) },
+                                deleteOnClick = { onClick(ListDialog(DELETE, data.id)) }
                             )
                             Divider(
                                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
@@ -194,13 +194,13 @@ fun ListCard(
                                             onConfirmText = stringResource(R.string.alert_dialog_yes),
                                             onConfirm = { deleteDialogOnConfirm(data) },
                                             onDismissText = stringResource(R.string.alert_dialog_no),
-                                            onDismiss = { dialogOnDismiss(DataDialog(DELETE, -1)) }
+                                            onDismiss = { dialogOnDismiss(ListDialog(DELETE, -1)) }
                                         )
                                     }
                                     EDIT -> {
                                         PWInputAlertDialog(
                                             title = editDialogTitle,
-                                            onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
+                                            onDismiss = { dialogOnDismiss(ListDialog(EDIT, -1)) },
                                             data = data,
                                             onConfirmData = editDialogOnConfirm
                                         )
@@ -230,7 +230,7 @@ fun ListCard(
  */
 @Composable
 fun DataItem(
-    data: DataInterface,
+    data: ListItemInterface,
     deletable: Boolean,
     editOnClick: () -> Unit,
     deleteOnClick: () -> Unit
@@ -295,7 +295,7 @@ fun ListCardPreview() {
             usedDataLists = listOf(listOf(exCat), emptyList()),
             listSubtitles = listOf(R.string.type_expense, R.string.type_income),
             onClick = { },
-            showDialog = DataDialog(EDIT, -1, EXPENSE),
+            showDialog = ListDialog(EDIT, -1, EXPENSE),
             createDialogTitle = "Create Title",
             createDialogOnConfirm = { },
             deleteDialogTitle = "Delete Title",

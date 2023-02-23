@@ -147,8 +147,8 @@ internal class ChartViewModelTest {
         )
         chartVM.filteredCategoryTotals(
             FilterInfo(
-                account = true, date = true,
-                accountNames = listOf("Cash"), start = Date(0), end = Date(86400000)
+                account = true, accountNames = listOf("Cash"),
+                date = true, start = Date(0), end = Date(86400000)
             )
         ).collect { collectedList = it }
         assertEquals(expectedBothFilter, collectedList)

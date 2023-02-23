@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
-import com.heyzeusv.plutuswallet.data.model.DataInterface
+import com.heyzeusv.plutuswallet.data.model.ListItemInterface
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.alertDialogButton
 
@@ -110,9 +110,9 @@ fun PWInputAlertDialog(
     title: String,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
-    data: DataInterface = Account(0, ""),
+    data: ListItemInterface = Account(0, ""),
     onConfirm: (String) -> Unit = { },
-    onConfirmData: (DataInterface, String) -> Unit = { _, _ -> }
+    onConfirmData: (ListItemInterface, String) -> Unit = { _, _ -> }
 ) {
     var text by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }

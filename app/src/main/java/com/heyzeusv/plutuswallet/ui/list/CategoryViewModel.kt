@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.Category
-import com.heyzeusv.plutuswallet.data.model.DataDialog
-import com.heyzeusv.plutuswallet.data.model.DataInterface
+import com.heyzeusv.plutuswallet.data.model.ListDialog
+import com.heyzeusv.plutuswallet.data.model.ListItemInterface
 import com.heyzeusv.plutuswallet.util.ListItemAction.DELETE
 import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
@@ -55,9 +55,9 @@ class CategoryViewModel @Inject constructor(
     override fun updateItemExists(value: String) { _categoryExists.value = value }
 
     // display different dialog depending on Action
-    private val _showDialog = MutableStateFlow(DataDialog(DELETE, -1))
-    override val showDialog: StateFlow<DataDialog> get() = _showDialog
-    override fun updateDialog(newValue: DataDialog) { _showDialog.value = newValue }
+    private val _showDialog = MutableStateFlow(ListDialog(DELETE, -1))
+    override val showDialog: StateFlow<ListDialog> get() = _showDialog
+    override fun updateDialog(newValue: ListDialog) { _showDialog.value = newValue }
 
     init {
         viewModelScope.launch {
@@ -77,17 +77,17 @@ class CategoryViewModel @Inject constructor(
     /**
      *  Removes [item] from database.
      */
-    override fun deleteItem(item: DataInterface) {
+    override fun deleteItem(item: ListItemInterface) {
         viewModelScope.launch {
             tranRepo.deleteCategory(item as Category)
         }
-        updateDialog(DataDialog(DELETE, -1))
+        updateDialog(ListDialog(DELETE, -1))
     }
 
     /**
      *  If name exists, creates Snackbar telling user so, else updates [item] with [newName]
      */
-    override fun editItem(item: DataInterface, newName: String) {
+    override fun editItem(item: ListItemInterface, newName: String) {
         val category = (item as Category)
         val exists = if (category.type == EXPENSE.type) {
             _expenseCatList.value.find { it.name == newName }
@@ -102,7 +102,7 @@ class CategoryViewModel @Inject constructor(
                 tranRepo.updateCategory(category)
             }
         }
-        updateDialog(DataDialog(EDIT, -1))
+        updateDialog(ListDialog(EDIT, -1))
     }
 
     /**
@@ -124,6 +124,6 @@ class CategoryViewModel @Inject constructor(
                 tranRepo.insertCategory(newCategory)
             }
         }
-        updateDialog(DataDialog(EDIT, -1, type))
+        updateDialog(ListDialog(EDIT, -1, type))
     }
 }

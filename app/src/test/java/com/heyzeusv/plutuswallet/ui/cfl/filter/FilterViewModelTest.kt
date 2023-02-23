@@ -160,8 +160,8 @@ internal class FilterViewModelTest {
         filterVM.updateStartDateString(Date(0))
         filterVM.updateEndDateString(Date(1000))
         val expectedFilterInfo = FilterInfo(
-            account = true, category = true, date = true,
-            EXPENSE.type, listOf("Cash"), listOf("Food"), Date(0), Date(1000 + 86399999)
+            account = true, listOf("Cash"), category = true,
+            EXPENSE.type, listOf("Food"), date = true, Date(0), Date(1000 + 86399999)
         )
 
         // first fill filter with data
@@ -196,8 +196,8 @@ internal class FilterViewModelTest {
         filterVM.updateStartDateString(Date(0))
         filterVM.updateEndDateString(Date(1000))
         val expectedFilterInfo = FilterInfo(
-            account = true, category = true, date = true,
-            EXPENSE.type, listOf("Cash"), listOf("Food"), Date(0), Date(1000 + 86399999)
+            account = true, listOf("Cash"), category = true,
+            EXPENSE.type, listOf("Food"), date = true, Date(0), Date(1000 + 86399999)
         )
 
         filterVM.applyFilter()

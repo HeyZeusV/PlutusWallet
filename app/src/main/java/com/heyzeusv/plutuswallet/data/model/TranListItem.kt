@@ -5,15 +5,8 @@ import java.util.Date
 
 /**
  *  Not exactly an entity, but more of a helper object to hold Transaction data that
- *  is displayed on TransactionListFragment since not all Transaction data is displayed.
- *
- *  @param id       unique id of Transaction.
- *  @param title    title of Transaction.
- *  @param date     Date of Transaction.
- *  @param total    the total amount of Transaction.
- *  @param account  account this IVT belongs to.
- *  @param type     either "Expense" or "Income".
- *  @param category the name of category selected.
+ *  is displayed on TransactionListCard Composable since not all Transaction data is displayed.
+ *  Refer to [Transaction] for parameter details.
  */
 data class TranListItem(
     val id: Int,

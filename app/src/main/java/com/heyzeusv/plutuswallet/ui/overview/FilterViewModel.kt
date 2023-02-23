@@ -179,11 +179,11 @@ class FilterViewModel @Inject constructor(
             else -> {
                 _filterInfo.value = FilterInfo(
                     account = accountFilter.value,
-                    category = categoryFilter.value,
-                    date = dateFilter.value,
-                    type = typeSelected.value.type,
                     accountNames = accountSelected.value,
+                    category = categoryFilter.value,
+                    type = typeSelected.value.type,
                     categoryNames = categorySelectedList.value,
+                    date = dateFilter.value,
                     start = startDate,
                     end = endDate
                 )

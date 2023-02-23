@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.Account
-import com.heyzeusv.plutuswallet.data.model.DataDialog
-import com.heyzeusv.plutuswallet.data.model.DataInterface
+import com.heyzeusv.plutuswallet.data.model.ListDialog
+import com.heyzeusv.plutuswallet.data.model.ListItemInterface
 import com.heyzeusv.plutuswallet.util.ListItemAction.DELETE
 import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,18 +34,18 @@ class AccountViewModel @Inject constructor(
 
     // Accounts to be displayed
     private val _accountList = MutableStateFlow(listOf<Account>())
-    override val firstItemList: StateFlow<List<DataInterface>> get() = _accountList
+    override val firstItemList: StateFlow<List<ListItemInterface>> get() = _accountList
 
     // used by Categories, so can be empty here
     private val _emptyList = MutableStateFlow(emptyList<Account>())
-    override val secondItemList: StateFlow<List<DataInterface>> get() = _emptyList
+    override val secondItemList: StateFlow<List<ListItemInterface>> get() = _emptyList
 
     // Accounts that are tied to Transactions
     private val _accountsUsedList = MutableStateFlow(listOf<Account>())
-    override val firstUsedItemList: StateFlow<List<DataInterface>> get() = _accountsUsedList
+    override val firstUsedItemList: StateFlow<List<ListItemInterface>> get() = _accountsUsedList
 
     // used by Categories, so can be empty here
-    override val secondUsedItemList: StateFlow<List<DataInterface>> get() = _emptyList
+    override val secondUsedItemList: StateFlow<List<ListItemInterface>> get() = _emptyList
 
     // name of Account that already exists
     private val _accountExists = MutableStateFlow("")
@@ -53,9 +53,9 @@ class AccountViewModel @Inject constructor(
     override fun updateItemExists(value: String) { _accountExists.value = value }
 
     // display different dialog depending on Action
-    private val _showDialog = MutableStateFlow(DataDialog(DELETE, -1))
-    override val showDialog: StateFlow<DataDialog> get() = _showDialog
-    override fun updateDialog(newValue: DataDialog) { _showDialog.value = newValue }
+    private val _showDialog = MutableStateFlow(ListDialog(DELETE, -1))
+    override val showDialog: StateFlow<ListDialog> get() = _showDialog
+    override fun updateDialog(newValue: ListDialog) { _showDialog.value = newValue }
 
     init {
         viewModelScope.launch {
@@ -70,17 +70,17 @@ class AccountViewModel @Inject constructor(
     /**
      *  Removes [item] from database.
      */
-    override fun deleteItem(item: DataInterface) {
+    override fun deleteItem(item: ListItemInterface) {
         viewModelScope.launch {
             tranRepo.deleteAccount(item as Account)
         }
-        updateDialog(DataDialog(DELETE, -1))
+        updateDialog(ListDialog(DELETE, -1))
     }
 
     /**
      *  If name exists, creates Snackbar telling user so, else updates [item] with [newName].
      */
-    override fun editItem(item: DataInterface, newName: String) {
+    override fun editItem(item: ListItemInterface, newName: String) {
         val exists = _accountList.value.find { it.name == newName }
         if (exists != null) {
             updateItemExists(newName)
@@ -90,7 +90,7 @@ class AccountViewModel @Inject constructor(
                 tranRepo.updateAccount(item as Account)
             }
         }
-        updateDialog(DataDialog(EDIT, -1))
+        updateDialog(ListDialog(EDIT, -1))
     }
 
     /**
@@ -105,6 +105,6 @@ class AccountViewModel @Inject constructor(
                 tranRepo.insertAccount(Account(0, name))
             }
         }
-        updateDialog(DataDialog(EDIT, -1))
+        updateDialog(ListDialog(EDIT, -1))
     }
 }
