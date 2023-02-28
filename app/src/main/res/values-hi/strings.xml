@@ -26,7 +26,7 @@
     <string name="filter_apply">लागू</string>
     <string name="filter_category">वर्ग</string>
     <string name="filter_date">दिनांक</string>
-    <string name="filter_date_warning">अंतिम तिथि प्रारंभ तिथि के बाद होनी चाहिए !!</string>
+    <string name="filter_invalid_date_range">अंतिम तिथि प्रारंभ तिथि के बाद होनी चाहिए !!</string>
     <string name="filter_end">समाप्त</string>
     <string name="filter_reset">रीसेट</string>
     <string name="filter_start">शुरू</string>

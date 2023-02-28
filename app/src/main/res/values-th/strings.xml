@@ -26,7 +26,7 @@
     <string name="filter_apply">ใช้</string>
     <string name="filter_category">ประเภท</string>
     <string name="filter_date">วันที่</string>
-    <string name="filter_date_warning">วันที่สิ้นสุดต้องอยู่หลังวันที่เริ่มต้น !!</string>
+    <string name="filter_invalid_date_range">วันที่สิ้นสุดต้องอยู่หลังวันที่เริ่มต้น !!</string>
     <string name="filter_end">ปลาย</string>
     <string name="filter_reset">ตั้งค่าใหม่</string>
     <string name="filter_start">ราคาเริ่มต้น</string>

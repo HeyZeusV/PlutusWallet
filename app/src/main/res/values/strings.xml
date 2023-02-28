@@ -32,7 +32,7 @@
     <string name="filter_apply">Apply</string>
     <string name="filter_category">Category</string>
     <string name="filter_date">Date</string>
-    <string name="filter_date_warning">End date must be after start date!!</string>
+    <string name="filter_invalid_date_range">End date must be after start date!!</string>
     <string name="filter_end">End</string>
     <string name="filter_type">Type</string>
     <string name="filter_reset">Reset</string>

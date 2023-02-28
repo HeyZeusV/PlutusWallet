@@ -26,7 +26,7 @@
     <string name="filter_apply">대다</string>
     <string name="filter_category">범주</string>
     <string name="filter_date">데이트</string>
-    <string name="filter_date_warning">종료일은 시작일 이후 여야합니다 !!</string>
+    <string name="filter_invalid_date_range">종료일은 시작일 이후 여야합니다 !!</string>
     <string name="filter_end">종료</string>
     <string name="filter_reset">초기화</string>
     <string name="filter_start">스타트</string>

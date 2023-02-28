@@ -26,7 +26,7 @@
     <string name="filter_apply">適用する</string>
     <string name="filter_category">カテゴリ</string>
     <string name="filter_date">日付</string>
-    <string name="filter_date_warning">終了日は開始日より後でなければなりません!!</string>
+    <string name="filter_invalid_date_range">終了日は開始日より後でなければなりません!!</string>
     <string name="filter_end">終わり</string>
     <string name="filter_reset">リセットする</string>
     <string name="filter_start">開始</string>

@@ -144,15 +144,8 @@ fun OverviewScreen(
     val fDateFilterSelected by filterVM.dateFilter.collectAsState()
     val fStartDateString by filterVM.startDateString.collectAsState()
     val fEndDateString by filterVM.endDateString.collectAsState()
-    val filterState by filterVM.filterState.collectAsState()
-    val filterStateMessage = stringResource(filterState.stringId)
+    val fFilterState by filterVM.filterState.collectAsState()
 
-    LaunchedEffect(key1 = filterState) {
-        if (filterState != FilterState.VALID) {
-            showSnackbar(filterStateMessage)
-            filterVM.updateFilterState(FilterState.VALID)
-        }
-    }
     // set up AppBar actions
     appBarActionSetup(
         AppBarActions(
@@ -211,13 +204,19 @@ fun OverviewScreen(
         fStartDateOnClick = filterVM::updateStartDateString,
         fEndDateString,
         fEndDateOnClick = filterVM::updateEndDateString,
-        fApplyOnClick = filterVM::applyFilter
+        fApplyOnClick = filterVM::applyFilter,
+        fFilterState,
+        fShowSnackbar = { msg ->
+            showSnackbar(msg)
+            filterVM.updateFilterState(FilterState.VALID)
+        }
     )
 }
 
 /**
  *  Composable that displays Overview screen.
  *  All the data has been hoisted into above [OverviewScreen] thus allowing for easier testing.
+ *  See individual Composables for parameter info.
  */
 @Composable
 fun OverviewScreen(
@@ -253,7 +252,9 @@ fun OverviewScreen(
     fStartDateOnClick: (Date) -> Unit,
     fEndDateString: String,
     fEndDateOnClick: (Date) -> Unit,
-    fApplyOnClick: () -> Unit
+    fApplyOnClick: () -> Unit,
+    fFilterState: FilterState,
+    fShowSnackbar: suspend (String) -> Unit
 ) {
 
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
@@ -305,7 +306,9 @@ fun OverviewScreen(
         fStartDateOnClick,
         fEndDateString,
         fEndDateOnClick,
-        fApplyOnClick
+        fApplyOnClick,
+        fFilterState,
+        fShowSnackbar
     )
 }
 
@@ -658,32 +661,36 @@ fun MarqueeText(
  *  selected. [categoryChipOnClick] determines action when individual category chip is selected.
  *  [startDateString] is displayed on start button which performs [startDateOnClick] when clicked.
  *  [endDateString] is displayed on end button which performs [endDateOnClick] when clicked.
- *  [applyOnClick] runs when apply/reset button is pressed.
+ *  [applyOnClick] runs when apply/reset button is pressed. [filterState] is used to determine
+ *  which message to display if there is an error. [showSnackbar] is suspend function which takes
+ *  a String that is meant to be displayed by Snackbar.
  */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FilterCard(
-    showFilter: Boolean,
-    updateShowFilter: (Boolean) -> Unit,
-    accountFilterSelected: Boolean,
-    accountFilterOnClick: (Boolean) -> Unit,
-    accountList: List<String>,
-    accountSelected: List<String>,
-    accountChipOnClick: (String, FilterChipAction) -> Unit,
-    categoryFilterSelected: Boolean,
-    categoryFilterOnClick: (Boolean) -> Unit,
-    typeSelected: TransactionType,
-    updateTypeSelected: (TransactionType) -> Unit,
-    categoryList: List<String>,
-    categorySelectedList: List<String>,
-    categoryChipOnClick: (String, FilterChipAction) -> Unit,
-    dateFilterSelected: Boolean,
-    dateFilterOnClick: (Boolean) -> Unit,
-    startDateString: String,
-    startDateOnClick: (Date) -> Unit,
-    endDateString: String,
-    endDateOnClick: (Date) -> Unit,
-    applyOnClick: () -> Unit
+    showFilter: Boolean = false,
+    updateShowFilter: (Boolean) -> Unit = { },
+    accountFilterSelected: Boolean = false,
+    accountFilterOnClick: (Boolean) -> Unit = { },
+    accountList: List<String> = emptyList(),
+    accountSelected: List<String> = emptyList(),
+    accountChipOnClick: (String, FilterChipAction) -> Unit = { _, _ -> },
+    categoryFilterSelected: Boolean = false,
+    categoryFilterOnClick: (Boolean) -> Unit = { },
+    typeSelected: TransactionType = EXPENSE,
+    updateTypeSelected: (TransactionType) -> Unit = { },
+    categoryList: List<String> = emptyList(),
+    categorySelectedList: List<String> = emptyList(),
+    categoryChipOnClick: (String, FilterChipAction) -> Unit = { _, _ -> },
+    dateFilterSelected: Boolean = false,
+    dateFilterOnClick: (Boolean) -> Unit = { },
+    startDateString: String = "",
+    startDateOnClick: (Date) -> Unit = { },
+    endDateString: String = "",
+    endDateOnClick: (Date) -> Unit = { },
+    applyOnClick: () -> Unit = { },
+    filterState: FilterState = FilterState.VALID,
+    showSnackbar: suspend (String) -> Unit = { }
 ) {
     // used by animation to determine Y offset
     var filterComposeSize by remember { mutableStateOf(Size.Zero) }
@@ -696,6 +703,11 @@ fun FilterCard(
 
     val typeSelectedLabel = stringResource(typeSelected.stringId)
 
+    val filterStateMessage = stringResource(filterState.stringId)
+
+    LaunchedEffect(key1 = filterState) {
+        if (filterState != FilterState.VALID) { showSnackbar(filterStateMessage) }
+    }
     AnimatedVisibility(
         visible = showFilter,
         enter = EnterTransition.None,
@@ -1045,10 +1057,11 @@ fun OverviewScreenPreview() {
             fStartDateString = "",
             fStartDateOnClick = { },
             fEndDateString = "",
-            fEndDateOnClick = { }
-        ) {
-
-        }
+            fEndDateOnClick = { },
+            fApplyOnClick = { },
+            fFilterState = FilterState.VALID,
+            fShowSnackbar = { }
+        )
     }
 }
 
@@ -1138,32 +1151,17 @@ fun MarqueeTextPreview() {
 @Preview
 @Composable
 fun FilterCardPreview() {
-    val accountFilterSelected = true
-    val categoryFilterSelected = false
-    val dateFilterSelected = true
     PreviewHelperCard {
         FilterCard(
             showFilter = true,
-            updateShowFilter = { },
-            accountFilterSelected = accountFilterSelected,
-            accountFilterOnClick = { },
+            accountFilterSelected = true,
             accountList = listOf("Preview"),
-            accountSelected = listOf(),
-            accountChipOnClick = { _, _ -> },
-            categoryFilterSelected = categoryFilterSelected,
-            categoryFilterOnClick = { },
+            categoryFilterSelected = true,
             typeSelected = EXPENSE,
-            updateTypeSelected = { },
             categoryList = listOf("Preview"),
-            categorySelectedList = listOf(),
-            categoryChipOnClick = { _, _ -> },
-            dateFilterSelected = dateFilterSelected,
-            dateFilterOnClick = { },
+            dateFilterSelected = true,
             startDateString = "Start",
-            startDateOnClick = { },
             endDateString = "End",
-            endDateOnClick = { },
-            applyOnClick = { }
         )
     }
 }

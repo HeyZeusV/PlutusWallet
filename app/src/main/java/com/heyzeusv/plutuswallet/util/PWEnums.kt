@@ -42,7 +42,7 @@ enum class FilterState(val stringId: Int) {
     NO_SELECTED_ACCOUNT(R.string.filter_no_selected_account),
     NO_SELECTED_CATEGORY(R.string.filter_no_selected_category),
     NO_SELECTED_DATE(R.string.filter_no_selected_dates),
-    INVALID_DATE_RANGE(R.string.filter_date_warning)
+    INVALID_DATE_RANGE(R.string.filter_invalid_date_range)
 }
 
 /**
