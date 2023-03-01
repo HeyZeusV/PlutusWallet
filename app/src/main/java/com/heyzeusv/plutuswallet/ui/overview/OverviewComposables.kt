@@ -272,6 +272,9 @@ fun OverviewScreen(
                 .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
         )
         TransactionListCard(
+            modifier = Modifier
+                .weight(0.6f)
+                .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad),
             tlTranList,
             tlPreviousMaxId,
             tlUpdatePreviousMaxId,
@@ -279,10 +282,7 @@ fun OverviewScreen(
             tlItemOnClick,
             tlShowDeleteDialog,
             tlDeleteDialogOnConfirm,
-            tlDeleteDialogOnDismiss,
-            modifier = Modifier
-                .weight(0.6f)
-                .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad)
+            tlDeleteDialogOnDismiss
         )
     }
     FilterCard(
@@ -474,35 +474,32 @@ fun ChartCard(
  */
 @Composable
 fun TransactionListCard(
-    tranList: List<TranListItemFull>,
-    previousMaxId: Int,
-    updatePreviousMaxId: (Int) -> Unit,
-    itemOnLongClick: (Int) -> Unit,
-    itemOnClick: (Int) -> Unit,
-    showDeleteDialog: Int,
-    deleteDialogOnConfirm: (Int) -> Unit,
-    deleteDialogOnDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tranList: List<TranListItemFull> = emptyList(),
+    previousMaxId: Int = 0,
+    updatePreviousMaxId: (Int) -> Unit = { },
+    itemOnLongClick: (Int) -> Unit = { },
+    itemOnClick: (Int) -> Unit = { },
+    showDeleteDialog: Int = 0,
+    deleteDialogOnConfirm: (Int) -> Unit = { },
+    deleteDialogOnDismiss: () -> Unit = { }
 ) {
     val tranListState = rememberLazyListState()
 
     // scrolls to top of the list when new Transaction is added
     LaunchedEffect(key1 = tranList) {
-        if (tranList.isNotEmpty()
-            && tranList[tranList.size - 1].transactionItem.id > previousMaxId
-        ) {
+        if (tranList.isNotEmpty() && tranList[tranList.size - 1].tli.id > previousMaxId) {
             tranListState.animateScrollToItem(0)
-            updatePreviousMaxId(tranList[tranList.size - 1].transactionItem.id)
+            updatePreviousMaxId(tranList[tranList.size - 1].tli.id)
         }
     }
-
     Card(modifier = modifier.fillMaxWidth()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = tranListState
         ) {
             items(tranList.reversed()) { transactionItemFormatted ->
-                val transactionItem = transactionItemFormatted.transactionItem
+                val transactionItem = transactionItemFormatted.tli
                 Divider(
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
                     thickness = 1.dp
@@ -551,7 +548,8 @@ fun TransactionListItem(
     onLongClick: () -> Unit,
     onClick: () -> Unit,
 ) {
-    val transactionItem = transactionItemFormatted.transactionItem
+    val transactionItem = transactionItemFormatted.tli
+
     Surface(
         modifier = Modifier
             .combinedClickable(onLongClick = onLongClick, onClick = onClick)
@@ -1107,8 +1105,8 @@ fun TransactionListCardPreview() {
             itemOnLongClick = { },
             itemOnClick = { },
             showDeleteDialog = 0,
-            deleteDialogOnConfirm = { },
-            deleteDialogOnDismiss = { })
+            deleteDialogOnConfirm = { }
+        ) { }
     }
 }
 

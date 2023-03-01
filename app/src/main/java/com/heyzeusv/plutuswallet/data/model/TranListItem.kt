@@ -26,7 +26,7 @@ data class TranListItem(
  *  updated parameters, StateFlow will emit new values.
  */
 data class TranListItemFull(
-    val transactionItem: TranListItem,
+    val tli: TranListItem,
     val formattedTotal: String,
     val formattedDate: String
 )

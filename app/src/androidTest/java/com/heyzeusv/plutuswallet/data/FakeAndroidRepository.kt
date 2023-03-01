@@ -4,6 +4,7 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.TranListItem
+import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
@@ -21,6 +22,7 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     var accList: MutableList<Account> = dd.accList
     var catList: MutableList<Category> = dd.catList
     var tranList: MutableList<Transaction> = dd.tranList
+    var tlifList: MutableList<TranListItemFull> = dd.tlifList
     var accUsedList: List<Account> = listOf()
     var exCatUsedList: List<Category> = listOf()
     var inCatUsedList: List<Category> = listOf()
@@ -43,11 +45,14 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     suspend fun expenseCatUsedListEmit(value: List<Category>) = expenseCatUsedListFlow.emit(value)
     private val incomeCatUsedListFLow = MutableSharedFlow<List<Category>>()
     suspend fun incomeCatUsedListEmit(value: List<Category>) = incomeCatUsedListFLow.emit(value)
+    val tlifFlow = MutableSharedFlow<List<TranListItemFull>>()
+    suspend fun tlifEmit(value: List<TranListItemFull>) = tlifFlow.emit(value)
 
     fun resetLists() {
         accList = dd.accList
         catList = dd.catList
         tranList = dd.tranList
+        tlifList = dd.tlifList
     }
 
     override suspend fun getAccountNames(): Flow<List<String>> {

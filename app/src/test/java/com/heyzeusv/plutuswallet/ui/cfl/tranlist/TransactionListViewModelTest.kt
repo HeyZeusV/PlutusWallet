@@ -118,7 +118,7 @@ internal class TransactionListViewModelTest {
     fun filteredTransactionList() = runTest {
         var collectedList = listOf<TranListItem>()
 
-        val expectedATD: List<TranListItem> = listOf(dd.ivt1, dd.ivt2)
+        val expectedATD: List<TranListItem> = listOf(dd.tli1, dd.tli2)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = true, listOf("Cash"), category = true, "Expense",
@@ -127,7 +127,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedATD, collectedList)
 
-        val expectedATCD: List<TranListItem> = listOf(dd.ivt3)
+        val expectedATCD: List<TranListItem> = listOf(dd.tli3)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = true, listOf("Debit Card"), category = true, "Income",
@@ -136,7 +136,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedATCD, collectedList)
 
-        val expectedAT: List<TranListItem> = listOf(dd.ivt4)
+        val expectedAT: List<TranListItem> = listOf(dd.tli4)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = true, listOf("Credit Card"), category = true, "Expense",
@@ -145,7 +145,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedAT, collectedList)
 
-        val expectedATC: List<TranListItem> = listOf(dd.ivt4)
+        val expectedATC: List<TranListItem> = listOf(dd.tli4)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = true, listOf("Credit Card"), category = true, "Expense",
@@ -163,7 +163,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedAD, collectedList)
 
-        val expectedA: List<TranListItem> = listOf(dd.ivt4)
+        val expectedA: List<TranListItem> = listOf(dd.tli4)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = true, listOf("Credit Card"), category = false, "",
@@ -181,7 +181,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedTD, collectedList)
 
-        val expectedTCD: List<TranListItem> = listOf(dd.ivt2)
+        val expectedTCD: List<TranListItem> = listOf(dd.tli2)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = false, listOf(), category = true, "Expense",
@@ -190,7 +190,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedTCD, collectedList)
 
-        val expectedT: List<TranListItem> = listOf(dd.ivt1, dd.ivt2, dd.ivt4)
+        val expectedT: List<TranListItem> = listOf(dd.tli1, dd.tli2, dd.tli4)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = false, listOf(), category = true, "Expense",
@@ -199,7 +199,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedT, collectedList)
 
-        val expectedTC: List<TranListItem> = listOf(dd.ivt4)
+        val expectedTC: List<TranListItem> = listOf(dd.tli4)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = false, listOf(), category = true, "Expense",
@@ -208,7 +208,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedTC, collectedList)
 
-        val expectedD: List<TranListItem> = listOf(dd.ivt2, dd.ivt3)
+        val expectedD: List<TranListItem> = listOf(dd.tli2, dd.tli3)
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = false, listOf(), category = false, "",
@@ -217,7 +217,7 @@ internal class TransactionListViewModelTest {
         ).collect { collectedList = it }
         assertEquals(expectedD, collectedList)
 
-        val expected: List<TranListItem> = dd.ivtList
+        val expected: List<TranListItem> = dd.tliList
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = false, listOf(), category = false, "",

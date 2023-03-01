@@ -46,27 +46,27 @@ class DummyDataUtil {
     )
     val tranList: MutableList<Transaction> = mutableListOf(tran1, tran2, tran3, tran4)
 
-    val ivt1 = TranListItem(
+    val tli1 = TranListItem(
         1, "Party", Date(86400000), BigDecimal("1000.10"),
     "Cash", "Expense", "Food"
     )
-    val ivt2 = TranListItem(
+    val tli2 = TranListItem(
         2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
     "Cash", "Expense", "Food"
     )
-    val ivt3 = TranListItem(
+    val tli3 = TranListItem(
         3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
     "Debit Card", "Income", "Salary"
     )
-    val ivt4 = TranListItem(
+    val tli4 = TranListItem(
         4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
     "Credit Card", "Expense", "Entertainment"
     )
-    val ivtList: MutableList<TranListItem> = mutableListOf(ivt1, ivt2, ivt3, ivt4)
+    val tliList: MutableList<TranListItem> = mutableListOf(tli1, tli2, tli3, tli4)
 
-    val tlif1 = TranListItemFull(ivt1, "\$1,000.10", "Thursday, January 1, 1970")
-    val tlif2 = TranListItemFull(ivt2, "\$100.00", "Friday, January 2, 1970")
-    val tlif3 = TranListItemFull(ivt3, "\$2,000.32", "Sunday, January 4, 1970")
-    val tlif4 = TranListItemFull(ivt4, "\$55.45", "Monday, January 5, 1970")
+    val tlif1 = TranListItemFull(tli1, "\$1,000.10", "Thursday, January 1, 1970")
+    val tlif2 = TranListItemFull(tli2, "\$100.00", "Friday, January 2, 1970")
+    val tlif3 = TranListItemFull(tli3, "\$2,000.32", "Sunday, January 4, 1970")
+    val tlif4 = TranListItemFull(tli4, "\$55.45", "Monday, January 5, 1970")
     val tlifList: MutableList<TranListItemFull> = mutableListOf(tlif1, tlif2, tlif3, tlif4)
 }
