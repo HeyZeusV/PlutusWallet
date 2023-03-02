@@ -2,6 +2,8 @@ package com.heyzeusv.plutuswallet.data
 
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
+import com.heyzeusv.plutuswallet.data.model.CategoryTotals
+import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.data.model.Transaction
@@ -71,4 +73,13 @@ class DummyAndroidDataUtil {
     val tlif3 = TranListItemFull(tli3, "\$2,000.32", "Sunday, January 4, 1970")
     val tlif4 = TranListItemFull(tli4, "\$55.45", "Monday, January 5, 1970")
     val tlifList: MutableList<TranListItemFull> = mutableListOf(tlif1, tlif2, tlif3, tlif4)
+
+    val ct1 = CategoryTotals("Food", BigDecimal("1000.10"), "Expense")
+    val ct2 = CategoryTotals("Housing", BigDecimal("100.00"), "Expense")
+    val ct3 = CategoryTotals("Salary", BigDecimal("2000.32"), "Income")
+    val ct4 = CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense")
+
+    val expenseCi = ChartInformation(listOf(ct1, ct2, ct4), "$1,155.55")
+    val expenseCiNoCt1 = ChartInformation(listOf(ct2, ct4), "$155.45")
+    val incomeCi = ChartInformation(listOf(ct3), "$2,000.32")
 }

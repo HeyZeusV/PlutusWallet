@@ -266,10 +266,10 @@ fun OverviewScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         ChartCard(
-            chartInfoList = chartInfoList,
             modifier = Modifier
                 .weight(0.4f)
-                .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
+                .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad),
+            chartInfoList = chartInfoList
         )
         TransactionListCard(
             modifier = Modifier
@@ -318,8 +318,8 @@ fun OverviewScreen(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ChartCard(
-    chartInfoList: List<ChartInformation>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    chartInfoList: List<ChartInformation> = listOf(ChartInformation(), ChartInformation())
 ) {
     val pagerState = rememberPagerState()
 
@@ -358,7 +358,11 @@ fun ChartCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (chartInfo.ctList.isNotEmpty()) {
-                        Surface(modifier = Modifier.weight(0.8f)) {
+                        Surface(
+                            modifier = Modifier
+                                .weight(0.8f)
+                                .testTag("Chart page $page")
+                        ) {
                             /**
                              *  Library used for PieChart is most likely never going to be updated to
                              *  be Composable. Will be looking for new library or possibly make own.

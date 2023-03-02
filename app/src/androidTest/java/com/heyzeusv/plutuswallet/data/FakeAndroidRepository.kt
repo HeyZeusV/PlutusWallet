@@ -3,6 +3,7 @@ package com.heyzeusv.plutuswallet.data
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
+import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.data.model.Transaction
@@ -47,6 +48,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     suspend fun incomeCatUsedListEmit(value: List<Category>) = incomeCatUsedListFLow.emit(value)
     val tlifFlow = MutableSharedFlow<List<TranListItemFull>>()
     suspend fun tlifEmit(value: List<TranListItemFull>) = tlifFlow.emit(value)
+    val chartInfoListFlow = MutableSharedFlow<List<ChartInformation>>()
+    suspend fun chartInfoListEmit(value: List<ChartInformation>) = chartInfoListFlow.emit(value)
 
     fun resetLists() {
         accList = dd.accList
