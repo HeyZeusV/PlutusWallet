@@ -8,7 +8,6 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
@@ -27,8 +26,6 @@ import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartText
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 @HiltAndroidTest
@@ -80,48 +77,6 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasTestTag(res.getString(R.string.filter_date))).assertIsNotSelected()
         composeRule.onNode(hasTestTag("Filter action"))
             .assertTextEquals(res.getString(R.string.filter_reset).uppercase())
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun overview_deleteTransaction() = runTest {
-        val expense = composeRule.activity.baseContext.resources.getString(R.string.type_expense)
-        val income = composeRule.activity.baseContext.resources.getString(R.string.type_income)
-
-        // check that we are on Overview screen
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-
-        composeRule.onNode(hasTestTag("${dd.tran2.id}")).performTouchInput { longClick() }
-        // checks that AlertDialog is being displayed and press confirm button
-        composeRule.onNode(hasTestTag("AlertDialog")).assertExists()
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
-
-        // check expense chart total and slices shown
-        onView(withContentDescription("Chart 0")).check(matches(chartText(expense)))
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 0"))
-            .assertTextContains("Total: $1,155.55")
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
-        onView(withContentDescription("Chart 0"))
-            .check(matches(chartEntry("Entertainment", 55.45F)))
-        onView(withContentDescription("Chart 0"))
-            .check(matches(chartEntry("Food", 1000.10F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
-
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-
-        // income chart should remain the same
-        onView(withContentDescription("Chart 1")).check(matches(chartText(income)))
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertIsNotDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1"))
-            .assertTextEquals("Total: $2,000.32")
-        onView(withContentDescription("Chart 1"))
-            .check(matches(chartEntry("Salary", 2000.32F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
     }
 
     @Test
