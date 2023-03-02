@@ -6,28 +6,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.longClick
-import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.assertTextColor
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.checkTlifIsDisplayed
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
-import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.ui.overview.TransactionListCard
-import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.util.theme.PWLightColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -78,7 +71,7 @@ class TransactionListTests {
 
         // check that each Transaction is displayed correctly
         repo.tlifList.forEach {
-            checkTlifIsDisplayed(it)
+            checkTlifIsDisplayed(composeRule, it)
         }
         composeRule.onNodeWithText(res.getString(R.string.cfl_no_transactions)).assertDoesNotExist()
     }
@@ -133,7 +126,7 @@ class TransactionListTests {
             // check that no other item was deleted
             val expectedTlifList = listOf(dd.tlif1, dd.tlif3, dd.tlif4)
             expectedTlifList.forEach {
-                checkTlifIsDisplayed(it)
+                checkTlifIsDisplayed(composeRule, it)
             }
         }
     }
@@ -169,29 +162,8 @@ class TransactionListTests {
             // check that no item was deleted
             val expectedTlifList = listOf(dd.tlif1, dd.tlif2, dd.tlif3, dd.tlif4)
             expectedTlifList.forEach {
-                checkTlifIsDisplayed(it)
+                checkTlifIsDisplayed(composeRule, it)
             }
         }
-    }
-
-    /**
-     *  Helper function that checks that all the required data of given [tlif] is correctly
-     *  displayed.
-     */
-    private fun checkTlifIsDisplayed(tlif: TranListItemFull) {
-        composeRule.onNode(hasTestTag("${tlif.tli.id}"), useUnmergedTree = true).onChildren()
-            .assertAny(hasText(tlif.tli.title))
-            .assertAny(hasText(tlif.tli.account))
-            .assertAny(hasText(tlif.formattedDate))
-            .assertAny(hasText(tlif.tli.category))
-        // total requires extra check of text color
-        composeRule.onNode(
-            hasText(text = tlif.formattedTotal) and hasParent(hasTestTag("${tlif.tli.id}")),
-            useUnmergedTree = true
-        )
-            .assertIsDisplayed()
-            .assertTextColor(
-                if (tlif.tli.type == EXPENSE.type) PWLightColors.expense else PWLightColors.income
-            )
     }
 }

@@ -8,9 +8,19 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
+import androidx.compose.ui.test.assertAny
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasParent
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.test.espresso.matcher.BoundedMatcher
 import com.github.mikephil.charting.charts.PieChart
+import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.theme.PWLightColors
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 
@@ -20,6 +30,28 @@ import org.hamcrest.Matcher
 class CustomMatchers {
 
     companion object {
+
+        /**
+         *  Not exactly a matcher, but a helper function that checks that all the required data of
+         *  given [tlif] is correctly displayed. Used by multiple test files.
+         */
+        fun checkTlifIsDisplayed(composeRule: ComposeContentTestRule, tlif: TranListItemFull) {
+            val colors = PWLightColors
+            composeRule.onNode(hasTestTag("${tlif.tli.id}"), useUnmergedTree = true).onChildren()
+                .assertAny(hasText(tlif.tli.title))
+                .assertAny(hasText(tlif.tli.account))
+                .assertAny(hasText(tlif.formattedDate))
+                .assertAny(hasText(tlif.tli.category))
+            // total requires extra check of text color
+            composeRule.onNode(
+                hasText(text = tlif.formattedTotal) and hasParent(hasTestTag("${tlif.tli.id}")),
+                useUnmergedTree = true
+            )
+                .assertIsDisplayed()
+                .assertTextColor(
+                    if (tlif.tli.type == EXPENSE.type) colors.expense else colors.income
+                )
+        }
 
         /**
          *  Checks that [category] with sum of [total] exists in dataSet of PieChart.

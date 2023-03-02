@@ -56,7 +56,7 @@ class DummyAndroidDataUtil {
     )
     val tli2 = TranListItem(
         2, "Party2", Date(86400000 * 2), BigDecimal("100.00"),
-        "Cash", "Expense", "Food"
+        "Savings", "Expense", "Housing"
     )
     val tli3 = TranListItem(
         3, "Pay Day", Date(86400000 * 4), BigDecimal("2000.32"),
@@ -66,7 +66,6 @@ class DummyAndroidDataUtil {
         4, "Movie Date", Date(86400000 * 5), BigDecimal("55.45"),
         "Credit Card", "Expense", "Entertainment"
     )
-    val tliList: MutableList<TranListItem> = mutableListOf(tli1, tli2, tli3, tli4)
 
     val tlif1 = TranListItemFull(tli1, "\$1,000.10", "Thursday, January 1, 1970")
     val tlif2 = TranListItemFull(tli2, "\$100.00", "Friday, January 2, 1970")

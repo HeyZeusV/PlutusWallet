@@ -1,6 +1,8 @@
 package com.heyzeusv.plutuswallet.ui
 
+import android.content.res.Resources
 import android.widget.DatePicker
+import androidx.activity.compose.setContent
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
@@ -8,6 +10,7 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
@@ -20,16 +23,54 @@ import androidx.test.espresso.contrib.PickerActions.setDate
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.assertTextColor
+import androidx.test.platform.app.InstrumentationRegistry
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartEntry
 import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartText
+import com.heyzeusv.plutuswallet.CustomMatchers.Companion.checkTlifIsDisplayed
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
+import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
+import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
 
 @HiltAndroidTest
-class OverviewTests : BaseTest() {
+class OverviewTests {
+
+    @get:Rule(order = 1)
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 2)
+    val composeRule = createAndroidComposeRule<MainActivity>()
+
+    @Inject
+    lateinit var fakeRepo: PWRepositoryInterface
+    lateinit var repo: FakeAndroidRepository
+    val dd = DummyAndroidDataUtil()
+    lateinit var res: Resources
+
+    @Before
+    fun setUp() {
+        hiltRule.inject()
+        composeRule.activity.setContent {
+            PlutusWalletTheme {
+                PlutusWalletApp()
+            }
+        }
+        repo = (fakeRepo as FakeAndroidRepository)
+        res = InstrumentationRegistry.getInstrumentation().targetContext.resources
+    }
+
+    @BeforeEach
+    fun setUpBeforeEach() {
+        repo.resetLists()
+    }
 
     @Test
     fun overview_startUp() {
@@ -39,7 +80,7 @@ class OverviewTests : BaseTest() {
         // check that we are on Overview screen
         composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
 
-        dd.tranList.forEach { item -> tranListItemCheck(item) }
+        dd.tlifList.forEach { item -> checkTlifIsDisplayed(composeRule, item) }
 
         // should start with Expense chart
         onView(withContentDescription("Chart 0")).check(matches(chartText(expense)))
@@ -109,8 +150,8 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran1)
-        tranListItemCheck(dd.tran4)
+        checkTlifIsDisplayed(composeRule, dd.tlif1)
+        checkTlifIsDisplayed(composeRule, dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -145,8 +186,8 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran2)
-        tranListItemCheck(dd.tran4)
+        checkTlifIsDisplayed(composeRule, dd.tlif2)
+        checkTlifIsDisplayed(composeRule, dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -179,7 +220,7 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
 
         // check TranList
-        tranListItemCheck(dd.tran3)
+        checkTlifIsDisplayed(composeRule, dd.tlif3)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -254,7 +295,7 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
 
         // check TranList
-        tranListItemCheck(dd.tran3)
+        checkTlifIsDisplayed(composeRule, dd.tlif3)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -299,7 +340,7 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran4)
+        checkTlifIsDisplayed(composeRule, dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -344,7 +385,7 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran1)
+        checkTlifIsDisplayed(composeRule, dd.tlif1)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -393,22 +434,7 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran1)
+        checkTlifIsDisplayed(composeRule, dd.tlif1)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
-    }
-
-    private fun tranListItemCheck(item: Transaction) {
-        // checks that all required information is being displayed
-        composeRule.onNodeWithText(item.title).assertExists()
-        composeRule.onNodeWithText(item.account).assertExists()
-        composeRule.onNodeWithText(dateFormatter.format(item.date)).assertExists()
-        // extra check to make sure text is correct color
-        composeRule.onNodeWithText(
-            text = "\$${totalFormatter.format(item.total)}",
-            useUnmergedTree = true
-        )
-            .assertExists()
-            .assertTextColor(if (item.type == "Expense") pwColors.expense else pwColors.income)
-        composeRule.onNodeWithText(item.category).assertExists()
     }
 }
