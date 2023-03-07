@@ -31,8 +31,6 @@ import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionCard
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
 import java.math.RoundingMode.HALF_UP
 import java.text.DateFormat
 import java.text.DecimalFormat
@@ -42,14 +40,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class TransactionTests {
 
-    @get:Rule(order = 1)
-    var hiltRule = HiltAndroidRule(this)
-
-    @get:Rule(order = 2)
+    @get:Rule
     var composeRule = createAndroidComposeRule<ComponentActivity>()
 
     val dd = DummyAndroidDataUtil()
