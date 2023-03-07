@@ -18,9 +18,6 @@ import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import java.math.RoundingMode
-import java.text.DateFormat
-import java.text.DecimalFormat
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -44,8 +41,6 @@ abstract class BaseTest {
     protected lateinit var sharedPref: SharedPreferences
 
     val dd = DummyAndroidDataUtil()
-    val dateFormatter: DateFormat = DateFormat.getDateInstance(0)
-    val totalFormatter = DecimalFormat("#,##0.00").apply { roundingMode = RoundingMode.HALF_UP }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before

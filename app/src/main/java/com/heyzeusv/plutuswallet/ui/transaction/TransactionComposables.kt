@@ -67,6 +67,9 @@ import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.AppBarActions
 import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.TransactionType
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.launch
 
@@ -78,7 +81,7 @@ import kotlinx.coroutines.launch
  *  [navigateUp] allows for navigation back to OverviewScreen.
  */
 @Composable
-fun TransactionScreen(
+fun TransactionCard(
     tranVM: TransactionViewModel,
     tranId: Int,
     appBarActionSetup: (AppBarActions) -> Unit,
@@ -98,7 +101,6 @@ fun TransactionScreen(
 
     // used for SnackBar
     val saveSuccess by tranVM.saveSuccess.collectAsState()
-    val saveSuccessMessage = stringResource(R.string.snackbar_saved)
 
     // data to be displayed
     val transaction by tranVM.transaction.collectAsState()
@@ -139,7 +141,7 @@ fun TransactionScreen(
         tranVM.retrieveTransaction = true
         navigateUp()
     }
-    TransactionScreen(
+    TransactionCard(
         transaction,
         title,
         tranVM::updateTitle,
@@ -175,8 +177,8 @@ fun TransactionScreen(
         futureDialogOnConfirm = { tranVM.futureDialogConfirm() },
         futureDialogOnDismiss = { tranVM.futureDialogDismiss() },
         saveSuccess,
-        onSaveSuccess = {
-            showSnackbar(saveSuccessMessage)
+        onSaveSuccess = { msg ->
+            showSnackbar(msg)
             tranVM.updateSaveSuccess(false)
         }
     )
@@ -184,53 +186,55 @@ fun TransactionScreen(
 
 /**
  *  Composable that displays TransactionScreen.
- *  All the data has been hoisted into above [TransactionScreen] thus allowing for easier testing.
+ *  All the data has been hoisted into above [TransactionCard] thus allowing for easier testing.
  */
 @Composable
-fun TransactionScreen(
-    transaction: Transaction,
-    title: String,
-    updateTitle: (String) -> Unit,
-    date: String,
-    onDateSelected: (Date) -> Unit,
-    account: String,
-    updateAccount: (String) -> Unit,
-    total: TextFieldValue,
-    updateTotal: (String) -> Unit,
-    totalMaxLength: Int,
-    typeSelected: TransactionType,
-    updateTypeSelected: (TransactionType) -> Unit,
-    selectedCat: String,
-    updateSelectedCat: (String) -> Unit,
-    memo: String,
-    updateMemo: (String) -> Unit,
-    repeat: Boolean,
-    updateRepeat: (Boolean) -> Unit,
-    period: String,
-    updatePeriod: (String) -> Unit,
-    frequency: TextFieldValue,
-    updateFrequency: (String) -> Unit,
-    accountList: List<String>,
-    selectedCatList: List<String>,
-    periodList: List<String>,
-    showAccountDialog: Boolean,
-    updateAccountDialog: (Boolean) -> Unit,
-    accountDialogOnConfirm: (String) -> Unit,
-    showCategoryDialog: Boolean,
-    updateCategoryDialog: (Boolean) -> Unit,
-    categoryDialogOnConfirm: (String) -> Unit,
-    showFutureDialog: Boolean,
-    futureDialogOnConfirm: () -> Unit,
-    futureDialogOnDismiss: () -> Unit,
-    saveSuccess: Boolean,
-    onSaveSuccess: suspend () -> Unit
+fun TransactionCard(
+    transaction: Transaction = Transaction(),
+    title: String = "",
+    updateTitle: (String) -> Unit = { },
+    date: String = DateFormat.getDateInstance(0).format(Date()),
+    onDateSelected: (Date) -> Unit = { },
+    account: String = "",
+    updateAccount: (String) -> Unit = { },
+    total: TextFieldValue = TextFieldValue("$0.00"),
+    updateTotal: (String) -> Unit = { },
+    totalMaxLength: Int = 21,
+    typeSelected: TransactionType = EXPENSE,
+    updateTypeSelected: (TransactionType) -> Unit = { },
+    selectedCat: String = "",
+    updateSelectedCat: (String) -> Unit = { },
+    memo: String = "",
+    updateMemo: (String) -> Unit = { },
+    repeat: Boolean = false,
+    updateRepeat: (Boolean) -> Unit = { },
+    period: String = "",
+    updatePeriod: (String) -> Unit = { },
+    frequency: TextFieldValue = TextFieldValue(""),
+    updateFrequency: (String) -> Unit = { },
+    accountList: List<String> = listOf("Create New Account"),
+    categoryList: List<String> = listOf("Create New Category"),
+    periodList: List<String> = listOf(),
+    showAccountDialog: Boolean = false,
+    updateAccountDialog: (Boolean) -> Unit = { },
+    accountDialogOnConfirm: (String) -> Unit = { },
+    showCategoryDialog: Boolean = false,
+    updateCategoryDialog: (Boolean) -> Unit = { },
+    categoryDialogOnConfirm: (String) -> Unit = { },
+    showFutureDialog: Boolean = false,
+    futureDialogOnConfirm: () -> Unit = { },
+    futureDialogOnDismiss: () -> Unit = { },
+    saveSuccess: Boolean = false,
+    onSaveSuccess: suspend (String) -> Unit = { }
 ) {
+    val saveSuccessMessage = stringResource(R.string.snackbar_saved)
+
     // used by DatePicker
     val dateObj = transaction.date
     val view = LocalView.current
 
     // displays SnackBar that Transaction was saved when saveSuccess is true
-    LaunchedEffect(key1 = saveSuccess) { if (saveSuccess) onSaveSuccess() }
+    LaunchedEffect(key1 = saveSuccess) { if (saveSuccess) onSaveSuccess(saveSuccessMessage) }
     if (showFutureDialog) {
         PWAlertDialog(
             title = stringResource(R.string.alert_dialog_future_transaction),
@@ -297,10 +301,10 @@ fun TransactionScreen(
             )
             TransactionCategories(
                 typeSelected = typeSelected,
-                chipExpenseOnClick = { updateTypeSelected(TransactionType.EXPENSE) },
-                chipIncomeOnClick = { updateTypeSelected(TransactionType.INCOME) },
+                chipExpenseOnClick = { updateTypeSelected(EXPENSE) },
+                chipIncomeOnClick = { updateTypeSelected(INCOME) },
                 dropDownValue = selectedCat,
-                dropDownList = selectedCatList,
+                dropDownList = categoryList,
                 dropDownOnClick = updateSelectedCat,
                 showInputDialog = showCategoryDialog,
                 updateInputDialog = { updateCategoryDialog(true) },
@@ -507,7 +511,7 @@ fun TransactionDropDownMenu(
                                 expanded = false
                             }
                         },
-                        modifier = Modifier.testTag(name)
+                        modifier = Modifier.testTag("DropdownMenuItem $name")
                     ) {
                         Text(text = name)
                     }
@@ -592,7 +596,7 @@ fun TransactionCategories(
             verticalAlignment = Alignment.CenterVertically
         ) {
             PWButton(
-                selected = typeSelected == TransactionType.EXPENSE,
+                selected = typeSelected == EXPENSE,
                 onClick = chipExpenseOnClick,
                 label = stringResource(R.string.type_expense),
                 showIcon = false,
@@ -601,7 +605,7 @@ fun TransactionCategories(
                     .weight(1f)
             )
             PWButton(
-                selected = typeSelected == TransactionType.INCOME,
+                selected = typeSelected == INCOME,
                 onClick = chipIncomeOnClick,
                 label = stringResource(R.string.type_income),
                 showIcon = false,
@@ -717,9 +721,9 @@ fun TransactionRepeating(
 
 @Preview
 @Composable
-fun TransactionScreenPreview() {
+fun TransactionCardPreview() {
     PreviewHelper {
-        TransactionScreen(
+        TransactionCard(
             transaction = Transaction(),
             title = "Transaction Title",
             updateTitle = { },
@@ -730,7 +734,7 @@ fun TransactionScreenPreview() {
             total = TextFieldValue("$12345.67"),
             updateTotal = { },
             totalMaxLength = 100,
-            typeSelected = TransactionType.EXPENSE,
+            typeSelected = EXPENSE,
             updateTypeSelected = { },
             selectedCat = "Transaction Category",
             updateSelectedCat = { },
@@ -743,7 +747,7 @@ fun TransactionScreenPreview() {
             frequency = TextFieldValue("100"),
             updateFrequency = { },
             accountList = listOf("Test Account 1", "Test Account 2", "Test Account 3"),
-            selectedCatList = listOf("Test Category 1", "Test Category 2", "Test Category 3"),
+            categoryList = listOf("Test Category 1", "Test Category 2", "Test Category 3"),
             periodList = listOf("Days", "Weeks", "Months", "Years"),
             showAccountDialog = false,
             updateAccountDialog = { },
@@ -823,7 +827,7 @@ fun TransactionNumberInputPreview() {
 fun TransactionCategoriesPreview() {
     PreviewHelperCard {
         TransactionCategories(
-            typeSelected = TransactionType.EXPENSE,
+            typeSelected = EXPENSE,
             chipExpenseOnClick = { },
             chipIncomeOnClick = { },
             dropDownValue = "Expense Value 1",

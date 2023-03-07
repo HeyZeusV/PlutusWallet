@@ -209,15 +209,7 @@ class TransactionViewModel @Inject constructor(
         updateSelectedCat(transaction.category)
         updateMemo(transaction.memo)
         updateRepeat(transaction.repeating)
-        periodList.value.let {
-            // gets translated period value using periodArray
-            updatePeriod(when (transaction.period) {
-                0 -> it[0]
-                1 -> it[1]
-                2 -> it[2]
-                else -> it[3]
-            })
-        }
+        updatePeriod(periodList.value[transaction.period])
         updateFrequency(transaction.frequency.toString())
     }
 

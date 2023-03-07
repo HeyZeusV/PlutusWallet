@@ -105,6 +105,27 @@ internal class TransactionViewModelTest {
     }
 
     @Test
+    @DisplayName("Should automatically create a title for Transaction upon saving it without a title")
+    fun saveTransactionNoTitle() {
+        val expectedTran = Transaction(
+            id = 5,
+            title = "Transaction 5",
+            total = BigDecimal("0.00"),
+            account = "Cash",
+            category = "Entertainment",
+        )
+        // this is normally set when ViewModel is created
+        tranVM.emptyTitle = "Transaction "
+        // retrieves new Transaction
+        tranVM.retrieveTransaction(0)
+
+        tranVM.saveTransaction()
+
+        assertEquals(expectedTran, tranVM.transaction.value)
+        assertEquals(expectedTran, repo.tranList[4])
+    }
+
+    @Test
     @DisplayName("Should show future dialog when user tries saving a Transaction that has" +
             " been repeated and date has been changed ")
     fun saveTransactionRepeatWarning() {

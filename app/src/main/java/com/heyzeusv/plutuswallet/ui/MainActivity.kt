@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -69,7 +70,7 @@ import com.heyzeusv.plutuswallet.ui.settings.SettingsScreen
 import com.heyzeusv.plutuswallet.ui.settings.SettingsViewModel
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
-import com.heyzeusv.plutuswallet.ui.transaction.TransactionScreen
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionCard
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
 import com.heyzeusv.plutuswallet.ui.transaction.tranVMSetup
 import com.heyzeusv.plutuswallet.util.AboutDestination
@@ -117,8 +118,9 @@ class MainActivity : BaseActivity() {
 @OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun PlutusWalletApp() {
-    val navController = rememberNavController()
+fun PlutusWalletApp(
+    navController: NavHostController = rememberNavController()
+) {
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen = PWScreens.find {
@@ -193,7 +195,7 @@ fun PlutusWalletApp() {
                 val tranId =
                     navBackStackEntry.arguments?.getInt(TransactionDestination.id_arg) ?: 0
 
-                TransactionScreen(
+                TransactionCard(
                     tranVM,
                     tranId,
                     appBarActionSetup = { appBarActions = it },

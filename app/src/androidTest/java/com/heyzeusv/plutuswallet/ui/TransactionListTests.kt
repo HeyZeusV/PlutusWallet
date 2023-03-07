@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.ui
 
 import android.content.res.Resources
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,14 +9,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.checkTlifIsDisplayed
+import com.heyzeusv.plutuswallet.checkTlifIsDisplayed
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
@@ -40,7 +41,7 @@ class TransactionListTests {
     var hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 2)
-    val composeRule = createComposeRule()
+    var composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Inject lateinit var fakeRepo: PWRepositoryInterface
     lateinit var repo: FakeAndroidRepository
@@ -63,15 +64,13 @@ class TransactionListTests {
     fun tranList_displayTransactions() {
         composeRule.setContent {
             PlutusWalletTheme {
-                TransactionListCard(
-                    tranList = repo.tlifList
-                )
+                TransactionListCard(tranList = repo.tlifList)
             }
         }
 
         // check that each Transaction is displayed correctly
         repo.tlifList.forEach {
-            checkTlifIsDisplayed(composeRule, it)
+            composeRule.checkTlifIsDisplayed(it)
         }
         composeRule.onNodeWithText(res.getString(R.string.cfl_no_transactions)).assertDoesNotExist()
     }
@@ -125,9 +124,7 @@ class TransactionListTests {
             composeRule.onNode(hasTestTag("${dd.tlif2.tli.id}")).assertDoesNotExist()
             // check that no other item was deleted
             val expectedTlifList = listOf(dd.tlif1, dd.tlif3, dd.tlif4)
-            expectedTlifList.forEach {
-                checkTlifIsDisplayed(composeRule, it)
-            }
+            expectedTlifList.forEach { composeRule.checkTlifIsDisplayed(it) }
         }
     }
 
@@ -161,9 +158,7 @@ class TransactionListTests {
 
             // check that no item was deleted
             val expectedTlifList = listOf(dd.tlif1, dd.tlif2, dd.tlif3, dd.tlif4)
-            expectedTlifList.forEach {
-                checkTlifIsDisplayed(composeRule, it)
-            }
+            expectedTlifList.forEach { composeRule.checkTlifIsDisplayed(it) }
         }
     }
 }

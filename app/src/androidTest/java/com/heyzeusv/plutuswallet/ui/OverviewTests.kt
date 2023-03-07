@@ -24,9 +24,9 @@ import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartEntry
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartText
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.checkTlifIsDisplayed
+import com.heyzeusv.plutuswallet.chartEntry
+import com.heyzeusv.plutuswallet.chartText
+import com.heyzeusv.plutuswallet.checkTlifIsDisplayed
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
@@ -80,7 +80,7 @@ class OverviewTests {
         // check that we are on Overview screen
         composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
 
-        dd.tlifList.forEach { item -> checkTlifIsDisplayed(composeRule, item) }
+        dd.tlifList.forEach { item -> composeRule.checkTlifIsDisplayed(item) }
 
         // should start with Expense chart
         onView(withContentDescription("Chart 0")).check(matches(chartText(expense)))
@@ -150,8 +150,8 @@ class OverviewTests {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        checkTlifIsDisplayed(composeRule, dd.tlif1)
-        checkTlifIsDisplayed(composeRule, dd.tlif4)
+        composeRule.checkTlifIsDisplayed(dd.tlif1)
+        composeRule.checkTlifIsDisplayed(dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -186,8 +186,8 @@ class OverviewTests {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        checkTlifIsDisplayed(composeRule, dd.tlif2)
-        checkTlifIsDisplayed(composeRule, dd.tlif4)
+        composeRule.checkTlifIsDisplayed(dd.tlif2)
+        composeRule.checkTlifIsDisplayed(dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -220,7 +220,7 @@ class OverviewTests {
         composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
 
         // check TranList
-        checkTlifIsDisplayed(composeRule, dd.tlif3)
+        composeRule.checkTlifIsDisplayed(dd.tlif3)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -295,7 +295,7 @@ class OverviewTests {
         composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
 
         // check TranList
-        checkTlifIsDisplayed(composeRule, dd.tlif3)
+        composeRule.checkTlifIsDisplayed(dd.tlif3)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -340,7 +340,7 @@ class OverviewTests {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        checkTlifIsDisplayed(composeRule, dd.tlif4)
+        composeRule.checkTlifIsDisplayed(dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -385,7 +385,7 @@ class OverviewTests {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        checkTlifIsDisplayed(composeRule, dd.tlif1)
+        composeRule.checkTlifIsDisplayed(dd.tlif1)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -434,7 +434,7 @@ class OverviewTests {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        checkTlifIsDisplayed(composeRule, dd.tlif1)
+        composeRule.checkTlifIsDisplayed(dd.tlif1)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 }

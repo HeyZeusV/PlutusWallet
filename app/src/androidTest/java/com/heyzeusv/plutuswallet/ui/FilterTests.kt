@@ -5,24 +5,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.assertDisplayedMessage
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.ui.overview.FilterCard
 import com.heyzeusv.plutuswallet.util.FilterState
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -123,12 +118,6 @@ class FilterTests {
             }
         }
 
-        runBlocking {
-            val actualSnackbarText = snapshotFlow { snackbarHostState.currentSnackbarData }
-                .filterNotNull().first().message
-            val expectedSnackbarText = InstrumentationRegistry.getInstrumentation().targetContext
-                .resources.getString(expectedMessageId)
-            assertEquals(expectedSnackbarText, actualSnackbarText)
-        }
+        snackbarHostState.assertDisplayedMessage(expectedMessageId)
     }
 }
