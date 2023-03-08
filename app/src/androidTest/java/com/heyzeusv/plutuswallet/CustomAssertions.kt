@@ -101,12 +101,12 @@ fun NavHostController.assertCurrentRouteName(expectedRouteName: String) {
     assertEquals(expectedRouteName, currentBackStackEntry?.destination?.route)
 }
 
-fun SnackbarHostState.assertDisplayedMessage(expectedMessageId: Int) {
+fun SnackbarHostState.assertDisplayedMessage(expectedMessageId: Int, vararg args: String?) {
     runBlocking {
         val actualSnackbarText = snapshotFlow { currentSnackbarData }
             .filterNotNull().first().message
         val expectedSnackbarText = InstrumentationRegistry.getInstrumentation().targetContext
-            .resources.getString(expectedMessageId)
+            .resources.getString(expectedMessageId, *args)
         assertEquals(expectedSnackbarText, actualSnackbarText)
     }
 }

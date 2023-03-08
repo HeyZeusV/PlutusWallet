@@ -69,7 +69,6 @@ fun ListCard(
     pagerState: PagerState
 ) {
     val itemExists by viewModel.itemExists.collectAsState()
-    val existsMessage = stringResource(R.string.snackbar_exists, itemExists)
 
     val firstItemList by viewModel.firstItemList.collectAsState()
     val secondItemList by viewModel.secondItemList.collectAsState()
@@ -77,9 +76,6 @@ fun ListCard(
     val secondUsedItemList by viewModel.secondUsedItemList.collectAsState()
     val showDialog by viewModel.showDialog.collectAsState()
 
-    LaunchedEffect(key1 = itemExists) {
-        if (itemExists.isNotBlank()) showSnackbar(existsMessage)
-    }
     // set up AppBar actions
     appBarActionSetup(
         AppBarActions(
@@ -97,19 +93,24 @@ fun ListCard(
         )
     )
     ListCard(
-        pagerState = pagerState,
+        pagerState,
         dataLists = listOf(firstItemList, secondItemList),
         usedDataLists = listOf(firstUsedItemList, secondUsedItemList),
         listSubtitles = viewModel.listSubtitleStringIds,
         onClick = viewModel::updateDialog,
-        showDialog = showDialog,
+        showDialog,
         createDialogTitle = stringResource(viewModel.createItemStringId),
         createDialogOnConfirm = viewModel::insertItem,
         deleteDialogTitle = stringResource(viewModel.deleteItemStringId),
         deleteDialogOnConfirm = viewModel::deleteItem,
         editDialogTitle = stringResource(viewModel.editItemStringId),
         editDialogOnConfirm = viewModel::editItem,
-        dialogOnDismiss = viewModel::updateDialog
+        dialogOnDismiss = viewModel::updateDialog,
+        itemExists,
+        showSnackbar = { msg ->
+            showSnackbar(msg)
+            viewModel.updateItemExists("")
+        }
     )
 }
 
@@ -120,22 +121,28 @@ fun ListCard(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ListCard(
-    pagerState: PagerState,
-    dataLists: List<List<ListItemInterface>>,
-    usedDataLists: List<List<ListItemInterface>>,
-    listSubtitles: List<Int>,
-    onClick: (ListDialog) -> Unit,
-    showDialog: ListDialog,
-    createDialogTitle: String,
-    createDialogOnConfirm: (String) -> Unit,
-    deleteDialogTitle: String,
-    deleteDialogOnConfirm: (ListItemInterface) -> Unit,
-    editDialogTitle: String,
-    editDialogOnConfirm: (ListItemInterface, String) -> Unit,
-    dialogOnDismiss: (ListDialog) -> Unit,
+    pagerState: PagerState = rememberPagerState(),
+    dataLists: List<List<ListItemInterface>> = emptyList(),
+    usedDataLists: List<List<ListItemInterface>> = emptyList(),
+    listSubtitles: List<Int> = emptyList(),
+    onClick: (ListDialog) -> Unit = { },
+    showDialog: ListDialog = ListDialog(EDIT, -1),
+    createDialogTitle: String = "",
+    createDialogOnConfirm: (String) -> Unit = { },
+    deleteDialogTitle: String = "",
+    deleteDialogOnConfirm: (ListItemInterface) -> Unit = { },
+    editDialogTitle: String = "",
+    editDialogOnConfirm: (ListItemInterface, String) -> Unit = { _, _ -> },
+    dialogOnDismiss: (ListDialog) -> Unit = { },
+    itemExists: String = "",
+    showSnackbar: suspend (String) -> Unit = { }
 ) {
+    val existsMessage = stringResource(R.string.snackbar_exists, itemExists)
     val dataListsSize = dataLists.size
 
+    LaunchedEffect(key1 = itemExists) {
+        if (itemExists.isNotBlank()) showSnackbar(existsMessage)
+    }
     if (showDialog.action == CREATE) {
         PWInputAlertDialog(
             title = createDialogTitle,
@@ -212,7 +219,7 @@ fun ListCard(
                     }
                 }
             }
-            if (dataListsSize > 1) {
+            if (listSubtitles.isNotEmpty()) {
                 HorizontalPagerIndicator(
                     pagerState = pagerState,
                     modifier = Modifier

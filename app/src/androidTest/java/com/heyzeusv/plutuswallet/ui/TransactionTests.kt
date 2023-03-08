@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui
 
-import android.content.res.Resources
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.compose.material.SnackbarHostState
@@ -13,7 +12,6 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.input.TextFieldValue
@@ -23,11 +21,12 @@ import androidx.test.espresso.contrib.PickerActions.setDate
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.assertDisplayedMessage
 import com.heyzeusv.plutuswallet.assertEditTextEquals
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
+import com.heyzeusv.plutuswallet.onNodeWithTTStrId
+import com.heyzeusv.plutuswallet.onNodeWithTextId
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionCard
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
@@ -35,7 +34,6 @@ import java.math.RoundingMode.HALF_UP
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.util.Date
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,15 +45,9 @@ class TransactionTests {
     var composeRule = createAndroidComposeRule<ComponentActivity>()
 
     val dd = DummyAndroidDataUtil()
-    lateinit var res: Resources
 
     val dateFormatter: DateFormat = DateFormat.getDateInstance(0)
     val totalFormatter = DecimalFormat("#,##0.00").apply { roundingMode = HALF_UP }
-
-    @Before
-    fun setUp() {
-        res = InstrumentationRegistry.getInstrumentation().targetContext.resources
-    }
 
     @Test
     fun transaction_displayNewTransaction() {
@@ -116,7 +108,7 @@ class TransactionTests {
         composeRule.onNodeWithTTStrId(R.string.transaction_memo).assertEditTextEquals(dd.tran1.memo)
         composeRule.onNodeWithTTStrId(R.string.transaction_repeat).assertIsSelected()
         composeRule.onNodeWithTTStrId(R.string.transaction_period)
-            .assertEditTextEquals(res.getString(R.string.period_days))
+            .assertEditTextEquals(composeRule.activity.getString(R.string.period_days))
         composeRule.onNodeWithTTStrId(R.string.transaction_frequency)
             .assertEditTextEquals("${dd.tran1.frequency}")
     }
@@ -408,7 +400,7 @@ class TransactionTests {
     private fun createNew(nodeId: Int, createId: Int, newName: String) {
         // create new item
         composeRule.onNodeWithTTStrId(nodeId).performClick()
-        composeRule.onNodeWithText(res.getString(createId)).performClick()
+        composeRule.onNodeWithTextId(createId).performClick()
         composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(newName)
         composeRule.onNode(
@@ -433,7 +425,7 @@ class TransactionTests {
      */
     private fun cancelNew(nodeId: Int, createId: Int, previousName: String) {
         composeRule.onNodeWithTTStrId(nodeId).performClick()
-        composeRule.onNodeWithText(res.getString(createId)).performClick()
+        composeRule.onNodeWithTextId(createId).performClick()
         composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
         composeRule.onNode(
             hasTestTag("AlertDialog dismiss"),
