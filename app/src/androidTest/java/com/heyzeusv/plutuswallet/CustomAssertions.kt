@@ -12,6 +12,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -109,4 +110,13 @@ fun SnackbarHostState.assertDisplayedMessage(expectedMessageId: Int, vararg args
             .resources.getString(expectedMessageId, *args)
         assertEquals(expectedSnackbarText, actualSnackbarText)
     }
+}
+
+/**
+ *  Assertion that checks if node's background color matches [expectedBackground].
+ *  Found [here](https://stackoverflow.com/a/70682865)
+ */
+fun SemanticsNodeInteraction.assertBackgroundColor(expectedBackground: Color) {
+    val capturedName = captureToImage().colorSpace.name
+    assertEquals(expectedBackground.colorSpace.name, capturedName)
 }
