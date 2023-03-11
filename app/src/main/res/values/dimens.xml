@@ -25,14 +25,14 @@
     <dimen name="tfh_topPad">4dp</dimen>
     <dimen name="tfh_height">16dp</dimen>
 
-    <!-- InputDialog (id) -->
-    <dimen name="id_topPad">16dp</dimen>
-    <dimen name="id_botPad">4dp</dimen>
-    <dimen name="id_content_horiPad">24dp</dimen>
-    <dimen name="id_tf_topPad">4dp</dimen>
-    <dimen name="id_button_horiPad">8dp</dimen>
-    <dimen name="id_button_topPad">4dp</dimen>
-    <dimen name="id_button_spacedBy">2dp</dimen>
+    <!-- AlertDialog (ad) -->
+    <dimen name="ad_topPad">16dp</dimen>
+    <dimen name="ad_botPad">4dp</dimen>
+    <dimen name="ad_content_horiPad">24dp</dimen>
+    <dimen name="ad_tf_topPad">16dp</dimen>
+    <dimen name="ad_button_horiPad">8dp</dimen>
+    <dimen name="ad_button_topPad">4dp</dimen>
+    <dimen name="ad_button_spacedBy">2dp</dimen>
 
     <!-- Chip -->
     <dimen name="transaction_button_chip_height">56dp</dimen>

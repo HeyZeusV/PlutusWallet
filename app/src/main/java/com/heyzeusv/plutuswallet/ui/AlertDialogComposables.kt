@@ -4,15 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.RadioButton
@@ -30,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.heyzeusv.plutuswallet.R
@@ -56,47 +57,69 @@ fun PWAlertDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    text = onConfirmText.uppercase(),
-                    modifier = Modifier.testTag("AlertDialog confirm"),
-                    color = LocalPWColors.current.alertDialogButtonText,
-                    style = alertDialogButton
-                )
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .defaultMinSize(minHeight = Dp(integerResource(R.integer.ad_minSize).toFloat()))
+                .testTag("AlertDialog"),
+            shape = MaterialTheme.shapes.medium,
+            elevation = dimensionResource(R.dimen.cardElevation)
+        ) {
+            Column(
+                modifier = modifier
+                    .padding(
+                        top = dimensionResource(R.dimen.ad_topPad),
+                        bottom = dimensionResource(R.dimen.ad_botPad)
+                    ),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    modifier = Modifier.padding(
+                        horizontal = dimensionResource(R.dimen.ad_content_horiPad)
+                    )
+                ) {
+                    Text(
+                        text = title,
+                        color = MaterialTheme.colors.onSurface,
+                        style = MaterialTheme.typography.subtitle1
+                    )
+                    Text(
+                        text = message,
+                        modifier = Modifier.padding(top = dimensionResource(R.dimen.ad_tf_topPad)),
+                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(R.dimen.ad_button_horiPad))
+                        .padding(top = dimensionResource(R.dimen.ad_button_topPad)),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = dimensionResource(R.dimen.ad_button_spacedBy),
+                        alignment = Alignment.End
+                    )
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text(
+                            text = onDismissText.uppercase(),
+                            modifier = Modifier.testTag("AlertDialog dismiss"),
+                            color = LocalPWColors.current.alertDialogButtonText,
+                            style = alertDialogButton
+                        )
+                    }
+                    TextButton(onClick = onConfirm) {
+                        Text(
+                            text = onConfirmText.uppercase(),
+                            modifier = Modifier.testTag("AlertDialog confirm"),
+                            color = LocalPWColors.current.alertDialogButtonText,
+                            style = alertDialogButton
+                        )
+                    }
+                }
             }
-        },
-        modifier = modifier.testTag("AlertDialog"),
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = onDismissText.uppercase(),
-                    modifier = Modifier.testTag("AlertDialog dismiss"),
-                    color = LocalPWColors.current.alertDialogButtonText,
-                    style = alertDialogButton
-                )
-            }
-        },
-        title = {
-            Text(
-                text = title,
-                color = MaterialTheme.colors.onSurface,
-                style = MaterialTheme.typography.subtitle1
-            )
-        },
-        text = {
-            Text(
-                text = message,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f)
-            )
-        },
-        backgroundColor = LocalElevationOverlay.current?.apply(
-            color = MaterialTheme.colors.surface,
-            elevation = 8.dp
-        ) ?: MaterialTheme.colors.surface
-    )
+        }
+    }
 }
 
 /**
@@ -123,19 +146,22 @@ fun PWInputAlertDialog(
      */
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier.testTag("AlertDialog"),
+            modifier = Modifier
+                .defaultMinSize(minHeight = Dp(integerResource(R.integer.ad_minSize).toFloat()))
+                .testTag("AlertDialog"),
             shape = MaterialTheme.shapes.medium,
             elevation = dimensionResource(R.dimen.cardElevation)
         ) {
             Column(
                 modifier = modifier.padding(
-                    top = dimensionResource(R.dimen.id_topPad),
-                    bottom = dimensionResource(R.dimen.id_botPad)
-                )
+                    top = dimensionResource(R.dimen.ad_topPad),
+                    bottom = dimensionResource(R.dimen.ad_botPad)
+                ),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
                     modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.id_content_horiPad)
+                        horizontal = dimensionResource(R.dimen.ad_content_horiPad)
                     )
                 ) {
                     Text(
@@ -147,7 +173,7 @@ fun PWInputAlertDialog(
                         onValueChange = { text = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = dimensionResource(R.dimen.id_tf_topPad))
+                            .padding(top = dimensionResource(R.dimen.ad_tf_topPad))
                             .testTag("AlertDialog input"),
                         label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
                         trailingIcon = {
@@ -189,10 +215,10 @@ fun PWInputAlertDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(R.dimen.id_button_horiPad))
-                        .padding(top = dimensionResource(R.dimen.id_button_topPad)),
+                        .padding(horizontal = dimensionResource(R.dimen.ad_button_horiPad))
+                        .padding(top = dimensionResource(R.dimen.ad_button_topPad)),
                     horizontalArrangement = Arrangement.spacedBy(
-                        space = dimensionResource(R.dimen.id_button_spacedBy),
+                        space = dimensionResource(R.dimen.ad_button_spacedBy),
                         alignment = Alignment.End
                     )
                 ) {
@@ -247,26 +273,33 @@ fun PWListAlertDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier.testTag("AlertDialog"),
+            modifier = Modifier
+                .defaultMinSize(minHeight = Dp(integerResource(R.integer.ad_minSize).toFloat()))
+                .testTag("AlertDialog"),
             shape = MaterialTheme.shapes.medium,
             elevation = dimensionResource(R.dimen.cardElevation)
         ) {
             Column(
                 modifier = modifier.padding(
-                    top = dimensionResource(R.dimen.id_topPad),
-                    bottom = dimensionResource(R.dimen.id_botPad)
-                )
+                    top = dimensionResource(R.dimen.ad_topPad),
+                    bottom = dimensionResource(R.dimen.ad_botPad)
+                ),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
                     modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.id_content_horiPad)
+                        horizontal = dimensionResource(R.dimen.ad_content_horiPad)
                     )
                 ) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.subtitle1
                     )
-                    Column(modifier = Modifier.selectableGroup()) {
+                    Column(
+                        modifier = Modifier
+                            .padding(top = dimensionResource(R.dimen.ad_tf_topPad))
+                            .selectableGroup()
+                    ) {
                         options.forEach { entry ->
                             Row(
                                 modifier = Modifier
@@ -285,7 +318,10 @@ fun PWListAlertDialog(
                                     selected = (entry.key == selectedOption),
                                     onClick = null // recommended for accessibility by Google
                                 )
-                                Text(text = entry.value)
+                                Text(
+                                    text = entry.value,
+                                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
+                                )
                             }
                         }
                     }
@@ -293,10 +329,10 @@ fun PWListAlertDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(R.dimen.id_button_horiPad))
-                        .padding(top = dimensionResource(R.dimen.id_button_topPad)),
+                        .padding(horizontal = dimensionResource(R.dimen.ad_button_horiPad))
+                        .padding(top = dimensionResource(R.dimen.ad_button_topPad)),
                     horizontalArrangement = Arrangement.spacedBy(
-                        space = dimensionResource(R.dimen.id_button_spacedBy),
+                        space = dimensionResource(R.dimen.ad_button_spacedBy),
                         alignment = Alignment.End
                     )
                 ) {
