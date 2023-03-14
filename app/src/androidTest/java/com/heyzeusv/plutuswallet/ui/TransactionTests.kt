@@ -1,123 +1,393 @@
 package com.heyzeusv.plutuswallet.ui
 
 import android.widget.DatePicker
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.getOrNull
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.SemanticsNodeInteraction
-import androidx.compose.ui.test.assert
+import androidx.activity.ComponentActivity
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.PickerActions.setDate
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.heyzeusv.plutuswallet.R
-import dagger.hilt.android.testing.HiltAndroidTest
+import com.heyzeusv.plutuswallet.assertDisplayedMessage
+import com.heyzeusv.plutuswallet.assertEditTextEquals
+import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
+import com.heyzeusv.plutuswallet.onNodeWithTTStrId
+import com.heyzeusv.plutuswallet.onNodeWithTextId
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionCard
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
+import java.math.RoundingMode.HALF_UP
+import java.text.DateFormat
+import java.text.DecimalFormat
 import java.util.Date
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
-@HiltAndroidTest
-class TransactionTests : BaseTest() {
+@RunWith(AndroidJUnit4::class)
+class TransactionTests {
+
+    @get:Rule
+    var composeRule = createAndroidComposeRule<ComponentActivity>()
+
+    val dd = DummyAndroidDataUtil()
+
+    val dateFormatter: DateFormat = DateFormat.getDateInstance(0)
+    val totalFormatter = DecimalFormat("#,##0.00").apply { roundingMode = HALF_UP }
 
     @Test
     fun transaction_displayNewTransaction() {
-        // check that we start on Overview screen and click on 'New Transaction'
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_transaction)))
-            .performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
+        composeRule.setContent {
+            PlutusWalletTheme {
+                TransactionCard()
+            }
+        }
 
         // check that fields display default values
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_title)))
-            .assertEditTextEquals("")
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date)))
+        composeRule.onNodeWithTTStrId(R.string.transaction_title).assertEditTextEquals("")
+        composeRule.onNodeWithTTStrId(R.string.transaction_date)
             .assertEditTextEquals(dateFormatter.format(Date()))
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_account)))
-            .assertEditTextEquals("")
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_total)))
-            .assertEditTextEquals("$0.00")
-        composeRule.onNode(hasTestTag(res.getString(R.string.type_expense))).assertIsSelected()
-        composeRule.onNode(hasTestTag(res.getString(R.string.type_income))).assertIsNotSelected()
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_category)))
-            .assertEditTextEquals("")
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_memo)))
-            .assertEditTextEquals("")
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_repeat)))
-            .assertIsNotSelected()
+        composeRule.onNodeWithTTStrId(R.string.transaction_account).assertEditTextEquals("")
+        composeRule.onNodeWithTTStrId(R.string.transaction_total).assertEditTextEquals("$0.00")
+        composeRule.onNodeWithTTStrId(R.string.type_expense).assertIsSelected()
+        composeRule.onNodeWithTTStrId(R.string.type_income).assertIsNotSelected()
+        composeRule.onNodeWithTTStrId(R.string.transaction_category).assertEditTextEquals("")
+        composeRule.onNodeWithTTStrId(R.string.transaction_memo).assertEditTextEquals("")
+        composeRule.onNodeWithTTStrId(R.string.transaction_repeat).assertIsNotSelected()
         // checks that nodes are not being shown/exist
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_period)))
-            .assertDoesNotExist()
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_frequency)))
-            .assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.transaction_period).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.transaction_frequency).assertDoesNotExist()
     }
 
     @Test
     fun transaction_displayExistingTransaction() {
-        // check that we start on Overview screen and click on existing Transaction
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
+        composeRule.setContent {
+            PlutusWalletTheme {
+                TransactionCard(
+                    transaction = dd.tran1,
+                    title = dd.tran1.title,
+                    date = dateFormatter.format(dd.tran1.date),
+                    account = dd.tran1.account,
+                    total = TextFieldValue("\$${totalFormatter.format(dd.tran1.total)}"),
+                    selectedCat = dd.tran1.category,
+                    memo = dd.tran1.memo,
+                    repeat = dd.tran1.repeating,
+                    period = "Days",
+                    frequency = TextFieldValue("${dd.tran1.frequency}"),
+                )
+            }
+        }
 
         // check that fields display correct values
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_title)))
+        composeRule.onNodeWithTTStrId(R.string.transaction_title)
             .assertEditTextEquals(dd.tran1.title)
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date)))
-            .assertEditTextEquals(dateFormatter.format(dd.tran1.date))
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_account)))
+        composeRule.onNodeWithTTStrId(R.string.transaction_date)
+           .assertEditTextEquals(dateFormatter.format(dd.tran1.date))
+        composeRule.onNodeWithTTStrId(R.string.transaction_account)
             .assertEditTextEquals(dd.tran1.account)
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_total)))
+        composeRule.onNodeWithTTStrId(R.string.transaction_total)
             .assertEditTextEquals("\$${totalFormatter.format(dd.tran1.total)}")
-        composeRule.onNode(hasTestTag(res.getString(R.string.type_expense))).assertIsSelected()
-        composeRule.onNode(hasTestTag(res.getString(R.string.type_income))).assertIsNotSelected()
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_category)))
+        composeRule.onNodeWithTTStrId(R.string.type_expense).assertIsSelected()
+        composeRule.onNodeWithTTStrId(R.string.type_income).assertIsNotSelected()
+        composeRule.onNodeWithTTStrId(R.string.transaction_category)
             .assertEditTextEquals(dd.tran1.category)
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_memo)))
-            .assertEditTextEquals(dd.tran1.memo)
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_repeat)))
-            .assertIsSelected()
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_period)))
-            .assertEditTextEquals(res.getString(R.string.period_days))
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_frequency)))
+        composeRule.onNodeWithTTStrId(R.string.transaction_memo).assertEditTextEquals(dd.tran1.memo)
+        composeRule.onNodeWithTTStrId(R.string.transaction_repeat).assertIsSelected()
+        composeRule.onNodeWithTTStrId(R.string.transaction_period)
+            .assertEditTextEquals(composeRule.activity.getString(R.string.period_days))
+        composeRule.onNodeWithTTStrId(R.string.transaction_frequency)
             .assertEditTextEquals("${dd.tran1.frequency}")
     }
 
     @Test
     fun transaction_createNewAccountAndCategories() {
+        composeRule.setContent {
+            PlutusWalletTheme {
+                var account by remember { mutableStateOf("") }
+                var typeSelected by remember { mutableStateOf(EXPENSE) }
+                var selectedCat by remember { mutableStateOf("") }
+                var accountList by remember { mutableStateOf(listOf("Create New Account")) }
+                val expenseCatList = listOf("Create New Category")
+                val incomeCatList = listOf("Create New Category")
+                var categoryList by remember { mutableStateOf(expenseCatList) }
+                var showAccountDialog by remember { mutableStateOf(false) }
+                var showCategoryDialog by remember { mutableStateOf(false) }
+                TransactionCard(
+                    account = account,
+                    typeSelected = typeSelected,
+                    updateTypeSelected = {
+                        typeSelected = typeSelected.opposite()
+                        categoryList =
+                            if (typeSelected == EXPENSE) expenseCatList else incomeCatList
+                    },
+                    selectedCat = selectedCat,
+                    accountList = accountList,
+                    categoryList = categoryList,
+                    showAccountDialog = showAccountDialog,
+                    updateAccountDialog = { showAccountDialog = it },
+                    accountDialogOnConfirm = {
+                        account = it
+                        accountList = listOf(it) + accountList
+                        showAccountDialog = false
+                    },
+                    showCategoryDialog = showCategoryDialog,
+                    updateCategoryDialog = { showCategoryDialog = it },
+                    categoryDialogOnConfirm = {
+                        selectedCat = it
+                        categoryList = listOf(it) + categoryList
+                        showCategoryDialog = false
+                    }
+                )
+            }
+        }
         // names for newly created items
         val testAcc = "Test Account"
         val testExCat = "Test Expense Category"
         val testInCat = "Test Income Category"
-
-        // check that we start on Overview screen and click on 'New Transaction'
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_transaction)))
-            .performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
 
         // Account
         createNew(R.string.transaction_account, R.string.account_create, testAcc)
         // Expense Category
         createNew(R.string.transaction_category, R.string.category_create, testExCat)
         // switch to Income Categories
-        composeRule.onNode(hasTestTag(res.getString(R.string.type_income))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.type_income).performClick()
         // Income Category
         createNew(R.string.transaction_category, R.string.category_create, testInCat)
+    }
+
+    @Test
+    fun transaction_cancelNewAccountAndCategories() {
+        composeRule.setContent {
+            PlutusWalletTheme {
+                val accountList by remember {
+                    mutableStateOf(listOf("Test Account", "Create New Account"))
+                }
+                val expenseCatList = listOf("Test Expense Category", "Create New Category")
+                val incomeCatList = listOf("Test Income Category", "Create New Category")
+                var account by remember { mutableStateOf(accountList[0]) }
+                var typeSelected by remember { mutableStateOf(EXPENSE) }
+                var selectedCat by remember { mutableStateOf(expenseCatList[0]) }
+                var categoryList by remember { mutableStateOf(expenseCatList) }
+                var showAccountDialog by remember { mutableStateOf(false) }
+                var showCategoryDialog by remember { mutableStateOf(false) }
+                TransactionCard(
+                    account = account,
+                    updateAccount = { account = it },
+                    typeSelected = typeSelected,
+                    updateTypeSelected = {
+                        typeSelected = typeSelected.opposite()
+                        if (typeSelected == EXPENSE) {
+                            categoryList = expenseCatList
+                            selectedCat = categoryList[0]
+
+                        } else {
+                            categoryList = incomeCatList
+                            selectedCat = categoryList[0]
+                        }
+                    },
+                    selectedCat = selectedCat,
+                    updateSelectedCat = { selectedCat = it },
+                    accountList = accountList,
+                    categoryList = categoryList,
+                    showAccountDialog = showAccountDialog,
+                    updateAccountDialog = { showAccountDialog = it },
+                    showCategoryDialog = showCategoryDialog,
+                    updateCategoryDialog = { showCategoryDialog = it },
+                )
+            }
+        }
+        // Account
+        cancelNew(R.string.transaction_account, R.string.account_create, "Test Account")
+        // Expense Category
+        cancelNew(R.string.transaction_category, R.string.category_create, "Test Expense Category")
+        // switch to Income Categories
+        composeRule.onNodeWithTTStrId(R.string.type_income).performClick()
+        // Income Category
+        cancelNew(R.string.transaction_category, R.string.category_create, "Test Income Category")
+    }
+
+    @Test
+    fun transaction_setNewDate() {
+        val expectedDate = "Monday, January 18, 2021"
+        composeRule.setContent {
+            PlutusWalletTheme {
+                var date by remember { mutableStateOf("") }
+                TransactionCard(
+                    date = date,
+                    onDateSelected = { date = dateFormatter.format(it) }
+                )
+            }
+        }
+
+        // open DatePickerDialog
+        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        // using non-Compose DatePicker so using Espresso here to select the date and confirm
+        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
+        onView(withId(android.R.id.button1)).perform(click())
+        // check that date is formatted and displayed correctly
+        composeRule.onNodeWithTTStrId(R.string.transaction_date).assertEditTextEquals(expectedDate)
+    }
+
+    @Test
+    fun transaction_cancelNewDate() {
+        val expectedDate = "Thursday, January 1, 1970"
+        composeRule.setContent {
+            PlutusWalletTheme {
+                var date by remember { mutableStateOf(expectedDate) }
+                TransactionCard(
+                    date = date,
+                    onDateSelected = { date = dateFormatter.format(it) }
+                )
+            }
+        }
+
+        // open DatePickerDialog
+        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        // using non-Compose DatePicker so using Espresso here to select the date and confirm
+        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
+        onView(withId(android.R.id.button2)).perform(click())
+        // check that previous date is formatted and displayed correctly
+        composeRule.onNodeWithTTStrId(R.string.transaction_date).assertEditTextEquals(expectedDate)
+    }
+
+    @Test
+    fun transaction_displaySaveSnackbar() {
+        val snackbarHostState = SnackbarHostState()
+        composeRule.setContent {
+            PlutusWalletTheme {
+                TransactionCard(
+                    saveSuccess = true,
+                    onSaveSuccess = { msg -> snackbarHostState.showSnackbar(msg) }
+                )
+            }
+        }
+
+        snackbarHostState.assertDisplayedMessage(R.string.snackbar_saved)
+    }
+
+    @Test
+    fun transaction_acceptFutureDialogWarning() {
+        composeRule.setContent {
+            PlutusWalletTheme {
+                val tran = dd.tran1
+                var date by remember { mutableStateOf(dateFormatter.format(dd.tran1.date)) }
+                var showFutureDialog by remember { mutableStateOf(false) }
+                var saveSuccess by remember { mutableStateOf(false) }
+                TransactionCard(
+                    transaction = tran,
+                    date = date,
+                    onDateSelected = {
+                        date = dateFormatter.format(it)
+                        // simulate the user clicking save after changing date
+                        saveSuccess = true
+                    },
+                    showFutureDialog = showFutureDialog,
+                    futureDialogOnConfirm = {
+                        tran.futureTCreated = false
+                        showFutureDialog = false
+                    },
+                    saveSuccess = saveSuccess,
+                    onSaveSuccess = {
+                        // this is normally down by AppBar save button, but we are simulating it
+                        // using saveSuccess which normally displays Snackbar
+                        if (date != dateFormatter.format(tran.date) && tran.futureTCreated) {
+                            showFutureDialog = true
+                        }
+                        saveSuccess = false
+                    }
+                )
+            }
+        }
+
+        // change date of Transaction that has already been repeated and save
+        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        // using non-Compose DatePicker so using Espresso here to select the date and confirm
+        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
+        onView(withId(android.R.id.button1)).perform(click())
+
+        // accept warning
+        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
+        composeRule.onNode(
+            hasTestTag("AlertDialog confirm"),
+            useUnmergedTree = true
+        ).performClick()
+
+        // change the date of Transaction again and save
+        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        // using non-Compose DatePicker so using Espresso here to select the date and confirm
+        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 17))
+        onView(withId(android.R.id.button1)).perform(click())
+
+        // check that the AlertDialog does not appear again
+        composeRule.onNode(hasTestTag("AlertDialog")).assertDoesNotExist()
+    }
+
+    @Test
+    fun transaction_declineFutureDialogWarning() {
+        composeRule.setContent {
+            PlutusWalletTheme {
+                val tran = dd.tran1
+                var date by remember { mutableStateOf(dateFormatter.format(tran.date)) }
+                var showFutureDialog by remember { mutableStateOf(false) }
+                var saveSuccess by remember { mutableStateOf(false) }
+                TransactionCard(
+                    transaction = tran,
+                    date = date,
+                    onDateSelected = {
+                        date = dateFormatter.format(it)
+                        // simulate the user clicking save after changing date
+                        saveSuccess = true
+                    },
+                    showFutureDialog = showFutureDialog,
+                    futureDialogOnDismiss = { showFutureDialog = false },
+                    saveSuccess = saveSuccess,
+                    onSaveSuccess = {
+                        // this is normally down by AppBar save button, but we are simulating it
+                        // using saveSuccess which normally displays Snackbar
+                        if (date != dateFormatter.format(tran.date) && tran.futureTCreated) {
+                            showFutureDialog = true
+                        }
+                        saveSuccess = false
+                    }
+                )
+            }
+        }
+
+        // change date of Transaction that has already been repeated and save
+        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        // using non-Compose DatePicker so using Espresso here to select the date and confirm
+        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
+        onView(withId(android.R.id.button1)).perform(click())
+
+        // decline warning
+        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
+        composeRule.onNode(
+            hasTestTag("AlertDialog dismiss"),
+            useUnmergedTree = true
+        ).performClick()
+
+        // change the date of Transaction again and save
+        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        // using non-Compose DatePicker so using Espresso here to select the date and confirm
+        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 17))
+        onView(withId(android.R.id.button1)).perform(click())
+
+        // check that the AlertDialog does appear again
+        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
     }
 
     /**
@@ -129,8 +399,8 @@ class TransactionTests : BaseTest() {
      */
     private fun createNew(nodeId: Int, createId: Int, newName: String) {
         // create new item
-        composeRule.onNode(hasTestTag(res.getString(nodeId))).performClick()
-        composeRule.onNodeWithText(res.getString(createId)).performClick()
+        composeRule.onNodeWithTTStrId(nodeId).performClick()
+        composeRule.onNodeWithTextId(createId).performClick()
         composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(newName)
         composeRule.onNode(
@@ -139,30 +409,11 @@ class TransactionTests : BaseTest() {
         ).performClick()
 
         // check that newly created item is selected
-        composeRule.onNode(hasTestTag(res.getString(nodeId))).assertEditTextEquals(newName)
+        composeRule.onNodeWithTTStrId(nodeId).assertEditTextEquals(newName)
 
         // check that newly created item exists in dropdown menu
-        composeRule.onNode(hasTestTag(res.getString(nodeId))).performClick()
-        composeRule.onNodeWithText(newName).assertExists()
-    }
-
-    @Test
-    fun transaction_cancelNewAccountAndCategories() {
-        // check that we start on Overview screen and click on existing Transaction
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
-
-        // Account
-        cancelNew(R.string.transaction_account, R.string.account_create, dd.tran1.account)
-        // Expense Category
-        cancelNew(R.string.transaction_category, R.string.category_create, dd.tran1.category)
-        // switch to Income Categories
-        composeRule.onNode(hasTestTag(res.getString(R.string.type_income))).performClick()
-        // Income Category
-        cancelNew(R.string.transaction_category, R.string.category_create, "")
+        composeRule.onNodeWithTTStrId(nodeId).performClick()
+        composeRule.onNode(hasTestTag("DropdownMenuItem $newName")).assertIsDisplayed()
     }
 
     /**
@@ -173,177 +424,14 @@ class TransactionTests : BaseTest() {
      *  [previousName] is displayed on node
      */
     private fun cancelNew(nodeId: Int, createId: Int, previousName: String) {
-        composeRule.onNode(hasTestTag(res.getString(nodeId))).performClick()
-        composeRule.onNodeWithText(res.getString(createId)).performClick()
+        composeRule.onNodeWithTTStrId(nodeId).performClick()
+        composeRule.onNodeWithTextId(createId).performClick()
         composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
         composeRule.onNode(
             hasTestTag("AlertDialog dismiss"),
             useUnmergedTree = true
         ).performClick()
 
-        composeRule.onNode(hasTestTag(res.getString(nodeId)))
-            .assertEditTextEquals(previousName)
-    }
-
-    @Test
-    fun transaction_setNewDate() {
-        val expectedDate = "Monday, January 18, 2021"
-
-        // check that we start on Overview screen and click on 'New Transaction'
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_transaction)))
-            .performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
-
-        // open DatePickerDialog
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date))).performClick()
-        // using non-Compose DatePicker so using Espresso here to select the date and confirm
-        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
-        onView(withId(android.R.id.button1)).perform(click())
-        // check that date is formatted and displayed correctly
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date)))
-            .assertEditTextEquals(expectedDate)
-    }
-
-    @Test
-    fun transaction_cancelNewDate() {
-        val expectedDate = "Thursday, January 1, 1970"
-
-        // check that we start on Overview screen and click on existing Transaction
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
-
-        // open DatePickerDialog
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date))).performClick()
-        // using non-Compose DatePicker so using Espresso here to select the date and confirm
-        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
-        onView(withId(android.R.id.button2)).perform(click())
-        // check that previous date is formatted and displayed correctly
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date)))
-            .assertEditTextEquals(expectedDate)
-    }
-
-    @Test
-    fun transaction_displaySaveSnackbar() {
-        // check that we start on Overview screen and click on 'New Transaction'
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_transaction)))
-            .performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
-
-        // check that Snackbar with save message is displayed after Save button is pressed
-        composeRule.onNode(hasContentDescription(res.getString(R.string.transaction_save)))
-            .performClick()
-        composeRule.onNodeWithText(res.getString(R.string.snackbar_saved)).assertIsDisplayed()
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun transaction_saveTransactionWithNoTitle() = runTest {
-        // retrieve highest id in FakeAndroidRepository and add 1
-        var expectedId = 0
-        repo.getMaxId().collect { id -> expectedId = id?.plus(1) ?: 0}
-        val title = res.getString(R.string.transaction_empty_title)
-
-        // check that we start on Overview screen and click on 'New Transaction'
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_transaction)))
-            .performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
-
-        // check that title is correctly displayed after saving
-        composeRule.onNode(hasContentDescription(res.getString(R.string.transaction_save)))
-            .performClick()
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_title)))
-            .assertEditTextEquals("$title$expectedId")
-    }
-
-    @Test
-    fun transaction_acceptFutureDialogWarning() {
-        // check that we start on Overview screen and click on repeatedTransaction
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
-
-        // change date of Transaction that has already been repeated and save
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date))).performClick()
-        // using non-Compose DatePicker so using Espresso here to select the date and confirm
-        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
-        onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasContentDescription(res.getString(R.string.transaction_save)))
-            .performClick()
-        // accept warning
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
-
-        // change the date of Transaction again and save
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date))).performClick()
-        // using non-Compose DatePicker so using Espresso here to select the date and confirm
-        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 17))
-        onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasContentDescription(res.getString(R.string.transaction_save)))
-            .performClick()
-
-        // check that the AlertDialog does not appear again
-        composeRule.onNode(hasTestTag("AlertDialog")).assertDoesNotExist()
-    }
-
-    @Test
-    fun transaction_declineFutureDialogWarning() {
-        // check that we start on Overview screen and click on repeatedTransaction
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
-
-        // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
-
-        // change date of Transaction that has already been repeated and save
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date))).performClick()
-        // using non-Compose DatePicker so using Espresso here to select the date and confirm
-        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
-        onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasContentDescription(res.getString(R.string.transaction_save)))
-            .performClick()
-        // decline warning
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(
-            hasTestTag("AlertDialog dismiss"),
-            useUnmergedTree = true
-        ).performClick()
-
-        // change the date of Transaction again and save
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date))).performClick()
-        // using non-Compose DatePicker so using Espresso here to select the date and confirm
-        onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 17))
-        onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasContentDescription(res.getString(R.string.transaction_save)))
-            .performClick()
-
-        // check that the AlertDialog does appear again
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(nodeId).assertEditTextEquals(previousName)
     }
 }
-
-fun SemanticsNodeInteraction.assertEditTextEquals(value: String) : SemanticsNodeInteraction =
-    assert(hasEditTextExactly(value))
-
-fun hasEditTextExactly(value: String): SemanticsMatcher =
-    SemanticsMatcher("${SemanticsProperties.EditableText.name} is $value") { node ->
-        var actual = ""
-        node.config.getOrNull(SemanticsProperties.EditableText)?.let { actual = it.text }
-        return@SemanticsMatcher actual == value
-    }

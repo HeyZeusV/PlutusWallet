@@ -53,8 +53,6 @@ object SettingsUtils {
         val thousandsSymbolKey: String = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
         val decimalNumber: String = sharedPref[Key.KEY_DECIMAL_NUMBER, "yes"]
         val currencySymbolSide: String = sharedPref[Key.KEY_CURRENCY_SYMBOL_SIDE, "left"]
-        val decimalPlaces: Boolean = sharedPref[Key.KEY_DECIMAL_PLACES, true]
-        val symbolSide: Boolean = sharedPref[Key.KEY_SYMBOL_SIDE, true]
 
         // converting keys to values
         val currencySymbol: String = getCurrencySymbol(currencySymbolKey)
@@ -76,9 +74,8 @@ object SettingsUtils {
         val dateFormatter = DateFormat.getDateInstance(dateFormat)
 
         return SettingsValues(
-            currencySymbol, symbolSide, thousandsSymbol, decimalPlaces,
-            decimalSymbol, dateFormat, decimalFormatter, integerFormatter,
-            decimalNumber, currencySymbolSide, dateFormatter
+            currencySymbol, currencySymbolSide, thousandsSymbol, decimalSymbol,
+            decimalNumber, decimalFormatter, integerFormatter, dateFormatter
         )
     }
 }

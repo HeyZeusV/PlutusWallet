@@ -26,7 +26,7 @@
     <string name="filter_apply">Anwenden</string>
     <string name="filter_category">Kategorie</string>
     <string name="filter_date">Datum</string>
-    <string name="filter_date_warning">Das Enddatum muss nach dem Startdatum liegen !!</string>
+    <string name="filter_invalid_date_range">Das Enddatum muss nach dem Startdatum liegen !!</string>
     <string name="filter_end">Ende</string>
     <string name="filter_reset">Rücksetzen</string>
     <string name="filter_start">Anfang</string>
@@ -100,4 +100,8 @@
     <string name="data_edit">Bearbeiten</string>
     <string name="data_delete">löschen</string>
     <string name="about_privacy_policy">Datenschutz-Bestimmungen</string>
+    <string name="icon_cd_expandcollapse">Erweitern oder reduzieren</string>
+    <string name="icon_cd_inputError">Eingabe Fehler</string>
+    <string name="alert_dialog_closeapp">App schließen</string>
+    <string name="alert_dialog_closeapp_message">Möchten Sie die App schließen?</string>
 </resources>

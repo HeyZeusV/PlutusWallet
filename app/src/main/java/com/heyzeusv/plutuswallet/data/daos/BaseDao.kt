@@ -14,7 +14,7 @@ import androidx.room.Update
  *  They support inheritance, this is a base.
  *  All EntityDaos must extent this class.
  *
- *  @property T the type of Entity to be used.
+ *  [T] is the type of Entity to be used.
  */
 @Dao
 abstract class BaseDao<T> {
@@ -44,7 +44,7 @@ abstract class BaseDao<T> {
     abstract suspend fun update(objs: List<T>)
 
     /**
-     *  Deletes [obj]
+     *  Deletes [obj].
      */
     @Delete
     abstract suspend fun delete(obj: T)

@@ -1,60 +1,66 @@
 package com.heyzeusv.plutuswallet.ui
 
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.onNodeWithTextIdUp
+import com.heyzeusv.plutuswallet.ui.about.AboutScreen
+import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 @HiltAndroidTest
-class AboutTests : BaseTest() {
+@RunWith(AndroidJUnit4::class)
+class AboutTests {
+
+    @get:Rule(order = 1)
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 2)
+    var composeRule = createAndroidComposeRule<ComponentActivity>()
+
+    @Before
+    fun setUp() {
+        composeRule.setContent {
+            PlutusWalletTheme {
+                AboutScreen(
+                    appBarActionSetup = { },
+                    navigateUp = { }
+                )
+            }
+        }
+    }
 
     @Test
     fun about_buttonContentHidden() {
-        navigateToAboutScreen()
-
-        composeRule.onNodeWithText(res.getString(R.string.about_changelog).uppercase())
-            .assertIsEnabled()
+        composeRule.onNodeWithTextIdUp(R.string.about_changelog).assertIsEnabled()
         composeRule.onNode(hasTestTag("File Changelog.txt")).assertDoesNotExist()
 
-        composeRule.onNodeWithText(res.getString(R.string.about_license).uppercase())
-            .assertIsEnabled()
+        composeRule.onNodeWithTextIdUp(R.string.about_license).assertIsEnabled()
         composeRule.onNode(hasTestTag("File MPAndroidChartLicense.txt")).assertDoesNotExist()
     }
 
     @Test
     fun about_buttonContentShownThenHide() {
-        navigateToAboutScreen()
-
-        composeRule.onNodeWithText(res.getString(R.string.about_changelog).uppercase())
-            .performClick()
+        composeRule.onNodeWithTextIdUp(R.string.about_changelog).performClick()
         composeRule.onNode(hasTestTag("File Changelog.txt")).assertIsDisplayed()
 
-        composeRule.onNodeWithText(res.getString(R.string.about_changelog).uppercase())
-            .performClick()
+        composeRule.onNodeWithTextIdUp(R.string.about_changelog).performClick()
         composeRule.onNode(hasTestTag("File Changelog.txt")).assertDoesNotExist()
 
-        composeRule.onNodeWithText(res.getString(R.string.about_license).uppercase())
-            .performClick()
+        composeRule.onNodeWithTextIdUp(R.string.about_license).performClick()
         composeRule.onNode(hasTestTag("File MPAndroidChartLicense.txt")).assertIsDisplayed()
 
-        composeRule.onNodeWithText(res.getString(R.string.about_license).uppercase())
-            .performClick()
+        composeRule.onNodeWithTextIdUp(R.string.about_license).performClick()
         composeRule.onNode(hasTestTag("File MPAndroidChartLicense.txt")).assertDoesNotExist()
-    }
-
-    private fun navigateToAboutScreen() {
-        // check that we start on Overview screen, open drawer, and navigate to Account screen
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_drawer_description)))
-            .performClick()
-        composeRule.onNode(hasTestTag("DrawerItem About")).performClick()
-
-        // check that we navigate to Account screen
-        composeRule.onNode(hasTestTag("AppBar About")).assertExists()
     }
 }

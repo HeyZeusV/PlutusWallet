@@ -26,7 +26,7 @@
     <string name="filter_apply">대다</string>
     <string name="filter_category">범주</string>
     <string name="filter_date">데이트</string>
-    <string name="filter_date_warning">종료일은 시작일 이후 여야합니다 !!</string>
+    <string name="filter_invalid_date_range">종료일은 시작일 이후 여야합니다 !!</string>
     <string name="filter_end">종료</string>
     <string name="filter_reset">초기화</string>
     <string name="filter_start">스타트</string>
@@ -100,4 +100,8 @@
     <string name="data_edit">편집하다</string>
     <string name="data_delete">삭제</string>
     <string name="about_privacy_policy">개인 정보 정책</string>
+    <string name="icon_cd_expandcollapse">확장 또는 축소</string>
+    <string name="icon_cd_inputError">입력 오류</string>
+    <string name="alert_dialog_closeapp">앱 닫기</string>
+    <string name="alert_dialog_closeapp_message">앱을 닫으시겠습니까?</string>
 </resources>

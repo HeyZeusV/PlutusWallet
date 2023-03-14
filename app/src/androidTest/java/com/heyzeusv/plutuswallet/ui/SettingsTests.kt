@@ -1,62 +1,70 @@
 package com.heyzeusv.plutuswallet.ui
 
+import androidx.activity.compose.setContent
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.assertBackgroundColor
+import com.heyzeusv.plutuswallet.assertEditTextEquals
+import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.onNodeWithContDiscId
+import com.heyzeusv.plutuswallet.onNodeWithTTStrId
+import com.heyzeusv.plutuswallet.onNodeWithTextId
 import com.heyzeusv.plutuswallet.util.prepareTotalText
+import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.util.theme.Purple900
+import com.heyzeusv.plutuswallet.util.theme.Purple900Light
+import com.heyzeusv.plutuswallet.util.theme.PurpleBase
+import com.heyzeusv.plutuswallet.util.theme.PurpleDark
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
 /**
  *  Test device should have default settings
  */
 @HiltAndroidTest
-class SettingsTests : BaseTest() {
+@RunWith(AndroidJUnit4::class)
+class SettingsTests {
+
+    @get:Rule(order = 1)
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 2)
+    var composeRule = createAndroidComposeRule<MainActivity>()
 
     // only used to get expected values
     private var setVals = SettingsValues()
+    val dd = DummyAndroidDataUtil()
 
-
-//    // LanguageTitles in each language available in app other than English
-//    private val german = LanguageTitles(
-//        "Deutsche", "die Einstellungen", "Überblick",
-//        "Transaktion", "Konten", "Kategorien", "Über"
-//    )
-//    private val spanish = LanguageTitles(
-//        "Español (latinoamericano)", "Configuraciones", "Visión general",
-//        "Transacción", "Cuentas", "Categorias", "Acerca de"
-//    )
-//    private val hindi = LanguageTitles(
-//        "हिंदी", "समायोजन", "अवलोकन",
-//        "लेन-देन", "हिसाब किताब", "श्रेणियाँ", "के बारे में"
-//    )
-//    private val japanese = LanguageTitles(
-//        "日本語", "設定", "概要概要",
-//        "トランザクション", "アカウント", "カテゴリー", "約"
-//    )
-//    private val korean = LanguageTitles(
-//        "한국어", "설정", "개요",
-//        "트랜잭션", "계정", "카테고리", "약"
-//    )
-//    private val thai = LanguageTitles(
-//        "ไทย", "การตั้งค่า", "ภาพรวม", "การทำธุรกรรม",
-//        "บัญชี", "หมวดหมู่", "เกี่ยวกับ"
-//    )
+    @Before
+    fun setUp() {
+        composeRule.activity.setContent {
+            PlutusWalletTheme {
+                PlutusWalletApp()
+            }
+        }
+    }
 
     @Test
     fun settings_displaySettings() {
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
     }
 
     @Test
@@ -66,18 +74,18 @@ class SettingsTests : BaseTest() {
          *  '$' on left side, ',' used as thousands symbols, '.' used as decimal symbol,
          *  decimals allowed, full date is displayed, and English is language.
          */
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
+        composeRule.onNodeWithTextId(R.string.cfl_overview).assertExists()
         // check List items
         checkAllTranListItems()
 
         // navigate to Transaction with id 1
         composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
         // check that we navigate to Transaction screen
-        composeRule.onNodeWithText(res.getString(R.string.transaction)).assertExists()
+        composeRule.onNodeWithTextId(R.string.transaction).assertExists()
         // check that date and total are formatted correctly
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_date)))
+        composeRule.onNodeWithTTStrId(R.string.transaction_date)
             .assertEditTextEquals(setVals.dateFormatter.format(dd.tran1.date))
-        composeRule.onNode(hasTestTag(res.getString(R.string.transaction_total)))
+        composeRule.onNodeWithTTStrId(R.string.transaction_total)
             .assertEditTextEquals("\$${setVals.decimalFormatter.format(dd.tran1.total)}")
         Espresso.pressBack()
 
@@ -85,37 +93,60 @@ class SettingsTests : BaseTest() {
         navigateToDrawerScreenAndCheckTitle("Accounts", false)
         navigateToDrawerScreenAndCheckTitle("Categories", false)
         navigateToDrawerScreenAndCheckTitle("About", false)
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
+    }
+
+    /**
+     *  Theme test checks the background color of the AppBar and Scaffold Composable that the entire
+     *  app uses in order to check that the Theme changes correctly.
+     */
+    @Test
+    fun settings_changeTheme() {
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("THEME", "Light", false)
+        composeRule.onNode(hasTestTag("PWApp Scaffold")).assertBackgroundColor(Purple900Light)
+        composeRule.onNode(hasTestTag("AppBar")).assertBackgroundColor(Purple900)
+
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("THEME", "Dark", false)
+        composeRule.onNode(hasTestTag("PWApp Scaffold")).assertBackgroundColor(PurpleDark)
+        composeRule.onNode(hasTestTag("AppBar")).assertBackgroundColor(PurpleBase)
+
+        // for some reason the second theme switch does not send user to Overview screen, but stays
+        // on Setting screen, this only happens in testing
+        selectOptionInSetting("THEME", "System", false)
+        composeRule.onNode(hasTestTag("PWApp Scaffold")).assertBackgroundColor(Purple900Light)
+        composeRule.onNode(hasTestTag("AppBar")).assertBackgroundColor(Purple900)
     }
 
     @Test
     fun settings_changeSymbols() {
         // navigate to Settings, change symbols then go back and check
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
         selectSymbolSettings("€", '-', ' ')
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change symbols then go back and check
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
         selectSymbolSettings("¥", '.', '-')
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change symbols then go back and check
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
         selectSymbolSettings("£", ' ', ',')
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change symbols then go back and check
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
         selectSymbolSettings("₩", ' ', ',')
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change symbols then go back and check
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
         selectSymbolSettings("฿", ' ', ',')
         Espresso.pressBack()
         checkAllTranListItems()
@@ -124,21 +155,21 @@ class SettingsTests : BaseTest() {
     @Test
     fun settings_changeDateFormat() {
         // navigate to Settings, change date format then go back and check
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "April 19, 1993")
         setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(1))
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change date format then go back and check
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "Apr 19, 1993")
         setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(2))
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change date format then go back and check
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "4/19/93")
         setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(3))
         Espresso.pressBack()
@@ -147,7 +178,7 @@ class SettingsTests : BaseTest() {
 
     @Test
     fun settings_swapThousandsDecimalSymbols() {
-        navigateToSettingsScreen()
+        navigateToSettingsScreenFromOverview()
 
         // select same option as decimal symbol
         composeRule.onNode(hasTestTag("THOUSANDS_SYMBOL")).performClick()
@@ -168,25 +199,84 @@ class SettingsTests : BaseTest() {
         checkAllTranListItems()
     }
 
-    // Need to look into this test and language changing
-//    @Test
-//    fun settings_changeTheme() {
-//        navigateToSettingsScreen()
-//
-//        selectOptionInSetting("THEME", "Light")
-//        selectOptionInSetting("THEME", "Dark")
-//        selectOptionInSetting("THEME", "System")
-//    }
+    @Test
+    fun settings_changeLanguage() {
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("LANGUAGE", german.language, false)
+        navigateToSettingsScreenFromOverview(german)
+        navigateToScreensAndCheckTitleFromSettings(german)
+        navigateToSettingsScreenFromOverview(german)
 
-    private fun navigateToSettingsScreen() {
+        selectOptionInSetting("LANGUAGE", spanish.language, false)
+        navigateToScreensAndCheckTitleFromSettings(spanish)
+        navigateToSettingsScreenFromOverview(spanish)
+
+        selectOptionInSetting("LANGUAGE", hindi.language, false)
+        navigateToScreensAndCheckTitleFromSettings(hindi)
+        navigateToSettingsScreenFromOverview(hindi)
+
+        selectOptionInSetting("LANGUAGE", japanese.language, false)
+        navigateToScreensAndCheckTitleFromSettings(japanese)
+        navigateToSettingsScreenFromOverview(japanese)
+
+        selectOptionInSetting("LANGUAGE", korean.language, false)
+        navigateToScreensAndCheckTitleFromSettings(korean)
+        navigateToSettingsScreenFromOverview(korean)
+
+        selectOptionInSetting("LANGUAGE", thai.language, false)
+        navigateToScreensAndCheckTitleFromSettings(thai)
+        navigateToSettingsScreenFromOverview(thai)
+
+        selectOptionInSetting("LANGUAGE", english.language, false)
+        navigateToScreensAndCheckTitleFromSettings(english)
+        navigateToSettingsScreenFromOverview(english)
+    }
+
+    /**
+     *  Navigates to all screens available and checks that their titles match with given [language].
+     */
+    private fun navigateToScreensAndCheckTitleFromSettings(language: LanguageStrings) {
+        // check that we start on Settings screen
+        composeRule.onNode(hasTestTag("AppBar ${language.settingsTitle}")).assertIsDisplayed()
+        // navigate to Overview screen and check title
+        composeRule.onNode(hasContentDescription(language.navContDesc)).performClick()
+        composeRule.onNodeWithText(language.overviewTitle).assertIsDisplayed()
+        // navigate to Transaction screen and check title
+        composeRule.onNode(hasContentDescription(language.tranContDesc)).performClick()
+        composeRule.onNodeWithText(language.tranTitle).assertIsDisplayed()
+        composeRule.onNode(hasContentDescription(language.navContDesc)).performClick()
+        // navigate to Account screen and check title
+        navigateToDrawerScreenAndBackFromOverview(language, language.accTitle)
+        // navigate to Categories screen and check title
+        navigateToDrawerScreenAndBackFromOverview(language, language.catTitle)
+        // navigate to About screen and check title
+        navigateToDrawerScreenAndBackFromOverview(language, language.aboutTitle)
+        // check that we finish on Overview screen
+        composeRule.onNodeWithText(language.overviewTitle).assertIsDisplayed()
+    }
+
+    /**
+     *  Navigates to a [screen] that is available from Drawer using given [language] to check
+     *  that correct language is being displayed.
+     */
+    private fun navigateToDrawerScreenAndBackFromOverview(language: LanguageStrings, screen: String) {
+        composeRule.onNode(hasContentDescription(language.drawerContDesc)).performClick()
+        composeRule.onNode(hasTestTag("DrawerItem $screen")).performClick()
+        composeRule.onNode(hasTestTag("AppBar $screen")).assertIsDisplayed()
+        composeRule.onNode(hasContentDescription(language.navContDesc)).performClick()
+    }
+
+    /**
+     *  Navigates to Settings screen starting from Overview screen using given [language].
+     */
+    private fun navigateToSettingsScreenFromOverview(language: LanguageStrings = english) {
         // check that we start on Overview screen, open drawer, and navigate to Settings screen
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_drawer_description)))
-            .performClick()
-        composeRule.onNode(hasTestTag("DrawerItem Settings")).performClick()
+        composeRule.onNodeWithText(language.overviewTitle).assertIsDisplayed()
+        composeRule.onNode(hasContentDescription(language.drawerContDesc)).performClick()
+        composeRule.onNode(hasTestTag("DrawerItem ${language.settingsTitle}")).performClick()
 
         // check that we navigate to Account screen
-        composeRule.onNode(hasTestTag("AppBar Settings")).assertExists()
+        composeRule.onNode(hasTestTag("AppBar ${language.settingsTitle}")).assertIsDisplayed()
     }
 
     /**
@@ -200,7 +290,7 @@ class SettingsTests : BaseTest() {
         translatedTitle: String = ""
     ) {
         // open drawer and click on item with title
-        composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_drawer_description)))
+        composeRule.onNodeWithContDiscId(R.string.cfl_drawer_description)
             .performClick()
         composeRule.onNode(hasTestTag("DrawerItem $title")).performClick()
 
@@ -257,14 +347,17 @@ class SettingsTests : BaseTest() {
     }
 
     /**
-     *  Selects [setting] to open its Dialog, then selects [option] from list and confrims selection
+     *  Selects [setting] to open its Dialog, then selects [option] from list, and confirms
+     *  selection if [check] is true.
      */
-    private fun selectOptionInSetting(setting: String, option: String) {
+    private fun selectOptionInSetting(setting: String, option: String, check: Boolean = true) {
         composeRule.onNode(hasTestTag(setting)).performClick()
         composeRule.onNode(hasTestTag(option), useUnmergedTree = true).performClick()
         composeRule.onNode(hasTestTag("AlertDialog confirm"), useUnmergedTree = true).performClick()
-        composeRule.onNode(hasTestTag("$setting $option"), useUnmergedTree = true)
-            .assertIsDisplayed()
+        if (check) {
+            composeRule.onNode(hasTestTag("$setting $option"), useUnmergedTree = true)
+                .assertIsDisplayed()
+        }
     }
 
     /**
@@ -277,17 +370,50 @@ class SettingsTests : BaseTest() {
         selectOptionInSetting("DECIMAL_SYMBOL", "\"$decimal\"")
         updateTotalFormatters(currency, thousands, decimal)
     }
+
+    // LanguageStrings in each language available in app
+    private val english = LanguageStrings(
+        "English", "Settings", "Overview", "Transaction", "Accounts",
+        "Categories", "About", "Open Navigation Drawer", "Navigate Back", "New Transaction"
+    )
+    private val german = LanguageStrings(
+        "Deutsche", "die Einstellungen", "Überblick", "Transaktion", "Konten", "Kategorien",
+        "Über", "Öffnen Sie die Navigationsleiste", "Navigieren Sie zurück", "Neue Transaktion"
+    )
+    private val spanish = LanguageStrings(
+        "Español (latino americano)", "Configuraciones", "Visión general",
+        "Transacción", "Cuentas", "Categorias", "Acerca de", "Abrir cajón de navegación",
+        "Navegar hacia atrás", "Nueva transacción"
+    )
+    private val hindi = LanguageStrings(
+        "हिंदी", "समायोजन", "अवलोकन", "लेन-देन", "हिसाब किताब", "श्रेणियाँ",
+        "के बारे में", "नेविगेशन दराज खोलें", "वापस नेविगेट करें", "नया लेन-देन"
+    )
+    private val japanese = LanguageStrings(
+        "日本語", "設定", "概要概要", "トランザクション", "アカウント",
+        "カテゴリー","約", "ナビゲーションドロワーを開く", "戻る", "新規取引"
+    )
+    private val korean = LanguageStrings(
+        "한국어", "설정", "개요", "트랜잭션", "계정", "카테고리", "약", "탐색 창 열기", "뒤로 탐색", "새로운 거래"
+    )
+    private val thai = LanguageStrings(
+        "ไทย", "การตั้งค่า", "ภาพรวม", "การทำธุรกรรม", "บัญชี", "หมวดหมู่",
+        "เกี่ยวกับ", "เปิด Navigation Drawer", "นำทางย้อนกลับ", "ธุรกรรมใหม่"
+    )
 }
 
-///**
-// *  Data class holding translated Fragment title strings and the [language] itself.
-// */
-//data class LanguageTitles(
-//    val language: String,
-//    val settingsTitle: String,
-//    val cflTitle: String,
-//    val tranTitle: String,
-//    val accTitle: String,
-//    val catTitle: String,
-//    val aboutTitle: String
-//)
+/**
+ *  Data class holding translated Screen strings and the [language] itself.
+ */
+data class LanguageStrings(
+    val language: String,
+    val settingsTitle: String,
+    val overviewTitle: String,
+    val tranTitle: String,
+    val accTitle: String,
+    val catTitle: String,
+    val aboutTitle: String,
+    val drawerContDesc: String,
+    val navContDesc: String,
+    val tranContDesc: String
+)

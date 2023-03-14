@@ -11,29 +11,19 @@ import java.util.Date
  *  types. Need Type Converters tell Room how to convert complex type to format that
  *  can be stored in database.
  */
-class TransactionTypeConverters {
+class PWTypeConverters {
 
     @TypeConverter
-    fun fromDate(date: Date?): Long? {
-
-        return date?.time
-    }
+    fun fromDate(date: Date?): Long? = date?.time
 
     @TypeConverter
-    fun toDate(millisSinceEpoch: Long?): Date? {
+    fun toDate(millisSinceEpoch: Long?): Date? = millisSinceEpoch?.let { Date(it) }
 
-        return millisSinceEpoch?.let { Date(it) }
-    }
 
     @TypeConverter
-    fun fromBigDecimal(total: BigDecimal?): String? {
+    fun fromBigDecimal(total: BigDecimal?): String? = total?.toString()
 
-        return total?.toString()
-    }
 
     @TypeConverter
-    fun toBigDecimal(total: String?): BigDecimal? {
-
-        return BigDecimal(total)
-    }
+    fun toBigDecimal(total: String?): BigDecimal? = total?.let { BigDecimal(total) }
 }

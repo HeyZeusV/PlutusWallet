@@ -1,12 +1,11 @@
 package com.heyzeusv.plutuswallet.ui.cfl.filter
 
-import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.ui.overview.FilterViewModel
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.ADD
+import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterState.INVALID_DATE_RANGE
 import com.heyzeusv.plutuswallet.util.FilterState.NO_SELECTED_ACCOUNT
 import com.heyzeusv.plutuswallet.util.FilterState.NO_SELECTED_CATEGORY
@@ -24,7 +23,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
+@ExtendWith(TestCoroutineExtension::class)
 internal class FilterViewModelTest {
 
     // test Fake
@@ -49,20 +48,20 @@ internal class FilterViewModelTest {
     @Test
     @DisplayName("Should retrieve data to be displayed in ChipGroups from Database at startup")
     fun viewModelInit() {
-
         val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
         val expectedExCatList: MutableList<String> = mutableListOf("Entertainment", "Food", "Unused Expense")
         val expectedInCatList: MutableList<String> = mutableListOf("Salary", "Unused Income", "Zelle")
 
         assertEquals(expectedAccList, filterVM.accountList.value)
-        assertEquals(expectedExCatList, filterVM.expenseCatList.value)
-        assertEquals(expectedInCatList, filterVM.incomeCatList.value)
+        assertEquals(expectedExCatList, filterVM.categoryList.value)
+
+        filterVM.updateTypeSelected(INCOME)
+        assertEquals(expectedInCatList, filterVM.categoryList.value)
     }
 
     @Test
     @DisplayName("Should save new start date selected and update String that displays formatted date")
     fun updateStartDateString() {
-
         filterVM.updateStartDateString(Date(864000000))
 
         assertEquals("1/10/70", filterVM.startDateString.value)
@@ -71,7 +70,6 @@ internal class FilterViewModelTest {
     @Test
     @DisplayName("Should save new end date selected and update String that displays formatted date")
     fun updateEndDateString() {
-
         filterVM.updateEndDateString(Date(864000000))
 
         assertEquals("1/11/70", filterVM.endDateString.value)
@@ -142,7 +140,6 @@ internal class FilterViewModelTest {
     @DisplayName("Should update filterState to INVALID_DATE_RANGE when selecting date filter, but" +
             "selecting a start date that is after the end date")
     fun applyFilter_invalidDateRange() {
-
         filterVM.updateDateFilter(true)
         filterVM.updateStartDateString(Date())
         filterVM.updateEndDateString(Date(0))
@@ -159,12 +156,12 @@ internal class FilterViewModelTest {
         filterVM.updateCategoryFilter(true)
         filterVM.updateDateFilter(true)
         filterVM.updateAccountSelected("Cash", ADD)
-        filterVM.updateExpenseCatSelected("Food", ADD)
+        filterVM.updateCategorySelectedList("Food", ADD)
         filterVM.updateStartDateString(Date(0))
         filterVM.updateEndDateString(Date(1000))
         val expectedFilterInfo = FilterInfo(
-            account = true, category = true, date = true,
-            EXPENSE.type, listOf("Cash"), listOf("Food"), Date(0), Date(1000 + 86399999)
+            account = true, listOf("Cash"), category = true,
+            EXPENSE.type, listOf("Food"), date = true, Date(0), Date(1000 + 86399999)
         )
 
         // first fill filter with data
@@ -179,8 +176,9 @@ internal class FilterViewModelTest {
         filterVM.applyFilter()
 
         assertEquals(listOf<String>(), filterVM.accountSelected.value)
-        assertEquals(listOf<String>(), filterVM.expenseCatSelected.value)
-        assertEquals(listOf<String>(), filterVM.incomeCatSelected.value)
+        assertEquals(listOf<String>(), filterVM.categorySelectedList.value)
+        filterVM.updateTypeSelected(INCOME)
+        assertEquals(listOf<String>(), filterVM.categorySelectedList.value)
         assertEquals("", filterVM.startDateString.value)
         assertEquals("", filterVM.endDateString.value)
         assertEquals(FilterInfo(), filterVM.filterInfo.value)
@@ -194,12 +192,12 @@ internal class FilterViewModelTest {
         filterVM.updateCategoryFilter(true)
         filterVM.updateDateFilter(true)
         filterVM.updateAccountSelected("Cash", ADD)
-        filterVM.updateExpenseCatSelected("Food", ADD)
+        filterVM.updateCategorySelectedList("Food", ADD)
         filterVM.updateStartDateString(Date(0))
         filterVM.updateEndDateString(Date(1000))
         val expectedFilterInfo = FilterInfo(
-            account = true, category = true, date = true,
-            EXPENSE.type, listOf("Cash"), listOf("Food"), Date(0), Date(1000 + 86399999)
+            account = true, listOf("Cash"), category = true,
+            EXPENSE.type, listOf("Food"), date = true, Date(0), Date(1000 + 86399999)
         )
 
         filterVM.applyFilter()

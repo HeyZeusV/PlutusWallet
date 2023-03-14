@@ -89,3 +89,13 @@ val PWScreens = listOf(
 )
 
 val Blank: ImageVector get() = materialIcon(name = "Filled.Blank") { materialPath { } }
+
+/**
+ *  Data class that is passed to each screen to determine the AppBar actions when pressed on the
+ *  specified screen.
+ */
+data class AppBarActions(
+    val onNavPressed: suspend () -> Unit = { },
+    val onActionLeftPressed: () -> Unit = { },
+    val onActionRightPressed: () -> Unit = { }
+)

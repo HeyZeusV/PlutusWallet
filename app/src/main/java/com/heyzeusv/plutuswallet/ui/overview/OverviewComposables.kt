@@ -35,6 +35,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.ChipDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.DrawerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FilterChip
 import androidx.compose.material.LocalElevationOverlay
@@ -47,6 +48,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,118 +79,236 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.ui.BackPressHandler
+import com.heyzeusv.plutuswallet.ui.PWButton
+import com.heyzeusv.plutuswallet.ui.PreviewHelper
+import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
+import com.heyzeusv.plutuswallet.ui.PWAlertDialog
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.theme.chipTextStyle
-import com.heyzeusv.plutuswallet.ui.transaction.PlutusWalletButtonChip
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.ADD
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.REMOVE
+import com.heyzeusv.plutuswallet.util.AppBarActions
+import com.heyzeusv.plutuswallet.util.FilterChipAction
+import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
+import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
 import com.heyzeusv.plutuswallet.util.TransactionType
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.DateUtils
-import com.heyzeusv.plutuswallet.util.PWAlertDialog
+import com.heyzeusv.plutuswallet.util.FilterState
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+/**
+ *  Composable that displays Overview screen.
+ *  Data that is displayed is retrieved from [tranListVM], [chartVM], and [filterVM].
+ *  [appBarActionSetup] determines what to do when an action item is pressed from the AppBar.
+ *  [showSnackbar] is used to display Snackbar. [drawerState] is to open/close drawer.
+ *  [navigateToTransaction] navigates to Transaction screen with id argument.
+ */
+@Composable
+fun OverviewScreen(
+    tranListVM: TransactionListViewModel,
+    chartVM: ChartViewModel,
+    filterVM: FilterViewModel,
+    appBarActionSetup: (AppBarActions) -> Unit,
+    showSnackbar: suspend (String) -> Unit,
+    drawerState: DrawerState,
+    navigateToTransaction: (Int) -> Unit,
+    activityFinish: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+    var closeApp by remember { mutableStateOf(false) }
+
+    val tlTranList by tranListVM.tranList.collectAsState()
+    val tranListShowDeleteDialog by tranListVM.showDeleteDialog.collectAsState()
+
+    val cChartInfoList by chartVM.chartInfoList.collectAsState()
+
+    val filterInfo by filterVM.filterInfo.collectAsState()
+    val fShowFilter by filterVM.showFilter.collectAsState()
+    val fAccountFilterSelected by filterVM.accountFilter.collectAsState()
+    val fAccountNameList by filterVM.accountList.collectAsState()
+    val fAccountSelected by filterVM.accountSelected.collectAsState()
+    val fCategoryFilterSelected by filterVM.categoryFilter.collectAsState()
+    val fTypeSelected by filterVM.typeSelected.collectAsState()
+    val fCategoryList by filterVM.categoryList.collectAsState()
+    val fCategorySelectedList by filterVM.categorySelectedList.collectAsState()
+    val fDateFilterSelected by filterVM.dateFilter.collectAsState()
+    val fStartDateString by filterVM.startDateString.collectAsState()
+    val fEndDateString by filterVM.endDateString.collectAsState()
+    val fFilterState by filterVM.filterState.collectAsState()
+
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = { drawerState.open() },
+            onActionLeftPressed = { filterVM.updateShowFilter(!fShowFilter) },
+            onActionRightPressed = { navigateToTransaction(0) }
+        )
+    )
+    BackPressHandler {
+        when {
+            drawerState.isOpen -> coroutineScope.launch { drawerState.close() }
+            fShowFilter -> filterVM.updateShowFilter(false)
+            else -> closeApp = true
+        }
+    }
+    if (closeApp) {
+        PWAlertDialog(
+            title = stringResource(R.string.alert_dialog_closeapp),
+            message = stringResource(R.string.alert_dialog_closeapp_message),
+            onConfirmText = stringResource(R.string.alert_dialog_yes),
+            onConfirm = { activityFinish() },
+            onDismissText = stringResource(R.string.alert_dialog_no),
+            onDismiss = { closeApp = false }
+        )
+    }
+    OverviewScreen(
+        filterInfo,
+        tlPreviousMaxId = tranListVM.previousMaxId,
+        tlUpdatePreviousMaxId = tranListVM::updatePreviousMaxId,
+        tlTranList,
+        tlUpdateTranList = tranListVM::updateTranList,
+        tlItemOnLongClick = tranListVM::updateDeleteDialog,
+        tlItemOnClick = { tranId -> navigateToTransaction(tranId) },
+        tlShowDeleteDialog = tranListShowDeleteDialog,
+        tlDeleteDialogOnConfirm = { tranId -> tranListVM.deleteTransaction(tranId) },
+        tlDeleteDialogOnDismiss = { tranListVM.updateDeleteDialog(-1) },
+        cChartInfoList,
+        cUpdateCatTotalsList = chartVM::updateCatTotalsList,
+        fShowFilter,
+        fUpdateShowFilter = filterVM::updateShowFilter,
+        fAccountFilterSelected,
+        fAccountFilterOnClick = filterVM::updateAccountFilter,
+        fAccountNameList,
+        fAccountSelected,
+        fAccountChipOnClick = filterVM::updateAccountSelected,
+        fCategoryFilterSelected,
+        fCategoryFilterOnClick = filterVM::updateCategoryFilter,
+        fTypeSelected,
+        fUpdateTypeSelected = filterVM::updateTypeSelected,
+        fCategoryList,
+        fCategorySelectedList,
+        fCategoryChipOnClick = filterVM::updateCategorySelectedList,
+        fDateFilterSelected,
+        fDateFilterOnClick = filterVM::updateDateFilter,
+        fStartDateString,
+        fStartDateOnClick = filterVM::updateStartDateString,
+        fEndDateString,
+        fEndDateOnClick = filterVM::updateEndDateString,
+        fApplyOnClick = filterVM::applyFilter,
+        fFilterState,
+        fShowSnackbar = { msg ->
+            showSnackbar(msg)
+            filterVM.updateFilterState(FilterState.VALID)
+        }
+    )
+}
+
+/**
+ *  Composable that displays Overview screen.
+ *  All the data has been hoisted into above [OverviewScreen] thus allowing for easier testing.
+ *  See individual Composables for parameter info.
+ */
 @Composable
 fun OverviewScreen(
     filterInfo: FilterInfo,
-    setVals: SettingsValues,
-    tranListVM: TransactionListViewModel,
-    chartVM: ChartViewModel,
-    tranListPreviousMaxId: Int,
-    tranListUpdatePreviousMaxId: (Int) -> Unit,
-    tranListItemOnLongClick: (Int) -> Unit,
-    tranListItemOnClick: (Int) -> Unit,
-    tranListShowDeleteDialog: Int,
-    tranListDialogOnConfirm: (Int) -> Unit,
-    tranListDialogOnDismiss: () -> Unit,
-    showFilter: Boolean,
-    updateShowFilter: (Boolean) -> Unit,
-    accountFilterSelected: Boolean,
-    accountFilterOnClick: (Boolean) -> Unit,
-    accountList: List<String>,
-    accountSelected: List<String>,
-    accountChipOnClick: (String, FilterSelectedAction) -> Unit,
-    categoryFilterSelected: Boolean,
-    categoryFilterOnClick: (Boolean) -> Unit,
-    filterTypeSelected: TransactionType,
-    filterUpdateTypeSelected: (TransactionType) -> Unit,
-    categoryList: List<String>,
-    categorySelected: List<String>,
-    categoryChipOnClick: (String, FilterSelectedAction) -> Unit,
-    dateFilterSelected: Boolean,
-    dateFilterOnClick: (Boolean) -> Unit,
-    startDateString: String,
-    startDateOnClick: (Date) -> Unit,
-    endDateString: String,
-    endDateOnClick: (Date) -> Unit,
-    applyOnClick: () -> Unit
+    tlPreviousMaxId: Int,
+    tlUpdatePreviousMaxId: (Int) -> Unit,
+    tlTranList: List<TranListItemFull>,
+    tlUpdateTranList: suspend (FilterInfo) -> Unit,
+    tlItemOnLongClick: (Int) -> Unit,
+    tlItemOnClick: (Int) -> Unit,
+    tlShowDeleteDialog: Int,
+    tlDeleteDialogOnConfirm: (Int) -> Unit,
+    tlDeleteDialogOnDismiss: () -> Unit,
+    chartInfoList: List<ChartInformation>,
+    cUpdateCatTotalsList: suspend (FilterInfo) -> Unit,
+    fShowFilter: Boolean,
+    fUpdateShowFilter: (Boolean) -> Unit,
+    fAccountFilterSelected: Boolean,
+    fAccountFilterOnClick: (Boolean) -> Unit,
+    fAccountNameList: List<String>,
+    fAccountSelected: List<String>,
+    fAccountChipOnClick: (String, FilterChipAction) -> Unit,
+    fCategoryFilterSelected: Boolean,
+    fCategoryFilterOnClick: (Boolean) -> Unit,
+    fTypeSelected: TransactionType,
+    fUpdateTypeSelected: (TransactionType) -> Unit,
+    fCategoryList: List<String>,
+    fCategorySelected: List<String>,
+    fCategoryChipOnClick: (String, FilterChipAction) -> Unit,
+    fDateFilterSelected: Boolean,
+    fDateFilterOnClick: (Boolean) -> Unit,
+    fStartDateString: String,
+    fStartDateOnClick: (Date) -> Unit,
+    fEndDateString: String,
+    fEndDateOnClick: (Date) -> Unit,
+    fApplyOnClick: () -> Unit,
+    fFilterState: FilterState,
+    fShowSnackbar: suspend (String) -> Unit
 ) {
-    val tranList by tranListVM.tranList.collectAsState()
-    val chartInfoList by chartVM.chartInfoList.collectAsState()
 
     val fullPad = dimensionResource(R.dimen.cardFullPadding)
     val sharedPad = dimensionResource(R.dimen.cardSharedPadding)
 
-    LaunchedEffect(key1 = filterInfo, key2 = setVals) {
-        tranListVM.updateTranList(filterInfo, setVals)
-    }
-    LaunchedEffect(key1 = filterInfo, key2 = setVals) {
-        chartVM.updateCatTotalsList(filterInfo, setVals)
-    }
+    LaunchedEffect(key1 = filterInfo) { tlUpdateTranList(filterInfo) }
+    LaunchedEffect(key1 = filterInfo) { cUpdateCatTotalsList(filterInfo) }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         ChartCard(
-            chartInfoList = chartInfoList,
             modifier = Modifier
                 .weight(0.4f)
-                .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad)
+                .padding(start = fullPad, top = fullPad, end = fullPad, bottom = sharedPad),
+            chartInfoList = chartInfoList
         )
         TransactionListCard(
-            tranListPreviousMaxId = tranListPreviousMaxId,
-            tranListUpdatePreviousMaxId = tranListUpdatePreviousMaxId,
-            tranList = tranList,
-            tranListItemOnLongClick = tranListItemOnLongClick,
-            tranListItemOnClick = tranListItemOnClick,
-            tranListShowDeleteDialog = tranListShowDeleteDialog,
-            tranListDialogOnConfirm = tranListDialogOnConfirm,
-            tranListDialogOnDismiss = tranListDialogOnDismiss,
             modifier = Modifier
                 .weight(0.6f)
-                .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad)
+                .padding(start = fullPad, top = sharedPad, end = fullPad, bottom = fullPad),
+            tlTranList,
+            tlPreviousMaxId,
+            tlUpdatePreviousMaxId,
+            tlItemOnLongClick,
+            tlItemOnClick,
+            tlShowDeleteDialog,
+            tlDeleteDialogOnConfirm,
+            tlDeleteDialogOnDismiss
         )
     }
     FilterCard(
-        showFilter,
-        updateShowFilter,
-        accountFilterSelected,
-        accountFilterOnClick,
-        accountList,
-        accountSelected,
-        accountChipOnClick,
-        categoryFilterSelected,
-        categoryFilterOnClick,
-        filterTypeSelected,
-        filterUpdateTypeSelected,
-        categoryList,
-        categorySelected,
-        categoryChipOnClick,
-        dateFilterSelected,
-        dateFilterOnClick,
-        startDateString,
-        startDateOnClick,
-        endDateString,
-        endDateOnClick,
-        applyOnClick
+        fShowFilter,
+        fUpdateShowFilter,
+        fAccountFilterSelected,
+        fAccountFilterOnClick,
+        fAccountNameList,
+        fAccountSelected,
+        fAccountChipOnClick,
+        fCategoryFilterSelected,
+        fCategoryFilterOnClick,
+        fTypeSelected,
+        fUpdateTypeSelected,
+        fCategoryList,
+        fCategorySelected,
+        fCategoryChipOnClick,
+        fDateFilterSelected,
+        fDateFilterOnClick,
+        fStartDateString,
+        fStartDateOnClick,
+        fEndDateString,
+        fEndDateOnClick,
+        fApplyOnClick,
+        fFilterState,
+        fShowSnackbar
     )
 }
 
@@ -198,8 +318,8 @@ fun OverviewScreen(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ChartCard(
-    chartInfoList: List<ChartInformation>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    chartInfoList: List<ChartInformation> = listOf(ChartInformation(), ChartInformation())
 ) {
     val pagerState = rememberPagerState()
 
@@ -221,13 +341,8 @@ fun ChartCard(
         )
     )
 
-    Card(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            // TODO: Look into item scroll effects https://google.github.io/accompanist/pager/#item-scroll-effects
+    Card(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
                 count = 2,
                 modifier = Modifier
@@ -243,79 +358,85 @@ fun ChartCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (chartInfo.ctList.isNotEmpty()) {
-                        /**
-                         *  Library used for PieChart is most likely never going to be updated to
-                         *  be Composable. Will be looking for new library or possibly make own.
-                         */
-                        AndroidView(
-                            factory = { context ->
-                                PieChart(context).apply {
-                                    // displays translated type in center of chart
-                                    centerText = if (page == 0) {
-                                        context.resources.getString(R.string.type_expense)
-                                    } else {
-                                        context.resources.getString(R.string.type_income)
-                                    }
-                                    // don't want a description so make it blank
-                                    description.text = ""
-                                    // don't want legend so disable it
-                                    legend.isEnabled = false
-                                    // true = doughnut chart
-                                    isDrawHoleEnabled = true
-                                    // color of labels
-                                    setEntryLabelColor(chartLabelColor)
-                                    // size of Category labels
-                                    setEntryLabelTextSize(14.5f)
-                                    // color of center hole
-                                    setHoleColor(chartCenterHoleColor)
-                                    // size of center text
-                                    setCenterTextSize(15f)
-                                    // color of center text
-                                    setCenterTextColor(chartLabelColor)
-                                    // true = display center text
-                                    setDrawCenterText(true)
-                                    // true = use percent values
-                                    setUsePercentValues(true)
-                                    contentDescription = "Chart $page"
-                                }
-                            },
+                        Surface(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                                .weight(0.8f),
-                            update = { pieChart: PieChart ->
-                                // list of entries to be displayed in PieChart
-                                val pieEntries: List<PieEntry> = chartInfo.ctList.map { catTotal ->
-                                    PieEntry(catTotal.total.toFloat(), catTotal.category)
+                                .weight(0.8f)
+                                .testTag("Chart page $page")
+                        ) {
+                            /**
+                             *  Library used for PieChart is most likely never going to be updated to
+                             *  be Composable. Will be looking for new library or possibly make own.
+                             */
+                            AndroidView(
+                                factory = { context ->
+                                    PieChart(context).apply {
+                                        // displays translated type in center of chart
+                                        centerText = if (page == 0) {
+                                            context.resources.getString(R.string.type_expense)
+                                        } else {
+                                            context.resources.getString(R.string.type_income)
+                                        }
+                                        // don't want a description so make it blank
+                                        description.text = ""
+                                        // don't want legend so disable it
+                                        legend.isEnabled = false
+                                        // true = doughnut chart
+                                        isDrawHoleEnabled = true
+                                        // color of labels
+                                        setEntryLabelColor(chartLabelColor)
+                                        // size of Category labels
+                                        setEntryLabelTextSize(14.5f)
+                                        // color of center hole
+                                        setHoleColor(chartCenterHoleColor)
+                                        // size of center text
+                                        setCenterTextSize(15f)
+                                        // color of center text
+                                        setCenterTextColor(chartLabelColor)
+                                        // true = display center text
+                                        setDrawCenterText(true)
+                                        // true = use percent values
+                                        setUsePercentValues(true)
+                                        contentDescription = "Chart $page"
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                update = { pieChart: PieChart ->
+                                    // list of entries to be displayed in PieChart
+                                    val pieEntries: List<PieEntry> =
+                                        chartInfo.ctList.map { catTotal ->
+                                            PieEntry(catTotal.total.toFloat(), catTotal.category)
+                                        }
+
+                                    // PieDataSet set up
+                                    val dataSet = PieDataSet(pieEntries, "Transactions")
+                                    // distance between slices
+                                    dataSet.sliceSpace = 2.5f
+                                    // size of percent value
+                                    dataSet.valueTextSize = 13f
+                                    // color of percent value
+                                    dataSet.valueTextColor = chartLabelColor
+                                    // colors used for slices
+                                    dataSet.colors = chartColorLists[page]
+                                    // no highlights so no shift needed
+                                    dataSet.selectionShift = 0f
+
+                                    // PieData set up
+                                    val pData = PieData(dataSet)
+                                    // makes values in form of percentages
+                                    pData.setValueFormatter(PercentFormatter(pieChart))
+                                    // PieChart set up
+                                    pieChart.data = pData
+
+                                    val highlights: MutableList<Highlight> = mutableListOf()
+                                    chartInfo.ctList.forEachIndexed { i, _ ->
+                                        highlights.add(Highlight(i.toFloat(), 0, 0))
+                                    }
+                                    pieChart.highlightValues(highlights.toTypedArray())
                                 }
-
-                                // PieDataSet set up
-                                val dataSet = PieDataSet(pieEntries, "Transactions")
-                                // distance between slices
-                                dataSet.sliceSpace = 2.5f
-                                // size of percent value
-                                dataSet.valueTextSize = 13f
-                                // color of percent value
-                                dataSet.valueTextColor = chartLabelColor
-                                // colors used for slices
-                                dataSet.colors = chartColorLists[page]
-                                // no highlights so no shift needed
-                                dataSet.selectionShift = 0f
-
-                                // PieData set up
-                                val pData = PieData(dataSet)
-                                // makes values in form of percentages
-                                pData.setValueFormatter(PercentFormatter(pieChart))
-                                // PieChart set up
-                                pieChart.data = pData
-
-                                val highlights: MutableList<Highlight> = mutableListOf()
-                                chartInfo.ctList.forEachIndexed { i, _ ->
-                                    highlights.add(Highlight(i.toFloat(), 0, 0))
-                                }
-                                pieChart.highlightValues(highlights.toTypedArray())
-                            }
-                        )
+                            )
+                        }
                         val totalPrefix = stringResource(R.string.chart_total)
                         MarqueeText(
                             text = "$totalPrefix${chartInfo.totalText}",
@@ -348,72 +469,67 @@ fun ChartCard(
 
 /**
  *  Composable that displays [tranList], list of Transactions, in [TranListItem] form.
- *  [tranListPreviousMaxId] is used to determine if a new Transaction was created in order to
- *  scroll to the top of the list automatically which is updated by [tranListUpdatePreviousMaxId].
- *  [tranListItemOnLongClick] and [tranListItemOnClick] are used for deletion and selection
- *  respectively. [tranListShowDeleteDialog] determines when to show AlertDialog, while
- *  [tranListDialogOnConfirm] and [tranListDialogOnDismiss] are used to confirm deletion or deny it
+ *  [previousMaxId] is used to determine if a new Transaction was created in order to
+ *  scroll to the top of the list automatically which is updated by [updatePreviousMaxId].
+ *  [itemOnLongClick] and [itemOnClick] are used for deletion and selection
+ *  respectively. [showDeleteDialog] determines when to show AlertDialog, while
+ *  [deleteDialogOnConfirm] and [deleteDialogOnDismiss] are used to confirm deletion or deny it
  *  respectively.
  */
 @Composable
 fun TransactionListCard(
-    tranList: List<TranListItemFull>,
-    tranListPreviousMaxId: Int,
-    tranListUpdatePreviousMaxId: (Int) -> Unit,
-    tranListItemOnLongClick: (Int) -> Unit,
-    tranListItemOnClick: (Int) -> Unit,
-    tranListShowDeleteDialog: Int,
-    tranListDialogOnConfirm: (Int) -> Unit,
-    tranListDialogOnDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tranList: List<TranListItemFull> = emptyList(),
+    previousMaxId: Int = 0,
+    updatePreviousMaxId: (Int) -> Unit = { },
+    itemOnLongClick: (Int) -> Unit = { },
+    itemOnClick: (Int) -> Unit = { },
+    showDeleteDialog: Int = 0,
+    deleteDialogOnConfirm: (Int) -> Unit = { },
+    deleteDialogOnDismiss: () -> Unit = { }
 ) {
     val tranListState = rememberLazyListState()
 
     // scrolls to top of the list when new Transaction is added
     LaunchedEffect(key1 = tranList) {
-        if (tranList.isNotEmpty()
-            && tranList[tranList.size - 1].transactionItem.id > tranListPreviousMaxId
-        ) {
+        if (tranList.isNotEmpty() && tranList[tranList.size - 1].tli.id > previousMaxId) {
             tranListState.animateScrollToItem(0)
-            tranListUpdatePreviousMaxId(tranList[tranList.size - 1].transactionItem.id)
+            updatePreviousMaxId(tranList[tranList.size - 1].tli.id)
         }
     }
-
     Card(modifier = modifier.fillMaxWidth()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = tranListState
         ) {
             items(tranList.reversed()) { transactionItemFormatted ->
-                val transactionItem = transactionItemFormatted.transactionItem
+                val transactionItem = transactionItemFormatted.tli
                 Divider(
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
                     thickness = 1.dp
                 )
                 TransactionListItem(
                     transactionItemFormatted,
-                    onLongClick = { tranListItemOnLongClick(transactionItem.id) },
-                    onClick = { tranListItemOnClick(transactionItem.id) },
+                    onLongClick = { itemOnLongClick(transactionItem.id) },
+                    onClick = { itemOnClick(transactionItem.id) },
                 )
-                if (tranListShowDeleteDialog == transactionItem.id) {
+                if (showDeleteDialog == transactionItem.id) {
                     PWAlertDialog(
-                        onConfirmText = stringResource(R.string.alert_dialog_yes),
-                        onConfirm = { tranListDialogOnConfirm(transactionItem.id) },
-                        onDismissText = stringResource(R.string.alert_dialog_no),
-                        onDismiss = tranListDialogOnDismiss,
                         title = stringResource(R.string.alert_dialog_delete_transaction),
                         message = stringResource(
                             R.string.alert_dialog_delete_warning,
                             transactionItem.title
-                        )
+                        ),
+                        onConfirmText = stringResource(R.string.alert_dialog_yes),
+                        onConfirm = { deleteDialogOnConfirm(transactionItem.id) },
+                        onDismissText = stringResource(R.string.alert_dialog_no),
+                        onDismiss = deleteDialogOnDismiss
                     )
                 }
             }
         }
         if (tranList.isEmpty()) {
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
+            Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = stringResource(R.string.cfl_no_transactions),
                     modifier = Modifier.testTag("Empty Transaction List"),
@@ -422,48 +538,6 @@ fun TransactionListCard(
             }
         }
     }
-}
-
-/**
- *  Composable for scrolling Text. Text will scroll indefinitely when it does not fit in given area.
- *  [text] is to be displayed using [style], [color], and [textAlign].
- */
-@Composable
-fun MarqueeText(
-    text: String,
-    style: TextStyle,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.onSurface,
-    textAlign: TextAlign? = null
-) {
-    val scrollState = rememberScrollState()
-    var animate by remember { mutableStateOf(true) }
-
-    LaunchedEffect(key1 = animate) {
-        scrollState.animateScrollTo(
-            value = scrollState.maxValue,
-            animationSpec = tween(
-                durationMillis = 4000,
-                delayMillis = 1000,
-                easing = CubicBezierEasing(0f, 0f, 0f, 0f)
-            )
-        )
-        delay(1000)
-        scrollState.scrollTo(0)
-        animate = !animate
-    }
-
-    Text(
-        text = text,
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState, false),
-        color = color,
-        textAlign = textAlign,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        style = style
-    )
 }
 
 /**
@@ -478,18 +552,14 @@ fun TransactionListItem(
     onLongClick: () -> Unit,
     onClick: () -> Unit,
 ) {
-    val transactionItem = transactionItemFormatted.transactionItem
+    val transactionItem = transactionItemFormatted.tli
+
     Surface(
         modifier = Modifier
-            .combinedClickable(
-                onLongClick = onLongClick, onClick = onClick
-            )
+            .combinedClickable(onLongClick = onLongClick, onClick = onClick)
             .testTag("${transactionItem.id}")
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -521,7 +591,7 @@ fun TransactionListItem(
                     text = transactionItemFormatted.formattedTotal,
                     style = MaterialTheme.typography.subtitle1,
                     color = when (transactionItem.type) {
-                        "Expense" -> LocalPWColors.current.expense
+                        EXPENSE.type -> LocalPWColors.current.expense
                         else -> LocalPWColors.current.income
                     },
                     textAlign = TextAlign.End
@@ -537,30 +607,92 @@ fun TransactionListItem(
     }
 }
 
+/**
+ *  Composable for scrolling Text. Text will scroll indefinitely when it does not fit in given area.
+ *  [text] is to be displayed using [style], [color], and [textAlign].
+ */
+@Composable
+fun MarqueeText(
+    text: String,
+    style: TextStyle,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.onSurface,
+    textAlign: TextAlign? = null
+) {
+    val scrollState = rememberScrollState()
+    var animate by remember { mutableStateOf(true) }
+
+    // animates text scroll effect forever
+    LaunchedEffect(key1 = animate) {
+        scrollState.animateScrollTo(
+            value = scrollState.maxValue,
+            animationSpec = tween(
+                durationMillis = 4000,
+                delayMillis = 1000,
+                easing = CubicBezierEasing(0f, 0f, 0f, 0f)
+            )
+        )
+        delay(1000)
+        scrollState.scrollTo(0)
+        animate = !animate
+    }
+
+    Text(
+        text = text,
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollState, false),
+        color = color,
+        textAlign = textAlign,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        style = style
+    )
+}
+
+/**
+ *  Composable that displays filter. [showFilter] is used to determine if filter should be displayed.
+ *  [updateShowFilter] is used to show/hide filter. [accountFilterSelected], [categoryFilterSelected],
+ *  and [dateFilterSelected] are used to determine which filters should be selected.
+ *  [accountFilterOnClick], [categoryFilterOnClick], [dateFilterOnClick] are used to select/deselect
+ *  filters. [accountList] are all accounts available while [accountSelected] is the list of accounts
+ *  which have been selected. [accountChipOnClick] determines action when individual account chip is
+ *  selected. [typeSelected] determines if Expense/Income categories should be displayed.
+ *  [updateTypeSelected] switches between Expense/Income lists. [categoryList] are all
+ *  categories available of type while [categorySelectedList] is the list of categories which have been
+ *  selected. [categoryChipOnClick] determines action when individual category chip is selected.
+ *  [startDateString] is displayed on start button which performs [startDateOnClick] when clicked.
+ *  [endDateString] is displayed on end button which performs [endDateOnClick] when clicked.
+ *  [applyOnClick] runs when apply/reset button is pressed. [filterState] is used to determine
+ *  which message to display if there is an error. [showSnackbar] is suspend function which takes
+ *  a String that is meant to be displayed by Snackbar.
+ */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FilterCard(
-    showFilter: Boolean,
-    updateShowFilter: (Boolean) -> Unit,
-    accountFilterSelected: Boolean,
-    accountFilterOnClick: (Boolean) -> Unit,
-    accountList: List<String>,
-    accountSelected: List<String>,
-    accountChipOnClick: (String, FilterSelectedAction) -> Unit,
-    categoryFilterSelected: Boolean,
-    categoryFilterOnClick: (Boolean) -> Unit,
-    filterTypeSelected: TransactionType,
-    filterUpdateTypeSelected: (TransactionType) -> Unit,
-    categoryList: List<String>,
-    categorySelected: List<String>,
-    categoryChipOnClick: (String, FilterSelectedAction) -> Unit,
-    dateFilterSelected: Boolean,
-    dateFilterOnClick: (Boolean) -> Unit,
-    startDateString: String,
-    startDateOnClick: (Date) -> Unit,
-    endDateString: String,
-    endDateOnClick: (Date) -> Unit,
-    applyOnClick: () -> Unit
+    showFilter: Boolean = false,
+    updateShowFilter: (Boolean) -> Unit = { },
+    accountFilterSelected: Boolean = false,
+    accountFilterOnClick: (Boolean) -> Unit = { },
+    accountList: List<String> = emptyList(),
+    accountSelected: List<String> = emptyList(),
+    accountChipOnClick: (String, FilterChipAction) -> Unit = { _, _ -> },
+    categoryFilterSelected: Boolean = false,
+    categoryFilterOnClick: (Boolean) -> Unit = { },
+    typeSelected: TransactionType = EXPENSE,
+    updateTypeSelected: (TransactionType) -> Unit = { },
+    categoryList: List<String> = emptyList(),
+    categorySelectedList: List<String> = emptyList(),
+    categoryChipOnClick: (String, FilterChipAction) -> Unit = { _, _ -> },
+    dateFilterSelected: Boolean = false,
+    dateFilterOnClick: (Boolean) -> Unit = { },
+    startDateString: String = "",
+    startDateOnClick: (Date) -> Unit = { },
+    endDateString: String = "",
+    endDateOnClick: (Date) -> Unit = { },
+    applyOnClick: () -> Unit = { },
+    filterState: FilterState = FilterState.VALID,
+    showSnackbar: suspend (String) -> Unit = { }
 ) {
     // used by animation to determine Y offset
     var filterComposeSize by remember { mutableStateOf(Size.Zero) }
@@ -571,8 +703,13 @@ fun FilterCard(
     val view = LocalView.current
     val noFilters = !accountFilterSelected && !categoryFilterSelected && !dateFilterSelected
 
-    val typeSelectedLabel = stringResource(filterTypeSelected.stringId)
+    val typeSelectedLabel = stringResource(typeSelected.stringId)
 
+    val filterStateMessage = stringResource(filterState.stringId)
+
+    LaunchedEffect(key1 = filterState) {
+        if (filterState != FilterState.VALID) { showSnackbar(filterStateMessage) }
+    }
     AnimatedVisibility(
         visible = showFilter,
         enter = EnterTransition.None,
@@ -606,7 +743,7 @@ fun FilterCard(
             Column(
                 modifier = Modifier.padding(all = 8.dp)
             ) {
-                PlutusWalletButtonChip(
+                PWButton(
                     selected = accountFilterSelected,
                     onClick = { accountFilterOnClick(!accountFilterSelected) },
                     label = stringResource(R.string.filter_account),
@@ -646,7 +783,7 @@ fun FilterCard(
                             crossAxisSpacing = dimensionResource(R.dimen.f_chipGr_inVertPad)
                         ) {
                             for (account in accountList) {
-                                PlutusWalletChip(
+                                PWChip(
                                     selected = accountSelected.contains(account),
                                     onClick = {
                                         accountChipOnClick(
@@ -660,7 +797,7 @@ fun FilterCard(
                         }
                     }
                 }
-                PlutusWalletButtonChip(
+                PWButton(
                     selected = categoryFilterSelected,
                     onClick = { categoryFilterOnClick(!categoryFilterSelected) },
                     label = stringResource(R.string.filter_category),
@@ -687,9 +824,9 @@ fun FilterCard(
                             .onGloballyPositioned { categoryComposeSize = it.size.toSize() },
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PlutusWalletButtonChip(
+                        PWButton(
                             selected = true,
-                            onClick = { filterUpdateTypeSelected(filterTypeSelected.opposite()) },
+                            onClick = { updateTypeSelected(typeSelected.opposite()) },
                             label = typeSelectedLabel,
                             showIcon = false,
                             modifier = Modifier
@@ -715,12 +852,12 @@ fun FilterCard(
                                 crossAxisSpacing = dimensionResource(R.dimen.f_chipGr_inVertPad)
                             ) {
                                 categoryList.map { category ->
-                                    PlutusWalletChip(
-                                        selected = categorySelected.contains(category),
+                                    PWChip(
+                                        selected = categorySelectedList.contains(category),
                                         onClick = {
                                             categoryChipOnClick(
                                                 category,
-                                                if (categorySelected.contains(category)) REMOVE else ADD
+                                                if (categorySelectedList.contains(category)) REMOVE else ADD
                                             )
                                         },
                                         label = category
@@ -730,7 +867,7 @@ fun FilterCard(
                         }
                     }
                 }
-                PlutusWalletButtonChip(
+                PWButton(
                     selected = dateFilterSelected,
                     onClick = { dateFilterOnClick(!dateFilterSelected) },
                     label = stringResource(R.string.filter_date),
@@ -757,7 +894,7 @@ fun FilterCard(
                             .onGloballyPositioned { dateComposeSize = it.size.toSize() },
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        PlutusWalletButtonChip(
+                        PWButton(
                             selected = true,
                             onClick = {
                                 DateUtils.datePickerDialog(
@@ -776,7 +913,7 @@ fun FilterCard(
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
                                 .testTag("Filter Start Date"),
                         )
-                        PlutusWalletButtonChip(
+                        PWButton(
                             selected = true,
                             onClick = {
                                 DateUtils.datePickerDialog(
@@ -798,7 +935,7 @@ fun FilterCard(
                         )
                     }
                 }
-                PlutusWalletButtonChip(
+                PWButton(
                     selected = true,
                     onClick = applyOnClick,
                     label = if (noFilters) {
@@ -821,16 +958,20 @@ fun FilterCard(
     }
 }
 
+/**
+ *  Composable for a text only Chip. [selected] determines if Chip has be selected. [onClick] is
+ *  performed when Chip is clicked. [label] is the text to be displayed in Chip.
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PlutusWalletChip(
+fun PWChip(
     selected: Boolean,
     onClick: () -> Unit,
     label: String
 ) {
     FilterChip(
-        selected,
-        onClick,
+        selected = selected,
+        onClick = onClick,
         modifier = Modifier.testTag("Chip: $label"),
         border = BorderStroke(
             width = dimensionResource(R.dimen.f_chip_border_width),
@@ -861,52 +1002,179 @@ fun PlutusWalletChip(
 
 @Preview
 @Composable
-fun FilterCardPreview() {
-    var accountFilterSelected = true
-    var categoryFilterSelected = false
-    var dateFilterSelected = true
-    PlutusWalletTheme {
-        FilterCard(
-            showFilter = true,
-            updateShowFilter = { },
-            accountFilterSelected = accountFilterSelected,
-            accountFilterOnClick = { accountFilterSelected = !accountFilterSelected },
-            accountList = listOf("Preview"),
-            accountSelected = listOf(),
-            accountChipOnClick = { _, _ -> },
-            categoryFilterSelected = categoryFilterSelected,
-            categoryFilterOnClick = { categoryFilterSelected = !categoryFilterSelected},
-            filterTypeSelected = TransactionType.EXPENSE,
-            filterUpdateTypeSelected = { },
-            categoryList = listOf("Preview"),
-            categorySelected = listOf(),
-            categoryChipOnClick = { _, _ -> },
-            dateFilterSelected = dateFilterSelected,
-            dateFilterOnClick = { dateFilterSelected = !dateFilterSelected},
-            startDateString = "Start",
-            startDateOnClick = { },
-            endDateString = "End",
-            endDateOnClick = { },
-            applyOnClick = { }
+fun OverviewScreenPreview() {
+    val tlItem = TranListItemFull(
+        TranListItem(
+            10,
+            "Test Title",
+            Date(),
+            BigDecimal("100.00"),
+            "Test Account",
+            "Expense",
+            "Test Category"
+        ),
+        formattedDate = "Today O' Clock",
+        formattedTotal = "$100.00"
+    )
+    val chartInfo = ChartInformation(
+        ctList = listOf(
+            CategoryTotals(
+                "Test Category",
+                BigDecimal("300.00"),
+                "Expense"
+            )
+        ),
+        totalText = "$300.00"
+    )
+    PreviewHelper {
+        OverviewScreen(
+            filterInfo = FilterInfo(),
+            tlPreviousMaxId = 1,
+            tlUpdatePreviousMaxId = { },
+            tlTranList = listOf(tlItem, tlItem, tlItem),
+            tlUpdateTranList = { },
+            tlItemOnLongClick = { },
+            tlItemOnClick = { },
+            tlShowDeleteDialog = 0,
+            tlDeleteDialogOnConfirm = { },
+            tlDeleteDialogOnDismiss = { },
+            chartInfoList = listOf(chartInfo),
+            cUpdateCatTotalsList = { },
+            fShowFilter = false,
+            fUpdateShowFilter = { },
+            fAccountFilterSelected = false,
+            fAccountFilterOnClick = { },
+            fAccountNameList = listOf(),
+            fAccountSelected = listOf(),
+            fAccountChipOnClick = { _, _ -> },
+            fCategoryFilterSelected = false,
+            fCategoryFilterOnClick = { },
+            fTypeSelected = EXPENSE,
+            fUpdateTypeSelected = { },
+            fCategoryList = listOf(),
+            fCategorySelected = listOf(),
+            fCategoryChipOnClick = { _, _ -> },
+            fDateFilterSelected = false,
+            fDateFilterOnClick = { },
+            fStartDateString = "",
+            fStartDateOnClick = { },
+            fEndDateString = "",
+            fEndDateOnClick = { },
+            fApplyOnClick = { },
+            fFilterState = FilterState.VALID,
+            fShowSnackbar = { }
         )
     }
 }
 
 @Preview
 @Composable
-fun TransactionListItemPreview() {
-    val ivTransaction = TranListItem(
-        0, "This is a very long title to test marquee text", Date(),
-        BigDecimal(1000000000000000000), "Account", "Expense", "Category"
+fun ChartCardPreview() {
+    val chartInfo = ChartInformation(
+        ctList = listOf(
+            CategoryTotals(
+                "Test Category",
+                BigDecimal("300.00"),
+                "Expense"
+            )
+        ),
+        totalText = "$300.00"
     )
-    val transactionItemFormatted = TranListItemFull(
-        ivTransaction, "$123.45", "Jan 1, 2000"
+    PreviewHelperCard {
+        ChartCard(chartInfoList = listOf(chartInfo))
+    }
+}
+
+@Preview
+@Composable
+fun TransactionListCardPreview() {
+    val tlItem = TranListItemFull(
+        TranListItem(
+            10,
+            "Test Title",
+            Date(),
+            BigDecimal("100.00"),
+            "Test Account",
+            "Expense",
+            "Test Category"
+        ),
+        formattedDate = "Today O' Clock",
+        formattedTotal = "$100.00"
+    )
+    PreviewHelperCard {
+        TransactionListCard(
+            tranList = listOf(tlItem, tlItem, tlItem),
+            previousMaxId = 1,
+            updatePreviousMaxId = { },
+            itemOnLongClick = { },
+            itemOnClick = { },
+            showDeleteDialog = 0,
+            deleteDialogOnConfirm = { }
+        ) { }
+    }
+}
+
+@Preview
+@Composable
+fun TransactionListItemPreview() {
+    val tlItem = TranListItemFull(
+        TranListItem(
+            10,
+            "Test Title",
+            Date(),
+            BigDecimal("100.00"),
+            "Test Account",
+            "Expense",
+            "Test Category"
+        ),
+        formattedDate = "Today O' Clock",
+        formattedTotal = "$100.00"
     )
     PlutusWalletTheme {
         TransactionListItem(
-            transactionItemFormatted,
+            tlItem,
             onLongClick = { },
             onClick = { },
         )
+    }
+}
+
+@Preview
+@Composable
+fun MarqueeTextPreview() {
+    PreviewHelperCard {
+        MarqueeText(
+            text = "Super duper uber gotta make this text even longer and longer",
+            style = MaterialTheme.typography.subtitle1
+        )
+    }
+}
+
+@Preview
+@Composable
+fun FilterCardPreview() {
+    PreviewHelperCard {
+        FilterCard(
+            showFilter = true,
+            accountFilterSelected = true,
+            accountList = listOf("Preview"),
+            categoryFilterSelected = true,
+            typeSelected = EXPENSE,
+            categoryList = listOf("Preview"),
+            dateFilterSelected = true,
+            startDateString = "Start",
+            endDateString = "End",
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PWChipPreview() {
+    PreviewHelperCard {
+        Column {
+            PWChip(selected = true, onClick = { }, label = "Selected")
+            PWChip(selected = false, onClick = { }, label = "Unselected")
+        }
     }
 }

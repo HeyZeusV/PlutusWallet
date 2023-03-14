@@ -10,7 +10,7 @@
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="about_version" translatable="false">v4.0.0</string>
+    <string name="about_version" translatable="false">v4.0.1</string>
     <string name="account_create">Create New Account</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
@@ -32,7 +32,7 @@
     <string name="filter_apply">Apply</string>
     <string name="filter_category">Category</string>
     <string name="filter_date">Date</string>
-    <string name="filter_date_warning">End date must be after start date!!</string>
+    <string name="filter_invalid_date_range">End date must be after start date!!</string>
     <string name="filter_end">End</string>
     <string name="filter_type">Type</string>
     <string name="filter_reset">Reset</string>
@@ -115,4 +115,8 @@
     <string name="data_delete">Delete</string>
     <string name="about_privacy_policy">Privacy Policy</string>
     <string name="about_privacy_policy_link" translatable="false">https://doc-hosting.flycricket.io/plutus-wallet-privacy-policy/2b4e7d61-0f8b-4e18-9634-d94fc965faf9/privacy</string>
+    <string name="icon_cd_expandcollapse">Expand or collapse</string>
+    <string name="icon_cd_inputError">Input error</string>
+    <string name="alert_dialog_closeapp">Close app</string>
+    <string name="alert_dialog_closeapp_message">Would you like to close the app?</string>
 </resources>
