@@ -26,7 +26,7 @@
     <string name="filter_apply">Aplicar</string>
     <string name="filter_category">Categoría</string>
     <string name="filter_date">Fecha</string>
-    <string name="filter_date_warning">¡La fecha de finalización debe ser posterior a la fecha de inicio!</string>
+    <string name="filter_invalid_date_range">¡La fecha de finalización debe ser posterior a la fecha de inicio!</string>
     <string name="filter_end">Fin</string>
     <string name="filter_reset">Reiniciar</string>
     <string name="filter_start">Comienzo</string>
@@ -100,4 +100,8 @@
     <string name="data_edit">Editar</string>
     <string name="data_delete">Eliminar</string>
     <string name="about_privacy_policy">Política de privacidad</string>
+    <string name="icon_cd_expandcollapse">Expandir o contraer</string>
+    <string name="icon_cd_inputError">Error de entrada</string>
+    <string name="alert_dialog_closeapp">Cerrar app</string>
+    <string name="alert_dialog_closeapp_message">¿Quieres cerrar la aplicación?</string>
 </resources>

@@ -3,9 +3,9 @@ package com.heyzeusv.plutuswallet.di
 import android.content.Context
 import androidx.room.Room
 import com.heyzeusv.plutuswallet.data.Migrations
-import com.heyzeusv.plutuswallet.data.Repository
-import com.heyzeusv.plutuswallet.data.TransactionDatabase
-import com.heyzeusv.plutuswallet.data.TransactionRepository
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
+import com.heyzeusv.plutuswallet.data.PWDatabase
+import com.heyzeusv.plutuswallet.data.PWRepository
 import com.heyzeusv.plutuswallet.data.daos.AccountDao
 import com.heyzeusv.plutuswallet.data.daos.CategoryDao
 import com.heyzeusv.plutuswallet.data.daos.TransactionDao
@@ -39,11 +39,11 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext appContext: Context): TransactionDatabase {
+    fun provideDatabase(@ApplicationContext appContext: Context): PWDatabase {
 
         return Room.databaseBuilder(
             appContext,
-            TransactionDatabase::class.java,
+            PWDatabase::class.java,
             "transaction-database"
         )
             .addMigrations(
@@ -55,15 +55,15 @@ object DatabaseModule {
 
     @TranDao
     @Provides
-    fun provideTranDao(database: TransactionDatabase): TransactionDao = database.transactionDao()
+    fun provideTranDao(database: PWDatabase): TransactionDao = database.transactionDao()
 
     @CatDao
     @Provides
-    fun provideCatDao(database: TransactionDatabase): CategoryDao = database.categoryDao()
+    fun provideCatDao(database: PWDatabase): CategoryDao = database.categoryDao()
 
     @AccDao
     @Provides
-    fun provideAccDao(database: TransactionDatabase): AccountDao = database.accountDao()
+    fun provideAccDao(database: PWDatabase): AccountDao = database.accountDao()
 }
 
 /**
@@ -79,8 +79,8 @@ object RepositoryModule {
         @DatabaseModule.AccDao accDao: AccountDao,
         @DatabaseModule.CatDao catDao: CategoryDao,
         @DatabaseModule.TranDao tranDao: TransactionDao
-    ): Repository {
+    ): PWRepositoryInterface {
 
-        return TransactionRepository(accDao, catDao, tranDao)
+        return PWRepository(accDao, catDao, tranDao)
     }
 }

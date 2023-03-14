@@ -26,7 +26,7 @@
     <string name="filter_apply">ใช้</string>
     <string name="filter_category">ประเภท</string>
     <string name="filter_date">วันที่</string>
-    <string name="filter_date_warning">วันที่สิ้นสุดต้องอยู่หลังวันที่เริ่มต้น !!</string>
+    <string name="filter_invalid_date_range">วันที่สิ้นสุดต้องอยู่หลังวันที่เริ่มต้น !!</string>
     <string name="filter_end">ปลาย</string>
     <string name="filter_reset">ตั้งค่าใหม่</string>
     <string name="filter_start">ราคาเริ่มต้น</string>
@@ -100,4 +100,8 @@
     <string name="data_edit">แก้ไข</string>
     <string name="data_delete">ลบ</string>
     <string name="about_privacy_policy">นโยบายความเป็นส่วนตัว</string>
+    <string name="icon_cd_expandcollapse">ขยายหรือยุบ</string>
+    <string name="icon_cd_inputError">ข้อผิดพลาดในการป้อนข้อมูล</string>
+    <string name="alert_dialog_closeapp">ปิดแอพ</string>
+    <string name="alert_dialog_closeapp_message">คุณต้องการปิดแอปหรือไม่</string>
 </resources>

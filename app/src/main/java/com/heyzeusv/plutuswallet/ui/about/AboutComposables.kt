@@ -44,20 +44,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
+import com.heyzeusv.plutuswallet.ui.PreviewHelper
+import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
+import com.heyzeusv.plutuswallet.util.AppBarActions
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 
-@OptIn(ExperimentalUnitApi::class)
+/**
+ *  Composable that displays About Card.
+ *  [appBarActionSetup] determines what to do when an action item is pressed from the AppBar.
+ *  [navigateUp] allows for navigation back to OverviewScreen.
+ */
 @Composable
-fun AboutScreen() {
+fun AboutScreen(
+    appBarActionSetup: (AppBarActions) -> Unit,
+    navigateUp: () -> Unit
+) {
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = { navigateUp() }
+        )
+    )
     Card(
         modifier = Modifier
             .fillMaxSize()
@@ -119,7 +133,8 @@ fun AboutScreen() {
 }
 
 /**
- *  Simple Text Composable with Center text alignment
+ *  Text Composable with center text alignment. [text] is text to be displayed. Default [modifier]
+ *  in case any additional modifiers needed. Default [style] in case a different TextStyle is needed.
  */
 @Composable
 fun TextCenterAlign(
@@ -139,7 +154,6 @@ fun TextCenterAlign(
  *  Button with [buttonText] that when pressed, reveals Surface containing Text with [file] as
  *  its content
  */
-@OptIn(ExperimentalUnitApi::class)
 @Composable
 fun ButtonRevealContent(buttonText: String, file: String) {
     var revealContent by remember { mutableStateOf(false) }
@@ -209,10 +223,7 @@ fun ButtonRevealContent(buttonText: String, file: String) {
  *  Modified from https://gist.github.com/stevdza-san/ff9dbec0e072d8090e1e6d16e6b73c91
  */
 @Composable
-fun HyperlinkText(
-    text: String,
-    link: String
-) {
+fun HyperlinkText(text: String, link: String) {
     val uriHandler = LocalUriHandler.current
     val annotatedString = buildAnnotatedString {
         append(text)
@@ -241,9 +252,7 @@ fun HyperlinkText(
                 .getStringAnnotations(
                     start = offset,
                     end = offset,
-                ).firstOrNull()?.let { result ->
-                    uriHandler.openUri(result.item)
-                }
+                ).firstOrNull()?.let { result -> uriHandler.openUri(result.item) }
         }
     )
 }
@@ -276,7 +285,34 @@ private fun loadFile(file: String, context: Context): String {
 @Preview
 @Composable
 fun AboutScreenPreview() {
-    PlutusWalletTheme {
-        AboutScreen()
+    PreviewHelper {
+        AboutScreen({ }, { })
+    }
+}
+
+@Preview
+@Composable
+fun TextCenterAlignPreview() {
+    PreviewHelperCard {
+        TextCenterAlign(text = "Text Center Align Preview")
+    }
+}
+
+@Preview
+@Composable
+fun ButtonRevealContentPreview() {
+    PreviewHelperCard {
+        ButtonRevealContent(buttonText = "Button Reveal Content Preview", file = "Changelog.txt")
+    }
+}
+
+@Preview
+@Composable
+fun HyperlinkTextPreview() {
+    PreviewHelperCard {
+        HyperlinkText(
+            text = "Hyperlink Text Preview",
+            link = stringResource(R.string.app_github_link)
+        )
     }
 }

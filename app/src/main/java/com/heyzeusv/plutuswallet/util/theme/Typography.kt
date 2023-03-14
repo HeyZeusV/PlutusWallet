@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
+// replacing a few default TextStyles that comes with MaterialTheme
 val PlutusWalletTypography = Typography(
     subtitle1 = TextStyle(
         fontSize = 18.sp
@@ -19,6 +20,9 @@ val PlutusWalletTypography = Typography(
     )
 )
 
+/**
+ *  Custom TextStyles used for specific Composables.
+ */
 val chipTextStyle = TextStyle(
     fontSize = 18.sp,
     fontWeight = FontWeight.Medium,

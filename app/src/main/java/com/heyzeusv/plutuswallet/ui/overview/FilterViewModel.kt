@@ -2,12 +2,12 @@ package com.heyzeusv.plutuswallet.ui.overview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.data.Repository
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.util.DateUtils
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.ADD
-import com.heyzeusv.plutuswallet.util.FilterSelectedAction.REMOVE
+import com.heyzeusv.plutuswallet.util.FilterChipAction
+import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
+import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
 import com.heyzeusv.plutuswallet.util.FilterState
 import com.heyzeusv.plutuswallet.util.FilterState.INVALID_DATE_RANGE
 import com.heyzeusv.plutuswallet.util.FilterState.NO_SELECTED_ACCOUNT
@@ -33,7 +33,7 @@ private const val MIDNIGHT_MILLI = 86399999
  */
 @HiltViewModel
 class FilterViewModel @Inject constructor(
-    private val tranRepo: Repository
+    private val tranRepo: PWRepositoryInterface
 ) : ViewModel() {
 
     private val _showFilter = MutableStateFlow(false)
@@ -45,17 +45,35 @@ class FilterViewModel @Inject constructor(
     val accountList: StateFlow<List<String>> get() = _accountList
     private fun updateAccountList(newList: List<String>) { _accountList.value = newList }
 
-    private val _expenseCatList = MutableStateFlow(listOf<String>())
-    val expenseCatList: StateFlow<List<String>> get() = _expenseCatList
-    private fun updateExpenseCatList(newList: List<String>) { _expenseCatList.value = newList }
+    private var expenseCatList = listOf<String>()
+    private fun updateExpenseCatList(newList: List<String>) {
+        expenseCatList = newList
+        updateCategoryList()
+    }
 
-    private val _incomeCatList = MutableStateFlow(listOf<String>())
-    val incomeCatList: StateFlow<List<String>> get() = _incomeCatList
-    private fun updateIncomeCatList(newList: List<String>) { _incomeCatList.value = newList }
+    private var incomeCatList = listOf<String>()
+    private fun updateIncomeCatList(newList: List<String>) {
+        incomeCatList = newList
+        updateCategoryList()
+    }
+
+    private val _categoryList = MutableStateFlow(listOf<String>())
+    val categoryList: StateFlow<List<String>> get() = _categoryList
+    private fun updateCategoryList() {
+        _categoryList.value = if (typeSelected.value == EXPENSE) {
+            expenseCatList
+        } else {
+            incomeCatList
+        }
+    }
 
     private val _typeSelected = MutableStateFlow(EXPENSE)
     val typeSelected: StateFlow<TransactionType> get() = _typeSelected
-    fun updateTypeSelected(newValue: TransactionType) { _typeSelected.value = newValue }
+    fun updateTypeSelected(newValue: TransactionType) {
+        _typeSelected.value = newValue
+        updateCategoryList()
+        updateCategorySelectedList()
+    }
 
     // filter status
     private val _accountFilter = MutableStateFlow(false)
@@ -73,28 +91,31 @@ class FilterViewModel @Inject constructor(
     // selected items
     private val _accountSelected = MutableStateFlow(listOf<String>())
     val accountSelected: StateFlow<List<String>> get() = _accountSelected
-    fun updateAccountSelected(value: String, action: FilterSelectedAction) {
+    fun updateAccountSelected(value: String, action: FilterChipAction) {
         _accountSelected.value = when (action) {
             ADD -> _accountSelected.value + value
             REMOVE -> _accountSelected.value - value
         }
     }
 
-    private val _expenseCatSelected = MutableStateFlow(listOf<String>())
-    val expenseCatSelected: StateFlow<List<String>> get() = _expenseCatSelected
-    fun updateExpenseCatSelected(value: String, action: FilterSelectedAction) {
-        _expenseCatSelected.value = when (action) {
-            ADD -> _expenseCatSelected.value + value
-            REMOVE -> _expenseCatSelected.value - value
+    // selected chips
+    private var expenseCatSelectedList = listOf<String>()
+    private var incomeCatSelectedList = listOf<String>()
+    private val _categorySelectedList = MutableStateFlow(listOf<String>())
+    val categorySelectedList: StateFlow<List<String>> get() = _categorySelectedList
+    private fun updateCategorySelectedList() {
+        if (typeSelected.value == EXPENSE) {
+            incomeCatSelectedList = categorySelectedList.value
+            _categorySelectedList.value = expenseCatSelectedList
+        } else {
+            expenseCatSelectedList = categorySelectedList.value
+            _categorySelectedList.value = incomeCatSelectedList
         }
     }
-
-    private val _incomeCatSelected = MutableStateFlow(listOf<String>())
-    val incomeCatSelected: StateFlow<List<String>> get() = _incomeCatSelected
-    fun updateIncomeCatSelected(value: String, action: FilterSelectedAction) {
-        _incomeCatSelected.value = when (action) {
-            ADD -> _incomeCatSelected.value + value
-            REMOVE -> _incomeCatSelected.value - value
+    fun updateCategorySelectedList(value: String, action: FilterChipAction) {
+        _categorySelectedList.value = when (action) {
+            ADD -> _categorySelectedList.value + value
+            REMOVE -> _categorySelectedList.value - value
         }
     }
 
@@ -122,7 +143,7 @@ class FilterViewModel @Inject constructor(
 
     private val _filterState = MutableStateFlow(VALID)
     val filterState: StateFlow<FilterState> get() = _filterState
-    fun updateFilterState(newState: FilterState) { _filterState.value = newState}
+    fun updateFilterState(newState: FilterState) { _filterState.value = newState }
 
     init {
         viewModelScope.launch {
@@ -143,14 +164,11 @@ class FilterViewModel @Inject constructor(
      *  start date.
      */
     fun applyFilter() {
-
         when {
             // users must select at least 1 Chip
             accountFilter.value && accountSelected.value.isEmpty() ->
                 _filterState.value = NO_SELECTED_ACCOUNT
-            categoryFilter.value &&
-                    ((typeSelected.value == EXPENSE && expenseCatSelected.value.isEmpty()) ||
-                    (typeSelected.value == INCOME && incomeCatSelected.value.isEmpty())) ->
+            categoryFilter.value && categorySelectedList.value.isEmpty() ->
                 _filterState.value = NO_SELECTED_CATEGORY
             // user must select both start and end date
             dateFilter.value && startDateString.value.isEmpty() && endDateString.value.isEmpty() ->
@@ -161,15 +179,11 @@ class FilterViewModel @Inject constructor(
             else -> {
                 _filterInfo.value = FilterInfo(
                     account = accountFilter.value,
-                    category = categoryFilter.value,
-                    date = dateFilter.value,
-                    type = typeSelected.value.type,
                     accountNames = accountSelected.value,
-                    categoryNames = if (typeSelected.value == EXPENSE) {
-                        expenseCatSelected.value
-                    } else {
-                        incomeCatSelected.value
-                    },
+                    category = categoryFilter.value,
+                    type = typeSelected.value.type,
+                    categoryNames = categorySelectedList.value,
+                    date = dateFilter.value,
                     start = startDate,
                     end = endDate
                 )
@@ -184,8 +198,9 @@ class FilterViewModel @Inject constructor(
     private fun resetFilter() {
         // clear Chip lists and launch resetEvent to clear Chips
         _accountSelected.value = emptyList()
-        _expenseCatSelected.value = emptyList()
-        _incomeCatSelected.value = emptyList()
+        expenseCatSelectedList = emptyList()
+        incomeCatSelectedList = emptyList()
+        _categorySelectedList.value = emptyList()
 
         // sets the startDate to very start of current day and endDate to right before the next day
         startDate = DateUtils.startOfDay(Date())

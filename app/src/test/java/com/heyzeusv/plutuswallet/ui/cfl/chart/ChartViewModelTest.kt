@@ -1,12 +1,10 @@
 package com.heyzeusv.plutuswallet.ui.cfl.chart
 
-import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
-import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.ui.overview.ChartViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.BeforeEach
@@ -19,7 +17,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
+@ExtendWith(TestCoroutineExtension::class)
 internal class ChartViewModelTest {
 
     // test Fake
@@ -35,7 +33,7 @@ internal class ChartViewModelTest {
     fun setUpViewModel() {
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
-        chartVM = ChartViewModel(repo, SettingsValues())
+        chartVM = ChartViewModel(repo)
     }
 
     @Test
@@ -64,7 +62,7 @@ internal class ChartViewModelTest {
         // adding extra Transactions
         repo.tranList.add(dd.tran1)
         repo.tranList.add(dd.tran3)
-        chartVM.updateCatTotalsList(FilterInfo(), SettingsValues())
+        chartVM.updateCatTotalsList(FilterInfo())
 
         val expectedExpenseCatTotalList = listOf(
             CategoryTotals("Food", BigDecimal("2100.20"), "Expense"),
@@ -92,7 +90,7 @@ internal class ChartViewModelTest {
         newIncomeCat.category = "Test Income Category"
         repo.tranList.add(newExpenseCat)
         repo.tranList.add(newIncomeCat)
-        chartVM.updateCatTotalsList(FilterInfo(), SettingsValues())
+        chartVM.updateCatTotalsList(FilterInfo())
 
         val expectedExpenseCatTotalList = listOf(
             CategoryTotals("Food", BigDecimal("1100.10"), "Expense"),
@@ -149,8 +147,8 @@ internal class ChartViewModelTest {
         )
         chartVM.filteredCategoryTotals(
             FilterInfo(
-                account = true, date = true,
-                accountNames = listOf("Cash"), start = Date(0), end = Date(86400000)
+                account = true, accountNames = listOf("Cash"),
+                date = true, start = Date(0), end = Date(86400000)
             )
         ).collect { collectedList = it }
         assertEquals(expectedBothFilter, collectedList)

@@ -1,15 +1,12 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,11 +19,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.ChipDefaults
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FilterChip
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -37,11 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.LaunchedEffect
@@ -52,7 +43,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -63,111 +53,202 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.model.Account
-import com.heyzeusv.plutuswallet.data.model.DataInterface
-import com.heyzeusv.plutuswallet.ui.AppBarActions
+import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.BackPressHandler
+import com.heyzeusv.plutuswallet.ui.PWButton
+import com.heyzeusv.plutuswallet.ui.PreviewHelper
+import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
+import com.heyzeusv.plutuswallet.ui.PWInputAlertDialog
+import com.heyzeusv.plutuswallet.ui.PWAlertDialog
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
-import com.heyzeusv.plutuswallet.util.theme.alertDialogButton
-import com.heyzeusv.plutuswallet.util.theme.chipTextStyle
+import com.heyzeusv.plutuswallet.util.AppBarActions
 import com.heyzeusv.plutuswallet.util.DateUtils
-import com.heyzeusv.plutuswallet.util.PWAlertDialog
 import com.heyzeusv.plutuswallet.util.TransactionType
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import java.text.DateFormat
+import java.util.Date
 import kotlinx.coroutines.launch
 
 /**
- *  Composable that displays the entire Transaction screen.
- *  Data that is displayed is retrieved from [tranVM]. [snackbarHostState] is used to
- *  display Snackbar on successful save. [navController] allows user to navigate back to
- *  OverviewScreen onBackPressed.
+ *  Composable that displays Transaction Card.
+ *  Data that is displayed is retrieved from [tranVM]. [tranId] is passed in through Navigation.
+ *  [appBarActionSetup] determines what to do when an action item is pressed from the AppBar.
+ *  [showSnackbar] display Snackbar on successful save.
+ *  [navigateUp] allows for navigation back to OverviewScreen.
  */
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun TransactionScreen(
+fun TransactionCard(
     tranVM: TransactionViewModel,
     tranId: Int,
     appBarActionSetup: (AppBarActions) -> Unit,
-    snackbarHostState: SnackbarHostState,
-    navController: NavController
+    showSnackbar: suspend (String) -> Unit,
+    navigateUp: () -> Unit
 ) {
     if (tranVM.retrieveTransaction) {
         tranVM.retrieveTransaction(tranId)
     }
+    val totalMaxLength = integerResource(
+        if (tranVM.setVals.decimalNumber == "yes") {
+            R.integer.maxLengthTotalDecimal
+        } else {
+            R.integer.maxLengthTotalInteger
+        }
+    )
 
     // used for SnackBar
     val saveSuccess by tranVM.saveSuccess.collectAsState()
-    val saveSuccessMessage = stringResource(R.string.snackbar_saved)
 
     // data to be displayed
     val transaction by tranVM.transaction.collectAsState()
     val title by tranVM.title.collectAsState()
     val date by tranVM.date.collectAsState()
     val account by tranVM.account.collectAsState()
-    val total by tranVM.totalFieldValue.collectAsState()
+    val total by tranVM.total.collectAsState()
     val typeSelected by tranVM.typeSelected.collectAsState()
-    val expenseCat by tranVM.expenseCat.collectAsState()
-    val incomeCat by tranVM.incomeCat.collectAsState()
+    val selectedCat by tranVM.selectedCat.collectAsState()
     val memo by tranVM.memo.collectAsState()
     val repeat by tranVM.repeat.collectAsState()
     val period by tranVM.period.collectAsState()
-    val frequency by tranVM.frequencyFieldValue.collectAsState()
+    val frequency by tranVM.frequency.collectAsState()
 
     // drop down menu lists
     val accountList by tranVM.accountList.collectAsState()
-    val expenseCatList by tranVM.expenseCatList.collectAsState()
-    val incomeCatList by tranVM.incomeCatList.collectAsState()
+    val selectedCatList by tranVM.selectedCatList.collectAsState()
     val periodList by tranVM.periodList.collectAsState()
 
     // determine which dialog to display
     val showAccountDialog by tranVM.showAccountDialog.collectAsState()
-    val showExpenseDialog by tranVM.showExpenseDialog.collectAsState()
-    val showIncomeDialog by tranVM.showIncomeDialog.collectAsState()
+    val showCategoryDialog by tranVM.showCategoryDialog.collectAsState()
     val showFutureDialog by tranVM.showFutureDialog.collectAsState()
+
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = {
+                tranVM.updateSaveSuccess(false)
+                tranVM.retrieveTransaction = true
+                navigateUp()
+            },
+            onActionRightPressed = { tranVM.saveTransaction() }
+        )
+    )
+    BackPressHandler {
+        tranVM.updateSaveSuccess(false)
+        tranVM.retrieveTransaction = true
+        navigateUp()
+    }
+    TransactionCard(
+        transaction,
+        title,
+        tranVM::updateTitle,
+        date,
+        tranVM::onDateSelected,
+        account,
+        tranVM::updateAccount,
+        total,
+        tranVM::updateTotal,
+        totalMaxLength,
+        typeSelected,
+        tranVM::updateTypeSelected,
+        selectedCat,
+        tranVM::updateSelectedCat,
+        memo,
+        tranVM::updateMemo,
+        repeat,
+        tranVM::updateRepeat,
+        period,
+        tranVM::updatePeriod,
+        frequency,
+        tranVM::updateFrequency,
+        accountList,
+        selectedCatList,
+        periodList,
+        showAccountDialog,
+        tranVM::updateAccountDialog,
+        accountDialogOnConfirm = tranVM::insertAccount,
+        showCategoryDialog,
+        tranVM::updateCategoryDialog,
+        categoryDialogOnConfirm = tranVM::insertCategory,
+        showFutureDialog,
+        futureDialogOnConfirm = { tranVM.futureDialogConfirm() },
+        futureDialogOnDismiss = { tranVM.futureDialogDismiss() },
+        saveSuccess,
+        onSaveSuccess = { msg ->
+            showSnackbar(msg)
+            tranVM.updateSaveSuccess(false)
+        }
+    )
+}
+
+/**
+ *  Composable that displays TransactionScreen.
+ *  All the data has been hoisted into above [TransactionCard] thus allowing for easier testing.
+ */
+@Composable
+fun TransactionCard(
+    transaction: Transaction = Transaction(),
+    title: String = "",
+    updateTitle: (String) -> Unit = { },
+    date: String = DateFormat.getDateInstance(0).format(Date()),
+    onDateSelected: (Date) -> Unit = { },
+    account: String = "",
+    updateAccount: (String) -> Unit = { },
+    total: TextFieldValue = TextFieldValue("$0.00"),
+    updateTotal: (String) -> Unit = { },
+    totalMaxLength: Int = 21,
+    typeSelected: TransactionType = EXPENSE,
+    updateTypeSelected: (TransactionType) -> Unit = { },
+    selectedCat: String = "",
+    updateSelectedCat: (String) -> Unit = { },
+    memo: String = "",
+    updateMemo: (String) -> Unit = { },
+    repeat: Boolean = false,
+    updateRepeat: (Boolean) -> Unit = { },
+    period: String = "",
+    updatePeriod: (String) -> Unit = { },
+    frequency: TextFieldValue = TextFieldValue(""),
+    updateFrequency: (String) -> Unit = { },
+    accountList: List<String> = listOf("Create New Account"),
+    categoryList: List<String> = listOf("Create New Category"),
+    periodList: List<String> = listOf(),
+    showAccountDialog: Boolean = false,
+    updateAccountDialog: (Boolean) -> Unit = { },
+    accountDialogOnConfirm: (String) -> Unit = { },
+    showCategoryDialog: Boolean = false,
+    updateCategoryDialog: (Boolean) -> Unit = { },
+    categoryDialogOnConfirm: (String) -> Unit = { },
+    showFutureDialog: Boolean = false,
+    futureDialogOnConfirm: () -> Unit = { },
+    futureDialogOnDismiss: () -> Unit = { },
+    saveSuccess: Boolean = false,
+    onSaveSuccess: suspend (String) -> Unit = { }
+) {
+    val saveSuccessMessage = stringResource(R.string.snackbar_saved)
 
     // used by DatePicker
     val dateObj = transaction.date
     val view = LocalView.current
 
-    // displays SnackBar when saveSuccess is true
-    LaunchedEffect(key1 = saveSuccess) {
-        if (saveSuccess) {
-            snackbarHostState.showSnackbar(saveSuccessMessage)
-            tranVM.updateSaveSuccess(false)
-        }
-    }
-    // set up AppBar actions
-    appBarActionSetup(
-        AppBarActions(
-            onNavPressed = { tranVM.retrieveTransaction = true },
-            onActionRightPressed = { tranVM.saveTransaction() }
-        )
-    )
+    // displays SnackBar that Transaction was saved when saveSuccess is true
+    LaunchedEffect(key1 = saveSuccess) { if (saveSuccess) onSaveSuccess(saveSuccessMessage) }
     if (showFutureDialog) {
         PWAlertDialog(
-            onConfirmText = stringResource(R.string.alert_dialog_yes),
-            onConfirm = { tranVM.futureDialogConfirm() },
-            onDismissText = stringResource(R.string.alert_dialog_no),
-            onDismiss = { tranVM.futureDialogDismiss() },
             title = stringResource(R.string.alert_dialog_future_transaction),
-            message = stringResource(R.string.alert_dialog_future_transaction_warning)
+            message = stringResource(R.string.alert_dialog_future_transaction_warning),
+            onConfirmText = stringResource(R.string.alert_dialog_yes),
+            onConfirm = { futureDialogOnConfirm() },
+            onDismissText = stringResource(R.string.alert_dialog_no),
+            onDismiss = { futureDialogOnDismiss() }
         )
     }
-    BackPressHandler(
-        onBackPressed = {
-            tranVM.updateSaveSuccess(false)
-            navController.navigateUp()
-        }
-    )
     Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(all = dimensionResource(R.dimen.cardFullPadding)),
-        shape = MaterialTheme.shapes.medium,
-        backgroundColor = MaterialTheme.colors.surface
     ) {
         Column(
             modifier = Modifier
@@ -176,7 +257,7 @@ fun TransactionScreen(
         ) {
             TransactionTextInput(
                 value = title,
-                onValueChanged = tranVM::updateTitle,
+                onValueChanged = updateTitle,
                 label = stringResource(R.string.transaction_title),
                 helper = stringResource(R.string.transaction_title_hint),
                 maxLength = integerResource(R.integer.maxLengthTitle),
@@ -188,7 +269,7 @@ fun TransactionScreen(
                 value = date,
                 label = stringResource(R.string.transaction_date),
                 onPressed = {
-                    DateUtils.datePickerDialog(view, dateObj, tranVM::onDateSelected).show()
+                    DateUtils.datePickerDialog(view, dateObj, onDateSelected).show()
                 },
                 modifier = Modifier.padding(
                     top = dimensionResource(R.dimen.textFToTextFWHelperTopPadding)
@@ -197,81 +278,45 @@ fun TransactionScreen(
             TransactionDropDownMenu(
                 value = account,
                 list = accountList,
-                onClick = tranVM::updateAccount,
+                onClick = updateAccount,
                 label = stringResource(R.string.transaction_account),
                 createNew = stringResource(R.string.account_create),
                 showInputDialog = showAccountDialog,
-                updateInputDialog = { tranVM.updateAccountDialog(true) },
+                updateInputDialog = { updateAccountDialog(true) },
                 dialogTitle = stringResource(R.string.alert_dialog_create_account),
-                dialogOnConfirm = tranVM::insertAccount,
-                dialogOnDismiss = { tranVM.updateAccountDialog(false) },
+                dialogOnConfirm = accountDialogOnConfirm,
+                dialogOnDismiss = { updateAccountDialog(false) },
                 modifier = Modifier.padding(
                     top = dimensionResource(R.dimen.textFToViewTopPadding)
                 )
             )
             TransactionNumberInput(
                 value = total,
-                onValueChanged = tranVM::updateTotalFieldValue,
+                onValueChanged = updateTotal,
                 label = stringResource(R.string.transaction_total),
-                maxLength = integerResource(
-                    if (tranVM.setVals.decimalNumber == "yes") {
-                        R.integer.maxLengthTotalDecimal
-                    } else {
-                        R.integer.maxLengthTotalInteger
-                    }
-                ),
+                maxLength = totalMaxLength,
                 modifier = Modifier.padding(
                     top = dimensionResource(R.dimen.textFToViewTopPadding)
                 )
             )
-            when (typeSelected) {
-                TransactionType.EXPENSE -> {
-                    TransactionCategories(
-                        typeSelected = typeSelected,
-                        chipExpenseOnClick = {
-                            tranVM.updateTypeSelected(TransactionType.EXPENSE)
-                        },
-                        chipIncomeOnClick = {
-                            tranVM.updateTypeSelected(TransactionType.INCOME)
-                        },
-                        dropDownValue = expenseCat,
-                        dropDownList = expenseCatList,
-                        dropDownOnClick = tranVM::updateExpenseCat,
-                        showInputDialog = showExpenseDialog,
-                        updateInputDialog = { tranVM.updateExpenseDialog(true) },
-                        dialogOnConfirm = tranVM::insertCategory,
-                        dialogOnDismiss = { tranVM.updateExpenseDialog(false) },
-                        modifier = Modifier.padding(
-                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
-                        )
-                    )
-                }
-
-                TransactionType.INCOME -> {
-                    TransactionCategories(
-                        typeSelected = typeSelected,
-                        chipExpenseOnClick = {
-                            tranVM.updateTypeSelected(TransactionType.EXPENSE)
-                        },
-                        chipIncomeOnClick = {
-                            tranVM.updateTypeSelected(TransactionType.INCOME)
-                        },
-                        dropDownValue = incomeCat,
-                        dropDownList = incomeCatList,
-                        dropDownOnClick = tranVM::updateIncomeCat,
-                        showInputDialog = showIncomeDialog,
-                        updateInputDialog = { tranVM.updateIncomeDialog(true) },
-                        dialogOnConfirm = tranVM::insertCategory,
-                        dialogOnDismiss = { tranVM.updateIncomeDialog(false) },
-                        modifier = Modifier.padding(
-                            top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
-                        )
-                    )
-                }
-            }
+            TransactionCategories(
+                typeSelected = typeSelected,
+                chipExpenseOnClick = { updateTypeSelected(EXPENSE) },
+                chipIncomeOnClick = { updateTypeSelected(INCOME) },
+                dropDownValue = selectedCat,
+                dropDownList = categoryList,
+                dropDownOnClick = updateSelectedCat,
+                showInputDialog = showCategoryDialog,
+                updateInputDialog = { updateCategoryDialog(true) },
+                dialogOnConfirm = categoryDialogOnConfirm,
+                dialogOnDismiss = { updateCategoryDialog(false) },
+                modifier = Modifier.padding(
+                    top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
+                )
+            )
             TransactionTextInput(
                 value = memo,
-                onValueChanged = { tranVM.updateMemo(it) },
+                onValueChanged = { updateMemo(it) },
                 label = stringResource(R.string.transaction_memo),
                 helper = stringResource(R.string.transaction_memo_hint),
                 maxLength = integerResource(R.integer.maxLengthMemo),
@@ -280,14 +325,14 @@ fun TransactionScreen(
                 )
             )
             TransactionRepeating(
-                newTransaction = tranVM.tranId == 0,
+                newTransaction = transaction.id == 0,
                 chipSelected = repeat,
-                chipOnClick = { tranVM.updateRepeat(!repeat) },
+                chipOnClick = { updateRepeat(!repeat) },
                 dropDownValue = period,
                 dropDownList = periodList,
-                dropDownOnClick = tranVM::updatePeriod,
+                dropDownOnClick = updatePeriod,
                 inputValue = frequency,
-                inputOnValueChanged = tranVM::updateFrequencyFieldValue,
+                inputOnValueChanged = updateFrequency,
                 modifier = Modifier.padding(
                     top = dimensionResource(R.dimen.chipToTextFWHelperTopPadding)
                 )
@@ -316,8 +361,7 @@ fun TransactionTextInput(
             onValueChange = { if (it.length <= maxLength) onValueChanged(it) },
             modifier = Modifier
                 .fillMaxWidth()
-                .testTag(label)
-            ,
+                .testTag(label),
             label = { Text(text = label) },
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -413,7 +457,7 @@ fun TransactionDropDownMenu(
         DisableSelection {
             if (showInputDialog) {
                 expanded = false
-                InputAlertDialog(
+                PWInputAlertDialog(
                     title = dialogTitle,
                     onConfirm = dialogOnConfirm,
                     onDismiss = dialogOnDismiss
@@ -429,7 +473,7 @@ fun TransactionDropDownMenu(
                     }
                     .testTag(label),
                 readOnly = true,
-                label = { Text(label)},
+                label = { Text(label) },
                 trailingIcon = {
                     Icon(
                         imageVector = if (expanded) {
@@ -437,7 +481,7 @@ fun TransactionDropDownMenu(
                         } else {
                             Icons.Filled.KeyboardArrowDown
                         },
-                        contentDescription = "Expand/Collapse",
+                        contentDescription = stringResource(R.string.icon_cd_expandcollapse),
                         tint = if (expanded) {
                             MaterialTheme.colors.secondary
                         } else {
@@ -467,136 +511,9 @@ fun TransactionDropDownMenu(
                                 expanded = false
                             }
                         },
-                        modifier = Modifier.testTag(name)
+                        modifier = Modifier.testTag("DropdownMenuItem $name")
                     ) {
                         Text(text = name)
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- *  Composable that displays an AlertDialog with [title] that allows for user input.
- *  [onConfirm] handles user input. [onDismiss] closes the AlertDialog.
- */
-@Composable
-fun InputAlertDialog(
-    title: String,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
-    data: DataInterface = Account(0, ""),
-    onConfirm: (String) -> Unit = { },
-    onConfirmData: (DataInterface, String) -> Unit = { _, _ -> }
-) {
-    var text by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
-
-    /**
-     *  There is an AlertDialog() composable in the compose library, but I could not edit the padding.
-     *  Using Dialog() allows for much more customization.
-     */
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.testTag("AlertDialog"),
-            shape = MaterialTheme.shapes.medium,
-            elevation = dimensionResource(R.dimen.cardElevation)
-        ) {
-            Column(
-                modifier = modifier.padding(
-                    top = dimensionResource(R.dimen.id_topPad),
-                    bottom = dimensionResource(R.dimen.id_botPad)
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.id_content_horiPad)
-                    )
-                ) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.subtitle1
-                    )
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = dimensionResource(R.dimen.id_tf_topPad))
-                            .testTag("AlertDialog input"),
-                        label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
-                        trailingIcon = {
-                            if (isError) {
-                                Icon(
-                                    imageVector = Icons.Filled.Error,
-                                    contentDescription = null
-                                )
-                            }
-                        },
-                        isError = isError,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            textColor = MaterialTheme.colors.onSurface,
-                            focusedBorderColor = MaterialTheme.colors.secondary,
-                            focusedLabelColor = MaterialTheme.colors.secondary,
-                            unfocusedLabelColor = MaterialTheme.colors.secondary,
-                            errorLabelColor = MaterialTheme.colors.error
-                        )
-                    )
-                    if (isError) {
-                        Text(
-                            text = stringResource(R.string.alert_dialog_input_error),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = dimensionResource(R.dimen.tfh_horiPad))
-                                .padding(top = dimensionResource(R.dimen.tfh_topPad))
-                                .height(dimensionResource(R.dimen.tfh_height)),
-                            color = MaterialTheme.colors.error,
-                            style = MaterialTheme.typography.caption
-                        )
-                    } else {
-                        Spacer(
-                            modifier = Modifier
-                                .padding(top = dimensionResource(R.dimen.tfh_topPad))
-                                .height(dimensionResource(R.dimen.tfh_height))
-                        )
-                    }
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(R.dimen.id_button_horiPad))
-                        .padding(top = dimensionResource(R.dimen.id_button_topPad)),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        space = dimensionResource(R.dimen.id_button_spacedBy),
-                        alignment = Alignment.End
-                    )
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text(
-                            text = stringResource(R.string.alert_dialog_cancel).uppercase(),
-                            modifier = Modifier.testTag("AlertDialog dismiss"),
-                            color = LocalPWColors.current.alertDialogButtonText,
-                            style = alertDialogButton
-                        )
-                    }
-                    TextButton(
-                        onClick = {
-                            if (text.isNotBlank()) {
-                                isError = false
-                                onConfirm(text)
-                                onConfirmData(data, text)
-                            } else {
-                                isError = true
-                            }
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.alert_dialog_save).uppercase(),
-                            modifier = Modifier.testTag("AlertDialog confirm"),
-                            color = LocalPWColors.current.alertDialogButtonText,
-                            style = alertDialogButton
-                        )
                     }
                 }
             }
@@ -624,8 +541,7 @@ fun TransactionNumberInput(
             onValueChange = { if (it.text.length <= maxLength) onValueChanged(it.text) },
             modifier = numberFieldModifier
                 .fillMaxWidth()
-                .testTag(label)
-            ,
+                .testTag(label),
             label = { Text(label) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -648,92 +564,12 @@ fun TransactionNumberInput(
 }
 
 /**
- *  Composable for selectable button/chip. [selected] determines if chip is selected. [onClick]
- *  is called when chip is selected. [label] is the text displayed on the chip. [showIcon]
- *  determines if a trailing icon should be displayed.
- */
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun PlutusWalletButtonChip(
-    selected: Boolean,
-    onClick: () -> Unit,
-    label: String,
-    showIcon: Boolean,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.Unspecified,
-    selectedBackgroundColor: Color = Color.Unspecified,
-    selectedTextColor: Color = MaterialTheme.colors.secondary,
-) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(label),
-        shape = MaterialTheme.shapes.medium,
-        border = BorderStroke(
-            width = dimensionResource(R.dimen.button_chip_border_width),
-            color = if (selected) {
-                MaterialTheme.colors.secondary
-            } else {
-                LocalPWColors.current.unselected
-            }
-        ),
-        colors = ChipDefaults.filterChipColors(
-            backgroundColor = backgroundColor,
-            selectedBackgroundColor = selectedBackgroundColor
-        ),
-        leadingIcon = {
-            // this icon is used to center text when trailing icon exists
-            if (showIcon) {
-                Icon(
-                    imageVector = Icons.Filled.KeyboardArrowDown,
-                    contentDescription = "",
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0f)
-                )
-            }
-        },
-        trailingIcon = {
-            if (showIcon) {
-                Icon(
-                    imageVector = if (selected) {
-                        Icons.Filled.KeyboardArrowUp
-                    } else {
-                        Icons.Filled.KeyboardArrowDown
-                    },
-                    contentDescription = "Expand/Collapse",
-                    tint = if (selected) {
-                        MaterialTheme.colors.secondary
-                    } else {
-                        LocalPWColors.current.unselected
-                    }
-                )
-            }
-        },
-        content = {
-            Text(
-                text = label.uppercase(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                color = if (selected) {
-                    selectedTextColor
-                } else {
-                    LocalPWColors.current.unselected
-                },
-                style = chipTextStyle
-            )
-        }
-    )
-}
-
-/**
- *  Composable that brings together [PlutusWalletButtonChip]s and [TransactionDropDownMenu] to handle
+ *  Composable that brings together [PWButton]s and [TransactionDropDownMenu] to handle
  *  Category selection. [typeSelected] determines which chip is currently selected, which is
  *  updated by [chipExpenseOnClick] and [chipIncomeOnClick]. [dropDownValue] is the currently
  *  selected value. [dropDownList] is the values displayed when the drop down menu is expanded.
  *  [dropDownOnClick] is called whenever a value is selected from menu. [showInputDialog]
- *  determines if [InputAlertDialog] should be displayed, which is updated by [updateInputDialog].
+ *  determines if [PWInputAlertDialog] should be displayed, which is updated by [updateInputDialog].
  *  [dialogOnConfirm] saves (if no error) user's input, while [dialogOnDismiss] closes the dialog.
  */
 @Composable
@@ -759,8 +595,8 @@ fun TransactionCategories(
             ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            PlutusWalletButtonChip(
-                selected = typeSelected == TransactionType.EXPENSE,
+            PWButton(
+                selected = typeSelected == EXPENSE,
                 onClick = chipExpenseOnClick,
                 label = stringResource(R.string.type_expense),
                 showIcon = false,
@@ -768,8 +604,8 @@ fun TransactionCategories(
                     .height(dimensionResource(R.dimen.transaction_button_chip_height))
                     .weight(1f)
             )
-            PlutusWalletButtonChip(
-                selected = typeSelected == TransactionType.INCOME,
+            PWButton(
+                selected = typeSelected == INCOME,
                 onClick = chipIncomeOnClick,
                 label = stringResource(R.string.type_income),
                 showIcon = false,
@@ -797,7 +633,7 @@ fun TransactionCategories(
 }
 
 /**
- *  Composable that combines [PlutusWalletButtonChip], [TransactionDropDownMenu], and
+ *  Composable that combines [PWButton], [TransactionDropDownMenu], and
  *  [TransactionNumberInput] to handle repeating Transactions. [newTransaction] determines if
  *  scroll down animation should occur. [chipSelected] determines if chip is selected.
  *  [chipOnClick] is called when chip is selected. [dropDownValue] is currently selected value from
@@ -812,7 +648,7 @@ fun TransactionRepeating(
     chipSelected: Boolean,
     chipOnClick: () -> Unit,
     dropDownValue: String,
-    dropDownList: MutableList<String>,
+    dropDownList: List<String>,
     dropDownOnClick: (String) -> Unit,
     inputValue: TextFieldValue,
     inputOnValueChanged: (String) -> Unit,
@@ -828,7 +664,7 @@ fun TransactionRepeating(
     }
 
     Column(modifier = modifier) {
-        PlutusWalletButtonChip(
+        PWButton(
             selected = chipSelected,
             onClick = chipOnClick,
             label = stringResource(R.string.transaction_repeat),
@@ -880,5 +716,144 @@ fun TransactionRepeating(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun TransactionCardPreview() {
+    PreviewHelper {
+        TransactionCard(
+            transaction = Transaction(),
+            title = "Transaction Title",
+            updateTitle = { },
+            date = "Transaction Date",
+            onDateSelected = { },
+            account = "Transaction Account",
+            updateAccount = { },
+            total = TextFieldValue("$12345.67"),
+            updateTotal = { },
+            totalMaxLength = 100,
+            typeSelected = EXPENSE,
+            updateTypeSelected = { },
+            selectedCat = "Transaction Category",
+            updateSelectedCat = { },
+            memo = "Transaction Memo",
+            updateMemo = { },
+            repeat = true ,
+            updateRepeat = { },
+            period = "Weeks",
+            updatePeriod = { },
+            frequency = TextFieldValue("100"),
+            updateFrequency = { },
+            accountList = listOf("Test Account 1", "Test Account 2", "Test Account 3"),
+            categoryList = listOf("Test Category 1", "Test Category 2", "Test Category 3"),
+            periodList = listOf("Days", "Weeks", "Months", "Years"),
+            showAccountDialog = false,
+            updateAccountDialog = { },
+            accountDialogOnConfirm = { },
+            showCategoryDialog = false,
+            updateCategoryDialog = { },
+            categoryDialogOnConfirm = { },
+            showFutureDialog = false,
+            futureDialogOnConfirm = { },
+            futureDialogOnDismiss = { },
+            saveSuccess = false,
+            onSaveSuccess = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TransactionTextInputPreview() {
+    PreviewHelperCard {
+        TransactionTextInput(
+            value = "Test Value",
+            onValueChanged = { },
+            label = "Test Label",
+            helper = "Test Helper",
+            maxLength = 100
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TransactionDatePreview() {
+    PreviewHelperCard {
+        TransactionDate(
+            value = "Test Date",
+            label = "Test Label",
+            onPressed = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TransactionDropDownMenuPreview() {
+    PreviewHelperCard {
+        TransactionDropDownMenu(
+            value = "Test Value",
+            list = listOf("Test Value 1", "Test Value 2", "Test Value 3"),
+            onClick = { },
+            label = "Test Label",
+            createNew = "Create New...",
+            showInputDialog = false,
+            updateInputDialog = { },
+            dialogTitle = "Dialog Title",
+            dialogOnConfirm = { },
+            dialogOnDismiss = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TransactionNumberInputPreview() {
+    PreviewHelperCard {
+        TransactionNumberInput(
+            value = TextFieldValue("$12345.67"),
+            onValueChanged = { },
+            label = "Test Label",
+            maxLength = 1000
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TransactionCategoriesPreview() {
+    PreviewHelperCard {
+        TransactionCategories(
+            typeSelected = EXPENSE,
+            chipExpenseOnClick = { },
+            chipIncomeOnClick = { },
+            dropDownValue = "Expense Value 1",
+            dropDownList = listOf("Expense Value 1", "Expense Value 2", "Expense Value 3"),
+            dropDownOnClick = { },
+            showInputDialog = false,
+            updateInputDialog = { },
+            dialogOnConfirm = { },
+            dialogOnDismiss = { }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun TransactionRepeatingPreview() {
+    PreviewHelperCard {
+        TransactionRepeating(
+            newTransaction = false,
+            chipSelected = true,
+            chipOnClick = {  },
+            dropDownValue = "Weeks",
+            dropDownList = listOf("Days", "Weeks", "Months", "Years"),
+            dropDownOnClick = { },
+            inputValue = TextFieldValue("10"),
+            inputOnValueChanged = { }
+        )
     }
 }

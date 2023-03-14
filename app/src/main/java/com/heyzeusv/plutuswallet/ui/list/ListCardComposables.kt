@@ -16,13 +16,14 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -35,48 +36,117 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
-import com.heyzeusv.plutuswallet.data.model.DataDialog
-import com.heyzeusv.plutuswallet.data.model.DataInterface
-import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
-import com.heyzeusv.plutuswallet.ui.transaction.InputAlertDialog
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.CREATE
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
-import com.heyzeusv.plutuswallet.util.PWAlertDialog
+import com.heyzeusv.plutuswallet.data.model.Category
+import com.heyzeusv.plutuswallet.data.model.ListDialog
+import com.heyzeusv.plutuswallet.data.model.ListItemInterface
+import com.heyzeusv.plutuswallet.ui.PreviewHelperCard
+import com.heyzeusv.plutuswallet.ui.PWAlertDialog
+import com.heyzeusv.plutuswallet.ui.PWInputAlertDialog
+import com.heyzeusv.plutuswallet.util.AppBarActions
+import com.heyzeusv.plutuswallet.util.ListItemAction.CREATE
+import com.heyzeusv.plutuswallet.util.ListItemAction.DELETE
+import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 
+/**
+ *  Composable that displays List card.
+ *  Data that is displayed is retrieved from [viewModel]. [appBarActionSetup] determines what to do
+ *  when an action item is pressed from the AppBar. [showSnackbar] is used to display Snackbar.
+ *  [navigateUp] returns user back to OverviewScreen. [pagerState] is used to determine which page
+ *  the user is currently viewing.
+ */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ListCard(
-    pagerState: PagerState,
-    snackbarHostState: SnackbarHostState,
-    dataLists: List<List<DataInterface>>,
-    usedDataLists: List<List<DataInterface>>,
-    listSubtitles: List<String> = emptyList(),
-    onClick: (DataDialog) -> Unit,
-    showDialog: DataDialog,
-    createDialogTitle: String,
-    createDialogOnConfirm: (String) -> Unit,
-    deleteDialogTitle: String,
-    deleteDialogOnConfirm: (DataInterface) -> Unit,
-    editDialogTitle: String,
-    editDialogOnConfirm: (DataInterface, String) -> Unit,
-    dialogOnDismiss: (DataDialog) -> Unit,
-    existsName: String
+    viewModel: ListViewModel,
+    appBarActionSetup: (AppBarActions) -> Unit,
+    showSnackbar: suspend (String) -> Unit,
+    navigateUp: () -> Unit,
+    pagerState: PagerState
 ) {
-    val dataListsSize = dataLists.size
-    val existsMessage = stringResource(R.string.snackbar_exists, existsName)
+    val itemExists by viewModel.itemExists.collectAsState()
 
-    LaunchedEffect(key1 = existsName) {
-        if (existsName.isNotBlank()) {
-            snackbarHostState.showSnackbar(existsMessage)
+    val firstItemList by viewModel.firstItemList.collectAsState()
+    val secondItemList by viewModel.secondItemList.collectAsState()
+    val firstUsedItemList by viewModel.firstUsedItemList.collectAsState()
+    val secondUsedItemList by viewModel.secondUsedItemList.collectAsState()
+    val showDialog by viewModel.showDialog.collectAsState()
+
+    // set up AppBar actions
+    appBarActionSetup(
+        AppBarActions(
+            onNavPressed = {
+                viewModel.updateItemExists("")
+                navigateUp()
+            },
+            onActionRightPressed = {
+                val type = when (pagerState.currentPage) {
+                    0 -> EXPENSE
+                    else -> INCOME
+                }
+                viewModel.updateDialog(ListDialog(CREATE, 0, type))
+            }
+        )
+    )
+    ListCard(
+        pagerState,
+        dataLists = listOf(firstItemList, secondItemList),
+        usedDataLists = listOf(firstUsedItemList, secondUsedItemList),
+        listSubtitles = viewModel.listSubtitleStringIds,
+        onClick = viewModel::updateDialog,
+        showDialog,
+        createDialogTitle = stringResource(viewModel.createItemStringId),
+        createDialogOnConfirm = viewModel::insertItem,
+        deleteDialogTitle = stringResource(viewModel.deleteItemStringId),
+        deleteDialogOnConfirm = viewModel::deleteItem,
+        editDialogTitle = stringResource(viewModel.editItemStringId),
+        editDialogOnConfirm = viewModel::editItem,
+        dialogOnDismiss = viewModel::updateDialog,
+        itemExists,
+        showSnackbar = { msg ->
+            showSnackbar(msg)
+            viewModel.updateItemExists("")
         }
+    )
+}
+
+/**
+ *  Composable that displays List card.
+ *  All the data has been hoisted into above [ListCard] thus allowing for easier testing.
+ */
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun ListCard(
+    pagerState: PagerState = rememberPagerState(),
+    dataLists: List<List<ListItemInterface>> = emptyList(),
+    usedDataLists: List<List<ListItemInterface>> = emptyList(),
+    listSubtitles: List<Int> = emptyList(),
+    onClick: (ListDialog) -> Unit = { },
+    showDialog: ListDialog = ListDialog(EDIT, -1),
+    createDialogTitle: String = "",
+    createDialogOnConfirm: (String) -> Unit = { },
+    deleteDialogTitle: String = "",
+    deleteDialogOnConfirm: (ListItemInterface) -> Unit = { },
+    editDialogTitle: String = "",
+    editDialogOnConfirm: (ListItemInterface, String) -> Unit = { _, _ -> },
+    dialogOnDismiss: (ListDialog) -> Unit = { },
+    itemExists: String = "",
+    showSnackbar: suspend (String) -> Unit = { }
+) {
+    val existsMessage = stringResource(R.string.snackbar_exists, itemExists)
+    val dataListsSize = dataLists.size
+
+    LaunchedEffect(key1 = itemExists) {
+        if (itemExists.isNotBlank()) showSnackbar(existsMessage)
     }
     if (showDialog.action == CREATE) {
-        InputAlertDialog(
+        PWInputAlertDialog(
             title = createDialogTitle,
-            onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
+            onDismiss = { dialogOnDismiss(ListDialog(EDIT, -1)) },
             onConfirm = createDialogOnConfirm
         )
     }
@@ -96,25 +166,24 @@ fun ListCard(
             ) { page ->
                 Column {
                     if (listSubtitles.isNotEmpty()) {
+                        val subtitle = stringResource(listSubtitles[page])
                         Text(
-                            text = listSubtitles[page],
+                            text = subtitle,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(all = 12.dp)
-                                .testTag("List Subtitle ${listSubtitles[page]}"),
+                                .testTag("List Subtitle $subtitle"),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.h5
                         )
                     }
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(dataLists[page]) { data ->
                             DataItem(
                                 data = data,
                                 deletable = !usedDataLists[page].contains(data),
-                                editOnClick = { onClick(DataDialog(EDIT, data.id)) },
-                                deleteOnClick = { onClick(DataDialog(DELETE, data.id)) }
+                                editOnClick = { onClick(ListDialog(EDIT, data.id)) },
+                                deleteOnClick = { onClick(ListDialog(DELETE, data.id)) }
                             )
                             Divider(
                                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f),
@@ -124,21 +193,21 @@ fun ListCard(
                                 when (showDialog.action) {
                                     DELETE -> {
                                         PWAlertDialog(
-                                            onConfirmText = stringResource(R.string.alert_dialog_yes),
-                                            onConfirm = { deleteDialogOnConfirm(data) },
-                                            onDismissText = stringResource(R.string.alert_dialog_no),
-                                            onDismiss = { dialogOnDismiss(DataDialog(DELETE, -1)) },
                                             title = deleteDialogTitle,
                                             message = stringResource(
                                                 R.string.alert_dialog_delete_warning,
                                                 data.name
-                                            )
+                                            ),
+                                            onConfirmText = stringResource(R.string.alert_dialog_yes),
+                                            onConfirm = { deleteDialogOnConfirm(data) },
+                                            onDismissText = stringResource(R.string.alert_dialog_no),
+                                            onDismiss = { dialogOnDismiss(ListDialog(DELETE, -1)) }
                                         )
                                     }
                                     EDIT -> {
-                                        InputAlertDialog(
+                                        PWInputAlertDialog(
                                             title = editDialogTitle,
-                                            onDismiss = { dialogOnDismiss(DataDialog(EDIT, -1)) },
+                                            onDismiss = { dialogOnDismiss(ListDialog(EDIT, -1)) },
                                             data = data,
                                             onConfirmData = editDialogOnConfirm
                                         )
@@ -150,7 +219,7 @@ fun ListCard(
                     }
                 }
             }
-            if (dataListsSize > 1) {
+            if (listSubtitles.isNotEmpty()) {
                 HorizontalPagerIndicator(
                     pagerState = pagerState,
                     modifier = Modifier
@@ -162,9 +231,13 @@ fun ListCard(
     }
 }
 
+/**
+ *  Composable that displays [data]. If [deletable] is true, then user can press right button for
+ *  [deleteOnClick]. [editOnClick], the left button, is always available for the user.
+ */
 @Composable
 fun DataItem(
-    data: DataInterface,
+    data: ListItemInterface,
     deletable: Boolean,
     editOnClick: () -> Unit,
     deleteOnClick: () -> Unit
@@ -172,8 +245,7 @@ fun DataItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-        ,
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -217,14 +289,39 @@ fun DataItem(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
+@Preview
+@Composable
+fun ListCardPreview() {
+    val exCat = Category(0, "Test EX Cat", "Expense")
+    val inCat = Category(0, "Test IN Cat", "Income")
+    PreviewHelperCard {
+        ListCard(
+            pagerState = rememberPagerState(),
+            dataLists = listOf(listOf(exCat, exCat), listOf(inCat, inCat)),
+            usedDataLists = listOf(listOf(exCat), emptyList()),
+            listSubtitles = listOf(R.string.type_expense, R.string.type_income),
+            onClick = { },
+            showDialog = ListDialog(EDIT, -1, EXPENSE),
+            createDialogTitle = "Create Title",
+            createDialogOnConfirm = { },
+            deleteDialogTitle = "Delete Title",
+            deleteDialogOnConfirm = { },
+            editDialogTitle = "Edit Title",
+            editDialogOnConfirm = { _, _ -> },
+            dialogOnDismiss = { }
+        )
+    }
+}
+
 @Preview
 @Composable
 fun PreviewDataItem() {
-    PlutusWalletTheme {
+    PreviewHelperCard {
         DataItem(
             data = Account(0, "Preview"),
             deletable = false,
-            editOnClick = { /*TODO*/ },
+            editOnClick = { },
             deleteOnClick = { }
         )
     }

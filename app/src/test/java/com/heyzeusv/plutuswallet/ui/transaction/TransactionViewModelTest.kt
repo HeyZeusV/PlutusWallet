@@ -1,6 +1,5 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
-import com.heyzeusv.plutuswallet.InstantExecutorExtension
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
@@ -20,7 +19,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
 @ExperimentalCoroutinesApi
-@ExtendWith(InstantExecutorExtension::class, TestCoroutineExtension::class)
+@ExtendWith(TestCoroutineExtension::class)
 internal class TransactionViewModelTest {
 
     // test Fake
@@ -49,11 +48,13 @@ internal class TransactionViewModelTest {
         assertEquals(dd.accList.map { it.name }.sorted() + "Create New Account", tranVM.accountList.value)
         assertEquals(
             dd.catList.filter { it.type == EXPENSE.type }.map { it.name }.sorted() + "Create New Category",
-            tranVM.expenseCatList.value
+            tranVM.selectedCatList.value
         )
+
+        tranVM.updateTypeSelected(INCOME)
         assertEquals(
             dd.catList.filter { it.type == INCOME.type }.map { it.name }.sorted() + "Create New Category",
-            tranVM.incomeCatList.value
+            tranVM.selectedCatList.value
         )
     }
 
@@ -64,9 +65,9 @@ internal class TransactionViewModelTest {
 
         assertEquals("Thursday, January 1, 1970", tranVM.date.value)
         assertEquals("Cash", tranVM.account.value)
-        assertEquals("$1,000.10", tranVM.totalFieldValue.value.text)
+        assertEquals("$1,000.10", tranVM.total.value.text)
         assertEquals(EXPENSE, tranVM.typeSelected.value)
-        assertEquals("Food", tranVM.expenseCat.value)
+        assertEquals("Food", tranVM.selectedCat.value)
         assertEquals(true, tranVM.repeat.value)
     }
 
@@ -91,9 +92,9 @@ internal class TransactionViewModelTest {
 
         tranVM.retrieveTransaction(dd.tran1.id)
         tranVM.updateAccount(expectedTran.account)
-        tranVM.updateTotalFieldValue(expectedTran.total.toString())
+        tranVM.updateTotal(expectedTran.total.toString())
         tranVM.updateTypeSelected(INCOME)
-        tranVM.updateIncomeCat(expectedTran.category)
+        tranVM.updateSelectedCat(expectedTran.category)
         tranVM.updateRepeat(expectedTran.repeating)
         tranVM.updatePeriod("Days")
 
@@ -101,6 +102,27 @@ internal class TransactionViewModelTest {
 
         assertEquals(expectedTran, tranVM.transaction.value)
         assertEquals(expectedTran, repo.tranList[0])
+    }
+
+    @Test
+    @DisplayName("Should automatically create a title for Transaction upon saving it without a title")
+    fun saveTransactionNoTitle() {
+        val expectedTran = Transaction(
+            id = 5,
+            title = "Transaction 5",
+            total = BigDecimal("0.00"),
+            account = "Cash",
+            category = "Entertainment",
+        )
+        // this is normally set when ViewModel is created
+        tranVM.emptyTitle = "Transaction "
+        // retrieves new Transaction
+        tranVM.retrieveTransaction(0)
+
+        tranVM.saveTransaction()
+
+        assertEquals(expectedTran, tranVM.transaction.value)
+        assertEquals(expectedTran, repo.tranList[4])
     }
 
     @Test
@@ -128,9 +150,9 @@ internal class TransactionViewModelTest {
         // in order to get dateChanged == true
         tranVM.onDateSelected(expectedTran.date)
         tranVM.updateAccount(expectedTran.account)
-        tranVM.updateTotalFieldValue(expectedTran.total.toString())
+        tranVM.updateTotal(expectedTran.total.toString())
         tranVM.updateTypeSelected(INCOME)
-        tranVM.updateIncomeCat(expectedTran.category)
+        tranVM.updateSelectedCat(expectedTran.category)
         tranVM.updateRepeat(expectedTran.repeating)
         tranVM.updatePeriod("Days")
 
@@ -205,15 +227,17 @@ internal class TransactionViewModelTest {
 
         tranVM.updateTypeSelected(EXPENSE)
         tranVM.insertCategory("ETest")
+
+        assertEquals(expectedExList, tranVM.selectedCatList.value)
+        assertEquals(expectedExCat, repo.catList[repo.catList.size - 1])
+        assertEquals("ETest", tranVM.selectedCat.value)
+
         tranVM.updateTypeSelected(INCOME)
         tranVM.insertCategory("ITest")
 
-        assertEquals(expectedExList, tranVM.expenseCatList.value)
-        assertEquals(expectedExCat, repo.catList[repo.catList.size - 2])
-        assertEquals("ETest", tranVM.expenseCat.value)
-        assertEquals(expectedInList, tranVM.incomeCatList.value)
+        assertEquals(expectedInList, tranVM.selectedCatList.value)
         assertEquals(expectedInCat, repo.catList[repo.catList.size - 1])
-        assertEquals("ITest", tranVM.incomeCat.value)
+        assertEquals("ITest", tranVM.selectedCat.value)
     }
 
     @Test
@@ -226,13 +250,15 @@ internal class TransactionViewModelTest {
 
         tranVM.updateTypeSelected(EXPENSE)
         tranVM.insertCategory("Food")
+
+        assertEquals(expectedExList, tranVM.selectedCatList.value)
+        assertEquals("Food", tranVM.selectedCat.value)
+
         tranVM.updateTypeSelected(INCOME)
         tranVM.insertCategory("Zelle")
 
-        assertEquals(expectedExList, tranVM.expenseCatList.value)
-        assertEquals("Food", tranVM.expenseCat.value)
-        assertEquals(expectedInList, tranVM.incomeCatList.value)
-        assertEquals("Zelle", tranVM.incomeCat.value)
+        assertEquals(expectedInList, tranVM.selectedCatList.value)
+        assertEquals("Zelle", tranVM.selectedCat.value)
         assertEquals(expectedCatRepoSize, repo.catList.size)
     }
 
@@ -257,7 +283,9 @@ internal class TransactionViewModelTest {
         val expectedInCatList = mutableListOf("Salary", "Unused Income", "Zelle", "Create New Category")
 
         assertEquals(expectedAccList, tranVM.accountList.value)
-        assertEquals(expectedExCatList, tranVM.expenseCatList.value)
-        assertEquals(expectedInCatList, tranVM.incomeCatList.value)
+        assertEquals(expectedExCatList, tranVM.selectedCatList.value)
+
+        tranVM.updateTypeSelected(INCOME)
+        assertEquals(expectedInCatList, tranVM.selectedCatList.value)
     }
 }

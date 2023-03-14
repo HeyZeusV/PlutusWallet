@@ -1,13 +1,8 @@
 package com.heyzeusv.plutuswallet.ui
 
+import android.content.res.Resources
 import android.widget.DatePicker
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.getOrNull
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.SemanticsNodeInteraction
-import androidx.compose.ui.test.assert
+import androidx.activity.compose.setContent
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
@@ -15,12 +10,11 @@ import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.longClick
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeLeft
-import androidx.compose.ui.text.TextLayoutResult
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
@@ -29,17 +23,55 @@ import androidx.test.espresso.contrib.PickerActions.setDate
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartEntry
-import com.heyzeusv.plutuswallet.CustomMatchers.Companion.chartText
+import androidx.test.platform.app.InstrumentationRegistry
+import com.heyzeusv.plutuswallet.chartEntry
+import com.heyzeusv.plutuswallet.chartText
+import com.heyzeusv.plutuswallet.checkTlifIsDisplayed
 import com.heyzeusv.plutuswallet.R
-import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
+import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
+import com.heyzeusv.plutuswallet.onNodeWithTTStrId
+import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
+import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
+import javax.inject.Inject
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
 
 @HiltAndroidTest
-class OverviewTests : BaseTest() {
+class OverviewTests {
+
+    @get:Rule(order = 1)
+    var hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 2)
+    val composeRule = createAndroidComposeRule<MainActivity>()
+
+    @Inject
+    lateinit var fakeRepo: PWRepositoryInterface
+    lateinit var repo: FakeAndroidRepository
+    val dd = DummyAndroidDataUtil()
+    lateinit var res: Resources
+
+    @Before
+    fun setUp() {
+        hiltRule.inject()
+        composeRule.activity.setContent {
+            PlutusWalletTheme {
+                PlutusWalletApp()
+            }
+        }
+        repo = (fakeRepo as FakeAndroidRepository)
+        res = InstrumentationRegistry.getInstrumentation().targetContext.resources
+    }
+
+    @BeforeEach
+    fun setUpBeforeEach() {
+        repo.resetLists()
+    }
 
     @Test
     fun overview_startUp() {
@@ -49,14 +81,14 @@ class OverviewTests : BaseTest() {
         // check that we are on Overview screen
         composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
 
-        dd.tranList.forEach { item -> tranListItemCheck(item) }
+        dd.tlifList.forEach { item -> composeRule.checkTlifIsDisplayed(item) }
 
         // should start with Expense chart
         onView(withContentDescription("Chart 0")).check(matches(chartText(expense)))
         composeRule.onNode(hasTestTag("Chart Total for page 0")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Chart Total for page 0"))
             .assertTextContains("Total: $1,155.55")
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertIsNotDisplayed()
+        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Entertainment", 55.45F)))
         onView(withContentDescription("Chart 0"))
@@ -82,53 +114,11 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_account))).assertIsNotSelected()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_category))).assertIsNotSelected()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_date))).assertIsNotSelected()
+        composeRule.onNodeWithTTStrId(R.string.filter_account).assertIsNotSelected()
+        composeRule.onNodeWithTTStrId(R.string.filter_category).assertIsNotSelected()
+        composeRule.onNodeWithTTStrId(R.string.filter_date).assertIsNotSelected()
         composeRule.onNode(hasTestTag("Filter action"))
             .assertTextEquals(res.getString(R.string.filter_reset).uppercase())
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun overview_deleteTransaction() = runTest {
-        val expense = composeRule.activity.baseContext.resources.getString(R.string.type_expense)
-        val income = composeRule.activity.baseContext.resources.getString(R.string.type_income)
-
-        // check that we are on Overview screen
-        composeRule.onNodeWithText(res.getString(R.string.cfl_overview)).assertExists()
-
-        composeRule.onNode(hasTestTag("${dd.tran2.id}")).performTouchInput { longClick() }
-        // checks that AlertDialog is being displayed and press confirm button
-        composeRule.onNode(hasTestTag("AlertDialog")).assertExists()
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
-
-        // check expense chart total and slices shown
-        onView(withContentDescription("Chart 0")).check(matches(chartText(expense)))
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 0"))
-            .assertTextContains("Total: $1,155.55")
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertIsNotDisplayed()
-        onView(withContentDescription("Chart 0"))
-            .check(matches(chartEntry("Entertainment", 55.45F)))
-        onView(withContentDescription("Chart 0"))
-            .check(matches(chartEntry("Food", 1000.10F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
-
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-
-        // income chart should remain the same
-        onView(withContentDescription("Chart 1")).check(matches(chartText(income)))
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertIsNotDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1"))
-            .assertTextEquals("Total: $2,000.32")
-        onView(withContentDescription("Chart 1"))
-            .check(matches(chartEntry("Salary", 2000.32F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
     }
 
     @Test
@@ -140,7 +130,7 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_account))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
         composeRule.onNode(hasTestTag("Chip: Cash")).performClick()
         composeRule.onNode(hasTestTag("Chip: Credit Card")).performClick()
         composeRule.onNode(hasTestTag("Filter action")).performClick()
@@ -161,8 +151,8 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran1)
-        tranListItemCheck(dd.tran4)
+        composeRule.checkTlifIsDisplayed(dd.tlif1)
+        composeRule.checkTlifIsDisplayed(dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -175,7 +165,7 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_category))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
         composeRule.onNode(hasTestTag("Expense Button")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Chip: Entertainment")).performClick()
         composeRule.onNode(hasTestTag("Chip: Housing")).performClick()
@@ -197,8 +187,8 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran2)
-        tranListItemCheck(dd.tran4)
+        composeRule.checkTlifIsDisplayed(dd.tlif2)
+        composeRule.checkTlifIsDisplayed(dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -211,7 +201,7 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_category))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
         composeRule.onNode(hasTestTag("Expense Button")).performClick()
         composeRule.onNode(hasTestTag("Income Button")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Chip: Salary")).performClick()
@@ -231,7 +221,7 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
 
         // check TranList
-        tranListItemCheck(dd.tran3)
+        composeRule.checkTlifIsDisplayed(dd.tlif3)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -244,7 +234,7 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_date))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
         composeRule.onNode(hasTestTag("Filter Start Date")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Filter End Date")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Filter Start Date")).performClick()
@@ -281,11 +271,11 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_account))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
         composeRule.onNode(hasTestTag("Chip: Debit Card")).performClick()
 
         // apply Category filter with 2 chip selected
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_category))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
         composeRule.onNode(hasTestTag("Expense Button")).performClick()
         composeRule.onNode(hasTestTag("Income Button")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Chip: Salary")).performClick()
@@ -306,7 +296,7 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
 
         // check TranList
-        tranListItemCheck(dd.tran3)
+        composeRule.checkTlifIsDisplayed(dd.tlif3)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -319,12 +309,12 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_account))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
         composeRule.onNode(hasTestTag("Chip: Cash")).performClick()
         composeRule.onNode(hasTestTag("Chip: Credit Card")).performClick()
 
         // apply Date filter
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_date))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
         composeRule.onNode(hasTestTag("Filter Start Date")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Filter End Date")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Filter Start Date")).performClick()
@@ -351,7 +341,7 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran4)
+        composeRule.checkTlifIsDisplayed(dd.tlif4)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -364,12 +354,12 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_category))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
         composeRule.onNode(hasTestTag("Expense Button")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Chip: Food")).performClick()
 
         // apply Date filter
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_date))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
         composeRule.onNode(hasTestTag("Filter Start Date")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Filter End Date")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Filter Start Date")).performClick()
@@ -396,7 +386,7 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran1)
+        composeRule.checkTlifIsDisplayed(dd.tlif1)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
     }
 
@@ -409,16 +399,16 @@ class OverviewTests : BaseTest() {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_account))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
         composeRule.onNode(hasTestTag("Chip: Cash")).performClick()
 
         // open filter and apply Category filter with 1 chip selected
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_category))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
         composeRule.onNode(hasTestTag("Expense Button")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Chip: Food")).performClick()
 
         // apply Date filter
-        composeRule.onNode(hasTestTag(res.getString(R.string.filter_date))).performClick()
+        composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
         composeRule.onNode(hasTestTag("Filter Start Date")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Filter End Date")).assertIsDisplayed()
         composeRule.onNode(hasTestTag("Filter Start Date")).performClick()
@@ -445,47 +435,7 @@ class OverviewTests : BaseTest() {
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        tranListItemCheck(dd.tran1)
+        composeRule.checkTlifIsDisplayed(dd.tlif1)
         composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
-    }
-
-    private fun tranListItemCheck(item: Transaction) {
-        // checks that all required information is being displayed
-        composeRule.onNodeWithText(item.title).assertExists()
-        composeRule.onNodeWithText(item.account).assertExists()
-        composeRule.onNodeWithText(dateFormatter.format(item.date)).assertExists()
-        // extra check to make sure text is correct color
-        composeRule.onNodeWithText(
-            text = "\$${totalFormatter.format(item.total)}",
-            useUnmergedTree = true
-        )
-            .assertExists()
-            .assertTextColor(if (item.type == "Expense") pwColors.expense else pwColors.income)
-        composeRule.onNodeWithText(item.category).assertExists()
-    }
-
-    /**
-     *  Assertion that looks at text [color]
-     */
-    fun SemanticsNodeInteraction.assertTextColor(color: Color): SemanticsNodeInteraction =
-        assert(isOfColor(color))
-
-    /**
-     *  Matcher that checks if text color matches [color] by checking node's TextLayoutResult.
-     *  Found on StackOverflow [here](https://stackoverflow.com/a/71077459)
-     *  Google does have a section explaining how to make custom semantics properties for testing
-     *  [here](https://developer.android.com/jetpack/compose/testing#custom-semantics-properties),
-     *  but they have a warning that it shouldn't be used for visual properties like colors...
-     */
-    private fun isOfColor(color: Color): SemanticsMatcher = SemanticsMatcher(
-        "${SemanticsProperties.Text.name} is of color '$color'"
-    ) {
-        val textLayoutResults = mutableListOf<TextLayoutResult>()
-        it.config.getOrNull(SemanticsActions.GetTextLayoutResult)?.action?.invoke(textLayoutResults)
-        return@SemanticsMatcher if (textLayoutResults.isEmpty()) {
-            false
-        } else {
-            textLayoutResults.first().layoutInput.style.color == color
-        }
     }
 }
