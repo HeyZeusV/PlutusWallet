@@ -1,7 +1,30 @@
 package com.heyzeusv.plutuswallet.util
 
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import java.math.BigDecimal
+
+/**
+ *  Navigates app to [route]
+ */
+fun NavHostController.navigateSingleTopTo(route: String) =
+    this.navigate(route) {
+        // pressing back from any screen would pop back stack to Overview
+        popUpTo(this@navigateSingleTopTo.graph.findStartDestination().id) { saveState = true }
+        // only 1 copy of a destination is ever created
+        launchSingleTop = true
+        // previous data and state is saved
+        restoreState = true
+    }
+
+/**
+ *  Used whenever navigating to TransactionScreen, opens the Transaction screen while passing
+ *  [tranId] as argument to determine which Transaction to open
+ */
+fun NavHostController.navigateToTransactionWithId(tranId: Int) {
+    this.navigateSingleTopTo("${TransactionDestination.route}/$tranId")
+}
 
 /**
  *  Returns formatted String which includes currency, thousands, and decimal symbols depending

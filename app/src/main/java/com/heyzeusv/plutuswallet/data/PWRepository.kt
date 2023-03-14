@@ -17,14 +17,14 @@ import kotlinx.coroutines.flow.Flow
 /**
  *  Interacts with Room database on behalf of the ViewModels
  *
- *  Calls upon the queries within the Daos.
- *  Each query must be run using a CoRoutine unless it returns a LiveData object.
+ *  Calls upon the queries within the given Daos.
+ *  Each query must be run using a CoRoutine unless it returns a Flow object.
  */
-class TransactionRepository @Inject constructor(
+class PWRepository @Inject constructor(
     private val accountDao: AccountDao,
     private val categoryDao: CategoryDao,
     private val transactionDao: TransactionDao
-) : Repository {
+) : PWRepositoryInterface {
     /**
      *  Account Queries
      */

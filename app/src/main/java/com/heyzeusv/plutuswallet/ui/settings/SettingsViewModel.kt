@@ -25,9 +25,6 @@ class SettingsViewModel @Inject constructor(
     private val _setVals = MutableStateFlow(settingsValues)
     val setVals: StateFlow<SettingsValues> get() = _setVals
     private fun updateSetVals(setVals: SettingsValues) { _setVals.value = setVals }
-    /**
-     *  Don't need StateFlows for theme/language Settings because recreate() is called on those
-     */
 
     fun updateCurrencySymbol(newSymbol: String) {
         updateSetVals(_setVals.value.copy(currencySymbol = newSymbol))

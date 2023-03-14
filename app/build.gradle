@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'de.mannodermaus.android-junit5'
+apply plugin: 'kotlin-kapt'
 
 android {
     signingConfigs {
@@ -26,8 +26,8 @@ android {
         applicationId "com.heyzeusv.plutuswallet"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 26
-        versionName "4.0.0"
+        versionCode 27
+        versionName "4.0.1"
         testInstrumentationRunner "com.heyzeusv.plutuswallet.CustomTestRunner"
         resConfigs 'en', 'es', 'de', 'hi', 'ja', 'ko', 'th'
         javaCompileOptions {

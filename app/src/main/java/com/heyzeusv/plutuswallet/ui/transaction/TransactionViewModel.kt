@@ -1,10 +1,12 @@
 package com.heyzeusv.plutuswallet.ui.transaction
 
+import android.content.Context
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.heyzeusv.plutuswallet.data.Repository
+import com.heyzeusv.plutuswallet.R
+import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
@@ -32,13 +34,10 @@ import kotlinx.coroutines.withContext
  */
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val tranRepo: Repository
+    private val tranRepo: PWRepositoryInterface
 ) : ViewModel() {
 
     var setVals = SettingsValues()
-
-    private var _tranId: Int = 0
-    val tranId: Int get() = _tranId
 
     // string resources received from MainActivity
     var emptyTitle = ""
@@ -67,25 +66,37 @@ class TransactionViewModel @Inject constructor(
     val account: StateFlow<String> get() = _account
     fun updateAccount(newValue: String) { _account.value = newValue }
 
-    private val _totalFieldValue = MutableStateFlow(TextFieldValue())
-    val totalFieldValue: StateFlow<TextFieldValue> get() = _totalFieldValue
-    fun updateTotalFieldValue(newValue: String) {
+    private val _total = MutableStateFlow(TextFieldValue())
+    val total: StateFlow<TextFieldValue> get() = _total
+    fun updateTotal(newValue: String) {
         val removedSymbols = BigDecimal(removeSymbols(newValue))
         val formattedTotal = removedSymbols.prepareTotalText(setVals)
-        _totalFieldValue.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
+        _total.value = TextFieldValue(formattedTotal, TextRange(formattedTotal.length))
     }
 
     private val _typeSelected = MutableStateFlow(EXPENSE)
     val typeSelected: StateFlow<TransactionType> get() = _typeSelected
-    fun updateTypeSelected(newValue: TransactionType) { _typeSelected.value = newValue }
+    fun updateTypeSelected(newValue: TransactionType) {
+        _typeSelected.value = newValue
+        updateSelectedCat()
+        updateSelectedCatList()
+    }
 
-    private val _expenseCat = MutableStateFlow("")
-    val expenseCat: StateFlow<String> get() = _expenseCat
-    fun updateExpenseCat(newValue: String) { _expenseCat.value = newValue }
-
-    private val _incomeCat = MutableStateFlow("")
-    val incomeCat: StateFlow<String> get() = _incomeCat
-    fun updateIncomeCat(newValue: String) { _incomeCat.value = newValue }
+    private var expenseCat = ""
+    private var incomeCat = ""
+    private val _selectedCat = MutableStateFlow("")
+    val selectedCat: StateFlow<String> get() = _selectedCat
+    private fun updateSelectedCat() {
+        _selectedCat.value = if (typeSelected.value == EXPENSE) expenseCat else incomeCat
+    }
+    fun updateSelectedCat(newValue: String) {
+        _selectedCat.value = newValue
+        if (_typeSelected.value == EXPENSE) {
+            expenseCat = newValue
+        } else {
+            incomeCat = newValue
+        }
+    }
 
     private val _memo = MutableStateFlow("")
     val memo: StateFlow<String> get() = _memo
@@ -99,29 +110,39 @@ class TransactionViewModel @Inject constructor(
     val period: StateFlow<String> get() = _period
     fun updatePeriod(newValue: String) { _period.value = newValue }
 
-    private val _frequencyFieldValue = MutableStateFlow(TextFieldValue())
-    val frequencyFieldValue: StateFlow<TextFieldValue> get() = _frequencyFieldValue
-    fun updateFrequencyFieldValue(newValue: String) {
-        _frequencyFieldValue.value = TextFieldValue(newValue, TextRange(newValue.length))
+    private val _frequency = MutableStateFlow(TextFieldValue())
+    val frequency: StateFlow<TextFieldValue> get() = _frequency
+    fun updateFrequency(newValue: String) {
+        _frequency.value = TextFieldValue(newValue, TextRange(newValue.length))
     }
 
-    // Lists used by Spinners
+    // Lists used by DropDownMenus
     private val _accountList = MutableStateFlow(listOf(""))
     val accountList: StateFlow<List<String>> get() = _accountList
     fun updateAccountList(newList: List<String>) {
         _accountList.value = newList + listOf(accountCreate)
     }
 
-    private val _expenseCatList = MutableStateFlow(listOf(""))
-    val expenseCatList: StateFlow<List<String>> get() = _expenseCatList
-    fun updateExpenseCatList(newList: List<String>) {
-        _expenseCatList.value = newList + listOf(categoryCreate)
+    private var expenseCatList = listOf("")
+    private fun updateExpenseCatList(newList: List<String>) {
+        expenseCatList = newList
+        updateSelectedCatList()
     }
 
-    private val _incomeCatList = MutableStateFlow(listOf(""))
-    val incomeCatList: StateFlow<List<String>> get() = _incomeCatList
-    fun updateIncomeCatList(newList: List<String>) {
-        _incomeCatList.value = newList + listOf(categoryCreate)
+    private var incomeCatList = listOf("")
+    private fun updateIncomeCatList(newList: List<String>) {
+        incomeCatList = newList
+        updateSelectedCatList()
+    }
+
+    private val _selectedCatList = MutableStateFlow(listOf(""))
+    val selectedCatList: StateFlow<List<String>> get() = _selectedCatList
+    private fun updateSelectedCatList() {
+        _selectedCatList.value = if (typeSelected.value == EXPENSE) {
+            expenseCatList
+        } else {
+            incomeCatList
+        } + listOf(categoryCreate)
     }
 
     private val _periodList = MutableStateFlow(mutableListOf(""))
@@ -134,13 +155,9 @@ class TransactionViewModel @Inject constructor(
     val showAccountDialog: StateFlow<Boolean> get() = _showAccountDialog
     fun updateAccountDialog(newValue: Boolean) { _showAccountDialog.value = newValue }
 
-    private val _showExpenseDialog = MutableStateFlow(false)
-    val showExpenseDialog: StateFlow<Boolean> get() = _showExpenseDialog
-    fun updateExpenseDialog(newValue: Boolean) { _showExpenseDialog.value = newValue }
-
-    private val _showIncomeDialog = MutableStateFlow(false)
-    val showIncomeDialog: StateFlow<Boolean> get() = _showIncomeDialog
-    fun updateIncomeDialog(newValue: Boolean) { _showIncomeDialog.value = newValue }
+    private val _showCategoryDialog = MutableStateFlow(false)
+    val showCategoryDialog: StateFlow<Boolean> get() = _showCategoryDialog
+    fun updateCategoryDialog(newValue: Boolean) { _showCategoryDialog.value = newValue }
 
     private val _showFutureDialog = MutableStateFlow(false)
     val showFutureDialog: StateFlow<Boolean> get() = _showFutureDialog
@@ -174,7 +191,6 @@ class TransactionViewModel @Inject constructor(
         viewModelScope.launch {
             tranRepo.getTransactionAsync(tranId).let {
                 _transaction.value = it ?: Transaction()
-                _tranId = if (it == null) 0 else tranId
             }
             setTranData(transaction.value)
             retrieveTransaction = false
@@ -188,26 +204,13 @@ class TransactionViewModel @Inject constructor(
         updateTitle(transaction.title)
         updateDate(setVals.dateFormatter.format(transaction.date))
         updateAccount(transaction.account)
-        updateTotalFieldValue(transaction.total.toString())
-        if (transaction.type == EXPENSE.type) {
-            updateTypeSelected(EXPENSE)
-            updateExpenseCat(transaction.category)
-        } else {
-            updateTypeSelected(INCOME)
-            updateIncomeCat(transaction.category)
-        }
+        updateTotal(transaction.total.toString())
+        updateTypeSelected(if (transaction.type == EXPENSE.type) EXPENSE else INCOME)
+        updateSelectedCat(transaction.category)
         updateMemo(transaction.memo)
         updateRepeat(transaction.repeating)
-        periodList.value.let {
-            // gets translated period value using periodArray
-            updatePeriod(when (transaction.period) {
-                0 -> it[0]
-                1 -> it[1]
-                2 -> it[2]
-                else -> it[3]
-            })
-        }
-        updateFrequencyFieldValue(transaction.frequency.toString())
+        updatePeriod(periodList.value[transaction.period])
+        updateFrequency(transaction.frequency.toString())
     }
 
     /**
@@ -216,9 +219,8 @@ class TransactionViewModel @Inject constructor(
     fun saveTransaction() {
         transaction.value.let { tran: Transaction ->
             // assigns new id if new Transaction
-            if (_tranId == 0) {
+            if (tran.id == 0) {
                 tran.id = maxId + 1
-                _tranId = tran.id
             }
 
             // gives Transaction simple title if user doesn't enter any
@@ -227,7 +229,7 @@ class TransactionViewModel @Inject constructor(
             // is empty if account hasn't been changed so defaults to first account
             tran.account = account.value.ifBlank { accountList.value[0] }
 
-            val totalFromFieldValue = totalFieldValue.value.text
+            val totalFromFieldValue = total.value.text
             tran.total = when {
                 totalFromFieldValue.isEmpty() && setVals.decimalNumber == "yes" ->
                     BigDecimal("0.00")
@@ -241,22 +243,18 @@ class TransactionViewModel @Inject constructor(
             }
 
             tran.type = typeSelected.value.type
-            // cat values are empty if they haven't been changed so defaults to first category
-            tran.category = when (typeSelected.value) {
-                EXPENSE -> expenseCat.value.ifBlank { expenseCatList.value[0] }
-                INCOME -> incomeCat.value.ifBlank { incomeCatList.value[0] }
-            }
+            tran.category = selectedCat.value.ifBlank { selectedCatList.value[0] }
 
             tran.memo = memo.value
 
             tran.repeating = repeat.value
             if (tran.repeating) tran.futureDate = createFutureDate()
             tran.period = periodList.value.indexOf(period.value)
-            val frequencyFromFieldValue = frequencyFieldValue.value.text
+            val frequencyValue = frequency.value.text
             // frequency must always be at least 1
             tran.frequency = when {
-                frequencyFromFieldValue.isBlank() || frequencyFromFieldValue.toInt() < 1 -> 1
-                else -> frequencyFromFieldValue.toInt()
+                frequencyValue.isBlank() || frequencyValue.toInt() < 1 -> 1
+                else -> frequencyValue.toInt()
             }
 
             // Coroutine that Save/Updates/warns user of FutureDate
@@ -378,7 +376,7 @@ class TransactionViewModel @Inject constructor(
         // checks which type is currently selected
         when (typeSelected.value) {
             EXPENSE -> {
-                expenseCatList.value.let {
+                expenseCatList.let {
                     // create if doesn't exist
                     if (!it.contains(name)) {
                         viewModelScope.launch {
@@ -388,11 +386,9 @@ class TransactionViewModel @Inject constructor(
                         }
                     }
                 }
-                updateExpenseCat(name)
-                updateExpenseDialog(false)
             }
             INCOME -> {
-                incomeCatList.value.let {
+                incomeCatList.let {
                     // create if doesn't exist
                     if (!it.contains(name)) {
                         viewModelScope.launch {
@@ -402,10 +398,10 @@ class TransactionViewModel @Inject constructor(
                         }
                     }
                 }
-                updateIncomeCat(name)
-                updateIncomeDialog(false)
             }
         }
+        updateSelectedCat(name)
+        updateCategoryDialog(false)
     }
 
     /**
@@ -417,5 +413,29 @@ class TransactionViewModel @Inject constructor(
         _transaction.value.date = newDate
         // turns date selected into Date type
         updateDate(setVals.dateFormatter.format(newDate))
+    }
+}
+
+/**
+ *  Update SettingsValues in TransactionViewModel with updated [sv].
+ *
+ *  TransactionViewModel requires several translated strings, but I don't want to have it hold
+ *  context in order to get string resources. This extension function retrieves all strings
+ *  required using the provided [context].
+ */
+fun TransactionViewModel.tranVMSetup(sv: SettingsValues, context: Context) {
+    this.apply {
+        setVals = sv
+
+        emptyTitle = context.getString(R.string.transaction_empty_title)
+        accountCreate = context.getString(R.string.account_create)
+        categoryCreate = context.getString(R.string.category_create)
+        // array used by Period DropDownMenu
+        updatePeriodList(
+            mutableListOf(
+                context.getString(R.string.period_days), context.getString(R.string.period_weeks),
+                context.getString(R.string.period_months), context.getString(R.string.period_years)
+            )
+        )
     }
 }

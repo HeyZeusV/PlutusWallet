@@ -4,10 +4,10 @@ import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
 import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
-import com.heyzeusv.plutuswallet.data.model.DataDialog
+import com.heyzeusv.plutuswallet.data.model.ListDialog
 import com.heyzeusv.plutuswallet.ui.list.AccountViewModel
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.DELETE
-import com.heyzeusv.plutuswallet.util.DataListSelectedAction.EDIT
+import com.heyzeusv.plutuswallet.util.ListItemAction.DELETE
+import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -47,8 +47,8 @@ internal class AccountViewModelTest {
         val expectedAccountList = dd.accList.sortedBy { it.name }
         val expectedAccountsUsedList = listOf(dd.acc1, dd.acc2, dd.acc3)
 
-        assertEquals(expectedAccountList, accVM.accountList.value)
-        assertEquals(expectedAccountsUsedList, accVM.accountsUsedList.value)
+        assertEquals(expectedAccountList, accVM.firstItemList.value)
+        assertEquals(expectedAccountsUsedList, accVM.firstUsedItemList.value)
     }
 
     @Test
@@ -56,11 +56,11 @@ internal class AccountViewModelTest {
     fun deleteAccount() = runTest {
         val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2)
 
-        accVM.updateDialog(DataDialog(DELETE, 4))
-        accVM.deleteAccount(dd.acc4)
+        accVM.updateDialog(ListDialog(DELETE, 4))
+        accVM.deleteItem(dd.acc4)
 
-        assertEquals(expectedAccounts, accVM.accountList.value)
-        assertEquals(DataDialog(DELETE, -1), accVM.showDialog.value)
+        assertEquals(expectedAccounts, accVM.firstItemList.value)
+        assertEquals(ListDialog(DELETE, -1), accVM.showDialog.value)
     }
 
     @Test
@@ -69,20 +69,20 @@ internal class AccountViewModelTest {
         val expectedAccounts = listOf( dd.acc3, dd.acc2, Account(1, "Test"), dd.acc4)
         val expectedAccountsUsed = listOf(Account(1, "Test"), dd.acc2, dd.acc3)
 
-        accVM.updateDialog(DataDialog(EDIT, 1))
-        accVM.editAccount(dd.acc1, "Test")
+        accVM.updateDialog(ListDialog(EDIT, 1))
+        accVM.editItem(dd.acc1, "Test")
 
-        assertEquals(expectedAccounts, accVM.accountList.value)
-        assertEquals(expectedAccountsUsed, accVM.accountsUsedList.value)
-        assertEquals(DataDialog(EDIT, -1), accVM.showDialog.value)
+        assertEquals(expectedAccounts, accVM.firstItemList.value)
+        assertEquals(expectedAccountsUsed, accVM.firstUsedItemList.value)
+        assertEquals(ListDialog(EDIT, -1), accVM.showDialog.value)
     }
 
     @Test
     @DisplayName("Should edit Account with an existing name which updates accountExists")
     fun editAccountExists() {
-        accVM.editAccount(dd.acc1, dd.acc3.name)
+        accVM.editItem(dd.acc1, dd.acc3.name)
 
-        assertEquals(dd.acc3.name, accVM.accountExists.value)
+        assertEquals(dd.acc3.name, accVM.itemExists.value)
     }
 
     @Test
@@ -91,18 +91,18 @@ internal class AccountViewModelTest {
         val newAccount = Account(0, "Test")
         val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2, newAccount, dd.acc4)
 
-        accVM.createNewAccount(newAccount.name)
+        accVM.insertItem(newAccount.name)
 
         assert(repo.accList.contains(newAccount))
-        assertEquals(expectedAccounts, accVM.accountList.value)
-        assertEquals(DataDialog(EDIT, -1), accVM.showDialog.value)
+        assertEquals(expectedAccounts, accVM.firstItemList.value)
+        assertEquals(ListDialog(EDIT, -1), accVM.showDialog.value)
     }
 
     @Test
     @DisplayName("Should insert Account with an existing name which updates accountExists")
     fun createNewAccountExists() {
-        accVM.createNewAccount(dd.acc3.name)
+        accVM.insertItem(dd.acc3.name)
 
-        assertEquals(dd.acc3.name, accVM.accountExists.value)
+        assertEquals(dd.acc3.name, accVM.itemExists.value)
     }
 }
