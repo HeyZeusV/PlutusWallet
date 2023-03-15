@@ -119,4 +119,7 @@
     <string name="icon_cd_inputError">Input error</string>
     <string name="alert_dialog_closeapp">Close app</string>
     <string name="alert_dialog_closeapp_message">Would you like to close the app?</string>
+
+    <string name="tt" translatable="false"> </string>
+    <string name="tt_about_file" translatable="false">File %1$s</string>
 </resources>
