@@ -2,16 +2,15 @@ package com.heyzeusv.plutuswallet.ui
 
 import android.content.res.Resources
 import androidx.activity.ComponentActivity
+import androidx.annotation.StringRes
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -29,6 +28,7 @@ import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.ListDialog
 import com.heyzeusv.plutuswallet.data.model.ListItemInterface
+import com.heyzeusv.plutuswallet.onNodeWithTTStrId
 import com.heyzeusv.plutuswallet.ui.list.ListCard
 import com.heyzeusv.plutuswallet.util.ListItemAction.CREATE
 import com.heyzeusv.plutuswallet.util.ListItemAction.EDIT
@@ -95,12 +95,12 @@ class ListTests {
         }
 
         // check correct subtitle is displayed
-        composeRule.onNode(hasTestTag("List Subtitle Expense")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_list_sub, EXPENSE.type).assertIsDisplayed()
         checkItemsExistsAndDeleteState(expenseCats, usedListExpense)
 
         // navigate to second page and check correct subtitle is displayed
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("List Subtitle Income")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_sub, INCOME.type).assertIsDisplayed()
 
         checkItemsExistsAndDeleteState(incomeCats, usedListIncome)
     }
@@ -127,7 +127,7 @@ class ListTests {
 
         val testItem = "Test Account"
         val expectedItem = Account(0, testItem)
-        dialogAction(null, testItem, "AlertDialog confirm")
+        dialogAction(testItem, R.string.tt_ad_confirm)
 
         checkItemsExistsAndDeleteState(dd.accList + expectedItem, usedList)
     }
@@ -174,16 +174,16 @@ class ListTests {
 
         val testExpenseItem = "Test Expense Category"
         val expectedExpenseItem = Category(0, testExpenseItem, EXPENSE.type)
-        dialogAction(null, testExpenseItem, "AlertDialog confirm")
+        dialogAction(testExpenseItem, R.string.tt_ad_confirm)
 
         checkItemsExistsAndDeleteState(expenseCats + expectedExpenseItem, usedListExpense)
 
         // navigate to second page
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
 
         val testIncomeItem = "Test Income Category"
         val expectedIncomeItem = Category(0, testIncomeItem, INCOME.type)
-        dialogAction(null, testIncomeItem, "AlertDialog confirm")
+        dialogAction(testIncomeItem, R.string.tt_ad_confirm)
 
         checkItemsExistsAndDeleteState(incomeCats + expectedIncomeItem, usedListIncome)
     }
@@ -214,7 +214,7 @@ class ListTests {
                 )
             }
         }
-        dialogAction(null, dd.acc1.name, "AlertDialog confirm")
+        dialogAction(dd.acc1.name, R.string.tt_ad_confirm)
 
         // check no item repeats and Snackbar message
         checkItemsExistsAndDeleteState(dd.accList, usedList)
@@ -267,16 +267,16 @@ class ListTests {
             }
         }
 
-        dialogAction(null, dd.cat1.name, "AlertDialog confirm")
+        dialogAction(dd.cat1.name, R.string.tt_ad_confirm)
 
         // check no item repeats and Snackbar message
         checkItemsExistsAndDeleteState(expenseCats, usedListExpense)
         expenseSnackbarHost.assertDisplayedMessage(R.string.snackbar_exists, dd.cat1.name)
 
         // navigate to second page
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
 
-        dialogAction(null, dd.cat3.name, "AlertDialog confirm")
+        dialogAction(dd.cat3.name, R.string.tt_ad_confirm)
 
         // check no item repeats and Snackbar message
         checkItemsExistsAndDeleteState(incomeCats, usedListIncome)
@@ -299,7 +299,7 @@ class ListTests {
         }
 
         val testItem = "Test Account"
-        dialogAction(null, testItem, "AlertDialog dismiss")
+        dialogAction(testItem, R.string.tt_ad_dismiss)
 
         // check that new item was not created then check all
         composeRule.onNodeWithText(testItem).assertDoesNotExist()
@@ -332,17 +332,17 @@ class ListTests {
         }
 
         val testExpenseItem = "Test Expense Category"
-        dialogAction(null, testExpenseItem, "AlertDialog dismiss")
+        dialogAction(testExpenseItem, R.string.tt_ad_dismiss)
 
         // check that new item was not created then check all
         composeRule.onNodeWithText(testExpenseItem).assertDoesNotExist()
         checkItemsExistsAndDeleteState(expenseCats, usedListExpense)
 
         // navigate to second page
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
 
         val testIncomeItem = "Test Income Category"
-        dialogAction(null, testIncomeItem, "AlertDialog dismiss")
+        dialogAction(testIncomeItem, R.string.tt_ad_dismiss)
 
         // check that new item was not created then check all
         composeRule.onNodeWithText(testIncomeItem).assertDoesNotExist()
@@ -372,7 +372,8 @@ class ListTests {
         }
 
         val updatedName = "New Test Name"
-        dialogAction(hasTestTag("${dd.acc5.name} Edit"), updatedName, "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.acc5.name).performClick()
+        dialogAction(updatedName, R.string.tt_ad_confirm)
 
         // check for updated name
         composeRule.onNodeWithText(updatedName).assertIsDisplayed()
@@ -418,15 +419,17 @@ class ListTests {
         }
 
         val updatedName = "New Test Name"
-        dialogAction(hasTestTag("${dd.cat1.name} Edit"), updatedName, "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.cat1.name).performClick()
+        dialogAction(updatedName, R.string.tt_ad_confirm)
 
         // check for updated name
         composeRule.onNodeWithText(updatedName).assertIsDisplayed()
 
         // navigate to second page
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
 
-        dialogAction(hasTestTag("${dd.cat3.name} Edit"), updatedName, "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.cat3.name).performClick()
+        dialogAction(updatedName, R.string.tt_ad_confirm)
 
         // check for updated name
         composeRule.onNodeWithText(updatedName).assertIsDisplayed()
@@ -460,7 +463,8 @@ class ListTests {
             }
         }
 
-        dialogAction(hasTestTag("${dd.acc5.name} Edit"), dd.acc1.name, "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.acc5.name).performClick()
+        dialogAction(dd.acc1.name, R.string.tt_ad_confirm)
 
         // check no item repeats and Snackbar message
         checkItemsExistsAndDeleteState(dd.accList, usedList)
@@ -507,16 +511,18 @@ class ListTests {
             }
         }
 
-        dialogAction(hasTestTag("${dd.cat1.name} Edit"), dd.cat2.name, "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.cat1.name).performClick()
+        dialogAction(dd.cat2.name, R.string.tt_ad_confirm)
 
         // check no item repeats and Snackbar message
         checkItemsExistsAndDeleteState(expenseCats, usedListExpense)
         expenseSnackbarHost.assertDisplayedMessage(R.string.snackbar_exists, dd.cat2.name)
 
         // navigate to second page
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
 
-        dialogAction(hasTestTag("${dd.cat3.name} Edit"), dd.cat4.name, "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.cat3.name).performClick()
+        dialogAction(dd.cat4.name, R.string.tt_ad_confirm)
 
         // check no item repeats and Snackbar message
         checkItemsExistsAndDeleteState(incomeCats, usedListIncome)
@@ -540,7 +546,8 @@ class ListTests {
         }
 
         val testItem = "Test Account"
-        dialogAction(hasTestTag("${dd.acc5.name} Edit"), testItem, "AlertDialog dismiss")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.acc5.name).performClick()
+        dialogAction(testItem, R.string.tt_ad_dismiss)
 
         // check that item was not edited then check all
         composeRule.onNodeWithText(testItem).assertDoesNotExist()
@@ -567,16 +574,18 @@ class ListTests {
         }
 
         val testItem = "Test Expense Category"
-        dialogAction(hasTestTag("${dd.cat1.name} Edit"), testItem, "AlertDialog dismiss")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.cat1.name).performClick()
+        dialogAction(testItem, R.string.tt_ad_dismiss)
 
         // check that new item was not edited then check all
         composeRule.onNodeWithText(testItem).assertDoesNotExist()
         checkItemsExistsAndDeleteState(expenseCats, usedListExpense)
 
         // navigate to second page
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
 
-        dialogAction(hasTestTag("${dd.cat3.name} Edit"), testItem, "AlertDialog dismiss")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_edit, dd.cat3.name).performClick()
+        dialogAction(testItem, R.string.tt_ad_dismiss)
 
         // check that new item was not edited then check all
         composeRule.onNodeWithText(testItem).assertDoesNotExist()
@@ -603,7 +612,8 @@ class ListTests {
             }
         }
 
-        dialogAction(hasTestTag("${dd.acc4.name} Delete"), "", "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_delete, dd.acc4.name).performClick()
+        dialogAction("", R.string.tt_ad_confirm)
 
         // check item was deleted
         composeRule.onNodeWithText(dd.acc4.name).assertDoesNotExist()
@@ -636,15 +646,17 @@ class ListTests {
             }
         }
 
-        dialogAction(hasTestTag("${dd.cat5.name} Delete"), "", "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_delete, dd.cat5.name).performClick()
+        dialogAction("", R.string.tt_ad_confirm)
 
         // check item was deleted
         composeRule.onNodeWithText(dd.cat5.name).assertDoesNotExist()
 
         // navigate to second page
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
 
-        dialogAction(hasTestTag("${dd.cat6.name} Delete"), "", "AlertDialog confirm")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_delete, dd.cat6.name).performClick()
+        dialogAction("", R.string.tt_ad_confirm)
 
         // check item was deleted
         composeRule.onNodeWithText(dd.cat6.name).assertDoesNotExist()
@@ -666,7 +678,8 @@ class ListTests {
             }
         }
 
-        dialogAction(hasTestTag("${dd.acc4.name} Delete"), "", "AlertDialog dismiss")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_delete, dd.acc4.name).performClick()
+        dialogAction("", R.string.tt_ad_dismiss)
 
         // check that item was not deleted then check all
         composeRule.onNodeWithText(dd.acc4.name).assertIsDisplayed()
@@ -692,16 +705,18 @@ class ListTests {
             }
         }
 
-        dialogAction(hasTestTag("${dd.cat5.name} Delete"), "", "AlertDialog dismiss")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_delete, dd.cat5.name).performClick()
+        dialogAction("", R.string.tt_ad_dismiss)
 
         // check that new item was not deleted then check all
         composeRule.onNodeWithText(dd.cat5.name).assertIsDisplayed()
         checkItemsExistsAndDeleteState(expenseCats, usedListExpense)
 
         // navigate to second page
-        composeRule.onNode(hasTestTag("List ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_list_vp).performTouchInput { swipeLeft() }
 
-        dialogAction(hasTestTag("${dd.cat6.name} Delete"), "", "AlertDialog dismiss")
+        composeRule.onNodeWithTTStrId(R.string.tt_list_delete, dd.cat6.name).performClick()
+        dialogAction("", R.string.tt_ad_dismiss)
 
         // check that new item was not deleted then check all
         composeRule.onNodeWithText(dd.cat6.name).assertIsDisplayed()
@@ -709,21 +724,14 @@ class ListTests {
     }
 
     /**
-     *  Clicks on [node] then types in [name] into input field if it is not empty and
-     *  performs [action].
+     *  Types in [name] into input field if it is not empty and performs [action].
      */
-    private fun dialogAction(node: SemanticsMatcher?, name: String, action: String) {
-        node?.let {
-            composeRule.onNode(it).performClick()
-        }
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
+    private fun dialogAction(name: String, @StringRes action: Int) {
+        composeRule.onNodeWithTTStrId(R.string.tt_ad).assertIsDisplayed()
         if (name.isNotBlank()) {
-            composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(name)
+            composeRule.onNodeWithTTStrId(R.string.tt_ad_input).performTextInput(name)
         }
-        composeRule.onNode(
-            hasTestTag(action),
-            useUnmergedTree = true
-        ).performClick()
+        composeRule.onNodeWithTTStrId(action, useUnmergedTree = true).performClick()
     }
 
     /**
@@ -733,9 +741,9 @@ class ListTests {
         itemList.forEach {
             composeRule.onNodeWithText(it.name).assertExists()
             if (usedList.contains(it)) {
-                composeRule.onNode(hasTestTag("${it.name} Delete")).assertIsNotEnabled()
+                composeRule.onNodeWithTTStrId(R.string.tt_list_delete, it.name).assertIsNotEnabled()
             } else {
-                composeRule.onNode(hasTestTag("${it.name} Delete")).assertIsEnabled()
+                composeRule.onNodeWithTTStrId(R.string.tt_list_delete, it.name).assertIsEnabled()
             }
         }
     }

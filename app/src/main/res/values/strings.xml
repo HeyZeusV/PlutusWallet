@@ -136,6 +136,10 @@
     <string name="tt_filter_end" translatable="false">Filter End Date</string>
     <string name="tt_filter_start" translatable="false">Filter Start Date</string>
     <string name="tt_filter_type" translatable="false">%1$s Button</string>
+    <string name="tt_list_delete" translatable="false">%1$s Delete</string>
+    <string name="tt_list_edit" translatable="false">%1$s Edit</string>
+    <string name="tt_list_sub" translatable="false">List Subtitle %1$s</string>
+    <string name="tt_list_vp" translatable="false">List ViewPager</string>
     <string name="tt_tranL_empty" translatable="false">Empty Transaction List</string>
     <string name="tt_tranL_item" translatable="false">TranList item %1$d</string>
 </resources>

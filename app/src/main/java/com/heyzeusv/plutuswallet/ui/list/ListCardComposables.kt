@@ -161,7 +161,7 @@ fun ListCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.9f)
-                    .testTag("List ViewPager"),
+                    .testTag(stringResource(R.string.tt_list_vp)),
                 state = pagerState
             ) { page ->
                 Column {
@@ -172,7 +172,7 @@ fun ListCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(all = 12.dp)
-                                .testTag("List Subtitle $subtitle"),
+                                .testTag(stringResource(R.string.tt_list_sub, subtitle)),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.h5
                         )
@@ -257,7 +257,7 @@ fun DataItem(
             onClick = editOnClick,
             modifier = Modifier
                 .size(49.dp)
-                .testTag("${data.name} Edit"),
+                .testTag(stringResource(R.string.tt_list_edit, data.name)),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
                 contentColor = MaterialTheme.colors.surface
@@ -273,7 +273,7 @@ fun DataItem(
             onClick = deleteOnClick,
             modifier = Modifier
                 .size(49.dp)
-                .testTag("${data.name} Delete"),
+                .testTag(stringResource(R.string.tt_list_delete, data.name)),
             enabled = deletable,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.secondary,
