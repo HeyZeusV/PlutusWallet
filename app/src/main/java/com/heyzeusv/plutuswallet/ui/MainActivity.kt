@@ -141,7 +141,7 @@ fun PlutusWalletApp(
     val setVals by setVM.setVals.collectAsState()
 
     Scaffold(
-        modifier = Modifier.testTag("PWApp Scaffold"),
+        modifier = Modifier.testTag(stringResource(R.string.tt_app_scaffold)),
         scaffoldState = scaffoldState,
         topBar = {
             PWAppBar(
@@ -265,11 +265,11 @@ fun PWAppBar(
         title = {
             Text(
                 text = title,
-                modifier = Modifier.testTag("AppBar $title"),
+                modifier = Modifier.testTag(stringResource(R.string.tt_app_barTitle, title)),
                 color = MaterialTheme.colors.onBackground
             )
         },
-        modifier = Modifier.testTag("AppBar"),
+        modifier = Modifier.testTag(stringResource(R.string.tt_app_bar)),
         navigationIcon = {
             IconButton(onClick = { onNavPressed() }) {
                 Icon(
@@ -381,7 +381,7 @@ fun PWDrawerItem(
             .height(48.dp)
             .padding(horizontal = 16.dp)
             .clickable { onClick() }
-            .testTag("DrawerItem $label"),
+            .testTag(stringResource(R.string.tt_app_drawItem, label)),
         horizontalArrangement = Arrangement.spacedBy(
             space = 8.dp
         )

@@ -300,26 +300,26 @@ fun PWListAlertDialog(
                             .padding(top = dimensionResource(R.dimen.ad_tf_topPad))
                             .selectableGroup()
                     ) {
-                        options.forEach { entry ->
+                        options.forEach { option ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(40.dp)
                                     .selectable(
-                                        selected = (entry.key == selectedOption),
+                                        selected = (option.key == selectedOption),
                                         role = Role.RadioButton,
-                                        onClick = { onOptionSelected(entry.key) }
+                                        onClick = { onOptionSelected(option.key) }
                                     )
-                                    .testTag(entry.value),
+                                    .testTag(stringResource(R.string.tt_ad_option, option.value)),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
-                                    selected = (entry.key == selectedOption),
+                                    selected = (option.key == selectedOption),
                                     onClick = null // recommended for accessibility by Google
                                 )
                                 Text(
-                                    text = entry.value,
+                                    text = option.value,
                                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
                                 )
                             }

@@ -314,7 +314,7 @@ fun Setting(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { openDialog = true }
-            .testTag(setting.name)
+            .testTag(stringResource(R.string.tt_set_name, setting.name))
     ) {
         if (openDialog) {
             PWListAlertDialog(
@@ -343,7 +343,9 @@ fun Setting(
             )
             Text(
                 text = optionSelectedDisplay,
-                modifier = Modifier.testTag("${setting.name} $optionSelectedDisplay"),
+                modifier = Modifier.testTag(
+                    stringResource(R.string.tt_set_select, setting.name, optionSelectedDisplay)
+                ),
                 style = MaterialTheme.typography.subtitle2
             )
         }
