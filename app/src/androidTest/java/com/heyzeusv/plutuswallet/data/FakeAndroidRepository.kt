@@ -3,18 +3,15 @@ package com.heyzeusv.plutuswallet.data
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
-import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.replace
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 
 class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
@@ -27,29 +24,6 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     var accUsedList: List<Account> = listOf()
     var exCatUsedList: List<Category> = listOf()
     var inCatUsedList: List<Category> = listOf()
-
-    private val accountListFlow = MutableSharedFlow<List<Account>>()
-    suspend fun accountListEmit(value: List<Account>) = accountListFlow.emit(value.sortedBy { it.name })
-    private val accountsUsedListFlow = MutableSharedFlow<List<Account>>()
-    suspend fun accountsUsedListEmit(value: List<Account>) = accountsUsedListFlow.emit(value)
-    private val accountNameListFLow = MutableSharedFlow<List<String>>()
-    suspend fun accountNameListEmit(value: List<String>) = accountNameListFLow.emit(value.sorted())
-    private val expenseCatNameListFlow = MutableSharedFlow<List<String>>()
-    suspend fun expenseCatNameListEmit(value: List<String>) = expenseCatNameListFlow.emit(value.sorted())
-    private val incomeCatNameListFlow = MutableSharedFlow<List<String>>()
-    suspend fun incomeCatNameListEmit(value: List<String>) = incomeCatNameListFlow.emit(value.sorted())
-    private val expenseCatListFlow = MutableSharedFlow<List<Category>>()
-    suspend fun expenseCatListEmit(value: List<Category>) = expenseCatListFlow.emit(value.sortedBy { it.name })
-    private val incomeCatListFlow = MutableSharedFlow<List<Category>>()
-    suspend fun incomeCatListEmit(value: List<Category>) = incomeCatListFlow.emit(value.sortedBy { it.name })
-    private val expenseCatUsedListFlow = MutableSharedFlow<List<Category>>()
-    suspend fun expenseCatUsedListEmit(value: List<Category>) = expenseCatUsedListFlow.emit(value)
-    private val incomeCatUsedListFLow = MutableSharedFlow<List<Category>>()
-    suspend fun incomeCatUsedListEmit(value: List<Category>) = incomeCatUsedListFLow.emit(value)
-    val tlifFlow = MutableSharedFlow<List<TranListItemFull>>()
-    suspend fun tlifEmit(value: List<TranListItemFull>) = tlifFlow.emit(value)
-    val chartInfoListFlow = MutableSharedFlow<List<ChartInformation>>()
-    suspend fun chartInfoListEmit(value: List<ChartInformation>) = chartInfoListFlow.emit(value)
 
     fun resetLists() {
         accList = dd.accList
@@ -64,8 +38,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
             accNames.add(acc.name)
         }
         accNames.sort()
-        return flow { emit(accNames) }
 
+        return flow { emit(accNames) }
     }
 
     override suspend fun getAccountsUsed(): Flow<List<Account>> {
@@ -75,8 +49,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         }
         val distinctAccUsed = accList.filter { accUsed.contains(it.name) }.distinct()
         accUsedList = distinctAccUsed
+
         return flow { emit(distinctAccUsed) }
-//        return accountsUsedListFlow
     }
 
     override suspend fun getAccountSizeAsync(): Int {
@@ -85,18 +59,14 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
     override suspend fun deleteAccount(account: Account) {
         accList.remove(account)
-        accountListEmit(accList)
     }
 
     override suspend fun insertAccount(account: Account) {
         accList.add(account)
-        accountListEmit(accList)
-        accountNameListEmit(accList.map { it.name })
     }
 
     override suspend fun updateAccount(account: Account) {
         accList.replace(accList.find { it.id == account.id }!!, account)
-        accountListEmit(accList)
     }
 
     override suspend fun getAccounts(): Flow<List<Account>> {
@@ -105,10 +75,11 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
     override suspend fun getCategoryNamesByType(type: String): Flow<List<String>> {
         val typeNameList: MutableList<String> = mutableListOf()
-        for (cat: Category in catList.filter { it.type == type}) {
+        for (cat: Category in catList.filter { it.type == type }) {
             typeNameList.add(cat.name)
         }
         typeNameList.sort()
+
         return flow { emit(typeNameList) }
     }
 
@@ -123,33 +94,26 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         } else {
             inCatUsedList = distinctCatUsed
         }
+
         return flow { emit(distinctCatUsed) }
-//        return if (type == EXPENSE.type) expenseCatUsedListFlow else incomeCatUsedListFLow
     }
 
     override suspend fun getCategoriesByType(type: String): Flow<List<Category>> {
         val typeList = catList.filter { it.type == type }
+
         return flow { emit(typeList) }
-//        return if (type == EXPENSE.type) expenseCatListFlow else incomeCatListFlow
     }
 
     override suspend fun getCategorySizeAsync(): Int {
-
         return catList.size
     }
 
     override suspend fun deleteCategory(category: Category) {
         catList.remove(category)
-        expenseCatListEmit(dd.catList.filter { it.type == EXPENSE.type })
-        incomeCatListEmit(dd.catList.filter { it.type == INCOME.type })
     }
 
     override suspend fun insertCategory(category: Category) {
         catList.add(category)
-        expenseCatListEmit(dd.catList.filter { it.type == EXPENSE.type })
-        incomeCatListEmit(dd.catList.filter { it.type == INCOME.type })
-        expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
-        incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
     }
 
     override suspend fun updateCategory(category: Category) {
@@ -158,14 +122,14 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
     override suspend fun insertCategories(categories: List<Category>) {
         catList.addAll(categories)
-        expenseCatNameListEmit(dd.catList.filter { it.type == EXPENSE.type }.map { it.name })
-        incomeCatNameListEmit(dd.catList.filter { it.type == INCOME.type }.map { it.name })
     }
 
     override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {
 
         val futureList: MutableList<Transaction> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.date < currentDate && it.repeating && !it.futureTCreated }) {
+        for (tran: Transaction in tranList.filter {
+            it.date < currentDate && it.repeating && !it.futureTCreated
+        }) {
             futureList.add(tran)
         }
 
@@ -173,7 +137,6 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     }
 
     override suspend fun getMaxId(): Flow<Int?> {
-
         return if (tranList.isEmpty()) {
             flow { emit(null) }
         } else {
@@ -202,7 +165,6 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     }
 
     private fun getCatLists(): List<List<String>> {
-
         val exCatList: MutableList<String> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == "Expense" }) {
             exCatList.add(tran.category)
@@ -217,7 +179,6 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
     private fun createCatTotals(listOfTranLists: MutableList<MutableList<Transaction>>)
             : List<CategoryTotals> {
-
         val catTotals: MutableList<CategoryTotals> = mutableListOf()
         for (list: MutableList<Transaction> in listOfTranLists) {
             var total = BigDecimal(0)
@@ -229,6 +190,7 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
                 catTotals.add(ct)
             }
         }
+
         return catTotals
     }
 
@@ -373,7 +335,10 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         return flow { emit(createCatTotals(listOfTranLists)) }
     }
 
-    override suspend fun getCtC(type: String, categories: List<String>): Flow<List<CategoryTotals>> {
+    override suspend fun getCtC(
+        type: String,
+        categories: List<String>
+    ): Flow<List<CategoryTotals>> {
         val catLists: List<List<String>> = getCatLists()
         val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
         for (cat: String in catLists[0]) {
@@ -647,7 +612,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.type == type  && it.date >= start && it.date <= end }) {
+            it.type == type && it.date >= start && it.date <= end
+        }) {
             val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )

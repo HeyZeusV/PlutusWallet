@@ -23,19 +23,24 @@ class FakeRepository @Inject constructor() : PWRepositoryInterface {
     var tranList: MutableList<Transaction> = dd.tranList
 
     private val accountListFlow = MutableSharedFlow<List<Account>>()
-    suspend fun accountListEmit(value: List<Account>) = accountListFlow.emit(value.sortedBy { it.name })
+    suspend fun accountListEmit(value: List<Account>) =
+        accountListFlow.emit(value.sortedBy { it.name })
     private val accountsUsedListFlow = MutableSharedFlow<List<Account>>()
     suspend fun accountsUsedListEmit(value: List<Account>) = accountsUsedListFlow.emit(value)
     private val accountNameListFLow = MutableSharedFlow<List<String>>()
     suspend fun accountNameListEmit(value: List<String>) = accountNameListFLow.emit(value.sorted())
     private val expenseCatNameListFlow = MutableSharedFlow<List<String>>()
-    suspend fun expenseCatNameListEmit(value: List<String>) = expenseCatNameListFlow.emit(value.sorted())
+    suspend fun expenseCatNameListEmit(value: List<String>) =
+        expenseCatNameListFlow.emit(value.sorted())
     private val incomeCatNameListFlow = MutableSharedFlow<List<String>>()
-    suspend fun incomeCatNameListEmit(value: List<String>) = incomeCatNameListFlow.emit(value.sorted())
+    suspend fun incomeCatNameListEmit(value: List<String>) =
+        incomeCatNameListFlow.emit(value.sorted())
     private val expenseCatListFlow = MutableSharedFlow<List<Category>>()
-    suspend fun expenseCatListEmit(value: List<Category>) = expenseCatListFlow.emit(value.sortedBy { it.name })
+    suspend fun expenseCatListEmit(value: List<Category>) =
+        expenseCatListFlow.emit(value.sortedBy { it.name })
     private val incomeCatListFlow = MutableSharedFlow<List<Category>>()
-    suspend fun incomeCatListEmit(value: List<Category>) = incomeCatListFlow.emit(value.sortedBy { it.name })
+    suspend fun incomeCatListEmit(value: List<Category>) =
+        incomeCatListFlow.emit(value.sortedBy { it.name })
     private val expenseCatUsedListFlow = MutableSharedFlow<List<Category>>()
     suspend fun expenseCatUsedListEmit(value: List<Category>) = expenseCatUsedListFlow.emit(value)
     private val incomeCatUsedListFLow = MutableSharedFlow<List<Category>>()
