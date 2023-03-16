@@ -79,14 +79,16 @@ fun <A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.c
     tlif: TranListItemFull
 ) {
     val colors = PWLightColors
-    onNode(hasTestTag("${tlif.tli.id}"), useUnmergedTree = true).onChildren()
+    onNodeWithTTStrId(R.string.tt_tranL_item, tlif.tli.id, useUnmergedTree = true).onChildren()
         .assertAny(hasText(tlif.tli.title))
         .assertAny(hasText(tlif.tli.account))
         .assertAny(hasText(tlif.formattedDate))
         .assertAny(hasText(tlif.tli.category))
+
     // total requires extra check of text color
+    val parentTestTag = activity.resources.getString(R.string.tt_tranL_item, tlif.tli.id)
     onNode(
-        hasText(text = tlif.formattedTotal) and hasParent(hasTestTag("${tlif.tli.id}")),
+        hasText(text = tlif.formattedTotal) and hasParent(hasTestTag(parentTestTag)),
         useUnmergedTree = true
     )
         .assertIsDisplayed()

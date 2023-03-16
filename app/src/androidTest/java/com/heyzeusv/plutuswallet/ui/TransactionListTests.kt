@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithText
@@ -21,6 +20,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
+import com.heyzeusv.plutuswallet.onNodeWithTTStrId
 import com.heyzeusv.plutuswallet.ui.overview.TransactionListCard
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -112,16 +112,16 @@ class TransactionListTests {
             repo.tlifEmit(repo.tlifList)
 
             // long press Transaction to bring up delete AlertDialog
-            composeRule.onNode(hasTestTag("${dd.tlif2.tli.id}")).performTouchInput { longClick() }
+            composeRule.onNodeWithTTStrId(R.string.tt_tranL_item, dd.tlif2.tli.id)
+                .performTouchInput { longClick() }
             // checks that AlertDialog is being displayed and press confirm button
-            composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-            composeRule.onNode(
-                hasTestTag("AlertDialog confirm"),
-                useUnmergedTree = true
-            ).performClick()
+            composeRule.onNodeWithTTStrId(R.string.tt_ad).assertIsDisplayed()
+            composeRule.onNodeWithTTStrId(R.string.tt_ad_confirm, useUnmergedTree = true)
+                .performClick()
 
             // check that correct item was deleted
-            composeRule.onNode(hasTestTag("${dd.tlif2.tli.id}")).assertDoesNotExist()
+            composeRule.onNodeWithTTStrId(R.string.tt_tranL_item, dd.tlif2.tli.id)
+                .assertDoesNotExist()
             // check that no other item was deleted
             val expectedTlifList = listOf(dd.tlif1, dd.tlif3, dd.tlif4)
             expectedTlifList.forEach { composeRule.checkTlifIsDisplayed(it) }
@@ -147,14 +147,13 @@ class TransactionListTests {
             repo.tlifEmit(repo.tlifList)
 
             // long press Transaction to bring up delete AlertDialog
-            composeRule.onNode(hasTestTag("${dd.tlif2.tli.id}")).performTouchInput { longClick() }
+            composeRule.onNodeWithTTStrId(R.string.tt_tranL_item, dd.tlif2.tli.id)
+                .performTouchInput { longClick() }
             // checks that AlertDialog is being displayed and press dismiss button
-            composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-            composeRule.onNode(
-                hasTestTag("AlertDialog dismiss"),
-                useUnmergedTree = true
-            ).performClick()
-            composeRule.onNode(hasTestTag("AlertDialog")).assertDoesNotExist()
+            composeRule.onNodeWithTTStrId(R.string.tt_ad).assertIsDisplayed()
+            composeRule.onNodeWithTTStrId(R.string.tt_ad_dismiss, useUnmergedTree = true)
+                .performClick()
+            composeRule.onNodeWithTTStrId(R.string.tt_ad).assertDoesNotExist()
 
             // check that no item was deleted
             val expectedTlifList = listOf(dd.tlif1, dd.tlif2, dd.tlif3, dd.tlif4)

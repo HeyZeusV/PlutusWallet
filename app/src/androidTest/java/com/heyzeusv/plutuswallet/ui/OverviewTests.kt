@@ -9,7 +9,6 @@ import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -85,39 +84,39 @@ class OverviewTests {
 
         // should start with Expense chart
         onView(withContentDescription("Chart 0")).check(matches(chartText(expense)))
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 0"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0)
             .assertTextContains("Total: $1,155.55")
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1).assertDoesNotExist()
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Entertainment", 55.45F)))
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Food", 1000.10F)))
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Housing", 100.00F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertDoesNotExist()
 
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
 
         // after scrolling to Income chart
         onView(withContentDescription("Chart 1")).check(matches(chartText(income)))
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertIsNotDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0).assertIsNotDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1)
             .assertTextEquals("Total: $2,000.32")
         onView(withContentDescription("Chart 1"))
             .check(matches(chartEntry("Salary", 2000.32F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertDoesNotExist()
 
-        composeRule.onNode(hasTestTag("Filter Card")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertDoesNotExist()
         // should start with no filters selected
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_account).assertIsNotSelected()
         composeRule.onNodeWithTTStrId(R.string.filter_category).assertIsNotSelected()
         composeRule.onNodeWithTTStrId(R.string.filter_date).assertIsNotSelected()
-        composeRule.onNode(hasTestTag("Filter action"))
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act)
             .assertTextEquals(res.getString(R.string.filter_reset).uppercase())
     }
 
@@ -129,31 +128,31 @@ class OverviewTests {
         // open filter and apply Account filter with 2 chips selected
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
-        composeRule.onNode(hasTestTag("Chip: Cash")).performClick()
-        composeRule.onNode(hasTestTag("Chip: Credit Card")).performClick()
-        composeRule.onNode(hasTestTag("Filter action")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Cash").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Credit Card").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
 
         // check expense chart
-        composeRule.onNode(hasTestTag("Chart Total for page 0"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0)
             .assertTextEquals("Total: $1,055.55")
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Food", 1000.10F)))
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Entertainment", 55.45F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertDoesNotExist()
 
         // check income chart
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1).assertDoesNotExist()
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
         composeRule.checkTlifIsDisplayed(dd.tlif1)
         composeRule.checkTlifIsDisplayed(dd.tlif4)
-        composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_empty).assertDoesNotExist()
     }
 
     @Test
@@ -164,32 +163,32 @@ class OverviewTests {
         // open filter and apply Category filter with 2 chips selected
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
-        composeRule.onNode(hasTestTag("Expense Button")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chip: Entertainment")).performClick()
-        composeRule.onNode(hasTestTag("Chip: Housing")).performClick()
-        composeRule.onNode(hasTestTag("Filter action")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Entertainment").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Housing").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
 
         // check expense chart
-        composeRule.onNode(hasTestTag("Chart Total for page 0"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0)
             .assertTextEquals("Total: $155.45")
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Housing", 100.00F)))
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Entertainment", 55.45F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertDoesNotExist()
 
         // check income chart
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1).assertDoesNotExist()
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
         composeRule.checkTlifIsDisplayed(dd.tlif2)
         composeRule.checkTlifIsDisplayed(dd.tlif4)
-        composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_empty).assertDoesNotExist()
     }
 
     @Test
@@ -200,29 +199,29 @@ class OverviewTests {
         // open filter and apply Category filter with 2 chips selected
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
-        composeRule.onNode(hasTestTag("Expense Button")).performClick()
-        composeRule.onNode(hasTestTag("Income Button")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chip: Salary")).performClick()
-        composeRule.onNode(hasTestTag("Filter action")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Income").assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Salary").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
 
         // check expense chart
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0).assertDoesNotExist()
         onView(withContentDescription("Chart 0")).check(doesNotExist())
 
         // check income chart
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("Chart Total for page 1"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1)
             .assertTextEquals("Total: $2,000.32")
         onView(withContentDescription("Chart 1"))
             .check(matches(chartEntry("Salary", 2000.32F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertDoesNotExist()
 
         // check TranList
         composeRule.checkTlifIsDisplayed(dd.tlif3)
-        composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_empty).assertDoesNotExist()
     }
 
     @Test
@@ -233,33 +232,33 @@ class OverviewTests {
         // open filter and apply date filter
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
-        composeRule.onNode(hasTestTag("Filter Start Date")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Filter End Date")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Filter Start Date")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).performClick()
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 20))
         onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasTestTag("Filter Start Date")).assertTextEquals("1/20/21")
-        composeRule.onNode(hasTestTag("Filter End Date")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertTextEquals("1/20/21")
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).performClick()
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 21))
         onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasTestTag("Filter End Date")).assertTextEquals("1/21/21")
-        composeRule.onNode(hasTestTag("Filter action")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertTextEquals("1/21/21")
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
 
         // check expense chart
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0).assertDoesNotExist()
         onView(withContentDescription("Chart 0")).check(doesNotExist())
 
         // check income chart
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1).assertDoesNotExist()
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
-        composeRule.onNode(hasTestTag("Empty Transaction List")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_empty).assertIsDisplayed()
     }
 
     @Test
@@ -270,34 +269,34 @@ class OverviewTests {
         // open filter and apply Account filter with 1 chip selected
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
-        composeRule.onNode(hasTestTag("Chip: Debit Card")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Debit Card").performClick()
 
         // apply Category filter with 2 chip selected
         composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
-        composeRule.onNode(hasTestTag("Expense Button")).performClick()
-        composeRule.onNode(hasTestTag("Income Button")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chip: Salary")).performClick()
-        composeRule.onNode(hasTestTag("Chip: Unused Income")).performClick()
-        composeRule.onNode(hasTestTag("Filter action")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Income").assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Salary").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Unused Income").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
 
         // check expense chart
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0).assertDoesNotExist()
         onView(withContentDescription("Chart 0")).check(doesNotExist())
 
         // check income chart
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("Chart Total for page 1"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1)
             .assertTextEquals("Total: $2,000.32")
         onView(withContentDescription("Chart 1"))
             .check(matches(chartEntry("Salary", 2000.32F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertDoesNotExist()
 
         // check TranList
         composeRule.checkTlifIsDisplayed(dd.tlif3)
-        composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_empty).assertDoesNotExist()
     }
 
     @Test
@@ -308,41 +307,41 @@ class OverviewTests {
         // open filter and apply Account filter with 2 chips selected
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
-        composeRule.onNode(hasTestTag("Chip: Cash")).performClick()
-        composeRule.onNode(hasTestTag("Chip: Credit Card")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Cash").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Credit Card").performClick()
 
         // apply Date filter
         composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
-        composeRule.onNode(hasTestTag("Filter Start Date")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Filter End Date")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Filter Start Date")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).performClick()
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 4))
         onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasTestTag("Filter Start Date")).assertTextEquals("1/4/70")
-        composeRule.onNode(hasTestTag("Filter End Date")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertTextEquals("1/4/70")
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).performClick()
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 6))
         onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasTestTag("Filter End Date")).assertTextEquals("1/6/70")
-        composeRule.onNode(hasTestTag("Filter action")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertTextEquals("1/6/70")
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
 
         // check expense chart
-        composeRule.onNode(hasTestTag("Chart Total for page 0"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0)
             .assertTextEquals("Total: $55.45")
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Entertainment", 55.45F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertDoesNotExist()
 
         // check income chart
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1).assertDoesNotExist()
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
         composeRule.checkTlifIsDisplayed(dd.tlif4)
-        composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_empty).assertDoesNotExist()
     }
 
     @Test
@@ -353,41 +352,41 @@ class OverviewTests {
         // open filter and apply Category filter with 1 chip selected
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
-        composeRule.onNode(hasTestTag("Expense Button")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chip: Food")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Food").performClick()
 
         // apply Date filter
         composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
-        composeRule.onNode(hasTestTag("Filter Start Date")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Filter End Date")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Filter Start Date")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).performClick()
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 1))
         onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasTestTag("Filter Start Date")).assertTextEquals("1/1/70")
-        composeRule.onNode(hasTestTag("Filter End Date")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertTextEquals("1/1/70")
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).performClick()
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 3))
         onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasTestTag("Filter End Date")).assertTextEquals("1/3/70")
-        composeRule.onNode(hasTestTag("Filter action")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertTextEquals("1/3/70")
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
 
         // check expense chart
-        composeRule.onNode(hasTestTag("Chart Total for page 0"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0)
             .assertTextEquals("Total: $1,000.10")
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Food", 1000.10F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertDoesNotExist()
 
         // check income chart
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1).assertDoesNotExist()
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
         composeRule.checkTlifIsDisplayed(dd.tlif1)
-        composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_empty).assertDoesNotExist()
     }
 
     @Test
@@ -398,44 +397,44 @@ class OverviewTests {
         // open filter and apply Account filter with 1 chip selected
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
-        composeRule.onNode(hasTestTag("Filter Card")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
-        composeRule.onNode(hasTestTag("Chip: Cash")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Cash").performClick()
 
         // open filter and apply Category filter with 1 chip selected
         composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
-        composeRule.onNode(hasTestTag("Expense Button")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chip: Food")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Food").performClick()
 
         // apply Date filter
         composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
-        composeRule.onNode(hasTestTag("Filter Start Date")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Filter End Date")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Filter Start Date")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).performClick()
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 1))
         onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasTestTag("Filter Start Date")).assertTextEquals("1/1/70")
-        composeRule.onNode(hasTestTag("Filter End Date")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertTextEquals("1/1/70")
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).performClick()
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(1970, 1, 3))
         onView(withId(android.R.id.button1)).perform(click())
-        composeRule.onNode(hasTestTag("Filter End Date")).assertTextEquals("1/3/70")
-        composeRule.onNode(hasTestTag("Filter action")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertTextEquals("1/3/70")
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
 
         // check expense chart
-        composeRule.onNode(hasTestTag("Chart Total for page 0"))
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 0)
             .assertTextEquals("Total: $1,000.10")
         onView(withContentDescription("Chart 0"))
             .check(matches(chartEntry("Food", 1000.10F)))
-        composeRule.onNode(hasTestTag("Empty Chart for page 0")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 0).assertDoesNotExist()
 
         // check income chart
-        composeRule.onNode(hasTestTag("Chart ViewPager")).performTouchInput { swipeLeft() }
-        composeRule.onNode(hasTestTag("Empty Chart for page 1")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("Chart Total for page 1")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_vp).performTouchInput { swipeLeft() }
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_empty, 1).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_chart_total, 1).assertDoesNotExist()
         onView(withContentDescription("Chart 1")).check(doesNotExist())
 
         // check TranList
         composeRule.checkTlifIsDisplayed(dd.tlif1)
-        composeRule.onNode(hasTestTag("Empty Transaction List")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_empty).assertDoesNotExist()
     }
 }

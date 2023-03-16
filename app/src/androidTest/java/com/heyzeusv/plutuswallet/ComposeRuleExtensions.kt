@@ -14,8 +14,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
  */
 fun <A : ComponentActivity> AndroidComposeTestRule<ActivityScenarioRule<A>, A>.onNodeWithTTStrId(
     @StringRes id: Int,
-    vararg args: Any?
-): SemanticsNodeInteraction = onNode(hasTestTag(activity.getString(id, *args)))
+    vararg args: Any?,
+    useUnmergedTree: Boolean = false
+): SemanticsNodeInteraction = onNode(hasTestTag(activity.getString(id, *args)), useUnmergedTree)
 
 /**
  *  Checks that node has text with given String resource [id] with [args] (if any).

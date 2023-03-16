@@ -348,7 +348,7 @@ fun ChartCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.9f)
-                    .testTag("Chart ViewPager"),
+                    .testTag(stringResource(R.string.tt_chart_vp)),
                 state = pagerState
             ) { page ->
                 val chartInfo = chartInfoList[page]
@@ -361,7 +361,7 @@ fun ChartCard(
                         Surface(
                             modifier = Modifier
                                 .weight(0.8f)
-                                .testTag("Chart page $page")
+                                .testTag(stringResource(R.string.tt_chart_page, page))
                         ) {
                             /**
                              *  Library used for PieChart is most likely never going to be updated to
@@ -444,14 +444,14 @@ fun ChartCard(
                             modifier = Modifier
                                 .align(Alignment.Start)
                                 .padding(horizontal = dimensionResource(R.dimen.chartMarginStartEnd))
-                                .testTag("Chart Total for page $page")
+                                .testTag(stringResource(R.string.tt_chart_total, page))
                         )
                     } else {
                         Text(
                             text = stringResource(R.string.cfl_no_transactions),
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
-                                .testTag("Empty Chart for page $page"),
+                                .testTag(stringResource(R.string.tt_chart_empty, page)),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -532,7 +532,7 @@ fun TransactionListCard(
             Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = stringResource(R.string.cfl_no_transactions),
-                    modifier = Modifier.testTag("Empty Transaction List"),
+                    modifier = Modifier.testTag(stringResource(R.string.tt_tranL_empty)),
                     textAlign = TextAlign.Center
                 )
             }
@@ -557,7 +557,7 @@ fun TransactionListItem(
     Surface(
         modifier = Modifier
             .combinedClickable(onLongClick = onLongClick, onClick = onClick)
-            .testTag("${transactionItem.id}")
+            .testTag(stringResource(R.string.tt_tranL_item, transactionItem.id))
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -831,7 +831,7 @@ fun FilterCard(
                             showIcon = false,
                             modifier = Modifier
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
-                                .testTag("$typeSelectedLabel Button"),
+                                .testTag(stringResource(R.string.tt_filter_type, typeSelectedLabel)),
                         )
                         Surface(
                             modifier = Modifier
@@ -911,7 +911,7 @@ fun FilterCard(
                             showIcon = false,
                             modifier = Modifier
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
-                                .testTag("Filter Start Date"),
+                                .testTag(stringResource(R.string.tt_filter_start)),
                         )
                         PWButton(
                             selected = true,
@@ -931,7 +931,7 @@ fun FilterCard(
                             modifier = Modifier
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
                                 .padding(bottom = 6.dp)
-                                .testTag("Filter End Date"),
+                                .testTag(stringResource(R.string.tt_filter_end)),
                         )
                     }
                 }
@@ -946,7 +946,7 @@ fun FilterCard(
                     showIcon = false,
                     modifier = Modifier
                         .height(dimensionResource(R.dimen.f_button_chip_height))
-                        .testTag("Filter action"),
+                        .testTag(stringResource(R.string.tt_filter_act)),
                     selectedBackgroundColor = MaterialTheme.colors.secondary,
                     selectedTextColor = LocalElevationOverlay.current?.apply(
                         color = MaterialTheme.colors.surface,
@@ -972,7 +972,7 @@ fun PWChip(
     FilterChip(
         selected = selected,
         onClick = onClick,
-        modifier = Modifier.testTag("Chip: $label"),
+        modifier = Modifier.testTag(stringResource(R.string.tt_filter_chip, label)),
         border = BorderStroke(
             width = dimensionResource(R.dimen.f_chip_border_width),
             color = if (selected) {
