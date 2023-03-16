@@ -82,9 +82,9 @@ class SettingsTests {
         // check that we navigate to Transaction screen
         composeRule.onNodeWithTextId(R.string.transaction).assertExists()
         // check that date and total are formatted correctly
-        composeRule.onNodeWithTTStrId(R.string.transaction_date)
+        composeRule.onNodeWithTextId(R.string.transaction_date)
             .assertEditTextEquals(setVals.dateFormatter.format(dd.tran1.date))
-        composeRule.onNodeWithTTStrId(R.string.transaction_total)
+        composeRule.onNodeWithTextId(R.string.transaction_total)
             .assertEditTextEquals("\$${setVals.decimalFormatter.format(dd.tran1.total)}")
         Espresso.pressBack()
 
