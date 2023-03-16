@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -27,6 +26,7 @@ import com.heyzeusv.plutuswallet.assertEditTextEquals
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.onNodeWithTTStrId
 import com.heyzeusv.plutuswallet.onNodeWithTextId
+import com.heyzeusv.plutuswallet.onNodeWithTextIdUp
 import com.heyzeusv.plutuswallet.ui.transaction.TransactionCard
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
@@ -58,19 +58,19 @@ class TransactionTests {
         }
 
         // check that fields display default values
-        composeRule.onNodeWithTTStrId(R.string.transaction_title).assertEditTextEquals("")
-        composeRule.onNodeWithTTStrId(R.string.transaction_date)
+        composeRule.onNodeWithTextId(R.string.transaction_title).assertEditTextEquals("")
+        composeRule.onNodeWithTextId(R.string.transaction_date)
             .assertEditTextEquals(dateFormatter.format(Date()))
-        composeRule.onNodeWithTTStrId(R.string.transaction_account).assertEditTextEquals("")
-        composeRule.onNodeWithTTStrId(R.string.transaction_total).assertEditTextEquals("$0.00")
-        composeRule.onNodeWithTTStrId(R.string.type_expense).assertIsSelected()
-        composeRule.onNodeWithTTStrId(R.string.type_income).assertIsNotSelected()
-        composeRule.onNodeWithTTStrId(R.string.transaction_category).assertEditTextEquals("")
-        composeRule.onNodeWithTTStrId(R.string.transaction_memo).assertEditTextEquals("")
-        composeRule.onNodeWithTTStrId(R.string.transaction_repeat).assertIsNotSelected()
+        composeRule.onNodeWithTextId(R.string.transaction_account).assertEditTextEquals("")
+        composeRule.onNodeWithTextId(R.string.transaction_total).assertEditTextEquals("$0.00")
+        composeRule.onNodeWithTextIdUp(R.string.type_expense).assertIsSelected()
+        composeRule.onNodeWithTextIdUp(R.string.type_income).assertIsNotSelected()
+        composeRule.onNodeWithTextId(R.string.transaction_category).assertEditTextEquals("")
+        composeRule.onNodeWithTextId(R.string.transaction_memo).assertEditTextEquals("")
+        composeRule.onNodeWithTextIdUp(R.string.transaction_repeat).assertIsNotSelected()
         // checks that nodes are not being shown/exist
-        composeRule.onNodeWithTTStrId(R.string.transaction_period).assertDoesNotExist()
-        composeRule.onNodeWithTTStrId(R.string.transaction_frequency).assertDoesNotExist()
+        composeRule.onNodeWithTextId(R.string.transaction_period).assertDoesNotExist()
+        composeRule.onNodeWithTextId(R.string.transaction_frequency).assertDoesNotExist()
     }
 
     @Test
@@ -93,23 +93,23 @@ class TransactionTests {
         }
 
         // check that fields display correct values
-        composeRule.onNodeWithTTStrId(R.string.transaction_title)
+        composeRule.onNodeWithTextId(R.string.transaction_title)
             .assertEditTextEquals(dd.tran1.title)
-        composeRule.onNodeWithTTStrId(R.string.transaction_date)
+        composeRule.onNodeWithTextId(R.string.transaction_date)
            .assertEditTextEquals(dateFormatter.format(dd.tran1.date))
-        composeRule.onNodeWithTTStrId(R.string.transaction_account)
+        composeRule.onNodeWithTextId(R.string.transaction_account)
             .assertEditTextEquals(dd.tran1.account)
-        composeRule.onNodeWithTTStrId(R.string.transaction_total)
+        composeRule.onNodeWithTextId(R.string.transaction_total)
             .assertEditTextEquals("\$${totalFormatter.format(dd.tran1.total)}")
-        composeRule.onNodeWithTTStrId(R.string.type_expense).assertIsSelected()
-        composeRule.onNodeWithTTStrId(R.string.type_income).assertIsNotSelected()
-        composeRule.onNodeWithTTStrId(R.string.transaction_category)
+        composeRule.onNodeWithTextIdUp(R.string.type_expense).assertIsSelected()
+        composeRule.onNodeWithTextIdUp(R.string.type_income).assertIsNotSelected()
+        composeRule.onNodeWithTextId(R.string.transaction_category)
             .assertEditTextEquals(dd.tran1.category)
-        composeRule.onNodeWithTTStrId(R.string.transaction_memo).assertEditTextEquals(dd.tran1.memo)
-        composeRule.onNodeWithTTStrId(R.string.transaction_repeat).assertIsSelected()
-        composeRule.onNodeWithTTStrId(R.string.transaction_period)
+        composeRule.onNodeWithTextId(R.string.transaction_memo).assertEditTextEquals(dd.tran1.memo)
+        composeRule.onNodeWithTextIdUp(R.string.transaction_repeat).assertIsSelected()
+        composeRule.onNodeWithTextId(R.string.transaction_period)
             .assertEditTextEquals(composeRule.activity.getString(R.string.period_days))
-        composeRule.onNodeWithTTStrId(R.string.transaction_frequency)
+        composeRule.onNodeWithTextId(R.string.transaction_frequency)
             .assertEditTextEquals("${dd.tran1.frequency}")
     }
 
@@ -164,7 +164,7 @@ class TransactionTests {
         // Expense Category
         createNew(R.string.transaction_category, R.string.category_create, testExCat)
         // switch to Income Categories
-        composeRule.onNodeWithTTStrId(R.string.type_income).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.type_income).performClick()
         // Income Category
         createNew(R.string.transaction_category, R.string.category_create, testInCat)
     }
@@ -215,7 +215,7 @@ class TransactionTests {
         // Expense Category
         cancelNew(R.string.transaction_category, R.string.category_create, "Test Expense Category")
         // switch to Income Categories
-        composeRule.onNodeWithTTStrId(R.string.type_income).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.type_income).performClick()
         // Income Category
         cancelNew(R.string.transaction_category, R.string.category_create, "Test Income Category")
     }
@@ -234,12 +234,12 @@ class TransactionTests {
         }
 
         // open DatePickerDialog
-        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        composeRule.onNodeWithTextId(R.string.transaction_date).performClick()
         // using non-Compose DatePicker so using Espresso here to select the date and confirm
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
         onView(withId(android.R.id.button1)).perform(click())
         // check that date is formatted and displayed correctly
-        composeRule.onNodeWithTTStrId(R.string.transaction_date).assertEditTextEquals(expectedDate)
+        composeRule.onNodeWithTextId(R.string.transaction_date).assertEditTextEquals(expectedDate)
     }
 
     @Test
@@ -256,12 +256,12 @@ class TransactionTests {
         }
 
         // open DatePickerDialog
-        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        composeRule.onNodeWithTextId(R.string.transaction_date).performClick()
         // using non-Compose DatePicker so using Espresso here to select the date and confirm
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
         onView(withId(android.R.id.button2)).perform(click())
         // check that previous date is formatted and displayed correctly
-        composeRule.onNodeWithTTStrId(R.string.transaction_date).assertEditTextEquals(expectedDate)
+        composeRule.onNodeWithTextId(R.string.transaction_date).assertEditTextEquals(expectedDate)
     }
 
     @Test
@@ -314,26 +314,23 @@ class TransactionTests {
         }
 
         // change date of Transaction that has already been repeated and save
-        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        composeRule.onNodeWithTextId(R.string.transaction_date).performClick()
         // using non-Compose DatePicker so using Espresso here to select the date and confirm
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
         onView(withId(android.R.id.button1)).perform(click())
 
         // accept warning
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
-            useUnmergedTree = true
-        ).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_confirm, useUnmergedTree = true).performClick()
 
         // change the date of Transaction again and save
-        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        composeRule.onNodeWithTextId(R.string.transaction_date).performClick()
         // using non-Compose DatePicker so using Espresso here to select the date and confirm
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 17))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check that the AlertDialog does not appear again
-        composeRule.onNode(hasTestTag("AlertDialog")).assertDoesNotExist()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad).assertDoesNotExist()
     }
 
     @Test
@@ -368,26 +365,23 @@ class TransactionTests {
         }
 
         // change date of Transaction that has already been repeated and save
-        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        composeRule.onNodeWithTextId(R.string.transaction_date).performClick()
         // using non-Compose DatePicker so using Espresso here to select the date and confirm
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 18))
         onView(withId(android.R.id.button1)).perform(click())
 
         // decline warning
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(
-            hasTestTag("AlertDialog dismiss"),
-            useUnmergedTree = true
-        ).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_dismiss, useUnmergedTree = true).performClick()
 
         // change the date of Transaction again and save
-        composeRule.onNodeWithTTStrId(R.string.transaction_date).performClick()
+        composeRule.onNodeWithTextId(R.string.transaction_date).performClick()
         // using non-Compose DatePicker so using Espresso here to select the date and confirm
         onView(isAssignableFrom(DatePicker::class.java)).perform(setDate(2021, 1, 17))
         onView(withId(android.R.id.button1)).perform(click())
 
         // check that the AlertDialog does appear again
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad).assertIsDisplayed()
     }
 
     /**
@@ -399,21 +393,20 @@ class TransactionTests {
      */
     private fun createNew(nodeId: Int, createId: Int, newName: String) {
         // create new item
-        composeRule.onNodeWithTTStrId(nodeId).performClick()
+        composeRule.onNodeWithTextId(nodeId).performClick()
         composeRule.onNodeWithTextId(createId).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(hasTestTag("AlertDialog input")).performTextInput(newName)
-        composeRule.onNode(
-            hasTestTag("AlertDialog confirm"),
+        composeRule.onNodeWithTTStrId(R.string.tt_ad).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_input).performTextInput(newName)
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_confirm,
             useUnmergedTree = true
         ).performClick()
 
         // check that newly created item is selected
-        composeRule.onNodeWithTTStrId(nodeId).assertEditTextEquals(newName)
+        composeRule.onNodeWithTextId(nodeId).assertEditTextEquals(newName)
 
         // check that newly created item exists in dropdown menu
-        composeRule.onNodeWithTTStrId(nodeId).performClick()
-        composeRule.onNode(hasTestTag("DropdownMenuItem $newName")).assertIsDisplayed()
+        composeRule.onNodeWithTextId(nodeId).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_tran_ddmItem, newName).assertIsDisplayed()
     }
 
     /**
@@ -424,14 +417,11 @@ class TransactionTests {
      *  [previousName] is displayed on node
      */
     private fun cancelNew(nodeId: Int, createId: Int, previousName: String) {
-        composeRule.onNodeWithTTStrId(nodeId).performClick()
+        composeRule.onNodeWithTextId(nodeId).performClick()
         composeRule.onNodeWithTextId(createId).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog")).assertIsDisplayed()
-        composeRule.onNode(
-            hasTestTag("AlertDialog dismiss"),
-            useUnmergedTree = true
-        ).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_dismiss, useUnmergedTree = true).performClick()
 
-        composeRule.onNodeWithTTStrId(nodeId).assertEditTextEquals(previousName)
+        composeRule.onNodeWithTextId(nodeId).assertEditTextEquals(previousName)
     }
 }

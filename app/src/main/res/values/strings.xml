@@ -147,6 +147,7 @@
     <string name="tt_list_vp" translatable="false">List ViewPager</string>
     <string name="tt_set_name" translatable="false">%1$s</string>
     <string name="tt_set_select" translatable="false">%1$s %2$s</string>
+    <string name="tt_tran_ddmItem" translatable="false">DropdownMenuItem %1$s</string>
     <string name="tt_tranL_empty" translatable="false">Empty Transaction List</string>
     <string name="tt_tranL_item" translatable="false">TranList item %1$d</string>
 </resources>

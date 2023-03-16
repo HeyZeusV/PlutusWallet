@@ -359,9 +359,7 @@ fun TransactionTextInput(
         OutlinedTextField(
             value = value,
             onValueChange = { if (it.length <= maxLength) onValueChanged(it) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(label),
+            modifier = Modifier.fillMaxWidth(),
             label = { Text(text = label) },
             singleLine = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -410,9 +408,7 @@ fun TransactionDate(
         OutlinedTextField(
             value = value,
             onValueChange = { },
-            modifier = modifier
-                .fillMaxWidth()
-                .testTag(label),
+            modifier = modifier.fillMaxWidth(),
             readOnly = true,
             label = { Text(text = label) },
             interactionSource = source,
@@ -470,8 +466,7 @@ fun TransactionDropDownMenu(
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
                         textFieldSize = coordinates.size.toSize()
-                    }
-                    .testTag(label),
+                    },
                 readOnly = true,
                 label = { Text(label) },
                 trailingIcon = {
@@ -511,7 +506,7 @@ fun TransactionDropDownMenu(
                                 expanded = false
                             }
                         },
-                        modifier = Modifier.testTag("DropdownMenuItem $name")
+                        modifier = Modifier.testTag(stringResource(R.string.tt_tran_ddmItem, name))
                     ) {
                         Text(text = name)
                     }
@@ -539,9 +534,7 @@ fun TransactionNumberInput(
         OutlinedTextField(
             value = value,
             onValueChange = { if (it.text.length <= maxLength) onValueChanged(it.text) },
-            modifier = numberFieldModifier
-                .fillMaxWidth()
-                .testTag(label),
+            modifier = numberFieldModifier.fillMaxWidth(),
             label = { Text(label) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = TextFieldDefaults.outlinedTextFieldColors(

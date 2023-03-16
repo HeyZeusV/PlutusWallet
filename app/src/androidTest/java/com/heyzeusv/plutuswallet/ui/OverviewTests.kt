@@ -31,6 +31,7 @@ import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.data.FakeAndroidRepository
 import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.onNodeWithTTStrId
+import com.heyzeusv.plutuswallet.onNodeWithTextIdUp
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -113,9 +114,9 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_account).assertIsNotSelected()
-        composeRule.onNodeWithTTStrId(R.string.filter_category).assertIsNotSelected()
-        composeRule.onNodeWithTTStrId(R.string.filter_date).assertIsNotSelected()
+        composeRule.onNodeWithTextIdUp(R.string.filter_account).assertIsNotSelected()
+        composeRule.onNodeWithTextIdUp(R.string.filter_category).assertIsNotSelected()
+        composeRule.onNodeWithTextIdUp(R.string.filter_date).assertIsNotSelected()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_act)
             .assertTextEquals(res.getString(R.string.filter_reset).uppercase())
     }
@@ -129,7 +130,7 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_account).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Cash").performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Credit Card").performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_act).performClick()
@@ -164,7 +165,7 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_category).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Entertainment").performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Housing").performClick()
@@ -200,7 +201,7 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_category).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Income").assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Salary").performClick()
@@ -233,7 +234,7 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_date).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_start).performClick()
@@ -270,11 +271,11 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_account).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Debit Card").performClick()
 
         // apply Category filter with 2 chip selected
-        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_category).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Income").assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Salary").performClick()
@@ -308,12 +309,12 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_account).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Cash").performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Credit Card").performClick()
 
         // apply Date filter
-        composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_date).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_start).performClick()
@@ -353,12 +354,12 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_category).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Food").performClick()
 
         // apply Date filter
-        composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_date).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_start).performClick()
@@ -398,16 +399,16 @@ class OverviewTests {
         composeRule.onNode(hasContentDescription(res.getString(R.string.cfl_menu_filter)))
             .performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_card).assertIsDisplayed()
-        composeRule.onNodeWithTTStrId(R.string.filter_account).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_account).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Cash").performClick()
 
         // open filter and apply Category filter with 1 chip selected
-        composeRule.onNodeWithTTStrId(R.string.filter_category).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_category).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_type, "Expense").assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_chip, "Food").performClick()
 
         // apply Date filter
-        composeRule.onNodeWithTTStrId(R.string.filter_date).performClick()
+        composeRule.onNodeWithTextIdUp(R.string.filter_date).performClick()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_start).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_end).assertIsDisplayed()
         composeRule.onNodeWithTTStrId(R.string.tt_filter_start).performClick()
