@@ -16,16 +16,17 @@ import com.heyzeusv.plutuswallet.util.FilterState.VALID
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.endOfDay
 import com.heyzeusv.plutuswallet.util.startOfDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.DateFormat
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
-private const val MIDNIGHT_MILLI = 86399999
 
 /**
  *  Stores and manages UI-related data in a lifecycle conscious way.
@@ -119,22 +120,22 @@ class FilterViewModel @Inject constructor(
         }
     }
 
-    private var startDate = startOfDay(Date())
-    private var endDate = Date(startDate.time + MIDNIGHT_MILLI)
+    private var startDate: ZonedDateTime = startOfDay(ZonedDateTime.now(systemDefault()))
+    private var endDate: ZonedDateTime = endOfDay(startDate)
     private val dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT)
 
     // Date string values
     private val _startDateString = MutableStateFlow("")
     val startDateString: StateFlow<String> get() = _startDateString
     fun updateStartDateString(newDate: Date) {
-        startDate = newDate
+//        startDate = newDate
         _startDateString.value = dateFormatter.format(startDate)
     }
 
     private val _endDateString = MutableStateFlow("")
     val endDateString: StateFlow<String> get() = _endDateString
     fun updateEndDateString(newDate: Date) {
-        endDate = Date(newDate.time + MIDNIGHT_MILLI)
+//        endDate = Date(newDate.time + MIDNIGHT_MILLI)
         _endDateString.value = dateFormatter.format(endDate)
     }
 
@@ -203,8 +204,8 @@ class FilterViewModel @Inject constructor(
         _categorySelectedList.value = emptyList()
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDate = startOfDay(Date())
-        endDate = Date(startDate.time + MIDNIGHT_MILLI)
+        startDate = startOfDay(ZonedDateTime.now(systemDefault()))
+        endDate = endOfDay(startDate)
         _startDateString.value = ""
         _endDateString.value = ""
 

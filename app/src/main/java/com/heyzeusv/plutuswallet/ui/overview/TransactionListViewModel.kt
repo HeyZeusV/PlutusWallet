@@ -13,13 +13,12 @@ import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.util.createFutureDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.ZoneId
+import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -148,7 +147,8 @@ class TransactionListViewModel @Inject constructor(
             moreToCreate = false
             // returns list of all Transactions whose futureDate is before current date
             val futureTranList: MutableList<Transaction> =
-                tranRepo.getFutureTransactionsAsync(Date()).toMutableList()
+                tranRepo.getFutureTransactionsAsync(ZonedDateTime.now(systemDefault()))
+                    .toMutableList()
             // return if empty
             if (futureTranList.isNotEmpty()) {
                 val ready: MutableList<Transaction> = tranUpsertAsync(futureTranList).await()
@@ -183,7 +183,7 @@ class TransactionListViewModel @Inject constructor(
                 )
                 // if new futureDate is before current time,
                 // then there are more Transactions to be added
-                if (futureDate < ZonedDateTime.now(ZoneId.systemDefault())) moreToCreate = true
+                if (futureDate < ZonedDateTime.now(systemDefault())) moreToCreate = true
             }
 
             // stops this Transaction from being repeated again if user switches its date
