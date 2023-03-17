@@ -101,8 +101,10 @@ import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.FilterState
 import com.heyzeusv.plutuswallet.util.datePickerDialog
 import java.math.BigDecimal
-import java.text.DateFormat
-import java.util.Date
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle.SHORT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -249,9 +251,9 @@ fun OverviewScreen(
     fDateFilterSelected: Boolean,
     fDateFilterOnClick: (Boolean) -> Unit,
     fStartDateString: String,
-    fStartDateOnClick: (Date) -> Unit,
+    fStartDateOnClick: (ZonedDateTime) -> Unit,
     fEndDateString: String,
-    fEndDateOnClick: (Date) -> Unit,
+    fEndDateOnClick: (ZonedDateTime) -> Unit,
     fApplyOnClick: () -> Unit,
     fFilterState: FilterState,
     fShowSnackbar: suspend (String) -> Unit
@@ -687,9 +689,9 @@ fun FilterCard(
     dateFilterSelected: Boolean = false,
     dateFilterOnClick: (Boolean) -> Unit = { },
     startDateString: String = "",
-    startDateOnClick: (Date) -> Unit = { },
+    startDateOnClick: (ZonedDateTime) -> Unit = { },
     endDateString: String = "",
-    endDateOnClick: (Date) -> Unit = { },
+    endDateOnClick: (ZonedDateTime) -> Unit = { },
     applyOnClick: () -> Unit = { },
     filterState: FilterState = FilterState.VALID,
     showSnackbar: suspend (String) -> Unit = { }
@@ -894,15 +896,16 @@ fun FilterCard(
                             .onGloballyPositioned { dateComposeSize = it.size.toSize() },
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
+                        val formatter = DateTimeFormatter.ofLocalizedDate(SHORT)
                         PWButton(
                             selected = true,
                             onClick = {
                                 datePickerDialog(
                                     view,
                                     initDate = if (startDateString.isNotBlank()) {
-                                        DateFormat.getDateInstance().parse(startDateString)
+                                        ZonedDateTime.parse(startDateString, formatter)
                                     } else {
-                                        Date()
+                                        ZonedDateTime.now(systemDefault())
                                     },
                                     onDateSelected = startDateOnClick
                                 ).show()
@@ -919,9 +922,9 @@ fun FilterCard(
                                 datePickerDialog(
                                     view,
                                     initDate = if (endDateString.isNotBlank()) {
-                                        DateFormat.getDateInstance().parse(endDateString)
+                                        ZonedDateTime.parse(endDateString, formatter)
                                     } else {
-                                        Date()
+                                        ZonedDateTime.now(systemDefault())
                                     },
                                     onDateSelected = endDateOnClick
                                 ).show()
@@ -1007,7 +1010,7 @@ fun OverviewScreenPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",
@@ -1092,7 +1095,7 @@ fun TransactionListCardPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",
@@ -1121,7 +1124,7 @@ fun TransactionListItemPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",

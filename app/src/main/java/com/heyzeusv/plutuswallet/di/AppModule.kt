@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
-import com.heyzeusv.plutuswallet.util.SettingsUtils
+import com.heyzeusv.plutuswallet.util.prepareSettingValues
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +27,6 @@ object AppModule {
     @Singleton
     @Provides
     fun provideSettingsValues(sharedPref: SharedPreferences): SettingsValues {
-        return SettingsUtils.prepareSettingValues(sharedPref)
+        return prepareSettingValues(sharedPref)
     }
 }

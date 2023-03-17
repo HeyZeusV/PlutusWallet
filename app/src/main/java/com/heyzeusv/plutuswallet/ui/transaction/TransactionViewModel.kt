@@ -15,11 +15,12 @@ import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.createFutureDate
+import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.Date
+import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -202,7 +203,7 @@ class TransactionViewModel @Inject constructor(
      */
     fun setTranData(transaction: Transaction) {
         updateTitle(transaction.title)
-        updateDate(setVals.dateFormatter.format(transaction.date))
+        updateDate(formatDate(transaction.date, setVals.dateFormat))
         updateAccount(transaction.account)
         updateTotal(transaction.total.toString())
         updateTypeSelected(if (transaction.type == EXPENSE.type) EXPENSE else INCOME)
@@ -384,12 +385,12 @@ class TransactionViewModel @Inject constructor(
     /**
      *  Takes [newDate] user selects, changes Transaction date, and formats it to be displayed.
      */
-    fun onDateSelected(newDate: Date) {
+    fun onDateSelected(newDate: ZonedDateTime) {
         // true if newDate is different from previous date
-//        dateChanged = _transaction.value.date != newDate
-//        _transaction.value.date = newDate
+        dateChanged = _transaction.value.date.isEqual(newDate).not()
+        _transaction.value.date = newDate
         // turns date selected into Date type
-        updateDate(setVals.dateFormatter.format(newDate))
+        updateDate(formatDate(newDate, setVals.dateFormat))
     }
 }
 

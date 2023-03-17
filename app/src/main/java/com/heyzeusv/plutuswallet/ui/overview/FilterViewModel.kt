@@ -17,13 +17,13 @@ import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.endOfDay
+import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.startOfDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.text.DateFormat
 import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
-import java.util.Date
+import java.time.format.FormatStyle.SHORT
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -122,21 +122,20 @@ class FilterViewModel @Inject constructor(
 
     private var startDate: ZonedDateTime = startOfDay(ZonedDateTime.now(systemDefault()))
     private var endDate: ZonedDateTime = endOfDay(startDate)
-    private val dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT)
 
     // Date string values
     private val _startDateString = MutableStateFlow("")
     val startDateString: StateFlow<String> get() = _startDateString
-    fun updateStartDateString(newDate: Date) {
-//        startDate = newDate
-        _startDateString.value = dateFormatter.format(startDate)
+    fun updateStartDateString(newDate: ZonedDateTime) {
+        startDate = newDate
+        _startDateString.value = formatDate(startDate, SHORT)
     }
 
     private val _endDateString = MutableStateFlow("")
     val endDateString: StateFlow<String> get() = _endDateString
-    fun updateEndDateString(newDate: Date) {
-//        endDate = Date(newDate.time + MIDNIGHT_MILLI)
-        _endDateString.value = dateFormatter.format(endDate)
+    fun updateEndDateString(newDate: ZonedDateTime) {
+        endDate = endOfDay(newDate)
+        _endDateString.value = formatDate(endDate, SHORT)
     }
 
     private val _filterInfo = MutableStateFlow(FilterInfo())

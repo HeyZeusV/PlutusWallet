@@ -1,7 +1,7 @@
 package com.heyzeusv.plutuswallet.data.model
 
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZonedDateTime
 
 /**
  *  Not exactly an entity, but more of a helper object to hold Transaction data that
@@ -11,7 +11,7 @@ import java.util.Date
 data class TranListItem(
     val id: Int,
     val title: String,
-    val date: Date,
+    val date: ZonedDateTime,
     val total: BigDecimal,
     val account: String,
     val type: String,

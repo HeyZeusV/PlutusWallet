@@ -69,8 +69,10 @@ import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.datePickerDialog
-import java.text.DateFormat
-import java.util.Date
+import com.heyzeusv.plutuswallet.util.formatDate
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
+import java.time.format.FormatStyle.SHORT
 import kotlinx.coroutines.launch
 
 /**
@@ -193,8 +195,8 @@ fun TransactionCard(
     transaction: Transaction = Transaction(),
     title: String = "",
     updateTitle: (String) -> Unit = { },
-    date: String = DateFormat.getDateInstance(0).format(Date()),
-    onDateSelected: (Date) -> Unit = { },
+    date: String = formatDate(ZonedDateTime.now(systemDefault()), SHORT),
+    onDateSelected: (ZonedDateTime) -> Unit = { },
     account: String = "",
     updateAccount: (String) -> Unit = { },
     total: TextFieldValue = TextFieldValue("$0.00"),

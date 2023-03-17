@@ -44,7 +44,8 @@ import com.heyzeusv.plutuswallet.util.SettingOptions.DECIMAL_SYMBOL
 import com.heyzeusv.plutuswallet.util.SettingOptions.LANGUAGE
 import com.heyzeusv.plutuswallet.util.SettingOptions.THEME
 import com.heyzeusv.plutuswallet.util.SettingOptions.THOUSANDS_SYMBOL
-import com.heyzeusv.plutuswallet.util.SettingsUtils
+import com.heyzeusv.plutuswallet.util.getCurrencySymbol
+import com.heyzeusv.plutuswallet.util.getSeparatorSymbol
 import java.lang.NumberFormatException
 
 /**
@@ -75,7 +76,7 @@ fun SettingsScreen(
         setVM::updateCurrencySymbolSide,
         setVM::updateThousandsSymbol,
         setVM::updateDecimalSymbol,
-        setVM::updateDateFormatter
+        setVM::updateDateFormat
     )
 }
 
@@ -92,7 +93,7 @@ fun SettingsScreen(
     updateCurrencySymbolSide: (String) -> Unit,
     updateThousandsSymbol: (Char) -> Unit,
     updateDecimalSymbol: (Char) -> Unit,
-    updateDateFormatter: (Int) -> Unit
+    updateDateFormat: (Int) -> Unit
 ) {
     val sharedPref = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
 
@@ -123,8 +124,8 @@ fun SettingsScreen(
                         sharedPref[Key.KEY_THOUSANDS_SYMBOL] = oldDecimal
                         sharedPref[Key.KEY_DECIMAL_SYMBOL] = oldThousands
                         updateNumberSymbols(
-                            SettingsUtils.getSeparatorSymbol(oldDecimal),
-                            SettingsUtils.getSeparatorSymbol(oldThousands)
+                            getSeparatorSymbol(oldDecimal),
+                            getSeparatorSymbol(oldThousands)
                         )
                         openSwitchDialog = false
                     },
@@ -165,7 +166,7 @@ fun SettingsScreen(
             }
             SettingSetup(CURRENCY_SYMBOL, sharedPref) {
                 sharedPref[CURRENCY_SYMBOL.key] = it
-                updateCurrencySymbol(SettingsUtils.getCurrencySymbol(it))
+                updateCurrencySymbol(getCurrencySymbol(it))
             }
             SettingSetup(CURRENCY_SYMBOL_SIDE, sharedPref) {
                 sharedPref[CURRENCY_SYMBOL_SIDE.key] = it
@@ -182,7 +183,7 @@ fun SettingsScreen(
                     openSwitchDialog = true
                 } else {
                     sharedPref[THOUSANDS_SYMBOL.key] = it
-                    val newThousandsSymbol = SettingsUtils.getSeparatorSymbol(it)
+                    val newThousandsSymbol = getSeparatorSymbol(it)
                     updateThousandsSymbol(newThousandsSymbol)
                     thousandsSymbolSelectedValue = "\"$newThousandsSymbol\""
                 }
@@ -198,7 +199,7 @@ fun SettingsScreen(
                     openSwitchDialog = true
                 } else {
                     sharedPref[DECIMAL_SYMBOL.key] = it
-                    val newDecimalSymbol = SettingsUtils.getSeparatorSymbol(it)
+                    val newDecimalSymbol = getSeparatorSymbol(it)
                     updateDecimalSymbol(newDecimalSymbol)
                     decimalSymbolSelectedValue = "\"$newDecimalSymbol\""
                 }
@@ -216,7 +217,7 @@ fun SettingsScreen(
             }
             SettingSetup(DATE_FORMAT, sharedPref) {
                 sharedPref[DATE_FORMAT.key] = it
-                updateDateFormatter(try { it.toInt() } catch (e: NumberFormatException) { 0 })
+                updateDateFormat(try { it.toInt() } catch (e: NumberFormatException) { 0 })
             }
             SettingSetup(LANGUAGE, sharedPref) {
                 sharedPref[LANGUAGE.key] = it
@@ -364,7 +365,7 @@ fun SettingsScreenPreview() {
             updateCurrencySymbolSide = { },
             updateThousandsSymbol = { },
             updateDecimalSymbol = { },
-            updateDateFormatter = { }
+            updateDateFormat = { }
         )
     }
 }

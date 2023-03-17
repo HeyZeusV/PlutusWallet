@@ -10,7 +10,10 @@ import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import com.heyzeusv.plutuswallet.util.createFutureDate
+import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.ZoneId.systemDefault
@@ -24,10 +27,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-
-
-private const val EXPENSE = "Expense"
-private const val INCOME = "Income"
 
 /**
  *  Data manager for TransactionListFragments.
@@ -92,19 +91,19 @@ class TransactionListViewModel @Inject constructor(
             val catSize: Int = tranRepo.getCategorySizeAsync()
 
             if (catSize == 0) {
-                val education = Category(0, "Education", EXPENSE)
-                val entertainment = Category(0, "Entertainment", EXPENSE)
-                val food = Category(0, "Food", EXPENSE)
-                val home = Category(0, "Home", EXPENSE)
-                val transportation = Category(0, "Transportation", EXPENSE)
-                val utilities = Category(0, "Utilities", EXPENSE)
+                val education = Category(0, "Education", EXPENSE.type)
+                val entertainment = Category(0, "Entertainment", EXPENSE.type)
+                val food = Category(0, "Food", EXPENSE.type)
+                val home = Category(0, "Home", EXPENSE.type)
+                val transportation = Category(0, "Transportation", EXPENSE.type)
+                val utilities = Category(0, "Utilities", EXPENSE.type)
 
-                val cryptocurrency = Category(0, "Cryptocurrency", INCOME)
-                val investments = Category(0, "Investments", INCOME)
-                val salary = Category(0, "Salary", INCOME)
-                val savings = Category(0, "Savings", INCOME)
-                val stocks = Category(0, "Stocks", INCOME)
-                val wages = Category(0, "Wages", INCOME)
+                val cryptocurrency = Category(0, "Cryptocurrency", INCOME.type)
+                val investments = Category(0, "Investments", INCOME.type)
+                val salary = Category(0, "Salary", INCOME.type)
+                val savings = Category(0, "Savings", INCOME.type)
+                val stocks = Category(0, "Stocks", INCOME.type)
+                val wages = Category(0, "Wages", INCOME.type)
 
                 val initialCategories: List<Category> = listOf(
                     education, entertainment, food, home, transportation, utilities,
@@ -131,7 +130,7 @@ class TransactionListViewModel @Inject constructor(
         val tranItemList = mutableListOf<TranListItemFull>()
         for (tlItem in list) {
             val formattedTotal = tlItem.total.prepareTotalText(setVals)
-            val formattedDate = setVals.dateFormatter.format(tlItem.date)
+            val formattedDate = formatDate(tlItem.date, setVals.dateFormat)
             val tranItem = TranListItemFull(tlItem, formattedTotal, formattedDate)
             tranItemList.add(tranItem)
         }
@@ -183,7 +182,7 @@ class TransactionListViewModel @Inject constructor(
                 )
                 // if new futureDate is before current time,
                 // then there are more Transactions to be added
-                if (futureDate < ZonedDateTime.now(systemDefault())) moreToCreate = true
+                if (futureDate.isBefore(ZonedDateTime.now(systemDefault()))) moreToCreate = true
             }
 
             // stops this Transaction from being repeated again if user switches its date

@@ -6,9 +6,6 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Calendar
-import java.util.Date
-import java.util.GregorianCalendar
 
 /**
  *  Functions used in multiple classes focused on Dates.
@@ -33,19 +30,21 @@ fun createFutureDate(date: ZonedDateTime, period: Int, frequency: Int): ZonedDat
 /**
  *  Returns formatted [date] String using [format] to determine version.
  */
-fun formatString(date: ZonedDateTime, format: Int): String {
-    return date.format(
-        DateTimeFormatter.ofLocalizedDate(
-            when (format) {
-                0 -> FormatStyle.SHORT
-                1 -> FormatStyle.MEDIUM
-                2 -> FormatStyle.LONG
-                else -> FormatStyle.FULL
-            }
-        )
-    )
+fun formatDate(date: ZonedDateTime, format: FormatStyle): String {
+    return date.format(DateTimeFormatter.ofLocalizedDate(format))
 }
 
+/**
+ *  Returns [FormatStyle] used by ZonedDateTime by converting passed [intFormat]
+ */
+fun retrieveDateFormat(intFormat: Int): FormatStyle {
+    return when (intFormat) {
+        0 -> FormatStyle.SHORT
+        1 -> FormatStyle.MEDIUM
+        2 -> FormatStyle.LONG
+        else -> FormatStyle.FULL
+    }
+}
 
 /**
  *  Returns ZonedDateTime object starting at the beginning of the day using [date].
@@ -69,59 +68,14 @@ fun endOfDay(date: ZonedDateTime): ZonedDateTime {
     return endDay.apply {
         plusDays(1L)
 
-        minusSeconds(date.second.toLong() + 1L)
+        minusSeconds(1L)
     }
-}
-
-
-/**
- *  Returns Date object starting at the beginning of the day using [date].
- */
-fun startOfDay(date: Date): Date {
-
-    val calendar = GregorianCalendar()
-    calendar.timeInMillis = date.time
-    calendar.set(Calendar.HOUR_OF_DAY, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
-
-    return calendar.time
-}
-
-/**
- *  Creates DatePickerDialog using [view]'s Context with [initDate] selected.
- *  [onDateSelected] is a function passed from ViewModel which determines what
- *  to do with the Date user selects.
- */
-fun datePickerDialog(
-    view: View,
-    initDate: Date,
-    onDateSelected: (Date) -> Unit
-): DatePickerDialog {
-
-    // set up Calendar with initial Date
-    val calendar: Calendar = Calendar.getInstance()
-    calendar.time = initDate
-    // variables used to initialize DateDialog
-    val initYear: Int = calendar.get(Calendar.YEAR)
-    val initMonth: Int = calendar.get(Calendar.MONTH)
-    val initDay: Int = calendar.get(Calendar.DAY_OF_MONTH)
-    // retrieves date selected in DateDialog and passes to function from ViewModel
-    val dateListener =
-        DatePickerDialog.OnDateSetListener { _, year: Int, month: Int, day: Int ->
-
-            val date: Date = GregorianCalendar(year, month, day).time
-            onDateSelected(date)
-        }
-
-    return DatePickerDialog(view.context, dateListener, initYear, initMonth, initDay)
 }
 
 fun datePickerDialog(
     view: View,
     initDate: ZonedDateTime,
-    onDateSelected: (Date) -> Unit
+    onDateSelected: (ZonedDateTime) -> Unit
 ): DatePickerDialog {
 
     // variables used to initialize DateDialog
@@ -135,7 +89,7 @@ fun datePickerDialog(
             val date: ZonedDateTime = ZonedDateTime.of(
                 year, month, day, 0, 0, 0, 0, ZoneId.systemDefault()
             )
-            onDateSelected(Date())
+            onDateSelected(date)
         }
 
     return DatePickerDialog(view.context, dateListener, initYear, initMonth, initDay)

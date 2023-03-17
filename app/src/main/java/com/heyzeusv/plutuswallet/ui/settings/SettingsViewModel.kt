@@ -2,9 +2,9 @@ package com.heyzeusv.plutuswallet.ui.settings
 
 import androidx.lifecycle.ViewModel
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
+import com.heyzeusv.plutuswallet.util.retrieveDateFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.RoundingMode
-import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -79,7 +79,7 @@ class SettingsViewModel @Inject constructor(
         updateSetVals(_setVals.value.copy(decimalNumber = format))
     }
 
-    fun updateDateFormatter(format: Int) {
-        updateSetVals(_setVals.value.copy(dateFormatter = DateFormat.getDateInstance(format)))
+    fun updateDateFormat(format: Int) {
+        updateSetVals(_setVals.value.copy(dateFormat = retrieveDateFormat(format)))
     }
 }
