@@ -2,6 +2,9 @@ package com.heyzeusv.plutuswallet.data
 
 import androidx.room.TypeConverter
 import java.math.BigDecimal
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.Date
 
 /**
@@ -19,6 +22,13 @@ class PWTypeConverters {
     @TypeConverter
     fun toDate(millisSinceEpoch: Long?): Date? = millisSinceEpoch?.let { Date(it) }
 
+    @TypeConverter
+    fun fromZonedDateTime(date: ZonedDateTime?): Long? = date?.toInstant()?.toEpochMilli()
+
+    @TypeConverter
+    fun toZonedDateTime(millisSinceEpoch: Long?): ZonedDateTime? = millisSinceEpoch?.let {
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(it), ZoneId.systemDefault())
+    }
 
     @TypeConverter
     fun fromBigDecimal(total: BigDecimal?): String? = total?.toString()

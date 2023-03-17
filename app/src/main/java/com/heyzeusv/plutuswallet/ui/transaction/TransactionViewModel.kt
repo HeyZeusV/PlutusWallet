@@ -14,11 +14,11 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.createFutureDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -248,7 +248,9 @@ class TransactionViewModel @Inject constructor(
             tran.memo = memo.value
 
             tran.repeating = repeat.value
-            if (tran.repeating) tran.futureDate = createFutureDate()
+            if (tran.repeating) {
+                tran.futureDate = createFutureDate(tran.date, tran.period, tran.frequency)
+            }
             tran.period = periodList.value.indexOf(period.value)
             val frequencyValue = frequency.value.text
             // frequency must always be at least 1
@@ -302,31 +304,6 @@ class TransactionViewModel @Inject constructor(
         }
         updateSaveSuccess(true)
         updateFutureDialog(false)
-    }
-
-    /**
-     *  Returns date from Transaction after adding frequency * period.
-     */
-    private fun createFutureDate(): Date {
-        val calendar: Calendar = Calendar.getInstance()
-        transaction.value.let {
-            // set to Transaction date rather than current time due to Users being able
-            // to select a Date in the past or future
-            calendar.time = it.date
-
-            // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-            calendar.add(
-                when (it.period) {
-                    0 -> Calendar.DAY_OF_MONTH
-                    1 -> Calendar.WEEK_OF_YEAR
-                    2 -> Calendar.MONTH
-                    else -> Calendar.YEAR
-                },
-                it.frequency
-            )
-        }
-
-        return calendar.time
     }
 
     /**
@@ -409,8 +386,8 @@ class TransactionViewModel @Inject constructor(
      */
     fun onDateSelected(newDate: Date) {
         // true if newDate is different from previous date
-        dateChanged = _transaction.value.date != newDate
-        _transaction.value.date = newDate
+//        dateChanged = _transaction.value.date != newDate
+//        _transaction.value.date = newDate
         // turns date selected into Date type
         updateDate(setVals.dateFormatter.format(newDate))
     }

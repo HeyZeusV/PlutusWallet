@@ -65,10 +65,10 @@ import com.heyzeusv.plutuswallet.ui.PWInputAlertDialog
 import com.heyzeusv.plutuswallet.ui.PWAlertDialog
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.AppBarActions
-import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.datePickerDialog
 import java.text.DateFormat
 import java.util.Date
 import kotlinx.coroutines.launch
@@ -268,9 +268,7 @@ fun TransactionCard(
             TransactionDate(
                 value = date,
                 label = stringResource(R.string.transaction_date),
-                onPressed = {
-                    DateUtils.datePickerDialog(view, dateObj, onDateSelected).show()
-                },
+                onPressed = { datePickerDialog(view, dateObj, onDateSelected).show() },
                 modifier = Modifier.padding(
                     top = dimensionResource(R.dimen.textFToTextFWHelperTopPadding)
                 )

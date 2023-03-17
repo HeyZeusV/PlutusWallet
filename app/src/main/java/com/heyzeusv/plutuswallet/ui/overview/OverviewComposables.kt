@@ -98,8 +98,8 @@ import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.FilterState
+import com.heyzeusv.plutuswallet.util.datePickerDialog
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.util.Date
@@ -897,7 +897,7 @@ fun FilterCard(
                         PWButton(
                             selected = true,
                             onClick = {
-                                DateUtils.datePickerDialog(
+                                datePickerDialog(
                                     view,
                                     initDate = if (startDateString.isNotBlank()) {
                                         DateFormat.getDateInstance().parse(startDateString)
@@ -916,7 +916,7 @@ fun FilterCard(
                         PWButton(
                             selected = true,
                             onClick = {
-                                DateUtils.datePickerDialog(
+                                datePickerDialog(
                                     view,
                                     initDate = if (endDateString.isNotBlank()) {
                                         DateFormat.getDateInstance().parse(endDateString)

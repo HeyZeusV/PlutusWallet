@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
-import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.FilterChipAction
 import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
@@ -17,6 +16,7 @@ import com.heyzeusv.plutuswallet.util.FilterState.VALID
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.startOfDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -119,7 +119,7 @@ class FilterViewModel @Inject constructor(
         }
     }
 
-    private var startDate = DateUtils.startOfDay(Date())
+    private var startDate = startOfDay(Date())
     private var endDate = Date(startDate.time + MIDNIGHT_MILLI)
     private val dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT)
 
@@ -203,7 +203,7 @@ class FilterViewModel @Inject constructor(
         _categorySelectedList.value = emptyList()
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDate = DateUtils.startOfDay(Date())
+        startDate = startOfDay(Date())
         endDate = Date(startDate.time + MIDNIGHT_MILLI)
         _startDateString.value = ""
         _endDateString.value = ""

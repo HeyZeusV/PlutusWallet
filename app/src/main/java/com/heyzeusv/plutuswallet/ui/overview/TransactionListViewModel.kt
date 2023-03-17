@@ -10,13 +10,15 @@ import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.util.createFutureDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -138,26 +140,6 @@ class TransactionListViewModel @Inject constructor(
     }
 
     /**
-     *  Returns FutureDate set at the beginning of the day by calculating
-     *  ([frequency] * [period]) + [date].
-     */
-    private fun createFutureDate(date: Date, period: Int, frequency: Int): Date {
-        val calendar: Calendar = Calendar.getInstance()
-        // set to Transaction date
-        calendar.time = date
-
-        // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-        when (period) {
-            0 -> calendar.add(Calendar.DAY_OF_MONTH, frequency)
-            1 -> calendar.add(Calendar.WEEK_OF_YEAR, frequency)
-            2 -> calendar.add(Calendar.MONTH, frequency)
-            3 -> calendar.add(Calendar.YEAR, frequency)
-        }
-
-        return calendar.time
-    }
-
-    /**
      *  Adds new Transactions depending on existing Transactions futureDate.
      */
     fun futureTransactions() {
@@ -189,19 +171,20 @@ class TransactionListViewModel @Inject constructor(
 
         futureTranList.forEach { transaction: Transaction ->
             // gets copy of Transaction attached to this FutureTransaction
-            val newTran: Transaction = transaction.copy()
-            // changing new Transaction values to updated values
-            newTran.id = 0
-            newTran.date = transaction.futureDate
-            newTran.title = incrementString(newTran.title)
-            newTran.futureDate = createFutureDate(
-                newTran.date,
-                newTran.period,
-                newTran.frequency
-            )
-            // if new futureDate is before current time,
-            // then there are more Transactions to be added
-            if (newTran.futureDate < Date()) moreToCreate = true
+            val newTran: Transaction = transaction.copy().apply {
+                // changing new Transaction values to updated values
+                id = 0
+                date = transaction.futureDate
+                title = incrementString(title)
+                futureDate = createFutureDate(
+                    date,
+                    period,
+                    frequency
+                )
+                // if new futureDate is before current time,
+                // then there are more Transactions to be added
+                if (futureDate < ZonedDateTime.now(ZoneId.systemDefault())) moreToCreate = true
+            }
 
             // stops this Transaction from being repeated again if user switches its date
             transaction.futureTCreated = true
