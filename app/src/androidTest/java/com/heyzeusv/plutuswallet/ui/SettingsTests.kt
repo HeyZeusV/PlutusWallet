@@ -17,6 +17,7 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.onNodeWithContDiscId
 import com.heyzeusv.plutuswallet.onNodeWithTTStrId
 import com.heyzeusv.plutuswallet.onNodeWithTextId
+import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.theme.Purple900
@@ -28,6 +29,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.time.format.FormatStyle
 import java.util.Locale
 import org.junit.Before
 import org.junit.Rule
@@ -81,8 +83,8 @@ class SettingsTests {
         // check that we navigate to Transaction screen
         composeRule.onNodeWithTextId(R.string.transaction).assertExists()
         // check that date and total are formatted correctly
-//        composeRule.onNodeWithTextId(R.string.transaction_date)
-//            .assertEditTextEquals(setVals.dateFormatter.format(dd.tran1.date))
+        composeRule.onNodeWithTextId(R.string.transaction_date)
+            .assertEditTextEquals(formatDate(dd.tran1.date, setVals.dateFormat))
         composeRule.onNodeWithTextId(R.string.transaction_total)
             .assertEditTextEquals("\$${setVals.decimalFormatter.format(dd.tran1.total)}")
         Espresso.pressBack()
@@ -155,21 +157,21 @@ class SettingsTests {
         // navigate to Settings, change date format then go back and check
         navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "April 19, 1993")
-//        setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(1))
+        setVals = setVals.copy(dateFormat = FormatStyle.LONG)
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change date format then go back and check
         navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "Apr 19, 1993")
-//        setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(2))
+        setVals = setVals.copy(dateFormat = FormatStyle.MEDIUM)
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change date format then go back and check
         navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "4/19/93")
-//        setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(3))
+        setVals = setVals.copy(dateFormat = FormatStyle.SHORT)
         Espresso.pressBack()
         checkAllTranListItems()
     }
