@@ -16,14 +16,11 @@ import java.time.format.FormatStyle
  *   ([frequency] * [period]) + [date].
  */
 fun createFutureDate(date: ZonedDateTime, period: Int, frequency: Int): ZonedDateTime {
-    return date.apply {
-        // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-        when (period) {
-            0 -> plusDays(frequency.toLong())
-            1 -> plusWeeks(frequency.toLong())
-            2 -> plusMonths(frequency.toLong())
-            else -> plusYears(frequency.toLong())
-        }
+    return when (period) {
+        0 -> date.plusDays(frequency.toLong())
+        1 -> date.plusWeeks(frequency.toLong())
+        2 -> date.plusMonths(frequency.toLong())
+        else -> date.plusYears(frequency.toLong())
     }
 }
 
@@ -50,26 +47,17 @@ fun retrieveDateFormat(intFormat: Int): FormatStyle {
  *  Returns ZonedDateTime object starting at the beginning of the day using [date].
  */
 fun startOfDay(date: ZonedDateTime): ZonedDateTime {
-    val startDay: ZonedDateTime = date
-
-    return startDay.apply {
-        minusNanos(date.nano.toLong())
-        minusSeconds(date.second.toLong())
-        minusMinutes(date.minute.toLong())
-        minusHours(date.hour.toLong())
-    }
+    return date.minusHours(date.hour.toLong())
+        .minusMinutes(date.minute.toLong())
+        .minusSeconds(date.second.toLong())
+        .minusNanos(date.nano.toLong())
 }
 
 /**
  *  Return ZonedDateTime object at 1 second before midnight using [date].
  */
 fun endOfDay(date: ZonedDateTime): ZonedDateTime {
-    val endDay: ZonedDateTime = startOfDay(date)
-    return endDay.apply {
-        plusDays(1L)
-
-        minusSeconds(1L)
-    }
+    return startOfDay(date).plusDays(1L).minusSeconds(1L)
 }
 
 fun datePickerDialog(
