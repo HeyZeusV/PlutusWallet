@@ -49,7 +49,7 @@ class DatabaseTest {
         @Test
         @DisplayName("List of Account names in alphabetical order")
         fun getAccountNames() = runTest {
-            val expected = listOf("Cash", "Credit Card", "Debit Card", "Unused Account")
+            val expected = listOf("Cash", "Credit Card", "Debit Card", "Savings", "Unused")
 
             assertEquals(expected, accDao.getAccountNames().first())
         }
@@ -57,7 +57,7 @@ class DatabaseTest {
         @Test
         @DisplayName("StateFlow that emits list of Accounts in use")
         fun getAccountsUsed() = runTest {
-            val expected = listOf(dd.acc3, dd.acc1, dd.acc2)
+            val expected = listOf(dd.acc3, dd.acc1, dd.acc2, dd.acc4)
 
             assertEquals(expected, accDao.getAccountsUsed().first())
         }
@@ -65,13 +65,13 @@ class DatabaseTest {
         @Test
         @DisplayName("Size of table")
         fun getAccountSize() = runTest {
-            assertEquals(4, accDao.getAccountSize())
+            assertEquals(dd.accList.size, accDao.getAccountSize())
         }
 
         @Test
         @DisplayName("StateFlow that emits list of all Accounts in order of name")
         fun getAccounts() = runTest {
-            val expected = listOf(dd.acc3, dd.acc1, dd.acc2, dd.acc4)
+            val expected = listOf(dd.acc3, dd.acc1, dd.acc2, dd.acc4, dd.acc5)
 
             assertEquals(expected, accDao.getAccounts().first())
         }
@@ -86,7 +86,7 @@ class DatabaseTest {
         @DisplayName("List of Category names of type in alphabetical order")
         fun getCategoryNamesByType() = runTest {
             val expected : MutableList<String> =
-                mutableListOf("Entertainment", "Food", "Unused Expense")
+                mutableListOf("Entertainment", "Food", "Housing", "Unused Expense")
 
             assertEquals(expected, catDao.getCategoryNamesByType("Expense").first())
         }
@@ -94,7 +94,7 @@ class DatabaseTest {
         @Test
         @DisplayName("StateFlow that emits list of Categories in use by type")
         fun getCategoriesUsedByType() = runTest {
-            val expected = listOf(dd.cat2, dd.cat1)
+            val expected = listOf(dd.cat2, dd.cat1, dd.cat7)
 
             assertEquals(expected, catDao.getCategoriesUsedByType("Expense").first())
         }
@@ -104,13 +104,13 @@ class DatabaseTest {
         @DisplayName("Size of table")
         fun getCategorySize() = runTest {
 
-            assertEquals(4, catDao.getCategorySize())
+            assertEquals(dd.catList.size, catDao.getCategorySize())
         }
 
         @Test
         @DisplayName("StateFlow that emits list that holds all Categories of type in order of name")
         fun getCategoriesByType() = runTest {
-            val expected = listOf(dd.cat2, dd.cat1, dd.cat4)
+            val expected = listOf(dd.cat2, dd.cat1, dd.cat7, dd.cat5)
 
             assertEquals(expected, catDao.getCategoriesByType("Expense").first())
         }
@@ -157,7 +157,8 @@ class DatabaseTest {
             fun getCt() = runTest {
                 val expected: List<CategoryTotals> = listOf(
                     CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense"),
-                    CategoryTotals("Food", BigDecimal("200.1"), "Expense"),
+                    CategoryTotals("Food", BigDecimal("1000.1"), "Expense"),
+                    CategoryTotals("Housing", BigDecimal("100"), "Expense"),
                     CategoryTotals("Salary", BigDecimal("2000.32"), "Income")
                 )
 
@@ -168,7 +169,7 @@ class DatabaseTest {
             @DisplayName("StateFlow that emits list of CT of given account w/ non-zero total")
             fun getCtA() = runTest {
                 val expected: List<CategoryTotals> =
-                    listOf(CategoryTotals("Food", BigDecimal("200.1"), "Expense"))
+                    listOf(CategoryTotals("Food", BigDecimal("1000.1"), "Expense"))
 
                 assertEquals(expected, tranDao.getCtA(listOf("Cash")).first())
             }
@@ -246,7 +247,7 @@ class DatabaseTest {
             @DisplayName("StateFlow that emits list of CT between given dates")
             fun getCtD() = runTest {
                 val expected: List<CategoryTotals> =
-                    listOf(CategoryTotals("Food", BigDecimal("100.1"), "Expense"))
+                    listOf(CategoryTotals("Food", BigDecimal("1000.1"), "Expense"))
 
                 assertEquals(
                     expected,
@@ -275,7 +276,7 @@ class DatabaseTest {
             @Test
             @DisplayName("StateFlow that emits list of TLI of given account")
             fun getTliA() = runTest {
-                val expected = listOf(dd.tli1, dd.tli2)
+                val expected = listOf(dd.tli1)
 
                 assertEquals(expected, tranDao.getTliA(listOf("Cash")).first())
             }
@@ -288,7 +289,7 @@ class DatabaseTest {
                 assertEquals(
                     expected,
                     tranDao.getTliAD(
-                        listOf("Cash"),
+                        listOf("Savings"),
                         ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
                         ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault())
                     ).first()
@@ -307,7 +308,7 @@ class DatabaseTest {
             @Test
             @DisplayName("StateFlow that emits list of TLI of given account, type, and category")
             fun getTliATC() = runTest {
-                val expected = listOf(dd.tli1, dd.tli2)
+                val expected = listOf(dd.tli1)
 
                 assertEquals(
                     expected,
@@ -324,7 +325,7 @@ class DatabaseTest {
                 assertEquals(
                     expected,
                     tranDao.getTliATD(
-                        listOf("Cash"),
+                        listOf("Savings"),
                         "Expense",
                         ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
                         ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault())
@@ -341,9 +342,9 @@ class DatabaseTest {
                 assertEquals(
                     expected,
                     tranDao.getTliATCD(
-                        listOf("Cash"),
+                        listOf("Savings"),
                         "Expense",
-                        listOf("Food"),
+                        listOf("Housing"),
                         ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
                         ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault())
                     ).first()

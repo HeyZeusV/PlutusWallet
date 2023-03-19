@@ -72,7 +72,7 @@ import com.heyzeusv.plutuswallet.util.datePickerDialog
 import com.heyzeusv.plutuswallet.util.formatDate
 import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
-import java.time.format.FormatStyle.SHORT
+import java.time.format.FormatStyle.LONG
 import kotlinx.coroutines.launch
 
 /**
@@ -195,7 +195,7 @@ fun TransactionCard(
     transaction: Transaction = Transaction(),
     title: String = "",
     updateTitle: (String) -> Unit = { },
-    date: String = formatDate(ZonedDateTime.now(systemDefault()), SHORT),
+    date: String = formatDate(ZonedDateTime.now(systemDefault()), LONG),
     onDateSelected: (ZonedDateTime) -> Unit = { },
     account: String = "",
     updateAccount: (String) -> Unit = { },
