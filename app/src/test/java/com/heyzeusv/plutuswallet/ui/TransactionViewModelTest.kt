@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.ui.transaction
+package com.heyzeusv.plutuswallet.ui
 
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
@@ -6,6 +6,7 @@ import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,7 +15,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -77,7 +79,7 @@ internal class TransactionViewModelTest {
         val expectedTran = Transaction(
             1,
             "Party",
-            Date(86400000),
+            ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
             BigDecimal("1000.99"),
             "Test Account",
             "Income",
@@ -86,7 +88,7 @@ internal class TransactionViewModelTest {
             false,
             1,
             0,
-            Date(86400000 * 2),
+            ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()),
             true
         )
 
@@ -132,7 +134,7 @@ internal class TransactionViewModelTest {
         val expectedTran = Transaction(
             1,
             "Party",
-            Date(86400000 * 3),
+            ZonedDateTime.of(1980, 1, 13, 1, 0, 0, 0, systemDefault()),
             BigDecimal("1000.99"),
             "Test Account",
             "Income",
@@ -141,7 +143,7 @@ internal class TransactionViewModelTest {
             true,
             1,
             0,
-            Date(86400000 * 4),
+            ZonedDateTime.of(1980, 1, 21, 1, 0, 0, 0, systemDefault()),
             true
         )
 
@@ -268,9 +270,12 @@ internal class TransactionViewModelTest {
         val expectedFormattedDate = "Saturday, January 3, 1970"
 
         tranVM.retrieveTransaction(dd.tran2.id)
-        tranVM.onDateSelected(Date(86400000*3))
+        tranVM.onDateSelected(ZonedDateTime.of(1980, 1, 21, 1, 0, 0, 0, systemDefault()))
 
-        assertEquals(Date(86400000*3), tranVM.transaction.value.date)
+        assertEquals(
+            ZonedDateTime.of(1980, 1, 21, 1, 0, 0, 0, systemDefault()),
+            tranVM.transaction.value.date
+        )
         assertEquals(expectedFormattedDate, tranVM.date.value)
     }
 

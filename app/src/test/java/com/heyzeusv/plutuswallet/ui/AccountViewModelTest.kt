@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.ui.account
+package com.heyzeusv.plutuswallet.ui
 
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil

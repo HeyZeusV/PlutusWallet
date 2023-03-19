@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.ui.cfl.chart
+package com.heyzeusv.plutuswallet.ui
 
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
@@ -12,7 +12,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -40,7 +41,8 @@ internal class ChartViewModelTest {
     @DisplayName("Should have ChartInformation ready for Expense and Income types at start up")
     fun viewModelInit() {
         val expectedExpenseCatTotalList = listOf(
-            CategoryTotals("Food", BigDecimal("1100.10"), "Expense"),
+            CategoryTotals("Food", BigDecimal("1000.10"), "Expense"),
+            CategoryTotals("Housing", BigDecimal("100.00"), "Expense"),
             CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense")
         )
         val expectedIncomeCatTotalList = listOf(
@@ -65,7 +67,8 @@ internal class ChartViewModelTest {
         chartVM.updateCatTotalsList(FilterInfo())
 
         val expectedExpenseCatTotalList = listOf(
-            CategoryTotals("Food", BigDecimal("2100.20"), "Expense"),
+            CategoryTotals("Food", BigDecimal("2000.20"), "Expense"),
+            CategoryTotals("Housing", BigDecimal("100.00"), "Expense"),
             CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense")
         )
         val expectedIncomeCatTotalList = listOf(
@@ -93,7 +96,8 @@ internal class ChartViewModelTest {
         chartVM.updateCatTotalsList(FilterInfo())
 
         val expectedExpenseCatTotalList = listOf(
-            CategoryTotals("Food", BigDecimal("1100.10"), "Expense"),
+            CategoryTotals("Food", BigDecimal("1000.10"), "Expense"),
+            CategoryTotals("Housing", BigDecimal("100.00"), "Expense"),
             CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense"),
             CategoryTotals("Test Expense Category", BigDecimal("1000.10"), "Expense")
         )
@@ -117,7 +121,8 @@ internal class ChartViewModelTest {
         var collectedList = listOf<CategoryTotals>()
 
         val expectedNoFilter: List<CategoryTotals> = listOf(
-            CategoryTotals("Food", BigDecimal("1100.10"), "Expense"),
+            CategoryTotals("Food", BigDecimal("1000.10"), "Expense"),
+            CategoryTotals("Housing", BigDecimal("100.00"), "Expense"),
             CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense"),
             CategoryTotals("Salary", BigDecimal("2000.32"), "Income")
         )
@@ -125,7 +130,7 @@ internal class ChartViewModelTest {
         assertEquals(expectedNoFilter, collectedList)
 
         val expectedAccFilter: List<CategoryTotals> = listOf(
-            CategoryTotals("Food", BigDecimal("1100.10"), "Expense")
+            CategoryTotals("Food", BigDecimal("1000.10"), "Expense")
         )
         chartVM.filteredCategoryTotals(
             FilterInfo(account = true, accountNames = listOf("Cash"))
@@ -133,12 +138,16 @@ internal class ChartViewModelTest {
         assertEquals(expectedAccFilter, collectedList)
 
         val expectedDateFilter: List<CategoryTotals> = listOf(
-            CategoryTotals("Food", BigDecimal("100.00"), "Expense"),
+            CategoryTotals("Housing", BigDecimal("100.00"), "Expense"),
             CategoryTotals("Entertainment", BigDecimal("55.45"), "Expense"),
             CategoryTotals("Salary", BigDecimal("2000.32"), "Income")
         )
         chartVM.filteredCategoryTotals(
-            FilterInfo(date = true, start = Date(86400000 * 2), end = Date(86400000 * 5))
+            FilterInfo(
+                date = true,
+                start = ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()),
+                end = ZonedDateTime.of(1980, 1, 15, 1, 0, 0, 0, systemDefault())
+            )
         ).collect { collectedList = it }
         assertEquals(expectedDateFilter, collectedList)
 
@@ -147,8 +156,11 @@ internal class ChartViewModelTest {
         )
         chartVM.filteredCategoryTotals(
             FilterInfo(
-                account = true, accountNames = listOf("Cash"),
-                date = true, start = Date(0), end = Date(86400000)
+                account = true,
+                accountNames = listOf("Cash"),
+                date = true,
+                start = ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()),
+                end = ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault())
             )
         ).collect { collectedList = it }
         assertEquals(expectedBothFilter, collectedList)

@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.ui.cfl.filter
+package com.heyzeusv.plutuswallet.ui
 
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
@@ -13,12 +13,14 @@ import com.heyzeusv.plutuswallet.util.FilterState.NO_SELECTED_DATE
 import com.heyzeusv.plutuswallet.util.FilterState.VALID
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.endOfDay
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -62,7 +64,7 @@ internal class FilterViewModelTest {
     @Test
     @DisplayName("Should save new start date selected and update String that displays formatted date")
     fun updateStartDateString() {
-        filterVM.updateStartDateString(Date(864000000))
+        filterVM.updateStartDateString(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
 
         assertEquals("1/10/70", filterVM.startDateString.value)
     }
@@ -70,7 +72,7 @@ internal class FilterViewModelTest {
     @Test
     @DisplayName("Should save new end date selected and update String that displays formatted date")
     fun updateEndDateString() {
-        filterVM.updateEndDateString(Date(864000000))
+        filterVM.updateEndDateString(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
 
         assertEquals("1/11/70", filterVM.endDateString.value)
     }
@@ -116,7 +118,7 @@ internal class FilterViewModelTest {
         assertEquals(NO_SELECTED_DATE, filterVM.filterState.value)
 
         // select only start date
-        filterVM.updateStartDateString(Date())
+        filterVM.updateStartDateString(ZonedDateTime.now(systemDefault()))
 
         filterVM.applyFilter()
 
@@ -129,7 +131,7 @@ internal class FilterViewModelTest {
 
         // select only end date
         filterVM.updateDateFilter(true)
-        filterVM.updateEndDateString(Date())
+        filterVM.updateEndDateString(ZonedDateTime.now(systemDefault()))
 
         filterVM.applyFilter()
 
@@ -141,8 +143,8 @@ internal class FilterViewModelTest {
             "selecting a start date that is after the end date")
     fun applyFilter_invalidDateRange() {
         filterVM.updateDateFilter(true)
-        filterVM.updateStartDateString(Date())
-        filterVM.updateEndDateString(Date(0))
+        filterVM.updateStartDateString(ZonedDateTime.now(systemDefault()))
+        filterVM.updateEndDateString(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
 
         filterVM.applyFilter()
 
@@ -157,11 +159,13 @@ internal class FilterViewModelTest {
         filterVM.updateDateFilter(true)
         filterVM.updateAccountSelected("Cash", ADD)
         filterVM.updateCategorySelectedList("Food", ADD)
-        filterVM.updateStartDateString(Date(0))
-        filterVM.updateEndDateString(Date(1000))
+        filterVM.updateStartDateString(ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()))
+        filterVM.updateEndDateString(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
         val expectedFilterInfo = FilterInfo(
             account = true, listOf("Cash"), category = true,
-            EXPENSE.type, listOf("Food"), date = true, Date(0), Date(1000 + 86399999)
+            EXPENSE.type, listOf("Food"), date = true,
+            ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()),
+            endOfDay(ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()))
         )
 
         // first fill filter with data
@@ -193,11 +197,13 @@ internal class FilterViewModelTest {
         filterVM.updateDateFilter(true)
         filterVM.updateAccountSelected("Cash", ADD)
         filterVM.updateCategorySelectedList("Food", ADD)
-        filterVM.updateStartDateString(Date(0))
-        filterVM.updateEndDateString(Date(1000))
+        filterVM.updateStartDateString(ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()))
+        filterVM.updateEndDateString(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
         val expectedFilterInfo = FilterInfo(
             account = true, listOf("Cash"), category = true,
-            EXPENSE.type, listOf("Food"), date = true, Date(0), Date(1000 + 86399999)
+            EXPENSE.type, listOf("Food"), date = true,
+            ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()),
+            endOfDay(ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()))
         )
 
         filterVM.applyFilter()
