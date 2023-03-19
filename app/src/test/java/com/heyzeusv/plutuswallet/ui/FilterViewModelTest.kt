@@ -50,9 +50,10 @@ internal class FilterViewModelTest {
     @Test
     @DisplayName("Should retrieve data to be displayed in ChipGroups from Database at startup")
     fun viewModelInit() {
-        val expectedAccList: MutableList<String> = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused")
-        val expectedExCatList: MutableList<String> = mutableListOf("Entertainment", "Food", "Unused Expense")
-        val expectedInCatList: MutableList<String> = mutableListOf("Salary", "Unused Income", "Zelle")
+        val expectedAccList =
+            mutableListOf("Cash", "Credit Card", "Debit Card", "Savings", "Unused")
+        val expectedExCatList = mutableListOf("Entertainment", "Food", "Housing", "Unused Expense")
+        val expectedInCatList = mutableListOf("Salary", "Unused Income", "Zelle")
 
         assertEquals(expectedAccList, filterVM.accountList.value)
         assertEquals(expectedExCatList, filterVM.categoryList.value)
@@ -66,15 +67,15 @@ internal class FilterViewModelTest {
     fun updateStartDateString() {
         filterVM.updateStartDateString(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
 
-        assertEquals("1/10/70", filterVM.startDateString.value)
+        assertEquals("1/10/80", filterVM.startDateString.value)
     }
 
     @Test
     @DisplayName("Should save new end date selected and update String that displays formatted date")
     fun updateEndDateString() {
-        filterVM.updateEndDateString(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
+        filterVM.updateEndDateString(ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()))
 
-        assertEquals("1/11/70", filterVM.endDateString.value)
+        assertEquals("1/11/80", filterVM.endDateString.value)
     }
 
     @Test
@@ -165,7 +166,7 @@ internal class FilterViewModelTest {
             account = true, listOf("Cash"), category = true,
             EXPENSE.type, listOf("Food"), date = true,
             ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()),
-            endOfDay(ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()))
+            endOfDay(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
         )
 
         // first fill filter with data
@@ -203,7 +204,7 @@ internal class FilterViewModelTest {
             account = true, listOf("Cash"), category = true,
             EXPENSE.type, listOf("Food"), date = true,
             ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()),
-            endOfDay(ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()))
+            endOfDay(ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()))
         )
 
         filterVM.applyFilter()

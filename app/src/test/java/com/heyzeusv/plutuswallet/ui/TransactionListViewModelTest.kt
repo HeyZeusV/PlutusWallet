@@ -122,7 +122,7 @@ internal class TransactionListViewModelTest {
         val expectedATD: List<TranListItem> = listOf(dd.tli1, dd.tli2)
         tlVM.filteredTransactionList(
             FilterInfo(
-                account = true, listOf("Cash"), category = true, "Expense",
+                account = true, listOf("Cash", "Savings"), category = true, "Expense",
                 listOf("All"), date = true,
                 ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
                 ZonedDateTime.of(1980, 1, 12, 1, 0, 0, 0, systemDefault())
@@ -191,7 +191,7 @@ internal class TransactionListViewModelTest {
         tlVM.filteredTransactionList(
             FilterInfo(
                 category = true, type = "Expense",
-                categoryNames = listOf("Food"), date = true,
+                categoryNames = listOf("Housing"), date = true,
                 start = ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
                 end = ZonedDateTime.of(1990, 1, 12, 1, 0, 0, 0, systemDefault())
             )
@@ -217,7 +217,7 @@ internal class TransactionListViewModelTest {
             FilterInfo(
                 date = true,
                 start = ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()),
-                end = ZonedDateTime.of(1980, 1, 14, 1, 0, 0, 0, systemDefault())
+                end = ZonedDateTime.of(1980, 1, 13, 1, 0, 0, 0, systemDefault())
             )
         ).collect { collectedList = it }
         assertEquals(expectedD, collectedList)

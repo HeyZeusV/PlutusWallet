@@ -174,7 +174,7 @@ class FilterViewModel @Inject constructor(
             categoryFilter.value && categorySelectedList.value.isEmpty() ->
                 _filterState.value = NO_SELECTED_CATEGORY
             // user must select both start and end date
-            dateFilter.value && startDateString.value.isEmpty() && endDateString.value.isEmpty() ->
+            dateFilter.value && (startDateString.value.isEmpty() || endDateString.value.isEmpty()) ->
                 _filterState.value = NO_SELECTED_DATE
             // startDate must be before endDate else it displays warning and doesn't apply filters
             dateFilter.value && startDate.value.isAfter(endDate.value) ->

@@ -34,8 +34,8 @@ class DummyDataUtil {
         true, 1, 0, ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()), true
     )
     val tran2 = Transaction(
-        2, "Party2", ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()), BigDecimal("100.00"),
-        "Savings", "Expense", "Housing", "",
+        2, "Party2", ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()),
+        BigDecimal("100.00"), "Savings", "Expense", "Housing", "",
         false, 1, 0, ZonedDateTime.of(1980, 1, 12, 1, 0, 0, 0, systemDefault()), false
     )
     val tran3 = Transaction(
