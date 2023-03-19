@@ -103,8 +103,6 @@ import com.heyzeusv.plutuswallet.util.datePickerDialog
 import java.math.BigDecimal
 import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle.SHORT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -144,7 +142,9 @@ fun OverviewScreen(
     val fCategoryList by filterVM.categoryList.collectAsState()
     val fCategorySelectedList by filterVM.categorySelectedList.collectAsState()
     val fDateFilterSelected by filterVM.dateFilter.collectAsState()
+    val fStartDate by filterVM.startDate.collectAsState()
     val fStartDateString by filterVM.startDateString.collectAsState()
+    val fEndDate by filterVM.endDate.collectAsState()
     val fEndDateString by filterVM.endDateString.collectAsState()
     val fFilterState by filterVM.filterState.collectAsState()
 
@@ -202,8 +202,10 @@ fun OverviewScreen(
         fCategoryChipOnClick = filterVM::updateCategorySelectedList,
         fDateFilterSelected,
         fDateFilterOnClick = filterVM::updateDateFilter,
+        fStartDate,
         fStartDateString,
         fStartDateOnClick = filterVM::updateStartDateString,
+        fEndDate,
         fEndDateString,
         fEndDateOnClick = filterVM::updateEndDateString,
         fApplyOnClick = filterVM::applyFilter,
@@ -250,8 +252,10 @@ fun OverviewScreen(
     fCategoryChipOnClick: (String, FilterChipAction) -> Unit,
     fDateFilterSelected: Boolean,
     fDateFilterOnClick: (Boolean) -> Unit,
+    fStartDate: ZonedDateTime,
     fStartDateString: String,
     fStartDateOnClick: (ZonedDateTime) -> Unit,
+    fEndDate: ZonedDateTime,
     fEndDateString: String,
     fEndDateOnClick: (ZonedDateTime) -> Unit,
     fApplyOnClick: () -> Unit,
@@ -304,8 +308,10 @@ fun OverviewScreen(
         fCategoryChipOnClick,
         fDateFilterSelected,
         fDateFilterOnClick,
+        fStartDate,
         fStartDateString,
         fStartDateOnClick,
+        fEndDate,
         fEndDateString,
         fEndDateOnClick,
         fApplyOnClick,
@@ -663,7 +669,8 @@ fun MarqueeText(
  *  [updateTypeSelected] switches between Expense/Income lists. [categoryList] are all
  *  categories available of type while [categorySelectedList] is the list of categories which have been
  *  selected. [categoryChipOnClick] determines action when individual category chip is selected.
- *  [startDateString] is displayed on start button which performs [startDateOnClick] when clicked.
+ *  [startDate] is the actual date object while [startDateString] is displayed on start button which
+ *  performs [startDateOnClick] when clicked. [endDate] is the actual date object while
  *  [endDateString] is displayed on end button which performs [endDateOnClick] when clicked.
  *  [applyOnClick] runs when apply/reset button is pressed. [filterState] is used to determine
  *  which message to display if there is an error. [showSnackbar] is suspend function which takes
@@ -688,8 +695,10 @@ fun FilterCard(
     categoryChipOnClick: (String, FilterChipAction) -> Unit = { _, _ -> },
     dateFilterSelected: Boolean = false,
     dateFilterOnClick: (Boolean) -> Unit = { },
+    startDate: ZonedDateTime = ZonedDateTime.now(systemDefault()),
     startDateString: String = "",
     startDateOnClick: (ZonedDateTime) -> Unit = { },
+    endDate: ZonedDateTime = ZonedDateTime.now(systemDefault()),
     endDateString: String = "",
     endDateOnClick: (ZonedDateTime) -> Unit = { },
     applyOnClick: () -> Unit = { },
@@ -896,17 +905,12 @@ fun FilterCard(
                             .onGloballyPositioned { dateComposeSize = it.size.toSize() },
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        val formatter = DateTimeFormatter.ofLocalizedDate(SHORT)
                         PWButton(
                             selected = true,
                             onClick = {
                                 datePickerDialog(
                                     view,
-                                    initDate = if (startDateString.isNotBlank()) {
-                                        ZonedDateTime.parse(startDateString, formatter)
-                                    } else {
-                                        ZonedDateTime.now(systemDefault())
-                                    },
+                                    initDate = startDate,
                                     onDateSelected = startDateOnClick
                                 ).show()
                             },
@@ -921,11 +925,7 @@ fun FilterCard(
                             onClick = {
                                 datePickerDialog(
                                     view,
-                                    initDate = if (endDateString.isNotBlank()) {
-                                        ZonedDateTime.parse(endDateString, formatter)
-                                    } else {
-                                        ZonedDateTime.now(systemDefault())
-                                    },
+                                    initDate = endDate,
                                     onDateSelected = endDateOnClick
                                 ).show()
                             },
@@ -1059,8 +1059,10 @@ fun OverviewScreenPreview() {
             fCategoryChipOnClick = { _, _ -> },
             fDateFilterSelected = false,
             fDateFilterOnClick = { },
+            fStartDate = ZonedDateTime.now(systemDefault()),
             fStartDateString = "",
             fStartDateOnClick = { },
+            fEndDate = ZonedDateTime.now(systemDefault()),
             fEndDateString = "",
             fEndDateOnClick = { },
             fApplyOnClick = { },

@@ -3,15 +3,19 @@ package com.heyzeusv.plutuswallet.data
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
+import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.isAfterEqual
+import com.heyzeusv.plutuswallet.util.isBeforeEqual
 import com.heyzeusv.plutuswallet.util.replace
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 
 class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
@@ -24,6 +28,11 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     var accUsedList: List<Account> = listOf()
     var exCatUsedList: List<Category> = listOf()
     var inCatUsedList: List<Category> = listOf()
+
+    val tlifFlow = MutableSharedFlow<List<TranListItemFull>>()
+    suspend fun tlifEmit(value: List<TranListItemFull>) = tlifFlow.emit(value)
+    val chartInfoListFlow = MutableSharedFlow<List<ChartInformation>>()
+    suspend fun chartInfoListEmit(value: List<ChartInformation>) = chartInfoListFlow.emit(value)
 
     fun resetLists() {
         accList = dd.accList
@@ -124,11 +133,10 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         catList.addAll(categories)
     }
 
-    override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> {
-
+    override suspend fun getFutureTransactionsAsync(currentDate: ZonedDateTime): List<Transaction> {
         val futureList: MutableList<Transaction> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.date < currentDate && it.repeating && !it.futureTCreated
+            it.date.isBefore(currentDate) && it.repeating && !it.futureTCreated
         }) {
             futureList.add(tran)
         }
@@ -273,8 +281,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
     override suspend fun getCtAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>> {
         val catLists: List<List<String>> = getCatLists()
         val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
@@ -282,7 +290,7 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Expense" && accounts.contains(it.account) &&
-                        it.date >= start && it.date <= end
+                        it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
             }) {
                 listOfTran.add(tran)
             }
@@ -292,7 +300,7 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
-                        it.date >= start && it.date <= end
+                        it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
             }) {
                 listOfTran.add(tran)
             }
@@ -306,8 +314,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>> {
         val catLists: List<List<String>> = getCatLists()
         val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
@@ -315,7 +323,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Expense" && accounts.contains(it.account) &&
-                        categories.contains(it.category) && it.date >= start && it.date <= end
+                        categories.contains(it.category) && it.date.isAfterEqual(start) &&
+                        it.date.isBeforeEqual(end)
             }) {
                 listOfTran.add(tran)
             }
@@ -325,7 +334,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Income" && accounts.contains(it.account) &&
-                        categories.contains(it.category) && it.date >= start && it.date <= end
+                        categories.contains(it.category) && it.date.isAfterEqual(start) &&
+                        it.date.isBeforeEqual(end)
             }) {
                 listOfTran.add(tran)
             }
@@ -366,8 +376,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     override suspend fun getCtCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>> {
         val catLists: List<List<String>> = getCatLists()
         val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
@@ -375,7 +385,7 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Expense" && categories.contains(it.category) &&
-                        it.date >= start && it.date <= end
+                        it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
             }) {
                 listOfTran.add(tran)
             }
@@ -385,7 +395,7 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
                 it.category == cat && it.type == "Income" && categories.contains(it.category) &&
-                        it.date >= start && it.date <= end
+                        it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
             }) {
                 listOfTran.add(tran)
             }
@@ -395,13 +405,14 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         return flow { emit(createCatTotals(listOfTranLists)) }
     }
 
-    override suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>> {
+    override suspend fun getCtD(start: ZonedDateTime, end: ZonedDateTime): Flow<List<CategoryTotals>> {
         val catLists: List<List<String>> = getCatLists()
         val listOfTranLists: MutableList<MutableList<Transaction>> = mutableListOf()
         for (cat: String in catLists[0]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Expense" && it.date >= start && it.date <= end
+                it.category == cat && it.type == "Expense" &&
+                        it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
             }) {
                 listOfTran.add(tran)
             }
@@ -410,7 +421,8 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         for (cat: String in catLists[1]) {
             val listOfTran: MutableList<Transaction> = mutableListOf()
             for (tran: Transaction in tranList.filter {
-                it.category == cat && it.type == "Income" && it.date >= start && it.date <= end
+                it.category == cat && it.type == "Income" &&
+                        it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
             }) {
                 listOfTran.add(tran)
             }
@@ -421,7 +433,6 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     }
 
     override suspend fun getTli(): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList) {
             val tli = TranListItem(
@@ -434,7 +445,6 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     }
 
     override suspend fun getTliA(accounts: List<String>): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { accounts.contains(it.account) }) {
             val tli = TranListItem(
@@ -448,13 +458,13 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
     override suspend fun getTliAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.date >= start && it.date <= end
+            accounts.contains(it.account) && it.date.isAfterEqual(start) &&
+                    it.date.isBeforeEqual(end)
         }) {
             val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -469,9 +479,10 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         accounts: List<String>,
         type: String
     ): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter { accounts.contains(it.account) && it.type == type }) {
+        for (tran: Transaction in tranList.filter {
+            accounts.contains(it.account) && it.type == type
+        }) {
             val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
@@ -486,7 +497,6 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         type: String,
         categories: List<String>
     ): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && categories.contains(it.category)
@@ -503,13 +513,13 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     override suspend fun getTliATD(
         accounts: List<String>,
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            accounts.contains(it.account) && it.type == type && it.date >= start && it.date <= end
+            accounts.contains(it.account) && it.type == type &&
+                    it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
         }) {
             val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -524,14 +534,13 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
             accounts.contains(it.account) && it.type == type && categories.contains(it.category) &&
-                    it.date >= start && it.date <= end
+                    it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
         }) {
             val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -542,8 +551,10 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         return flow { emit(tliList) }
     }
 
-    override suspend fun getTliD(start: Date, end: Date): Flow<List<TranListItem>> {
-
+    override suspend fun getTliD(
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): Flow<List<TranListItem>> {
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.date in start..end }) {
             val tli = TranListItem(
@@ -556,7 +567,6 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     }
 
     override suspend fun getTliT(type: String): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter { it.type == type }) {
             val tli = TranListItem(
@@ -572,9 +582,10 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
         type: String,
         categories: List<String>
     ): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
-        for (tran: Transaction in tranList.filter { it.type == type && categories.contains(it.category) }) {
+        for (tran: Transaction in tranList.filter {
+            it.type == type && categories.contains(it.category)
+        }) {
             val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
             )
@@ -587,13 +598,13 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
     override suspend fun getTliTCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.type == type && categories.contains(it.category) && it.date >= start && it.date <= end
+            it.type == type && categories.contains(it.category) &&
+                    it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
         }) {
             val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category
@@ -606,13 +617,12 @@ class FakeAndroidRepository @Inject constructor() : PWRepositoryInterface {
 
     override suspend fun getTliTD(
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> {
-
         val tliList: MutableList<TranListItem> = mutableListOf()
         for (tran: Transaction in tranList.filter {
-            it.type == type && it.date >= start && it.date <= end
+            it.type == type && it.date.isAfterEqual(start) && it.date.isBeforeEqual(end)
         }) {
             val tli = TranListItem(
                 tran.id, tran.title, tran.date, tran.total, tran.account, tran.type, tran.category

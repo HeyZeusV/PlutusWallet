@@ -120,22 +120,25 @@ class FilterViewModel @Inject constructor(
         }
     }
 
-    private var startDate: ZonedDateTime = startOfDay(ZonedDateTime.now(systemDefault()))
-    private var endDate: ZonedDateTime = endOfDay(startDate)
+    // Date object values
+    private val _startDate = MutableStateFlow(startOfDay(ZonedDateTime.now(systemDefault())))
+    val startDate: StateFlow<ZonedDateTime> get() = _startDate
+    private val _endDate = MutableStateFlow(endOfDay(ZonedDateTime.now(systemDefault())))
+    val endDate: StateFlow<ZonedDateTime> get() = _endDate
 
     // Date string values
     private val _startDateString = MutableStateFlow("")
     val startDateString: StateFlow<String> get() = _startDateString
     fun updateStartDateString(newDate: ZonedDateTime) {
-        startDate = newDate
-        _startDateString.value = formatDate(startDate, SHORT)
+        _startDate.value = newDate
+        _startDateString.value = formatDate(newDate, SHORT)
     }
 
     private val _endDateString = MutableStateFlow("")
     val endDateString: StateFlow<String> get() = _endDateString
     fun updateEndDateString(newDate: ZonedDateTime) {
-        endDate = endOfDay(newDate)
-        _endDateString.value = formatDate(endDate, SHORT)
+        _endDate.value = endOfDay(newDate)
+        _endDateString.value = formatDate(endOfDay(newDate), SHORT)
     }
 
     private val _filterInfo = MutableStateFlow(FilterInfo())
@@ -174,7 +177,8 @@ class FilterViewModel @Inject constructor(
             dateFilter.value && startDateString.value.isEmpty() && endDateString.value.isEmpty() ->
                 _filterState.value = NO_SELECTED_DATE
             // startDate must be before endDate else it displays warning and doesn't apply filters
-            dateFilter.value && startDate > endDate -> _filterState.value = INVALID_DATE_RANGE
+            dateFilter.value && startDate.value.isAfter(endDate.value) ->
+                _filterState.value = INVALID_DATE_RANGE
             !accountFilter.value && !categoryFilter.value && !dateFilter.value -> resetFilter()
             else -> {
                 _filterInfo.value = FilterInfo(
@@ -184,8 +188,8 @@ class FilterViewModel @Inject constructor(
                     type = typeSelected.value.type,
                     categoryNames = categorySelectedList.value,
                     date = dateFilter.value,
-                    start = startDate,
-                    end = endDate
+                    start = startDate.value,
+                    end = endDate.value
                 )
                 _showFilter.value = false
             }
@@ -203,8 +207,8 @@ class FilterViewModel @Inject constructor(
         _categorySelectedList.value = emptyList()
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDate = startOfDay(ZonedDateTime.now(systemDefault()))
-        endDate = endOfDay(startDate)
+        _startDate.value = startOfDay(ZonedDateTime.now(systemDefault()))
+        _endDate.value = endOfDay(ZonedDateTime.now(systemDefault()))
         _startDateString.value = ""
         _endDateString.value = ""
 

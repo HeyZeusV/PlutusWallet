@@ -46,7 +46,7 @@ fun prepareSettingValues(sharedPref: SharedPreferences): SettingsValues {
 
     // retrieving SharedPreferences values
     val currencySymbolKey: String = sharedPref[Key.KEY_CURRENCY_SYMBOL, "dollar"]
-    val dateFormatKey: String = sharedPref[Key.KEY_DATE_FORMAT, "0"]
+    val dateFormatKey: String = sharedPref[Key.KEY_DATE_FORMAT, "3"]
     val decimalSymbolKey: String = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
     val thousandsSymbolKey: String = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
     val decimalNumber: String = sharedPref[Key.KEY_DECIMAL_NUMBER, "yes"]
