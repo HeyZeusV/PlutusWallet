@@ -55,8 +55,8 @@ internal class CategoryViewModelTest {
     @DisplayName("Should have 4 lists at start up, 2 lists of all Expense/Income Categories " +
             "and 2 lists of Expense/Income Categories in use")
     fun viewModelInit() {
-        val expectedExpenseList = listOf(dd.cat2, dd.cat1, dd.cat5)
-        val expectedExpenseUsedList = listOf(dd.cat1, dd.cat2)
+        val expectedExpenseList = listOf(dd.cat2, dd.cat1, dd.cat7, dd.cat5)
+        val expectedExpenseUsedList = listOf(dd.cat1, dd.cat2, dd.cat7)
         val expectedIncomeList = listOf(dd.cat3, dd.cat6, dd.cat4)
         val expectedIncomeUsedList = listOf(dd.cat3)
 
@@ -70,7 +70,7 @@ internal class CategoryViewModelTest {
     @Test
     @DisplayName("Should delete Category from database and update showDialog")
     fun deleteCategory() = runTest {
-        val expectedExpenseList = listOf(dd.cat2, dd.cat1)
+        val expectedExpenseList = listOf(dd.cat2, dd.cat1, dd.cat7)
         val expectedIncomeList = listOf(dd.cat3, dd.cat4)
 
         catVM.updateDialog(ListDialog(DELETE, 5, EXPENSE))
@@ -88,8 +88,8 @@ internal class CategoryViewModelTest {
     fun editCategory() {
         val expenseCat = Category(1, "Test Expense", "Expense")
         val incomeCat = Category(6, "Test Income", "Income")
-        val expectedExpenseList = listOf(dd.cat2, expenseCat, dd.cat5)
-        val expectedExpenseUsedList = listOf(expenseCat, dd.cat2)
+        val expectedExpenseList = listOf(dd.cat2, expenseCat, dd.cat7, dd.cat5)
+        val expectedExpenseUsedList = listOf(expenseCat, dd.cat2, dd.cat7)
         val expectedIncomeList = listOf(dd.cat3, incomeCat, dd.cat4)
         val expectedIncomeUsedList = listOf(dd.cat3)
 
@@ -122,7 +122,7 @@ internal class CategoryViewModelTest {
     fun createNewCategory() {
         val newExpenseCat = Category(0, "Expense Test", "Expense")
         val newIncomeCat = Category(0, "Income Test", "Income")
-        val expectedExpenseList = listOf(dd.cat2, newExpenseCat, dd.cat1, dd.cat5)
+        val expectedExpenseList = listOf(dd.cat2, newExpenseCat, dd.cat1, dd.cat7, dd.cat5)
         val expectedIncomeList = listOf(newIncomeCat, dd.cat3, dd.cat6, dd.cat4)
 
         catVM.updateDialog(ListDialog(CREATE, 0, EXPENSE))

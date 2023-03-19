@@ -45,7 +45,7 @@ internal class AccountViewModelTest {
             "and a list of Accounts in use")
     fun viewModelInit() {
         val expectedAccountList = dd.accList.sortedBy { it.name }
-        val expectedAccountsUsedList = listOf(dd.acc1, dd.acc2, dd.acc3)
+        val expectedAccountsUsedList = listOf(dd.acc1, dd.acc2, dd.acc3, dd.acc4)
 
         assertEquals(expectedAccountList, accVM.firstItemList.value)
         assertEquals(expectedAccountsUsedList, accVM.firstUsedItemList.value)
@@ -54,7 +54,7 @@ internal class AccountViewModelTest {
     @Test
     @DisplayName("Should delete Account from database and update showDialog")
     fun deleteAccount() = runTest {
-        val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2)
+        val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2, dd.acc5)
 
         accVM.updateDialog(ListDialog(DELETE, 4))
         accVM.deleteItem(dd.acc4)
@@ -66,8 +66,9 @@ internal class AccountViewModelTest {
     @Test
     @DisplayName("Should edit Account with a new name and update showDialog")
     fun editAccount() = runTest {
-        val expectedAccounts = listOf( dd.acc3, dd.acc2, Account(1, "Test"), dd.acc4)
-        val expectedAccountsUsed = listOf(Account(1, "Test"), dd.acc2, dd.acc3)
+        val expectedAccounts =
+            listOf( dd.acc3, dd.acc2, dd.acc4, Account(1, "Test"), dd.acc5)
+        val expectedAccountsUsed = listOf(Account(1, "Test"), dd.acc2, dd.acc3, dd.acc4)
 
         accVM.updateDialog(ListDialog(EDIT, 1))
         accVM.editItem(dd.acc1, "Test")
@@ -89,7 +90,7 @@ internal class AccountViewModelTest {
     @DisplayName("Should create a new unique Account")
     fun createNewAccount() {
         val newAccount = Account(0, "Test")
-        val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2, newAccount, dd.acc4)
+        val expectedAccounts = listOf(dd.acc3, dd.acc1, dd.acc2, dd.acc4, newAccount, dd.acc5)
 
         accVM.insertItem(newAccount.name)
 
