@@ -249,15 +249,15 @@ class TransactionViewModel @Inject constructor(
             tran.memo = memo.value
 
             tran.repeating = repeat.value
-            if (tran.repeating) {
-                tran.futureDate = createFutureDate(tran.date, tran.period, tran.frequency)
-            }
             tran.period = periodList.value.indexOf(period.value)
             val frequencyValue = frequency.value.text
             // frequency must always be at least 1
             tran.frequency = when {
                 frequencyValue.isBlank() || frequencyValue.toInt() < 1 -> 1
                 else -> frequencyValue.toInt()
+            }
+            if (tran.repeating) {
+                tran.futureDate = createFutureDate(tran.date, tran.period, tran.frequency)
             }
 
             // Coroutine that Save/Updates/warns user of FutureDate

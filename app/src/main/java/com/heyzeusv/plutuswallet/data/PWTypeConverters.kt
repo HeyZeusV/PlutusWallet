@@ -5,7 +5,6 @@ import java.math.BigDecimal
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.Date
 
 /**
  *  Converts complex types.
@@ -15,13 +14,6 @@ import java.util.Date
  *  can be stored in database.
  */
 class PWTypeConverters {
-
-    @TypeConverter
-    fun fromDate(date: Date?): Long? = date?.time
-
-    @TypeConverter
-    fun toDate(millisSinceEpoch: Long?): Date? = millisSinceEpoch?.let { Date(it) }
-
     @TypeConverter
     fun fromZonedDateTime(date: ZonedDateTime?): Long? = date?.toInstant()?.toEpochMilli()
 
