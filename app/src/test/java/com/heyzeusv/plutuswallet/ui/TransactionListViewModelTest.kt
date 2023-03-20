@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.ui.cfl.tranlist
+package com.heyzeusv.plutuswallet.ui
 
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
@@ -9,12 +9,13 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.overview.TransactionListViewModel
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.Date
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -61,21 +62,21 @@ internal class TransactionListViewModelTest {
         val expectedTranList = repo.tranList
         val repeatingTransaction = Transaction(
             title = "Title",
-            date = Date(System.currentTimeMillis() - 259200000),
+            date = ZonedDateTime.of(1980, 1, 9, 1, 0, 0, 0, systemDefault()),
             repeating = true,
-            futureDate = Date(System.currentTimeMillis() - 172800000)
+            futureDate = ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault())
         )
         val repeatingTransaction2nd = Transaction(
             title = "Title x2",
-            date = Date(System.currentTimeMillis() - 172800000),
+            date = ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
             repeating = true,
-            futureDate = Date(System.currentTimeMillis() - 86400000)
+            futureDate = ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault())
         )
         val repeatingTransaction3rd = Transaction(
             title = "Title x3",
-            date = Date(System.currentTimeMillis() - 86400000),
+            date = ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()),
             repeating = true,
-            futureDate = Date(System.currentTimeMillis())
+            futureDate = ZonedDateTime.of(1980, 1, 12, 1, 0, 0, 0, systemDefault())
         )
         expectedTranList.addAll(listOf(repeatingTransaction2nd, repeatingTransaction3rd))
 
@@ -121,8 +122,11 @@ internal class TransactionListViewModelTest {
         val expectedATD: List<TranListItem> = listOf(dd.tli1, dd.tli2)
         tlVM.filteredTransactionList(
             FilterInfo(
-                account = true, listOf("Cash"), category = true, "Expense",
-                listOf("All"), date = true, Date(0), Date(86400001 * 2)
+                account = true, listOf("Cash", "Savings"), category = true, "Expense",
+                listOf("All"), date = true,
+                ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
+                ZonedDateTime.of(1980, 1, 12, 1, 0, 0, 0, systemDefault())
+
             )
         ).collect { collectedList = it }
         assertEquals(expectedATD, collectedList)
@@ -131,7 +135,9 @@ internal class TransactionListViewModelTest {
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = true, listOf("Debit Card"), category = true, "Income",
-                listOf("Salary"), date = true, Date(0), Date(86400001 * 6)
+                listOf("Salary"), date = true,
+                ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
+                ZonedDateTime.of(1980, 1, 14, 1, 0, 0, 0, systemDefault())
             )
         ).collect { collectedList = it }
         assertEquals(expectedATCD, collectedList)
@@ -140,7 +146,7 @@ internal class TransactionListViewModelTest {
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = true, listOf("Credit Card"), category = true, "Expense",
-                listOf("All"), date = false, Date(), Date()
+                listOf("All")
             )
         ).collect { collectedList = it }
         assertEquals(expectedAT, collectedList)
@@ -149,7 +155,7 @@ internal class TransactionListViewModelTest {
         tlVM.filteredTransactionList(
             FilterInfo(
                 account = true, listOf("Credit Card"), category = true, "Expense",
-                listOf("Entertainment"), date = false, Date(0), Date()
+                listOf("Entertainment")
             )
         ).collect { collectedList = it }
         assertEquals(expectedATC, collectedList)
@@ -157,26 +163,26 @@ internal class TransactionListViewModelTest {
         val expectedAD: List<TranListItem> = listOf()
         tlVM.filteredTransactionList(
             FilterInfo(
-                account = true, listOf("None"), category = false, "",
-                listOf(), date = true, Date(0), Date(86400001 * 6)
+                account = true, listOf("None"), date = true,
+                start = ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
+                end = ZonedDateTime.of(1980, 1, 16, 1, 0, 0, 0, systemDefault())
             )
         ).collect { collectedList = it }
         assertEquals(expectedAD, collectedList)
 
         val expectedA: List<TranListItem> = listOf(dd.tli4)
         tlVM.filteredTransactionList(
-            FilterInfo(
-                account = true, listOf("Credit Card"), category = false, "",
-                listOf(), date = false, Date(), Date()
-            )
+            FilterInfo(account = true, listOf("Credit Card"))
         ).collect { collectedList = it }
         assertEquals(expectedA, collectedList)
 
         val expectedTD: List<TranListItem> = listOf()
         tlVM.filteredTransactionList(
             FilterInfo(
-                account = false, listOf(), category = true, "Income",
-                listOf("All"), date = true, Date(86400001 * 15), Date()
+                category = true, type = "Income",
+                categoryNames = listOf("All"), date = true,
+                start = ZonedDateTime.of(1980, 1, 20, 1, 0, 0, 0, systemDefault()),
+                end = ZonedDateTime.of(1990, 1, 12, 1, 0, 0, 0, systemDefault())
             )
         ).collect { collectedList = it }
         assertEquals(expectedTD, collectedList)
@@ -184,26 +190,24 @@ internal class TransactionListViewModelTest {
         val expectedTCD: List<TranListItem> = listOf(dd.tli2)
         tlVM.filteredTransactionList(
             FilterInfo(
-                account = false, listOf(), category = true, "Expense",
-                listOf("Food"), date = true, Date(86400000 * 2), Date()
+                category = true, type = "Expense",
+                categoryNames = listOf("Housing"), date = true,
+                start = ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
+                end = ZonedDateTime.of(1990, 1, 12, 1, 0, 0, 0, systemDefault())
             )
         ).collect { collectedList = it }
         assertEquals(expectedTCD, collectedList)
 
         val expectedT: List<TranListItem> = listOf(dd.tli1, dd.tli2, dd.tli4)
         tlVM.filteredTransactionList(
-            FilterInfo(
-                account = false, listOf(), category = true, "Expense",
-                listOf("All"), date = false, Date(), Date()
-            )
+            FilterInfo(category = true, type = "Expense", categoryNames = listOf("All"))
         ).collect { collectedList = it }
         assertEquals(expectedT, collectedList)
 
         val expectedTC: List<TranListItem> = listOf(dd.tli4)
         tlVM.filteredTransactionList(
             FilterInfo(
-                account = false, listOf(), category = true, "Expense",
-                listOf("Entertainment"), date = false, Date(), Date()
+                category = true, type = "Expense", categoryNames = listOf("Entertainment")
             )
         ).collect { collectedList = it }
         assertEquals(expectedTC, collectedList)
@@ -211,19 +215,15 @@ internal class TransactionListViewModelTest {
         val expectedD: List<TranListItem> = listOf(dd.tli2, dd.tli3)
         tlVM.filteredTransactionList(
             FilterInfo(
-                account = false, listOf(), category = false, "",
-                listOf(), date = true, Date(86400000 * 2), Date(86400000 * 4)
+                date = true,
+                start = ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()),
+                end = ZonedDateTime.of(1980, 1, 13, 1, 0, 0, 0, systemDefault())
             )
         ).collect { collectedList = it }
         assertEquals(expectedD, collectedList)
 
         val expected: List<TranListItem> = dd.tliList
-        tlVM.filteredTransactionList(
-            FilterInfo(
-                account = false, listOf(), category = false, "",
-                listOf(), date = false, Date(), Date()
-            )
-        ).collect { collectedList = it }
+        tlVM.filteredTransactionList(FilterInfo()).collect { collectedList = it }
         assertEquals(expected, collectedList)
     }
 }

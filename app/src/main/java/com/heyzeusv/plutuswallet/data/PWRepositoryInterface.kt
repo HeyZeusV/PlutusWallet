@@ -5,7 +5,7 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import java.util.Date
+import java.time.ZonedDateTime
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -51,7 +51,7 @@ interface PWRepositoryInterface {
     /**
      *  Transaction Queries
      */
-    suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction>
+    suspend fun getFutureTransactionsAsync(currentDate: ZonedDateTime): List<Transaction>
 
     suspend fun getMaxId(): Flow<Int?>
 
@@ -68,7 +68,7 @@ interface PWRepositoryInterface {
      *  Tli = TranListItem
      *  A   = Account
      *  C   = Category
-     *  D   = Date
+     *  D   = ZonedDateTime
      *  T   = Type
      */
     suspend fun getCt(): Flow<List<CategoryTotals>>
@@ -81,14 +81,18 @@ interface PWRepositoryInterface {
         categories: List<String>
     ): Flow<List<CategoryTotals>>
 
-    suspend fun getCtAD(accounts: List<String>, start: Date, end: Date): Flow<List<CategoryTotals>>
+    suspend fun getCtAD(
+        accounts: List<String>,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): Flow<List<CategoryTotals>>
 
     suspend fun getCtACD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>>
 
     suspend fun getCtC(type: String, categories: List<String>): Flow<List<CategoryTotals>>
@@ -96,17 +100,21 @@ interface PWRepositoryInterface {
     suspend fun getCtCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>>
 
-    suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
+    suspend fun getCtD(start: ZonedDateTime, end: ZonedDateTime): Flow<List<CategoryTotals>>
 
     suspend fun getTli(): Flow<List<TranListItem>>
 
     suspend fun getTliA(accounts: List<String>): Flow<List<TranListItem>>
 
-    suspend fun getTliAD(accounts: List<String>, start: Date, end: Date): Flow<List<TranListItem>>
+    suspend fun getTliAD(
+        accounts: List<String>,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): Flow<List<TranListItem>>
 
     suspend fun getTliAT(accounts: List<String>, type: String): Flow<List<TranListItem>>
 
@@ -119,19 +127,19 @@ interface PWRepositoryInterface {
     suspend fun getTliATD(
         accounts: List<String>,
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>>
 
     suspend fun getTliATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>>
 
-    suspend fun getTliD(start: Date, end: Date): Flow<List<TranListItem>>
+    suspend fun getTliD(start: ZonedDateTime, end: ZonedDateTime): Flow<List<TranListItem>>
 
     suspend fun getTliT(type: String): Flow<List<TranListItem>>
 
@@ -140,9 +148,13 @@ interface PWRepositoryInterface {
     suspend fun getTliTCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>>
 
-    suspend fun getTliTD(type: String, start: Date, end: Date): Flow<List<TranListItem>>
+    suspend fun getTliTD(
+        type: String,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): Flow<List<TranListItem>>
 }

@@ -65,12 +65,14 @@ import com.heyzeusv.plutuswallet.ui.PWInputAlertDialog
 import com.heyzeusv.plutuswallet.ui.PWAlertDialog
 import com.heyzeusv.plutuswallet.util.theme.LocalPWColors
 import com.heyzeusv.plutuswallet.util.AppBarActions
-import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
-import java.text.DateFormat
-import java.util.Date
+import com.heyzeusv.plutuswallet.util.datePickerDialog
+import com.heyzeusv.plutuswallet.util.formatDate
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
+import java.time.format.FormatStyle.LONG
 import kotlinx.coroutines.launch
 
 /**
@@ -193,8 +195,8 @@ fun TransactionCard(
     transaction: Transaction = Transaction(),
     title: String = "",
     updateTitle: (String) -> Unit = { },
-    date: String = DateFormat.getDateInstance(0).format(Date()),
-    onDateSelected: (Date) -> Unit = { },
+    date: String = formatDate(ZonedDateTime.now(systemDefault()), LONG),
+    onDateSelected: (ZonedDateTime) -> Unit = { },
     account: String = "",
     updateAccount: (String) -> Unit = { },
     total: TextFieldValue = TextFieldValue("$0.00"),
@@ -268,9 +270,7 @@ fun TransactionCard(
             TransactionDate(
                 value = date,
                 label = stringResource(R.string.transaction_date),
-                onPressed = {
-                    DateUtils.datePickerDialog(view, dateObj, onDateSelected).show()
-                },
+                onPressed = { datePickerDialog(view, dateObj, onDateSelected).show() },
                 modifier = Modifier.padding(
                     top = dimensionResource(R.dimen.textFToTextFWHelperTopPadding)
                 )

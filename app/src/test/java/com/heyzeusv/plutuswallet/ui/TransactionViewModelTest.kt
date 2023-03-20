@@ -1,4 +1,4 @@
-package com.heyzeusv.plutuswallet.ui.transaction
+package com.heyzeusv.plutuswallet.ui
 
 import com.heyzeusv.plutuswallet.TestCoroutineExtension
 import com.heyzeusv.plutuswallet.data.DummyDataUtil
@@ -6,6 +6,7 @@ import com.heyzeusv.plutuswallet.data.FakeRepository
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import com.heyzeusv.plutuswallet.ui.transaction.TransactionViewModel
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,7 +15,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
-import java.util.Date
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -63,7 +65,7 @@ internal class TransactionViewModelTest {
     fun setTranData() {
         tranVM.setTranData(dd.tran1)
 
-        assertEquals("Thursday, January 1, 1970", tranVM.date.value)
+        assertEquals("Thursday, January 10, 1980", tranVM.date.value)
         assertEquals("Cash", tranVM.account.value)
         assertEquals("$1,000.10", tranVM.total.value.text)
         assertEquals(EXPENSE, tranVM.typeSelected.value)
@@ -77,7 +79,7 @@ internal class TransactionViewModelTest {
         val expectedTran = Transaction(
             1,
             "Party",
-            Date(86400000),
+            ZonedDateTime.of(1980, 1, 10, 1, 0, 0, 0, systemDefault()),
             BigDecimal("1000.99"),
             "Test Account",
             "Income",
@@ -86,7 +88,7 @@ internal class TransactionViewModelTest {
             false,
             1,
             0,
-            Date(86400000 * 2),
+            ZonedDateTime.of(1980, 1, 11, 1, 0, 0, 0, systemDefault()),
             true
         )
 
@@ -107,9 +109,11 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should automatically create a title for Transaction upon saving it without a title")
     fun saveTransactionNoTitle() {
+        val expectedDate = ZonedDateTime.of(1980, 1, 12, 1, 0, 0, 0, systemDefault())
         val expectedTran = Transaction(
             id = 5,
             title = "Transaction 5",
+            date = expectedDate,
             total = BigDecimal("0.00"),
             account = "Cash",
             category = "Entertainment",
@@ -119,6 +123,7 @@ internal class TransactionViewModelTest {
         // retrieves new Transaction
         tranVM.retrieveTransaction(0)
 
+        tranVM.onDateSelected(expectedDate)
         tranVM.saveTransaction()
 
         assertEquals(expectedTran, tranVM.transaction.value)
@@ -132,7 +137,7 @@ internal class TransactionViewModelTest {
         val expectedTran = Transaction(
             1,
             "Party",
-            Date(86400000 * 3),
+            ZonedDateTime.of(1980, 1, 13, 1, 0, 0, 0, systemDefault()),
             BigDecimal("1000.99"),
             "Test Account",
             "Income",
@@ -141,7 +146,7 @@ internal class TransactionViewModelTest {
             true,
             1,
             0,
-            Date(86400000 * 4),
+            ZonedDateTime.of(1980, 1, 21, 1, 0, 0, 0, systemDefault()),
             true
         )
 
@@ -190,8 +195,9 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should create new Account and add it to database")
     fun insertAccount() = runTest {
-        val expectedList =
-            mutableListOf("Cash", "Credit Card", "Debit Card", "Test", "Unused", "Create New Account")
+        val expectedList = mutableListOf(
+            "Cash", "Credit Card", "Debit Card", "Savings", "Test", "Unused", "Create New Account"
+        )
         val expectedAcc = Account(0, "Test")
 
         tranVM.insertAccount("Test")
@@ -204,8 +210,9 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should set account value to existing Account from list")
     fun insertAccountExists() {
-        val expectedList =
-            mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create New Account")
+        val expectedList = mutableListOf(
+            "Cash", "Credit Card", "Debit Card", "Savings", "Unused", "Create New Account"
+        )
         val expectedListSize: Int = repo.accList.size
 
         tranVM.insertAccount("Debit Card")
@@ -218,8 +225,9 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should create new Category and add it to database")
     fun insertCategory() {
-        val expectedExList =
-            mutableListOf("ETest", "Entertainment", "Food", "Unused Expense", "Create New Category")
+        val expectedExList = mutableListOf(
+            "ETest", "Entertainment", "Food", "Housing", "Unused Expense", "Create New Category"
+        )
         val expectedExCat = Category(0, "ETest", "Expense")
         val expectedInList =
             mutableListOf("ITest", "Salary", "Unused Income", "Zelle", "Create New Category")
@@ -243,8 +251,9 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should set category value to existing Category from list")
     fun insertCategoryExists() {
-        val expectedExList =
-            mutableListOf("Entertainment", "Food", "Unused Expense", "Create New Category")
+        val expectedExList = mutableListOf(
+            "Entertainment", "Food", "Housing", "Unused Expense", "Create New Category"
+        )
         val expectedInList = mutableListOf("Salary", "Unused Income", "Zelle", "Create New Category")
         val expectedCatRepoSize: Int = repo.catList.size
 
@@ -265,12 +274,15 @@ internal class TransactionViewModelTest {
     @Test
     @DisplayName("Should set Transaction date to newly selected Date and format it to be displayed")
     fun onDateSelected() {
-        val expectedFormattedDate = "Saturday, January 3, 1970"
+        val expectedFormattedDate = "Monday, January 21, 1980"
 
         tranVM.retrieveTransaction(dd.tran2.id)
-        tranVM.onDateSelected(Date(86400000*3))
+        tranVM.onDateSelected(ZonedDateTime.of(1980, 1, 21, 1, 0, 0, 0, systemDefault()))
 
-        assertEquals(Date(86400000*3), tranVM.transaction.value.date)
+        assertEquals(
+            ZonedDateTime.of(1980, 1, 21, 1, 0, 0, 0, systemDefault()),
+            tranVM.transaction.value.date
+        )
         assertEquals(expectedFormattedDate, tranVM.date.value)
     }
 
@@ -278,9 +290,14 @@ internal class TransactionViewModelTest {
     @DisplayName("Should retrieve lists of Accounts and Categories by type, add 'Create'," +
             " and retrieve highest ID from Database")
     fun prepareLists() {
-        val expectedAccList = mutableListOf("Cash", "Credit Card", "Debit Card", "Unused", "Create New Account")
-        val expectedExCatList = mutableListOf("Entertainment", "Food", "Unused Expense", "Create New Category")
-        val expectedInCatList = mutableListOf("Salary", "Unused Income", "Zelle", "Create New Category")
+        val expectedAccList = mutableListOf(
+            "Cash", "Credit Card", "Debit Card", "Savings", "Unused", "Create New Account"
+        )
+        val expectedExCatList = mutableListOf(
+            "Entertainment", "Food", "Housing", "Unused Expense", "Create New Category"
+        )
+        val expectedInCatList =
+            mutableListOf("Salary", "Unused Income", "Zelle", "Create New Category")
 
         assertEquals(expectedAccList, tranVM.accountList.value)
         assertEquals(expectedExCatList, tranVM.selectedCatList.value)

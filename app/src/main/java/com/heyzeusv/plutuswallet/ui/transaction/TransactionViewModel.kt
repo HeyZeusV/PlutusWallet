@@ -14,12 +14,13 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.createFutureDate
+import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.Calendar
-import java.util.Date
+import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -202,7 +203,7 @@ class TransactionViewModel @Inject constructor(
      */
     fun setTranData(transaction: Transaction) {
         updateTitle(transaction.title)
-        updateDate(setVals.dateFormatter.format(transaction.date))
+        updateDate(formatDate(transaction.date, setVals.dateFormat))
         updateAccount(transaction.account)
         updateTotal(transaction.total.toString())
         updateTypeSelected(if (transaction.type == EXPENSE.type) EXPENSE else INCOME)
@@ -248,13 +249,15 @@ class TransactionViewModel @Inject constructor(
             tran.memo = memo.value
 
             tran.repeating = repeat.value
-            if (tran.repeating) tran.futureDate = createFutureDate()
             tran.period = periodList.value.indexOf(period.value)
             val frequencyValue = frequency.value.text
             // frequency must always be at least 1
             tran.frequency = when {
                 frequencyValue.isBlank() || frequencyValue.toInt() < 1 -> 1
                 else -> frequencyValue.toInt()
+            }
+            if (tran.repeating) {
+                tran.futureDate = createFutureDate(tran.date, tran.period, tran.frequency)
             }
 
             // Coroutine that Save/Updates/warns user of FutureDate
@@ -302,31 +305,6 @@ class TransactionViewModel @Inject constructor(
         }
         updateSaveSuccess(true)
         updateFutureDialog(false)
-    }
-
-    /**
-     *  Returns date from Transaction after adding frequency * period.
-     */
-    private fun createFutureDate(): Date {
-        val calendar: Calendar = Calendar.getInstance()
-        transaction.value.let {
-            // set to Transaction date rather than current time due to Users being able
-            // to select a Date in the past or future
-            calendar.time = it.date
-
-            // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-            calendar.add(
-                when (it.period) {
-                    0 -> Calendar.DAY_OF_MONTH
-                    1 -> Calendar.WEEK_OF_YEAR
-                    2 -> Calendar.MONTH
-                    else -> Calendar.YEAR
-                },
-                it.frequency
-            )
-        }
-
-        return calendar.time
     }
 
     /**
@@ -407,12 +385,12 @@ class TransactionViewModel @Inject constructor(
     /**
      *  Takes [newDate] user selects, changes Transaction date, and formats it to be displayed.
      */
-    fun onDateSelected(newDate: Date) {
+    fun onDateSelected(newDate: ZonedDateTime) {
         // true if newDate is different from previous date
-        dateChanged = _transaction.value.date != newDate
+        dateChanged = _transaction.value.date.isEqual(newDate).not()
         _transaction.value.date = newDate
         // turns date selected into Date type
-        updateDate(setVals.dateFormatter.format(newDate))
+        updateDate(formatDate(newDate, setVals.dateFormat))
     }
 }
 

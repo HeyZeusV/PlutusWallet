@@ -5,7 +5,7 @@ import androidx.room.Query
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
-import java.util.Date
+import java.time.ZonedDateTime
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -26,7 +26,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     @Query("""SELECT * 
               FROM `transaction` 
               WHERE futureDate < :currentDate AND futureTCreated == 0""")
-    abstract suspend fun getFutureTransactions(currentDate: Date): List<Transaction>
+    abstract suspend fun getFutureTransactions(currentDate: ZonedDateTime): List<Transaction>
 
     /**
      *  Returns highest id in table or null if empty.
@@ -49,7 +49,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  Tli = TranListItem
      *  A   = Account
      *  C   = Category
-     *  D   = Date
+     *  D   = ZonedDateTime
      *  T   = Type
      *
      *  CategoryTotals(CT): Used for ChartScreen contains Category and Total sum of
@@ -61,8 +61,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
      *  account: the account to be matched against
      *  type: either "Expense" or "Income"
      *  category: the category name to be matched against
-     *  start: the start Date to be compared with
-     *  end: the end Date to be compared with
+     *  start: the start ZonedDateTime to be compared with
+     *  end: the end ZonedDateTime to be compared with
      *
      */
     /**
@@ -106,7 +106,11 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               WHERE account IN (:accounts) AND date BETWEEN :start AND :end
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getCtAD(accounts: List<String>, start: Date, end: Date): Flow<List<CategoryTotals>>
+    abstract fun getCtAD(
+        accounts: List<String>,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): Flow<List<CategoryTotals>>
 
     /**
      *  Returns list of CT of given [accounts], given [categories] with [type],
@@ -122,8 +126,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>>
 
     /**
@@ -148,8 +152,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getCtCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>>
 
     /**
@@ -160,7 +164,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               WHERE date BETWEEN :start AND :end
               GROUP BY category, type
               HAVING SUM(total) > 0""")
-    abstract fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>>
+    abstract fun getCtD(start: ZonedDateTime, end: ZonedDateTime): Flow<List<CategoryTotals>>
 
     /**
      *  Returns list of TLI.
@@ -188,8 +192,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               ORDER BY date ASC""")
     abstract fun getTliAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>>
 
     /**
@@ -224,8 +228,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getTliATD(
         accounts: List<String>,
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>>
 
     /**
@@ -241,8 +245,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>>
 
     /**
@@ -252,7 +256,7 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getTliD(start: Date, end: Date): Flow<List<TranListItem>>
+    abstract fun getTliD(start: ZonedDateTime, end: ZonedDateTime): Flow<List<TranListItem>>
 
     /**
      *  Returns list of TLI of given [type].
@@ -283,8 +287,8 @@ abstract class TransactionDao : BaseDao<Transaction>() {
     abstract fun getTliTCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>>
 
     /**
@@ -294,5 +298,9 @@ abstract class TransactionDao : BaseDao<Transaction>() {
               FROM `transaction` 
               WHERE type=(:type) AND date BETWEEN :start AND :end
               ORDER BY date ASC""")
-    abstract fun getTliTD(type: String, start: Date, end: Date): Flow<List<TranListItem>>
+    abstract fun getTliTD(
+        type: String,
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): Flow<List<TranListItem>>
 }

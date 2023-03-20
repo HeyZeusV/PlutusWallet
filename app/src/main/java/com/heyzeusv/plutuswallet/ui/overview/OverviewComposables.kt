@@ -98,11 +98,11 @@ import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.FilterState
+import com.heyzeusv.plutuswallet.util.datePickerDialog
 import java.math.BigDecimal
-import java.text.DateFormat
-import java.util.Date
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -142,7 +142,9 @@ fun OverviewScreen(
     val fCategoryList by filterVM.categoryList.collectAsState()
     val fCategorySelectedList by filterVM.categorySelectedList.collectAsState()
     val fDateFilterSelected by filterVM.dateFilter.collectAsState()
+    val fStartDate by filterVM.startDate.collectAsState()
     val fStartDateString by filterVM.startDateString.collectAsState()
+    val fEndDate by filterVM.endDate.collectAsState()
     val fEndDateString by filterVM.endDateString.collectAsState()
     val fFilterState by filterVM.filterState.collectAsState()
 
@@ -200,8 +202,10 @@ fun OverviewScreen(
         fCategoryChipOnClick = filterVM::updateCategorySelectedList,
         fDateFilterSelected,
         fDateFilterOnClick = filterVM::updateDateFilter,
+        fStartDate,
         fStartDateString,
         fStartDateOnClick = filterVM::updateStartDateString,
+        fEndDate,
         fEndDateString,
         fEndDateOnClick = filterVM::updateEndDateString,
         fApplyOnClick = filterVM::applyFilter,
@@ -248,10 +252,12 @@ fun OverviewScreen(
     fCategoryChipOnClick: (String, FilterChipAction) -> Unit,
     fDateFilterSelected: Boolean,
     fDateFilterOnClick: (Boolean) -> Unit,
+    fStartDate: ZonedDateTime,
     fStartDateString: String,
-    fStartDateOnClick: (Date) -> Unit,
+    fStartDateOnClick: (ZonedDateTime) -> Unit,
+    fEndDate: ZonedDateTime,
     fEndDateString: String,
-    fEndDateOnClick: (Date) -> Unit,
+    fEndDateOnClick: (ZonedDateTime) -> Unit,
     fApplyOnClick: () -> Unit,
     fFilterState: FilterState,
     fShowSnackbar: suspend (String) -> Unit
@@ -302,8 +308,10 @@ fun OverviewScreen(
         fCategoryChipOnClick,
         fDateFilterSelected,
         fDateFilterOnClick,
+        fStartDate,
         fStartDateString,
         fStartDateOnClick,
+        fEndDate,
         fEndDateString,
         fEndDateOnClick,
         fApplyOnClick,
@@ -661,7 +669,8 @@ fun MarqueeText(
  *  [updateTypeSelected] switches between Expense/Income lists. [categoryList] are all
  *  categories available of type while [categorySelectedList] is the list of categories which have been
  *  selected. [categoryChipOnClick] determines action when individual category chip is selected.
- *  [startDateString] is displayed on start button which performs [startDateOnClick] when clicked.
+ *  [startDate] is the actual date object while [startDateString] is displayed on start button which
+ *  performs [startDateOnClick] when clicked. [endDate] is the actual date object while
  *  [endDateString] is displayed on end button which performs [endDateOnClick] when clicked.
  *  [applyOnClick] runs when apply/reset button is pressed. [filterState] is used to determine
  *  which message to display if there is an error. [showSnackbar] is suspend function which takes
@@ -686,10 +695,12 @@ fun FilterCard(
     categoryChipOnClick: (String, FilterChipAction) -> Unit = { _, _ -> },
     dateFilterSelected: Boolean = false,
     dateFilterOnClick: (Boolean) -> Unit = { },
+    startDate: ZonedDateTime = ZonedDateTime.now(systemDefault()),
     startDateString: String = "",
-    startDateOnClick: (Date) -> Unit = { },
+    startDateOnClick: (ZonedDateTime) -> Unit = { },
+    endDate: ZonedDateTime = ZonedDateTime.now(systemDefault()),
     endDateString: String = "",
-    endDateOnClick: (Date) -> Unit = { },
+    endDateOnClick: (ZonedDateTime) -> Unit = { },
     applyOnClick: () -> Unit = { },
     filterState: FilterState = FilterState.VALID,
     showSnackbar: suspend (String) -> Unit = { }
@@ -897,13 +908,9 @@ fun FilterCard(
                         PWButton(
                             selected = true,
                             onClick = {
-                                DateUtils.datePickerDialog(
+                                datePickerDialog(
                                     view,
-                                    initDate = if (startDateString.isNotBlank()) {
-                                        DateFormat.getDateInstance().parse(startDateString)
-                                    } else {
-                                        Date()
-                                    },
+                                    initDate = startDate,
                                     onDateSelected = startDateOnClick
                                 ).show()
                             },
@@ -916,13 +923,9 @@ fun FilterCard(
                         PWButton(
                             selected = true,
                             onClick = {
-                                DateUtils.datePickerDialog(
+                                datePickerDialog(
                                     view,
-                                    initDate = if (endDateString.isNotBlank()) {
-                                        DateFormat.getDateInstance().parse(endDateString)
-                                    } else {
-                                        Date()
-                                    },
+                                    initDate = endDate,
                                     onDateSelected = endDateOnClick
                                 ).show()
                             },
@@ -1007,7 +1010,7 @@ fun OverviewScreenPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",
@@ -1056,8 +1059,10 @@ fun OverviewScreenPreview() {
             fCategoryChipOnClick = { _, _ -> },
             fDateFilterSelected = false,
             fDateFilterOnClick = { },
+            fStartDate = ZonedDateTime.now(systemDefault()),
             fStartDateString = "",
             fStartDateOnClick = { },
+            fEndDate = ZonedDateTime.now(systemDefault()),
             fEndDateString = "",
             fEndDateOnClick = { },
             fApplyOnClick = { },
@@ -1092,7 +1097,7 @@ fun TransactionListCardPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",
@@ -1121,7 +1126,7 @@ fun TransactionListItemPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",

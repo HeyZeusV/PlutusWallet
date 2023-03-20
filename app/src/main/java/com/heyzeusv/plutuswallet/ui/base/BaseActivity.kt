@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.heyzeusv.plutuswallet.util.Key
 import com.heyzeusv.plutuswallet.util.PreferenceHelper.get
-import com.heyzeusv.plutuswallet.util.SettingsUtils
+import com.heyzeusv.plutuswallet.util.prepareSettingValues
 import java.util.Locale
 
 /**
@@ -24,7 +24,7 @@ abstract class BaseActivity : AppCompatActivity() {
     @SuppressLint("CommitPrefEdits")
     override fun attachBaseContext(newBase: Context) {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(newBase)
-        SettingsUtils.prepareSettingValues(sharedPref)
+        prepareSettingValues(sharedPref)
         val manualChange: Boolean = sharedPref[Key.KEY_MANUAL_LANGUAGE, false]
 
         // sets to language selected in SettingsScreen else uses system language if available
