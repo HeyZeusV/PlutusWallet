@@ -112,6 +112,12 @@ enum class SettingOptions(
         R.array.decimal_number_display_array,
         Key.KEY_DECIMAL_NUMBER
     ),
+    STARTUP_VIEW(
+        R.string.preferences_startup_view,
+        R.array.startup_view_value_array,
+        R.array.startup_view_display_array,
+        Key.KEY_STARTUP_VIEW
+    ),
     DATE_FORMAT(
         R.string.preferences_date_format,
         R.array.date_format_value_array,

@@ -42,6 +42,7 @@ import com.heyzeusv.plutuswallet.util.SettingOptions.DATE_FORMAT
 import com.heyzeusv.plutuswallet.util.SettingOptions.DECIMAL_NUMBER
 import com.heyzeusv.plutuswallet.util.SettingOptions.DECIMAL_SYMBOL
 import com.heyzeusv.plutuswallet.util.SettingOptions.LANGUAGE
+import com.heyzeusv.plutuswallet.util.SettingOptions.STARTUP_VIEW
 import com.heyzeusv.plutuswallet.util.SettingOptions.THEME
 import com.heyzeusv.plutuswallet.util.SettingOptions.THOUSANDS_SYMBOL
 import com.heyzeusv.plutuswallet.util.getCurrencySymbol
@@ -214,6 +215,9 @@ fun SettingsScreen(
                 if (currentValue != it) {
                     openDecimalDialog = true
                 }
+            }
+            SettingSetup(STARTUP_VIEW, sharedPref) {
+                sharedPref[STARTUP_VIEW.key] = it
             }
             SettingSetup(DATE_FORMAT, sharedPref) {
                 sharedPref[DATE_FORMAT.key] = it

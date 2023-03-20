@@ -59,6 +59,7 @@ enum class Key(val key: String) {
     KEY_DECIMAL_SYMBOL("key_decimal_symbol"),
     KEY_LANGUAGE("key_language"),
     KEY_MANUAL_LANGUAGE("key_manual_language"),
+    KEY_STARTUP_VIEW("key_startup_view"),
     KEY_THEME("key_theme"),
     KEY_THOUSANDS_SYMBOL("key_thousands_symbol"),
 }

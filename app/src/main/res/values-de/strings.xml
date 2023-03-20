@@ -104,4 +104,9 @@
     <string name="icon_cd_inputError">Eingabe Fehler</string>
     <string name="alert_dialog_closeapp">App schließen</string>
     <string name="alert_dialog_closeapp_message">Möchten Sie die App schließen?</string>
+    <string name="preferences_startup_view">Startansicht</string>
+    <string name="preferences_startup_monthly">Monatlich</string>
+    <string name="preferences_startup_weekly">Wöchentlich</string>
+    <string name="preferences_startup_daily">Täglich</string>
+    <string name="preferences_startup_yearly">Jährlich</string>
 </resources>
