@@ -45,6 +45,7 @@ import com.heyzeusv.plutuswallet.util.SettingOptions.LANGUAGE
 import com.heyzeusv.plutuswallet.util.SettingOptions.VIEW
 import com.heyzeusv.plutuswallet.util.SettingOptions.THEME
 import com.heyzeusv.plutuswallet.util.SettingOptions.THOUSANDS_SYMBOL
+import com.heyzeusv.plutuswallet.util.Views
 import com.heyzeusv.plutuswallet.util.getCurrencySymbol
 import com.heyzeusv.plutuswallet.util.getSeparatorSymbol
 import java.lang.NumberFormatException
@@ -77,6 +78,7 @@ fun SettingsScreen(
         setVM::updateCurrencySymbolSide,
         setVM::updateThousandsSymbol,
         setVM::updateDecimalSymbol,
+        setVM::updateView,
         setVM::updateDateFormat
     )
 }
@@ -94,6 +96,7 @@ fun SettingsScreen(
     updateCurrencySymbolSide: (String) -> Unit,
     updateThousandsSymbol: (Char) -> Unit,
     updateDecimalSymbol: (Char) -> Unit,
+    updateView: (Views) -> Unit,
     updateDateFormat: (Int) -> Unit
 ) {
     val sharedPref = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
@@ -218,6 +221,7 @@ fun SettingsScreen(
             }
             SettingSetup(VIEW, sharedPref) {
                 sharedPref[VIEW.key] = it
+                updateView(Views.valueOf(it.uppercase()))
             }
             SettingSetup(DATE_FORMAT, sharedPref) {
                 sharedPref[DATE_FORMAT.key] = it
@@ -369,6 +373,7 @@ fun SettingsScreenPreview() {
             updateCurrencySymbolSide = { },
             updateThousandsSymbol = { },
             updateDecimalSymbol = { },
+            updateView = { },
             updateDateFormat = { }
         )
     }

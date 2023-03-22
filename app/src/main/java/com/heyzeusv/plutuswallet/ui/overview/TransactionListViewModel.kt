@@ -12,6 +12,7 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.calculateViewDates
 import com.heyzeusv.plutuswallet.util.createFutureDate
 import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
@@ -246,7 +247,10 @@ class TransactionListViewModel @Inject constructor(
             fi.category && fi.categoryNames.contains("All") -> tranRepo.getTliT(fi.type)
             fi.category -> tranRepo.getTliTC(fi.type, fi.categoryNames)
             fi.date -> tranRepo.getTliD(fi.start, fi.end)
-            else -> tranRepo.getTli()
+            else -> {
+                val dates = calculateViewDates(ZonedDateTime.now(systemDefault()), setVals.view)
+                tranRepo.getTliD(dates.start, dates.end)
+            }
         }
     }
 }

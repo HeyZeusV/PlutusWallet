@@ -8,9 +8,12 @@ import com.heyzeusv.plutuswallet.data.model.ChartInformation
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.calculateViewDates
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -101,7 +104,10 @@ class ChartViewModel @Inject constructor(
             fi.account -> tranRepo.getCtA(fi.accountNames)
             fi.category -> tranRepo.getCtC(fi.type, fi.categoryNames)
             fi.date -> tranRepo.getCtD(fi.start, fi.end)
-            else -> tranRepo.getCt()
+            else -> {
+                val dates = calculateViewDates(ZonedDateTime.now(systemDefault()), setVals.view)
+                tranRepo.getCtD(dates.start, dates.end)
+            }
         }
     }
 }
