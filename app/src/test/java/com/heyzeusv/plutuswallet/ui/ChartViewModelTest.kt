@@ -12,7 +12,10 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
+import java.time.Clock
+import java.time.Instant
 import java.time.ZoneId.systemDefault
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -23,6 +26,10 @@ internal class ChartViewModelTest {
 
     // test Fake
     private val repo = FakeRepository()
+    private val clock = Clock.fixed(
+        Instant.parse("1980-01-10T00:00:00Z"),
+        ZoneOffset.systemDefault()
+    )
 
     // what is being tested
     private lateinit var chartVM: ChartViewModel
@@ -34,7 +41,7 @@ internal class ChartViewModelTest {
     fun setUpViewModel() {
         // reset fake repo with dummy data and pass it to ViewModel
         repo.resetLists()
-        chartVM = ChartViewModel(repo)
+        chartVM = ChartViewModel(repo, clock)
     }
 
     @Test

@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.time.Clock
 import javax.inject.Singleton
 
 /**
@@ -28,5 +29,11 @@ object AppModule {
     @Provides
     fun provideSettingsValues(sharedPref: SharedPreferences): SettingsValues {
         return prepareSettingValues(sharedPref)
+    }
+
+    @Singleton
+    @Provides
+    fun provideClock(): Clock {
+        return Clock.systemDefaultZone()
     }
 }

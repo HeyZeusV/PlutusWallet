@@ -12,7 +12,7 @@ import com.heyzeusv.plutuswallet.util.calculateViewDates
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
-import java.time.ZoneId.systemDefault
+import java.time.Clock
 import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +29,8 @@ import kotlinx.coroutines.launch
  */
 @HiltViewModel
 class ChartViewModel @Inject constructor(
-    private val tranRepo: PWRepositoryInterface
+    private val tranRepo: PWRepositoryInterface,
+    private val clock: Clock
 ) : ViewModel() {
 
     var setVals = SettingsValues()
@@ -105,7 +106,7 @@ class ChartViewModel @Inject constructor(
             fi.category -> tranRepo.getCtC(fi.type, fi.categoryNames)
             fi.date -> tranRepo.getCtD(fi.start, fi.end)
             else -> {
-                val dates = calculateViewDates(ZonedDateTime.now(systemDefault()), setVals.view)
+                val dates = calculateViewDates(ZonedDateTime.now(clock), setVals.view)
                 tranRepo.getCtD(dates.start, dates.end)
             }
         }
