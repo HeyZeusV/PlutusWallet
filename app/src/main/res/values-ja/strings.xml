@@ -104,9 +104,9 @@
     <string name="icon_cd_inputError">入力エラー</string>
     <string name="alert_dialog_closeapp">アプリを閉じる</string>
     <string name="alert_dialog_closeapp_message">アプリを閉じますか？</string>
-    <string name="preferences_startup_view">スタートアップ ビュー</string>
-    <string name="preferences_startup_monthly">毎月</string>
-    <string name="preferences_startup_weekly">毎週</string>
-    <string name="preferences_startup_daily">毎日</string>
-    <string name="preferences_startup_yearly">毎年</string>
+    <string name="preferences_view">意見</string>
+    <string name="preferences_view_monthly">毎月</string>
+    <string name="preferences_view_weekly">毎週</string>
+    <string name="preferences_view_daily">毎日</string>
+    <string name="preferences_view_yearly">毎年</string>
 </resources>

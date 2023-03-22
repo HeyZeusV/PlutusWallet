@@ -50,7 +50,7 @@ fun prepareSettingValues(sharedPref: SharedPreferences): SettingsValues {
     val thousandsSymbolKey: String = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
     val decimalSymbolKey: String = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
     val decimalNumber: String = sharedPref[Key.KEY_DECIMAL_NUMBER, "yes"]
-    val startupView: String = sharedPref[Key.KEY_STARTUP_VIEW, "monthly"]
+    val viewKey: String = sharedPref[Key.KEY_VIEW, "monthly"]
     val dateFormatKey: String = sharedPref[Key.KEY_DATE_FORMAT, "3"]
 
     // converting keys to values
@@ -71,9 +71,10 @@ fun prepareSettingValues(sharedPref: SharedPreferences): SettingsValues {
         .apply { roundingMode = RoundingMode.HALF_UP }
 
     val dateFormat = retrieveDateFormat(dateFormatValue)
+    val view = Views.valueOf(viewKey.uppercase())
 
     return SettingsValues(
         currencySymbol, currencySymbolSide, thousandsSymbol, decimalSymbol,
-        decimalNumber, decimalFormatter, integerFormatter, startupView, dateFormat
+        decimalNumber, decimalFormatter, integerFormatter, view, dateFormat
     )
 }

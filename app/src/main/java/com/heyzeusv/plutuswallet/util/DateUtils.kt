@@ -73,22 +73,22 @@ fun endOfDay(date: ZonedDateTime): ZonedDateTime {
  *  Based on [view], calculates the start and end dates using [date], and returns them in a
  *  [ViewDates] data class.
  */
-fun calculateViewDates(date: ZonedDateTime, view: String): ViewDates {
+fun calculateViewDates(date: ZonedDateTime, view: Views): ViewDates {
     val year = date.year
     val month = date.monthValue
 
     val start: ZonedDateTime
     val end: ZonedDateTime
     when (view) {
-        "yearly" -> {
+        Views.YEARLY -> {
             start = ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, systemDefault())
             end = ZonedDateTime.of(year + 1, 1, 1, 0, 0, 0, 0, systemDefault()).minusSeconds(1L)
         }
-        "monthly" -> {
+        Views.MONTHLY -> {
             start = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, systemDefault())
             end = ZonedDateTime.of(year, month + 1, 1, 0, 0, 0, 0, systemDefault()).minusSeconds(1L)
         }
-        "weekly" -> {
+        Views.WEEKLY -> {
             val day = date.dayOfWeek
             if (day == DayOfWeek.SUNDAY) {
                 start = startOfDay(date)
@@ -99,8 +99,7 @@ fun calculateViewDates(date: ZonedDateTime, view: String): ViewDates {
                 end =  endOfDay(date).plusDays(daysToSaturday.toLong())
             }
         }
-        // daily
-        else -> {
+        Views.DAILY -> {
             start = startOfDay(date)
             end = endOfDay(date)
         }

@@ -104,9 +104,9 @@
     <string name="icon_cd_inputError">इनपुट त्रुटि</string>
     <string name="alert_dialog_closeapp">ऐप बंद करें</string>
     <string name="alert_dialog_closeapp_message">क्या आप ऐप को बंद करना चाहेंगे?</string>
-    <string name="preferences_startup_view">स्टार्टअप दृश्य</string>
-    <string name="preferences_startup_monthly">महीने के</string>
-    <string name="preferences_startup_weekly">साप्ताहिक</string>
-    <string name="preferences_startup_daily">दैनिक</string>
-    <string name="preferences_startup_yearly">सालाना</string>
+    <string name="preferences_view">देखना</string>
+    <string name="preferences_view_monthly">महीने के</string>
+    <string name="preferences_view_weekly">साप्ताहिक</string>
+    <string name="preferences_view_daily">दैनिक</string>
+    <string name="preferences_view_yearly">सालाना</string>
 </resources>

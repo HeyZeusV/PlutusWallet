@@ -119,11 +119,11 @@
     <string name="icon_cd_inputError">Input error</string>
     <string name="alert_dialog_closeapp">Close app</string>
     <string name="alert_dialog_closeapp_message">Would you like to close the app?</string>
-    <string name="preferences_startup_view">Startup View</string>
-    <string name="preferences_startup_yearly">Yearly</string>
-    <string name="preferences_startup_monthly">Monthly</string>
-    <string name="preferences_startup_weekly">Weekly</string>
-    <string name="preferences_startup_daily">Daily</string>
+    <string name="preferences_view">View</string>
+    <string name="preferences_view_yearly">Yearly</string>
+    <string name="preferences_view_monthly">Monthly</string>
+    <string name="preferences_view_weekly">Weekly</string>
+    <string name="preferences_view_daily">Daily</string>
 
     <string name="tt_about_file" translatable="false">File %1$s</string>
     <string name="tt_ad" translatable="false">AlertDialog</string>

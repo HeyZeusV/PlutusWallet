@@ -66,14 +66,14 @@
         <item>no</item>
     </string-array>
 
-    <string-array name="startup_view_display_array">
-        <item>@string/preferences_startup_yearly</item>
-        <item>@string/preferences_startup_monthly</item>
-        <item>@string/preferences_startup_weekly</item>
-        <item>@string/preferences_startup_daily</item>
+    <string-array name="view_display_array">
+        <item>@string/preferences_view_yearly</item>
+        <item>@string/preferences_view_monthly</item>
+        <item>@string/preferences_view_weekly</item>
+        <item>@string/preferences_view_daily</item>
     </string-array>
 
-    <string-array name="startup_view_value_array">
+    <string-array name="view_value_array">
         <item>yearly</item>
         <item>monthly</item>
         <item>weekly</item>

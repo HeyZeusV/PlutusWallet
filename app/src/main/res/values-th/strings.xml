@@ -104,9 +104,9 @@
     <string name="icon_cd_inputError">ข้อผิดพลาดในการป้อนข้อมูล</string>
     <string name="alert_dialog_closeapp">ปิดแอพ</string>
     <string name="alert_dialog_closeapp_message">คุณต้องการปิดแอปหรือไม่</string>
-    <string name="preferences_startup_view">มุมมองเริ่มต้น</string>
-    <string name="preferences_startup_monthly">รายเดือน</string>
-    <string name="preferences_startup_weekly">รายสัปดาห์</string>
-    <string name="preferences_startup_daily">รายวัน</string>
-    <string name="preferences_startup_yearly">รายปี</string>
+    <string name="preferences_view">ดู</string>
+    <string name="preferences_view_monthly">รายเดือน</string>
+    <string name="preferences_view_weekly">รายสัปดาห์</string>
+    <string name="preferences_view_daily">รายวัน</string>
+    <string name="preferences_view_yearly">รายปี</string>
 </resources>
