@@ -20,8 +20,8 @@ import com.heyzeusv.plutuswallet.util.endOfDay
 import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.startOfDay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Clock
 import kotlinx.coroutines.launch
-import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
 import java.time.format.FormatStyle.SHORT
 import javax.inject.Inject
@@ -34,7 +34,8 @@ import kotlinx.coroutines.flow.StateFlow
  */
 @HiltViewModel
 class FilterViewModel @Inject constructor(
-    private val tranRepo: PWRepositoryInterface
+    private val tranRepo: PWRepositoryInterface,
+    private val clock: Clock
 ) : ViewModel() {
 
     private val _showFilter = MutableStateFlow(false)
@@ -121,9 +122,9 @@ class FilterViewModel @Inject constructor(
     }
 
     // Date object values
-    private val _startDate = MutableStateFlow(startOfDay(ZonedDateTime.now(systemDefault())))
+    private val _startDate = MutableStateFlow(startOfDay(ZonedDateTime.now(clock)))
     val startDate: StateFlow<ZonedDateTime> get() = _startDate
-    private val _endDate = MutableStateFlow(endOfDay(ZonedDateTime.now(systemDefault())))
+    private val _endDate = MutableStateFlow(endOfDay(ZonedDateTime.now(clock)))
     val endDate: StateFlow<ZonedDateTime> get() = _endDate
 
     // Date string values
@@ -207,8 +208,8 @@ class FilterViewModel @Inject constructor(
         _categorySelectedList.value = emptyList()
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        _startDate.value = startOfDay(ZonedDateTime.now(systemDefault()))
-        _endDate.value = endOfDay(ZonedDateTime.now(systemDefault()))
+        _startDate.value = startOfDay(ZonedDateTime.now(clock))
+        _endDate.value = endOfDay(ZonedDateTime.now(clock))
         _startDateString.value = ""
         _endDateString.value = ""
 
