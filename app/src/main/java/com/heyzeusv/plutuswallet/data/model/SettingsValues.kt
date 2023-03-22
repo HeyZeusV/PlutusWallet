@@ -21,5 +21,6 @@ data class SettingsValues(
     var decimalNumber: String = "yes",
     var decimalFormatter: DecimalFormat = DecimalFormat("#,##0.00"),
     var integerFormatter: DecimalFormat = DecimalFormat("#,###"),
+    var startupView: String = "monthly",
     var dateFormat: FormatStyle = FormatStyle.FULL
 )

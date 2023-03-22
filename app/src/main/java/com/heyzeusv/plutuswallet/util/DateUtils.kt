@@ -2,14 +2,23 @@ package com.heyzeusv.plutuswallet.util
 
 import android.app.DatePickerDialog
 import android.view.View
-import java.time.ZoneId
+import java.time.DayOfWeek
+import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 /**
- *  Functions used in multiple classes focused on Dates.
+ *  Functions/Classes used in multiple classes focused on Dates.
  */
+/**
+ *  Class used to ensure that we always get a [start] and [end] [ZonedDateTime] to pass to the
+ *  filter when the Date filter IS NOT applied.
+ */
+data class ViewDates(
+    val start: ZonedDateTime,
+    val end: ZonedDateTime
+)
 
 /**
  *   Returns FutureDate set at the beginning of the day by calculating
@@ -60,6 +69,46 @@ fun endOfDay(date: ZonedDateTime): ZonedDateTime {
     return startOfDay(date).plusDays(1L).minusSeconds(1L)
 }
 
+/**
+ *  Based on [view], calculates the start and end dates using [date], and returns them in a
+ *  [ViewDates] data class.
+ */
+fun calculateViewDates(date: ZonedDateTime, view: String): ViewDates {
+    val year = date.year
+    val month = date.monthValue
+
+    val start: ZonedDateTime
+    val end: ZonedDateTime
+    when (view) {
+        "yearly" -> {
+            start = ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, systemDefault())
+            end = ZonedDateTime.of(year + 1, 1, 1, 0, 0, 0, 0, systemDefault()).minusSeconds(1L)
+        }
+        "monthly" -> {
+            start = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, systemDefault())
+            end = ZonedDateTime.of(year, month + 1, 1, 0, 0, 0, 0, systemDefault()).minusSeconds(1L)
+        }
+        "weekly" -> {
+            val day = date.dayOfWeek
+            if (day == DayOfWeek.SUNDAY) {
+                start = startOfDay(date)
+                end = endOfDay(start).plusDays(6L)
+            } else {
+                val daysToSaturday = 6 - day.value
+                start = startOfDay(date).minusDays(day.value.toLong())
+                end =  endOfDay(date).plusDays(daysToSaturday.toLong())
+            }
+        }
+        // daily
+        else -> {
+            start = startOfDay(date)
+            end = endOfDay(date)
+        }
+    }
+
+    return ViewDates(start, end)
+}
+
 fun datePickerDialog(
     view: View,
     initDate: ZonedDateTime,
@@ -74,7 +123,7 @@ fun datePickerDialog(
     val dateListener =
         DatePickerDialog.OnDateSetListener { _, year: Int, month: Int, day: Int ->
             val date: ZonedDateTime = ZonedDateTime.of(
-                year, month + 1, day, 0, 0, 0, 0, ZoneId.systemDefault()
+                year, month + 1, day, 0, 0, 0, 0, systemDefault()
             )
             onDateSelected(date)
         }
