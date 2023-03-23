@@ -46,17 +46,18 @@ fun prepareSettingValues(sharedPref: SharedPreferences): SettingsValues {
 
     // retrieving SharedPreferences values
     val currencySymbolKey: String = sharedPref[Key.KEY_CURRENCY_SYMBOL, "dollar"]
-    val dateFormatKey: String = sharedPref[Key.KEY_DATE_FORMAT, "3"]
-    val decimalSymbolKey: String = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
-    val thousandsSymbolKey: String = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
-    val decimalNumber: String = sharedPref[Key.KEY_DECIMAL_NUMBER, "yes"]
     val currencySymbolSide: String = sharedPref[Key.KEY_CURRENCY_SYMBOL_SIDE, "left"]
+    val thousandsSymbolKey: String = sharedPref[Key.KEY_THOUSANDS_SYMBOL, "comma"]
+    val decimalSymbolKey: String = sharedPref[Key.KEY_DECIMAL_SYMBOL, "period"]
+    val decimalNumber: String = sharedPref[Key.KEY_DECIMAL_NUMBER, "yes"]
+    val viewKey: String = sharedPref[Key.KEY_VIEW, "monthly"]
+    val dateFormatKey: String = sharedPref[Key.KEY_DATE_FORMAT, "3"]
 
     // converting keys to values
     val currencySymbol: String = getCurrencySymbol(currencySymbolKey)
-    val dateFormatValue: Int = dateFormatKey.toInt()
-    val decimalSymbol: Char = getSeparatorSymbol(decimalSymbolKey)
     val thousandsSymbol: Char = getSeparatorSymbol(thousandsSymbolKey)
+    val decimalSymbol: Char = getSeparatorSymbol(decimalSymbolKey)
+    val dateFormatValue: Int = dateFormatKey.toInt()
 
     // set up decimal/thousands symbol
     val customSymbols = DecimalFormatSymbols(Locale.US)
@@ -70,9 +71,10 @@ fun prepareSettingValues(sharedPref: SharedPreferences): SettingsValues {
         .apply { roundingMode = RoundingMode.HALF_UP }
 
     val dateFormat = retrieveDateFormat(dateFormatValue)
+    val view = Views.valueOf(viewKey.uppercase())
 
     return SettingsValues(
         currencySymbol, currencySymbolSide, thousandsSymbol, decimalSymbol,
-        decimalNumber, decimalFormatter, integerFormatter, dateFormat
+        decimalNumber, decimalFormatter, integerFormatter, view, dateFormat
     )
 }

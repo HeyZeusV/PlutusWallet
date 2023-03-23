@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.data.model
 
+import com.heyzeusv.plutuswallet.util.Views
 import java.text.DecimalFormat
 import java.time.format.FormatStyle
 
@@ -21,5 +22,6 @@ data class SettingsValues(
     var decimalNumber: String = "yes",
     var decimalFormatter: DecimalFormat = DecimalFormat("#,##0.00"),
     var integerFormatter: DecimalFormat = DecimalFormat("#,###"),
+    var view: Views = Views.MONTHLY,
     var dateFormat: FormatStyle = FormatStyle.FULL
 )

@@ -9,7 +9,10 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.ui.overview.TransactionListViewModel
+import java.time.Clock
+import java.time.Instant
 import java.time.ZoneId.systemDefault
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.jupiter.api.BeforeEach
@@ -25,6 +28,10 @@ internal class TransactionListViewModelTest {
 
     // test Fake
     private val repo = FakeRepository()
+    private val clock = Clock.fixed(
+        Instant.parse("1980-01-10T00:00:00Z"),
+        ZoneOffset.systemDefault()
+    )
 
     // What is being tested
     private lateinit var tlVM: TransactionListViewModel
@@ -36,7 +43,7 @@ internal class TransactionListViewModelTest {
     fun setUpViewModel() {
         // reset fake repo with dummy data and pass it to ViewModel
         repo.clearAccCatLists()
-        tlVM = TransactionListViewModel(repo)
+        tlVM = TransactionListViewModel(repo, clock)
     }
 
     @Test

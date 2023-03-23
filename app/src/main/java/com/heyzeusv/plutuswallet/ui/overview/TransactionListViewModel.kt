@@ -12,11 +12,12 @@ import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.calculateViewDates
 import com.heyzeusv.plutuswallet.util.createFutureDate
 import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.ZoneId.systemDefault
+import java.time.Clock
 import java.time.ZonedDateTime
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +37,8 @@ import kotlinx.coroutines.flow.first
  */
 @HiltViewModel
 class TransactionListViewModel @Inject constructor(
-    private val tranRepo: PWRepositoryInterface
+    private val tranRepo: PWRepositoryInterface,
+    private val clock: Clock
 ) : ViewModel() {
 
     var setVals = SettingsValues()
@@ -146,7 +148,7 @@ class TransactionListViewModel @Inject constructor(
             moreToCreate = false
             // returns list of all Transactions whose futureDate is before current date
             val futureTranList: MutableList<Transaction> =
-                tranRepo.getFutureTransactionsAsync(ZonedDateTime.now(systemDefault()))
+                tranRepo.getFutureTransactionsAsync(ZonedDateTime.now(clock))
                     .toMutableList()
             // return if empty
             if (futureTranList.isNotEmpty()) {
@@ -182,7 +184,7 @@ class TransactionListViewModel @Inject constructor(
                 )
                 // if new futureDate is before current time,
                 // then there are more Transactions to be added
-                if (futureDate.isBefore(ZonedDateTime.now(systemDefault()))) moreToCreate = true
+                if (futureDate.isBefore(ZonedDateTime.now(clock))) moreToCreate = true
             }
 
             // stops this Transaction from being repeated again if user switches its date
@@ -246,7 +248,10 @@ class TransactionListViewModel @Inject constructor(
             fi.category && fi.categoryNames.contains("All") -> tranRepo.getTliT(fi.type)
             fi.category -> tranRepo.getTliTC(fi.type, fi.categoryNames)
             fi.date -> tranRepo.getTliD(fi.start, fi.end)
-            else -> tranRepo.getTli()
+            else -> {
+                val dates = calculateViewDates(ZonedDateTime.now(clock), setVals.view)
+                tranRepo.getTliD(dates.start, dates.end)
+            }
         }
     }
 }

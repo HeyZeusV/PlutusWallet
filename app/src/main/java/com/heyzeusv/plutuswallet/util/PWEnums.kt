@@ -63,6 +63,16 @@ enum class ListItemAction {
 }
 
 /**
+ *  Enum for the possible views user can select when no Date filter is applied.
+ */
+enum class Views {
+    YEARLY,
+    MONTHLY,
+    WEEKLY,
+    DAILY
+}
+
+/**
  *  Enum for the available settings in the Settings screen. [titleId] is the string resource id for
  *  the name of the setting. [valueArrayId] is the string array resource id for the values that get
  *  saved to SharedPreferences after user selects an option. [displayArrayId] is the string array
@@ -111,6 +121,12 @@ enum class SettingOptions(
         R.array.decimal_number_value_array,
         R.array.decimal_number_display_array,
         Key.KEY_DECIMAL_NUMBER
+    ),
+    VIEW(
+        R.string.preferences_view,
+        R.array.view_value_array,
+        R.array.view_display_array,
+        Key.KEY_VIEW
     ),
     DATE_FORMAT(
         R.string.preferences_date_format,

@@ -61,4 +61,5 @@ enum class Key(val key: String) {
     KEY_MANUAL_LANGUAGE("key_manual_language"),
     KEY_THEME("key_theme"),
     KEY_THOUSANDS_SYMBOL("key_thousands_symbol"),
+    KEY_VIEW("key_view")
 }
