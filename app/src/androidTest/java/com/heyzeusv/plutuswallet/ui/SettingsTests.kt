@@ -74,14 +74,14 @@ class SettingsTests {
          *  '$' on left side, ',' used as thousands symbols, '.' used as decimal symbol,
          *  decimals allowed, full date is displayed, and English is language.
          */
-        composeRule.onNodeWithTextId(R.string.cfl_overview).assertExists()
+        composeRule.onNodeWithTextId(R.string.cfl_overview).assertIsDisplayed()
         // check List items
         checkAllTranListItems()
 
         // navigate to Transaction with id 1
         composeRule.onNodeWithTTStrId(R.string.tt_tranL_item, dd.tran1.id).performClick()
         // check that we navigate to Transaction screen
-        composeRule.onNodeWithTextId(R.string.transaction).assertExists()
+        composeRule.onNodeWithTextId(R.string.transaction).assertIsDisplayed()
         // check that date and total are formatted correctly
         composeRule.onNodeWithTextId(R.string.transaction_date)
             .assertEditTextEquals(formatDate(dd.tran1.date, setVals.dateFormat))
@@ -150,6 +150,30 @@ class SettingsTests {
         selectSymbolSettings("฿", ' ', ',')
         Espresso.pressBack()
         checkAllTranListItems()
+    }
+
+    @Test
+    fun settings_changeView() {
+        // monthly option, which is default, is already checked in checkInitialSettings()
+
+        // navigate to Settings, change view then go back and check
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("VIEW", "Yearly")
+        Espresso.pressBack()
+        checkAllTranListItems()
+
+        // navigate to Settings, change view then go back and check
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("VIEW", "Weekly")
+        Espresso.pressBack()
+        checkTranListItems(listOf(dd.tran1, dd.tran2))
+        checkTranListItemDNE(listOf(dd.tran3, dd.tran4))
+
+        // navigate to Settings, change view then go back and check
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("VIEW", "Daily")
+        Espresso.pressBack()
+        checkTranListItemDNE(dd.tranList)
     }
 
     @Test
@@ -301,12 +325,27 @@ class SettingsTests {
 
         if (translated) {
             // check that title is correctly translated
-            composeRule.onNodeWithText(translatedTitle).assertExists()
+            composeRule.onNodeWithText(translatedTitle).assertIsDisplayed()
         }
-        composeRule.onNodeWithTTStrId(R.string.tt_app_barTitle, title).assertExists()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_barTitle, title).assertIsDisplayed()
 
         // return to Overview screen
         Espresso.pressBack()
+    }
+
+    /**
+     *  Checks that all Transactions of given [list] do not exist.
+     */
+    private fun checkTranListItemDNE(list: List<Transaction>) {
+        list.forEach {
+            val totalText = it.total.prepareTotalText(setVals)
+
+            // checks that total and date are formatted correctly
+            composeRule.onNodeWithText(formatDate(it.date, setVals.dateFormat))
+                .assertDoesNotExist()
+            composeRule.onNodeWithText(text = totalText, useUnmergedTree = true)
+                .assertDoesNotExist()
+        }
     }
 
     /**
@@ -316,14 +355,20 @@ class SettingsTests {
         val totalText = tran.total.prepareTotalText(setVals)
 
         // checks that total and date are formatted correctly
-//        composeRule.onNodeWithText(setVals.dateFormatter.format(tran.date)).assertExists()
-        composeRule.onNodeWithText(text = totalText, useUnmergedTree = true).assertExists()
+        composeRule.onNodeWithText(formatDate(tran.date, setVals.dateFormat)).assertIsDisplayed()
+        composeRule.onNodeWithText(text = totalText, useUnmergedTree = true).assertIsDisplayed()
     }
 
     /**
      *  Calls [checkTranListItemDateTotal] on all Transactions in dummy data
      */
     private fun checkAllTranListItems() = dd.tranList.forEach { checkTranListItemDateTotal(it) }
+
+    /**
+     *  Calls [checkTranListItemDateTotal] on given [list] of Transactions
+     */
+    private fun checkTranListItems(list: List<Transaction>) =
+        list.forEach { checkTranListItemDateTotal(it) }
 
     /**
      *  Updates setVal symbols/formatters using [currencySymbol], [decimalSymbol],
