@@ -1,6 +1,7 @@
 package com.heyzeusv.plutuswallet.data.model
 
-import java.util.Date
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 
 /**
  *  Holds data to be sent to CFLViewModel that then gets passed to Repository to complete a query.
@@ -16,6 +17,6 @@ data class FilterInfo(
     val type: String = "",
     val categoryNames: List<String> = listOf(""),
     val date: Boolean = false,
-    val start: Date = Date(0),
-    val end: Date = Date(1)
+    val start: ZonedDateTime = ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, systemDefault()),
+    val end: ZonedDateTime = ZonedDateTime.of(1, 1, 1, 1, 1, 1, 2, systemDefault()),
 )

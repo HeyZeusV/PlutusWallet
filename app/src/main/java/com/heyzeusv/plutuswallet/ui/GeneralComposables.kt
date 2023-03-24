@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.heyzeusv.plutuswallet.R
@@ -49,9 +48,7 @@ fun PWButton(
     FilterChip(
         selected = selected,
         onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .testTag(label),
+        modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         border = BorderStroke(
             width = dimensionResource(R.dimen.button_chip_border_width),

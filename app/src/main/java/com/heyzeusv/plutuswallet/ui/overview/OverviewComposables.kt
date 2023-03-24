@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -15,9 +14,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +29,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
@@ -53,14 +54,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,9 +74,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
@@ -98,12 +95,11 @@ import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
-import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.FilterState
+import com.heyzeusv.plutuswallet.util.datePickerDialog
 import java.math.BigDecimal
-import java.text.DateFormat
-import java.util.Date
-import kotlinx.coroutines.delay
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime
 import kotlinx.coroutines.launch
 
 /**
@@ -142,7 +138,9 @@ fun OverviewScreen(
     val fCategoryList by filterVM.categoryList.collectAsState()
     val fCategorySelectedList by filterVM.categorySelectedList.collectAsState()
     val fDateFilterSelected by filterVM.dateFilter.collectAsState()
+    val fStartDate by filterVM.startDate.collectAsState()
     val fStartDateString by filterVM.startDateString.collectAsState()
+    val fEndDate by filterVM.endDate.collectAsState()
     val fEndDateString by filterVM.endDateString.collectAsState()
     val fFilterState by filterVM.filterState.collectAsState()
 
@@ -200,8 +198,10 @@ fun OverviewScreen(
         fCategoryChipOnClick = filterVM::updateCategorySelectedList,
         fDateFilterSelected,
         fDateFilterOnClick = filterVM::updateDateFilter,
+        fStartDate,
         fStartDateString,
         fStartDateOnClick = filterVM::updateStartDateString,
+        fEndDate,
         fEndDateString,
         fEndDateOnClick = filterVM::updateEndDateString,
         fApplyOnClick = filterVM::applyFilter,
@@ -248,10 +248,12 @@ fun OverviewScreen(
     fCategoryChipOnClick: (String, FilterChipAction) -> Unit,
     fDateFilterSelected: Boolean,
     fDateFilterOnClick: (Boolean) -> Unit,
+    fStartDate: ZonedDateTime,
     fStartDateString: String,
-    fStartDateOnClick: (Date) -> Unit,
+    fStartDateOnClick: (ZonedDateTime) -> Unit,
+    fEndDate: ZonedDateTime,
     fEndDateString: String,
-    fEndDateOnClick: (Date) -> Unit,
+    fEndDateOnClick: (ZonedDateTime) -> Unit,
     fApplyOnClick: () -> Unit,
     fFilterState: FilterState,
     fShowSnackbar: suspend (String) -> Unit
@@ -302,8 +304,10 @@ fun OverviewScreen(
         fCategoryChipOnClick,
         fDateFilterSelected,
         fDateFilterOnClick,
+        fStartDate,
         fStartDateString,
         fStartDateOnClick,
+        fEndDate,
         fEndDateString,
         fEndDateOnClick,
         fApplyOnClick,
@@ -315,7 +319,7 @@ fun OverviewScreen(
 /**
  *  Composable that displays Charts and totals using data from [chartInfoList]
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun ChartCard(
     modifier: Modifier = Modifier,
@@ -344,11 +348,11 @@ fun ChartCard(
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
-                count = 2,
+                pageCount = 2,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.9f)
-                    .testTag("Chart ViewPager"),
+                    .testTag(stringResource(R.string.tt_chart_vp)),
                 state = pagerState
             ) { page ->
                 val chartInfo = chartInfoList[page]
@@ -361,7 +365,7 @@ fun ChartCard(
                         Surface(
                             modifier = Modifier
                                 .weight(0.8f)
-                                .testTag("Chart page $page")
+                                .testTag(stringResource(R.string.tt_chart_page, page))
                         ) {
                             /**
                              *  Library used for PieChart is most likely never going to be updated to
@@ -438,20 +442,24 @@ fun ChartCard(
                             )
                         }
                         val totalPrefix = stringResource(R.string.chart_total)
-                        MarqueeText(
+                        Text(
                             text = "$totalPrefix${chartInfo.totalText}",
-                            style = MaterialTheme.typography.subtitle1,
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .align(Alignment.Start)
                                 .padding(horizontal = dimensionResource(R.dimen.chartMarginStartEnd))
-                                .testTag("Chart Total for page $page")
+                                .testTag(stringResource(R.string.tt_chart_total, page))
+                                .basicMarquee(),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.subtitle1
                         )
                     } else {
                         Text(
                             text = stringResource(R.string.cfl_no_transactions),
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
-                                .testTag("Empty Chart for page $page"),
+                                .testTag(stringResource(R.string.tt_chart_empty, page)),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -459,6 +467,7 @@ fun ChartCard(
             }
             HorizontalPagerIndicator(
                 pagerState = pagerState,
+                pageCount = 2,
                 modifier = Modifier
                     .padding(top = 4.dp, bottom = 8.dp)
                     .align(Alignment.CenterHorizontally)
@@ -532,7 +541,7 @@ fun TransactionListCard(
             Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = stringResource(R.string.cfl_no_transactions),
-                    modifier = Modifier.testTag("Empty Transaction List"),
+                    modifier = Modifier.testTag(stringResource(R.string.tt_tranL_empty)),
                     textAlign = TextAlign.Center
                 )
             }
@@ -557,7 +566,7 @@ fun TransactionListItem(
     Surface(
         modifier = Modifier
             .combinedClickable(onLongClick = onLongClick, onClick = onClick)
-            .testTag("${transactionItem.id}")
+            .testTag(stringResource(R.string.tt_tranL_item, transactionItem.id))
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -566,19 +575,34 @@ fun TransactionListItem(
                     .padding(start = 8.dp, top = 4.dp, end = 4.dp, bottom = 2.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                MarqueeText(
+                Text(
                     text = transactionItem.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                     style = MaterialTheme.typography.subtitle1
                 )
-                MarqueeText(
+                Text(
                     text = transactionItem.account,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                     style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
                 )
-                MarqueeText(
+                Text(
                     text = transactionItemFormatted.formattedDate,
-                    style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle2
                 )
             }
             Column(
@@ -587,67 +611,34 @@ fun TransactionListItem(
                     .padding(start = 4.dp, top = 8.dp, end = 8.dp, bottom = 2.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                MarqueeText(
+                Text(
                     text = transactionItemFormatted.formattedTotal,
-                    style = MaterialTheme.typography.subtitle1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
                     color = when (transactionItem.type) {
                         EXPENSE.type -> LocalPWColors.current.expense
                         else -> LocalPWColors.current.income
                     },
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle1
                 )
-                MarqueeText(
+                Text(
                     text = transactionItem.category,
-                    style = MaterialTheme.typography.subtitle2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle2
                 )
             }
         }
     }
-}
-
-/**
- *  Composable for scrolling Text. Text will scroll indefinitely when it does not fit in given area.
- *  [text] is to be displayed using [style], [color], and [textAlign].
- */
-@Composable
-fun MarqueeText(
-    text: String,
-    style: TextStyle,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.onSurface,
-    textAlign: TextAlign? = null
-) {
-    val scrollState = rememberScrollState()
-    var animate by remember { mutableStateOf(true) }
-
-    // animates text scroll effect forever
-    LaunchedEffect(key1 = animate) {
-        scrollState.animateScrollTo(
-            value = scrollState.maxValue,
-            animationSpec = tween(
-                durationMillis = 4000,
-                delayMillis = 1000,
-                easing = CubicBezierEasing(0f, 0f, 0f, 0f)
-            )
-        )
-        delay(1000)
-        scrollState.scrollTo(0)
-        animate = !animate
-    }
-
-    Text(
-        text = text,
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState, false),
-        color = color,
-        textAlign = textAlign,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        style = style
-    )
 }
 
 /**
@@ -661,7 +652,8 @@ fun MarqueeText(
  *  [updateTypeSelected] switches between Expense/Income lists. [categoryList] are all
  *  categories available of type while [categorySelectedList] is the list of categories which have been
  *  selected. [categoryChipOnClick] determines action when individual category chip is selected.
- *  [startDateString] is displayed on start button which performs [startDateOnClick] when clicked.
+ *  [startDate] is the actual date object while [startDateString] is displayed on start button which
+ *  performs [startDateOnClick] when clicked. [endDate] is the actual date object while
  *  [endDateString] is displayed on end button which performs [endDateOnClick] when clicked.
  *  [applyOnClick] runs when apply/reset button is pressed. [filterState] is used to determine
  *  which message to display if there is an error. [showSnackbar] is suspend function which takes
@@ -686,10 +678,12 @@ fun FilterCard(
     categoryChipOnClick: (String, FilterChipAction) -> Unit = { _, _ -> },
     dateFilterSelected: Boolean = false,
     dateFilterOnClick: (Boolean) -> Unit = { },
+    startDate: ZonedDateTime = ZonedDateTime.now(systemDefault()),
     startDateString: String = "",
-    startDateOnClick: (Date) -> Unit = { },
+    startDateOnClick: (ZonedDateTime) -> Unit = { },
+    endDate: ZonedDateTime = ZonedDateTime.now(systemDefault()),
     endDateString: String = "",
-    endDateOnClick: (Date) -> Unit = { },
+    endDateOnClick: (ZonedDateTime) -> Unit = { },
     applyOnClick: () -> Unit = { },
     filterState: FilterState = FilterState.VALID,
     showSnackbar: suspend (String) -> Unit = { }
@@ -831,7 +825,7 @@ fun FilterCard(
                             showIcon = false,
                             modifier = Modifier
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
-                                .testTag("$typeSelectedLabel Button"),
+                                .testTag(stringResource(R.string.tt_filter_type, typeSelectedLabel)),
                         )
                         Surface(
                             modifier = Modifier
@@ -897,13 +891,9 @@ fun FilterCard(
                         PWButton(
                             selected = true,
                             onClick = {
-                                DateUtils.datePickerDialog(
+                                datePickerDialog(
                                     view,
-                                    initDate = if (startDateString.isNotBlank()) {
-                                        DateFormat.getDateInstance().parse(startDateString)
-                                    } else {
-                                        Date()
-                                    },
+                                    initDate = startDate,
                                     onDateSelected = startDateOnClick
                                 ).show()
                             },
@@ -911,18 +901,14 @@ fun FilterCard(
                             showIcon = false,
                             modifier = Modifier
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
-                                .testTag("Filter Start Date"),
+                                .testTag(stringResource(R.string.tt_filter_start)),
                         )
                         PWButton(
                             selected = true,
                             onClick = {
-                                DateUtils.datePickerDialog(
+                                datePickerDialog(
                                     view,
-                                    initDate = if (endDateString.isNotBlank()) {
-                                        DateFormat.getDateInstance().parse(endDateString)
-                                    } else {
-                                        Date()
-                                    },
+                                    initDate = endDate,
                                     onDateSelected = endDateOnClick
                                 ).show()
                             },
@@ -931,7 +917,7 @@ fun FilterCard(
                             modifier = Modifier
                                 .height(dimensionResource(R.dimen.f_button_chip_height))
                                 .padding(bottom = 6.dp)
-                                .testTag("Filter End Date"),
+                                .testTag(stringResource(R.string.tt_filter_end)),
                         )
                     }
                 }
@@ -946,7 +932,7 @@ fun FilterCard(
                     showIcon = false,
                     modifier = Modifier
                         .height(dimensionResource(R.dimen.f_button_chip_height))
-                        .testTag("Filter action"),
+                        .testTag(stringResource(R.string.tt_filter_act)),
                     selectedBackgroundColor = MaterialTheme.colors.secondary,
                     selectedTextColor = LocalElevationOverlay.current?.apply(
                         color = MaterialTheme.colors.surface,
@@ -972,7 +958,7 @@ fun PWChip(
     FilterChip(
         selected = selected,
         onClick = onClick,
-        modifier = Modifier.testTag("Chip: $label"),
+        modifier = Modifier.testTag(stringResource(R.string.tt_filter_chip, label)),
         border = BorderStroke(
             width = dimensionResource(R.dimen.f_chip_border_width),
             color = if (selected) {
@@ -1007,7 +993,7 @@ fun OverviewScreenPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",
@@ -1056,8 +1042,10 @@ fun OverviewScreenPreview() {
             fCategoryChipOnClick = { _, _ -> },
             fDateFilterSelected = false,
             fDateFilterOnClick = { },
+            fStartDate = ZonedDateTime.now(systemDefault()),
             fStartDateString = "",
             fStartDateOnClick = { },
+            fEndDate = ZonedDateTime.now(systemDefault()),
             fEndDateString = "",
             fEndDateOnClick = { },
             fApplyOnClick = { },
@@ -1092,7 +1080,7 @@ fun TransactionListCardPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",
@@ -1121,7 +1109,7 @@ fun TransactionListItemPreview() {
         TranListItem(
             10,
             "Test Title",
-            Date(),
+            ZonedDateTime.now(systemDefault()),
             BigDecimal("100.00"),
             "Test Account",
             "Expense",
@@ -1135,17 +1123,6 @@ fun TransactionListItemPreview() {
             tlItem,
             onLongClick = { },
             onClick = { },
-        )
-    }
-}
-
-@Preview
-@Composable
-fun MarqueeTextPreview() {
-    PreviewHelperCard {
-        MarqueeText(
-            text = "Super duper uber gotta make this text even longer and longer",
-            style = MaterialTheme.typography.subtitle1
         )
     }
 }

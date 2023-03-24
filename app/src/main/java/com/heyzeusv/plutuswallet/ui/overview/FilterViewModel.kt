@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.heyzeusv.plutuswallet.data.PWRepositoryInterface
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
-import com.heyzeusv.plutuswallet.util.DateUtils
 import com.heyzeusv.plutuswallet.util.FilterChipAction
 import com.heyzeusv.plutuswallet.util.FilterChipAction.ADD
 import com.heyzeusv.plutuswallet.util.FilterChipAction.REMOVE
@@ -17,15 +16,17 @@ import com.heyzeusv.plutuswallet.util.FilterState.VALID
 import com.heyzeusv.plutuswallet.util.TransactionType
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
 import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.endOfDay
+import com.heyzeusv.plutuswallet.util.formatDate
+import com.heyzeusv.plutuswallet.util.startOfDay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Clock
 import kotlinx.coroutines.launch
-import java.text.DateFormat
-import java.util.Date
+import java.time.ZonedDateTime
+import java.time.format.FormatStyle.SHORT
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
-private const val MIDNIGHT_MILLI = 86399999
 
 /**
  *  Stores and manages UI-related data in a lifecycle conscious way.
@@ -33,7 +34,8 @@ private const val MIDNIGHT_MILLI = 86399999
  */
 @HiltViewModel
 class FilterViewModel @Inject constructor(
-    private val tranRepo: PWRepositoryInterface
+    private val tranRepo: PWRepositoryInterface,
+    private val clock: Clock
 ) : ViewModel() {
 
     private val _showFilter = MutableStateFlow(false)
@@ -119,23 +121,25 @@ class FilterViewModel @Inject constructor(
         }
     }
 
-    private var startDate = DateUtils.startOfDay(Date())
-    private var endDate = Date(startDate.time + MIDNIGHT_MILLI)
-    private val dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT)
+    // Date object values
+    private val _startDate = MutableStateFlow(startOfDay(ZonedDateTime.now(clock)))
+    val startDate: StateFlow<ZonedDateTime> get() = _startDate
+    private val _endDate = MutableStateFlow(endOfDay(ZonedDateTime.now(clock)))
+    val endDate: StateFlow<ZonedDateTime> get() = _endDate
 
     // Date string values
     private val _startDateString = MutableStateFlow("")
     val startDateString: StateFlow<String> get() = _startDateString
-    fun updateStartDateString(newDate: Date) {
-        startDate = newDate
-        _startDateString.value = dateFormatter.format(startDate)
+    fun updateStartDateString(newDate: ZonedDateTime) {
+        _startDate.value = newDate
+        _startDateString.value = formatDate(newDate, SHORT)
     }
 
     private val _endDateString = MutableStateFlow("")
     val endDateString: StateFlow<String> get() = _endDateString
-    fun updateEndDateString(newDate: Date) {
-        endDate = Date(newDate.time + MIDNIGHT_MILLI)
-        _endDateString.value = dateFormatter.format(endDate)
+    fun updateEndDateString(newDate: ZonedDateTime) {
+        _endDate.value = endOfDay(newDate)
+        _endDateString.value = formatDate(endOfDay(newDate), SHORT)
     }
 
     private val _filterInfo = MutableStateFlow(FilterInfo())
@@ -171,10 +175,11 @@ class FilterViewModel @Inject constructor(
             categoryFilter.value && categorySelectedList.value.isEmpty() ->
                 _filterState.value = NO_SELECTED_CATEGORY
             // user must select both start and end date
-            dateFilter.value && startDateString.value.isEmpty() && endDateString.value.isEmpty() ->
+            dateFilter.value && (startDateString.value.isEmpty() || endDateString.value.isEmpty()) ->
                 _filterState.value = NO_SELECTED_DATE
             // startDate must be before endDate else it displays warning and doesn't apply filters
-            dateFilter.value && startDate > endDate -> _filterState.value = INVALID_DATE_RANGE
+            dateFilter.value && startDate.value.isAfter(endDate.value) ->
+                _filterState.value = INVALID_DATE_RANGE
             !accountFilter.value && !categoryFilter.value && !dateFilter.value -> resetFilter()
             else -> {
                 _filterInfo.value = FilterInfo(
@@ -184,8 +189,8 @@ class FilterViewModel @Inject constructor(
                     type = typeSelected.value.type,
                     categoryNames = categorySelectedList.value,
                     date = dateFilter.value,
-                    start = startDate,
-                    end = endDate
+                    start = startDate.value,
+                    end = endDate.value
                 )
                 _showFilter.value = false
             }
@@ -203,8 +208,8 @@ class FilterViewModel @Inject constructor(
         _categorySelectedList.value = emptyList()
 
         // sets the startDate to very start of current day and endDate to right before the next day
-        startDate = DateUtils.startOfDay(Date())
-        endDate = Date(startDate.time + MIDNIGHT_MILLI)
+        _startDate.value = startOfDay(ZonedDateTime.now(clock))
+        _endDate.value = endOfDay(ZonedDateTime.now(clock))
         _startDateString.value = ""
         _endDateString.value = ""
 

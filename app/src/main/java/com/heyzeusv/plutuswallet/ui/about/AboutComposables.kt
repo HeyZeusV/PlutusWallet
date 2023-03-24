@@ -210,7 +210,7 @@ fun ButtonRevealContent(buttonText: String, file: String) {
                     text = fileContent,
                     modifier = Modifier
                         .padding(all = dimensionResource(R.dimen.AboutNestedScrollViewChildPadding))
-                        .testTag("File $file"),
+                        .testTag(stringResource(R.string.tt_about_file, file)),
                     style = MaterialTheme.typography.subtitle2
                 )
             }
@@ -245,7 +245,6 @@ fun HyperlinkText(text: String, link: String) {
 
     ClickableText(
         text = annotatedString,
-        modifier = Modifier.testTag(link),
         style = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         onClick = { offset ->
             annotatedString

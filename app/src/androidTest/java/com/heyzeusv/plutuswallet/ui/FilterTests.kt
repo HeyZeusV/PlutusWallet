@@ -1,18 +1,19 @@
 package com.heyzeusv.plutuswallet.ui
 
+import androidx.activity.ComponentActivity
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.assertDisplayedMessage
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
+import com.heyzeusv.plutuswallet.onNodeWithTTStrId
 import com.heyzeusv.plutuswallet.ui.overview.FilterCard
 import com.heyzeusv.plutuswallet.util.FilterState
 import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
@@ -26,7 +27,7 @@ import org.junit.runner.RunWith
 class FilterTests {
 
     @get:Rule
-    val composeRule = createComposeRule()
+    val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     val dd = DummyAndroidDataUtil()
 
@@ -94,7 +95,7 @@ class FilterTests {
             composeRule.onNodeWithText(it.name).assertExists()
         }
         // switch to Income
-        composeRule.onNode(hasTestTag("Expense Button")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_filter_type, EXPENSE.type).performClick()
         // check that all Categories of type Income are represented by a Chip
         dd.catList.filter { it.type == INCOME.type }.forEach {
             composeRule.onNodeWithText(it.name).assertExists()

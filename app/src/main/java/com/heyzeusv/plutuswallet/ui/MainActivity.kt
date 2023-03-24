@@ -7,6 +7,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -53,8 +55,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.ui.about.AboutScreen
@@ -115,7 +115,7 @@ class MainActivity : BaseActivity() {
  *  Main Composable of entire app. Contains a Scaffold which handles AppBar and Drawer. Its content
  *  is a NavHost which handles which Screen Composables to display.
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun PlutusWalletApp(
@@ -141,7 +141,7 @@ fun PlutusWalletApp(
     val setVals by setVM.setVals.collectAsState()
 
     Scaffold(
-        modifier = Modifier.testTag("PWApp Scaffold"),
+        modifier = Modifier.testTag(stringResource(R.string.tt_app_scaffold)),
         scaffoldState = scaffoldState,
         topBar = {
             PWAppBar(
@@ -265,11 +265,11 @@ fun PWAppBar(
         title = {
             Text(
                 text = title,
-                modifier = Modifier.testTag("AppBar $title"),
+                modifier = Modifier.testTag(stringResource(R.string.tt_app_barTitle, title)),
                 color = MaterialTheme.colors.onBackground
             )
         },
-        modifier = Modifier.testTag("AppBar"),
+        modifier = Modifier.testTag(stringResource(R.string.tt_app_bar)),
         navigationIcon = {
             IconButton(onClick = { onNavPressed() }) {
                 Icon(
@@ -381,7 +381,7 @@ fun PWDrawerItem(
             .height(48.dp)
             .padding(horizontal = 16.dp)
             .clickable { onClick() }
-            .testTag("DrawerItem $label"),
+            .testTag(stringResource(R.string.tt_app_drawItem, label)),
         horizontalArrangement = Arrangement.spacedBy(
             space = 8.dp
         )

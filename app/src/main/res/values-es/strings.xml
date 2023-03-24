@@ -104,4 +104,9 @@
     <string name="icon_cd_inputError">Error de entrada</string>
     <string name="alert_dialog_closeapp">Cerrar app</string>
     <string name="alert_dialog_closeapp_message">¿Quieres cerrar la aplicación?</string>
+    <string name="preferences_view">Vista</string>
+    <string name="preferences_view_monthly">Mensual</string>
+    <string name="preferences_view_weekly">Semanalmente</string>
+    <string name="preferences_view_daily">A diario</string>
+    <string name="preferences_view_yearly">Anual</string>
 </resources>

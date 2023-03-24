@@ -10,23 +10,24 @@ import com.heyzeusv.plutuswallet.data.model.SettingsValues
 import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.data.model.FilterInfo
 import com.heyzeusv.plutuswallet.data.model.TranListItemFull
+import com.heyzeusv.plutuswallet.util.TransactionType.EXPENSE
+import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
+import com.heyzeusv.plutuswallet.util.calculateViewDates
+import com.heyzeusv.plutuswallet.util.createFutureDate
+import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.Clock
+import java.time.ZonedDateTime
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-
-
-private const val EXPENSE = "Expense"
-private const val INCOME = "Income"
 
 /**
  *  Data manager for TransactionListFragments.
@@ -36,7 +37,8 @@ private const val INCOME = "Income"
  */
 @HiltViewModel
 class TransactionListViewModel @Inject constructor(
-    private val tranRepo: PWRepositoryInterface
+    private val tranRepo: PWRepositoryInterface,
+    private val clock: Clock
 ) : ViewModel() {
 
     var setVals = SettingsValues()
@@ -91,19 +93,19 @@ class TransactionListViewModel @Inject constructor(
             val catSize: Int = tranRepo.getCategorySizeAsync()
 
             if (catSize == 0) {
-                val education = Category(0, "Education", EXPENSE)
-                val entertainment = Category(0, "Entertainment", EXPENSE)
-                val food = Category(0, "Food", EXPENSE)
-                val home = Category(0, "Home", EXPENSE)
-                val transportation = Category(0, "Transportation", EXPENSE)
-                val utilities = Category(0, "Utilities", EXPENSE)
+                val education = Category(0, "Education", EXPENSE.type)
+                val entertainment = Category(0, "Entertainment", EXPENSE.type)
+                val food = Category(0, "Food", EXPENSE.type)
+                val home = Category(0, "Home", EXPENSE.type)
+                val transportation = Category(0, "Transportation", EXPENSE.type)
+                val utilities = Category(0, "Utilities", EXPENSE.type)
 
-                val cryptocurrency = Category(0, "Cryptocurrency", INCOME)
-                val investments = Category(0, "Investments", INCOME)
-                val salary = Category(0, "Salary", INCOME)
-                val savings = Category(0, "Savings", INCOME)
-                val stocks = Category(0, "Stocks", INCOME)
-                val wages = Category(0, "Wages", INCOME)
+                val cryptocurrency = Category(0, "Cryptocurrency", INCOME.type)
+                val investments = Category(0, "Investments", INCOME.type)
+                val salary = Category(0, "Salary", INCOME.type)
+                val savings = Category(0, "Savings", INCOME.type)
+                val stocks = Category(0, "Stocks", INCOME.type)
+                val wages = Category(0, "Wages", INCOME.type)
 
                 val initialCategories: List<Category> = listOf(
                     education, entertainment, food, home, transportation, utilities,
@@ -130,31 +132,11 @@ class TransactionListViewModel @Inject constructor(
         val tranItemList = mutableListOf<TranListItemFull>()
         for (tlItem in list) {
             val formattedTotal = tlItem.total.prepareTotalText(setVals)
-            val formattedDate = setVals.dateFormatter.format(tlItem.date)
+            val formattedDate = formatDate(tlItem.date, setVals.dateFormat)
             val tranItem = TranListItemFull(tlItem, formattedTotal, formattedDate)
             tranItemList.add(tranItem)
         }
         _tranList.value = tranItemList
-    }
-
-    /**
-     *  Returns FutureDate set at the beginning of the day by calculating
-     *  ([frequency] * [period]) + [date].
-     */
-    private fun createFutureDate(date: Date, period: Int, frequency: Int): Date {
-        val calendar: Calendar = Calendar.getInstance()
-        // set to Transaction date
-        calendar.time = date
-
-        // 0 = Day, 1 = Week, 2 = Month, 3 = Year
-        when (period) {
-            0 -> calendar.add(Calendar.DAY_OF_MONTH, frequency)
-            1 -> calendar.add(Calendar.WEEK_OF_YEAR, frequency)
-            2 -> calendar.add(Calendar.MONTH, frequency)
-            3 -> calendar.add(Calendar.YEAR, frequency)
-        }
-
-        return calendar.time
     }
 
     /**
@@ -166,7 +148,8 @@ class TransactionListViewModel @Inject constructor(
             moreToCreate = false
             // returns list of all Transactions whose futureDate is before current date
             val futureTranList: MutableList<Transaction> =
-                tranRepo.getFutureTransactionsAsync(Date()).toMutableList()
+                tranRepo.getFutureTransactionsAsync(ZonedDateTime.now(clock))
+                    .toMutableList()
             // return if empty
             if (futureTranList.isNotEmpty()) {
                 val ready: MutableList<Transaction> = tranUpsertAsync(futureTranList).await()
@@ -189,19 +172,20 @@ class TransactionListViewModel @Inject constructor(
 
         futureTranList.forEach { transaction: Transaction ->
             // gets copy of Transaction attached to this FutureTransaction
-            val newTran: Transaction = transaction.copy()
-            // changing new Transaction values to updated values
-            newTran.id = 0
-            newTran.date = transaction.futureDate
-            newTran.title = incrementString(newTran.title)
-            newTran.futureDate = createFutureDate(
-                newTran.date,
-                newTran.period,
-                newTran.frequency
-            )
-            // if new futureDate is before current time,
-            // then there are more Transactions to be added
-            if (newTran.futureDate < Date()) moreToCreate = true
+            val newTran: Transaction = transaction.copy().apply {
+                // changing new Transaction values to updated values
+                id = 0
+                date = transaction.futureDate
+                title = incrementString(title)
+                futureDate = createFutureDate(
+                    date,
+                    period,
+                    frequency
+                )
+                // if new futureDate is before current time,
+                // then there are more Transactions to be added
+                if (futureDate.isBefore(ZonedDateTime.now(clock))) moreToCreate = true
+            }
 
             // stops this Transaction from being repeated again if user switches its date
             transaction.futureTCreated = true
@@ -264,7 +248,10 @@ class TransactionListViewModel @Inject constructor(
             fi.category && fi.categoryNames.contains("All") -> tranRepo.getTliT(fi.type)
             fi.category -> tranRepo.getTliTC(fi.type, fi.categoryNames)
             fi.date -> tranRepo.getTliD(fi.start, fi.end)
-            else -> tranRepo.getTli()
+            else -> {
+                val dates = calculateViewDates(ZonedDateTime.now(clock), setVals.view)
+                tranRepo.getTliD(dates.start, dates.end)
+            }
         }
     }
 }

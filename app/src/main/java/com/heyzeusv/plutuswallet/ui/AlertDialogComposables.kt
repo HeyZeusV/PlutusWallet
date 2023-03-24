@@ -61,7 +61,7 @@ fun PWAlertDialog(
         Card(
             modifier = Modifier
                 .defaultMinSize(minHeight = Dp(integerResource(R.integer.ad_minSize).toFloat()))
-                .testTag("AlertDialog"),
+                .testTag(stringResource(R.string.tt_ad)),
             shape = MaterialTheme.shapes.medium,
             elevation = dimensionResource(R.dimen.cardElevation)
         ) {
@@ -103,7 +103,7 @@ fun PWAlertDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = onDismissText.uppercase(),
-                            modifier = Modifier.testTag("AlertDialog dismiss"),
+                            modifier = Modifier.testTag(stringResource(R.string.tt_ad_dismiss)),
                             color = LocalPWColors.current.alertDialogButtonText,
                             style = alertDialogButton
                         )
@@ -111,7 +111,7 @@ fun PWAlertDialog(
                     TextButton(onClick = onConfirm) {
                         Text(
                             text = onConfirmText.uppercase(),
-                            modifier = Modifier.testTag("AlertDialog confirm"),
+                            modifier = Modifier.testTag(stringResource(R.string.tt_ad_confirm)),
                             color = LocalPWColors.current.alertDialogButtonText,
                             style = alertDialogButton
                         )
@@ -148,7 +148,7 @@ fun PWInputAlertDialog(
         Card(
             modifier = Modifier
                 .defaultMinSize(minHeight = Dp(integerResource(R.integer.ad_minSize).toFloat()))
-                .testTag("AlertDialog"),
+                .testTag(stringResource(R.string.tt_ad)),
             shape = MaterialTheme.shapes.medium,
             elevation = dimensionResource(R.dimen.cardElevation)
         ) {
@@ -174,7 +174,7 @@ fun PWInputAlertDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = dimensionResource(R.dimen.ad_tf_topPad))
-                            .testTag("AlertDialog input"),
+                            .testTag(stringResource(R.string.tt_ad_input)),
                         label = { Text(text = stringResource(R.string.alert_dialog_input_hint)) },
                         trailingIcon = {
                             if (isError) {
@@ -225,7 +225,7 @@ fun PWInputAlertDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = stringResource(R.string.alert_dialog_cancel).uppercase(),
-                            modifier = Modifier.testTag("AlertDialog dismiss"),
+                            modifier = Modifier.testTag(stringResource(R.string.tt_ad_dismiss)),
                             color = LocalPWColors.current.alertDialogButtonText,
                             style = alertDialogButton
                         )
@@ -243,7 +243,7 @@ fun PWInputAlertDialog(
                     ) {
                         Text(
                             text = stringResource(R.string.alert_dialog_save).uppercase(),
-                            modifier = Modifier.testTag("AlertDialog confirm"),
+                            modifier = Modifier.testTag(stringResource(R.string.tt_ad_confirm)),
                             color = LocalPWColors.current.alertDialogButtonText,
                             style = alertDialogButton
                         )
@@ -275,7 +275,7 @@ fun PWListAlertDialog(
         Card(
             modifier = Modifier
                 .defaultMinSize(minHeight = Dp(integerResource(R.integer.ad_minSize).toFloat()))
-                .testTag("AlertDialog"),
+                .testTag(stringResource(R.string.tt_ad)),
             shape = MaterialTheme.shapes.medium,
             elevation = dimensionResource(R.dimen.cardElevation)
         ) {
@@ -300,26 +300,26 @@ fun PWListAlertDialog(
                             .padding(top = dimensionResource(R.dimen.ad_tf_topPad))
                             .selectableGroup()
                     ) {
-                        options.forEach { entry ->
+                        options.forEach { option ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(40.dp)
                                     .selectable(
-                                        selected = (entry.key == selectedOption),
+                                        selected = (option.key == selectedOption),
                                         role = Role.RadioButton,
-                                        onClick = { onOptionSelected(entry.key) }
+                                        onClick = { onOptionSelected(option.key) }
                                     )
-                                    .testTag(entry.value),
+                                    .testTag(stringResource(R.string.tt_ad_option, option.value)),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 RadioButton(
-                                    selected = (entry.key == selectedOption),
+                                    selected = (option.key == selectedOption),
                                     onClick = null // recommended for accessibility by Google
                                 )
                                 Text(
-                                    text = entry.value,
+                                    text = option.value,
                                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.8f),
                                 )
                             }
@@ -339,7 +339,7 @@ fun PWListAlertDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = stringResource(R.string.alert_dialog_cancel).uppercase(),
-                            modifier = Modifier.testTag("AlertDialog dismiss"),
+                            modifier = Modifier.testTag(stringResource(R.string.tt_ad_dismiss)),
                             color = LocalPWColors.current.alertDialogButtonText,
                             style = alertDialogButton
                         )
@@ -347,7 +347,7 @@ fun PWListAlertDialog(
                     TextButton(onClick = { onConfirm(selectedOption) }) {
                         Text(
                             text = stringResource(R.string.alert_dialog_save).uppercase(),
-                            modifier = Modifier.testTag("AlertDialog confirm"),
+                            modifier = Modifier.testTag(stringResource(R.string.tt_ad_confirm)),
                             color = LocalPWColors.current.alertDialogButtonText,
                             style = alertDialogButton
                         )

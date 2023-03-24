@@ -10,7 +10,7 @@
     <string name="about_license">License</string>
     <string name="about_special_thanks">Special thanks to family, friends, and pets for all their support and Hadia A. for the icon!</string>
     <string name="about_translation_warning">Google Translate was used for localization. Please let me know of any mistakes, thank you!</string>
-    <string name="about_version" translatable="false">v4.0.1</string>
+    <string name="about_version" translatable="false">v4.1.0</string>
     <string name="account_create">Create New Account</string>
     <string name="alert_dialog_are_you_sure">Are you sure?</string>
     <string name="alert_dialog_cancel">Cancel</string>
@@ -119,4 +119,39 @@
     <string name="icon_cd_inputError">Input error</string>
     <string name="alert_dialog_closeapp">Close app</string>
     <string name="alert_dialog_closeapp_message">Would you like to close the app?</string>
+    <string name="preferences_view">View</string>
+    <string name="preferences_view_yearly">Yearly</string>
+    <string name="preferences_view_monthly">Monthly</string>
+    <string name="preferences_view_weekly">Weekly</string>
+    <string name="preferences_view_daily">Daily</string>
+
+    <string name="tt_about_file" translatable="false">File %1$s</string>
+    <string name="tt_ad" translatable="false">AlertDialog</string>
+    <string name="tt_ad_confirm" translatable="false">AlertDialog Confirm</string>
+    <string name="tt_ad_dismiss" translatable="false">AlertDialog Dismiss</string>
+    <string name="tt_ad_option" translatable="false">AlertDialog Option %1$s</string>
+    <string name="tt_ad_input" translatable="false">AlertDialog Input</string>
+    <string name="tt_app_bar" translatable="false">AppBar</string>
+    <string name="tt_app_barTitle" translatable="false">AppBar %1$s</string>
+    <string name="tt_app_drawItem" translatable="false">DrawerItem %1$s</string>
+    <string name="tt_app_scaffold" translatable="false">PWApp Scaffold</string>
+    <string name="tt_chart_empty" translatable="false">Empty Chart for page %1$d</string>
+    <string name="tt_chart_page" translatable="false">Chart Page %1$d</string>
+    <string name="tt_chart_total" translatable="false">Chart Total for page %1$d</string>
+    <string name="tt_chart_vp" translatable="false">Chart ViewPager</string>
+    <string name="tt_filter_act" translatable="false">Filter Action</string>
+    <string name="tt_filter_card" translatable="false">Filter Card</string>
+    <string name="tt_filter_chip" translatable="false">Chip: %1$s</string>
+    <string name="tt_filter_end" translatable="false">Filter End Date</string>
+    <string name="tt_filter_start" translatable="false">Filter Start Date</string>
+    <string name="tt_filter_type" translatable="false">%1$s Button</string>
+    <string name="tt_list_delete" translatable="false">%1$s Delete</string>
+    <string name="tt_list_edit" translatable="false">%1$s Edit</string>
+    <string name="tt_list_sub" translatable="false">List Subtitle %1$s</string>
+    <string name="tt_list_vp" translatable="false">List ViewPager</string>
+    <string name="tt_set_name" translatable="false">%1$s</string>
+    <string name="tt_set_select" translatable="false">%1$s %2$s</string>
+    <string name="tt_tran_ddmItem" translatable="false">DropdownMenuItem %1$s</string>
+    <string name="tt_tranL_empty" translatable="false">Empty Transaction List</string>
+    <string name="tt_tranL_item" translatable="false">TranList item %1$d</string>
 </resources>

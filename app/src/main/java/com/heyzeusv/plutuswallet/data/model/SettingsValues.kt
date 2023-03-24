@@ -1,7 +1,8 @@
 package com.heyzeusv.plutuswallet.data.model
 
-import java.text.DateFormat
+import com.heyzeusv.plutuswallet.util.Views
 import java.text.DecimalFormat
+import java.time.format.FormatStyle
 
 /**
  *  Data class which holds most Settings that user can change in SettingsScreen Composable. These
@@ -10,7 +11,7 @@ import java.text.DecimalFormat
  *  are displayed whenever a total is shown; they are passed along to [decimalFormatter] and
  *  [integerFormatter] which are used to retrieve a formatted total String. [currencySymbolSide]
  *  determines if [currencySymbol] should appear on the left or right of total. [decimalNumber]
- *  determines if totals should be decimal or integer numbers. [dateFormatter] is used to retrieve
+ *  determines if totals should be decimal or integer numbers. [dateFormat] is used to retrieve
  *  a formatted date String.
  */
 data class SettingsValues(
@@ -21,5 +22,6 @@ data class SettingsValues(
     var decimalNumber: String = "yes",
     var decimalFormatter: DecimalFormat = DecimalFormat("#,##0.00"),
     var integerFormatter: DecimalFormat = DecimalFormat("#,###"),
-    var dateFormatter: DateFormat = DateFormat.getDateInstance(0)
+    var view: Views = Views.MONTHLY,
+    var dateFormat: FormatStyle = FormatStyle.FULL
 )

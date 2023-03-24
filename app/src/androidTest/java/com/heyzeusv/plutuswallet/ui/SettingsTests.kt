@@ -3,7 +3,6 @@ package com.heyzeusv.plutuswallet.ui
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -18,6 +17,7 @@ import com.heyzeusv.plutuswallet.data.model.Transaction
 import com.heyzeusv.plutuswallet.onNodeWithContDiscId
 import com.heyzeusv.plutuswallet.onNodeWithTTStrId
 import com.heyzeusv.plutuswallet.onNodeWithTextId
+import com.heyzeusv.plutuswallet.util.formatDate
 import com.heyzeusv.plutuswallet.util.prepareTotalText
 import com.heyzeusv.plutuswallet.util.theme.PlutusWalletTheme
 import com.heyzeusv.plutuswallet.util.theme.Purple900
@@ -27,9 +27,9 @@ import com.heyzeusv.plutuswallet.util.theme.PurpleDark
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import java.math.RoundingMode
-import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.time.format.FormatStyle
 import java.util.Locale
 import org.junit.Before
 import org.junit.Rule
@@ -74,18 +74,18 @@ class SettingsTests {
          *  '$' on left side, ',' used as thousands symbols, '.' used as decimal symbol,
          *  decimals allowed, full date is displayed, and English is language.
          */
-        composeRule.onNodeWithTextId(R.string.cfl_overview).assertExists()
+        composeRule.onNodeWithTextId(R.string.cfl_overview).assertIsDisplayed()
         // check List items
         checkAllTranListItems()
 
         // navigate to Transaction with id 1
-        composeRule.onNode(hasTestTag("${dd.tran1.id}")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_tranL_item, dd.tran1.id).performClick()
         // check that we navigate to Transaction screen
-        composeRule.onNodeWithTextId(R.string.transaction).assertExists()
+        composeRule.onNodeWithTextId(R.string.transaction).assertIsDisplayed()
         // check that date and total are formatted correctly
-        composeRule.onNodeWithTTStrId(R.string.transaction_date)
-            .assertEditTextEquals(setVals.dateFormatter.format(dd.tran1.date))
-        composeRule.onNodeWithTTStrId(R.string.transaction_total)
+        composeRule.onNodeWithTextId(R.string.transaction_date)
+            .assertEditTextEquals(formatDate(dd.tran1.date, setVals.dateFormat))
+        composeRule.onNodeWithTextId(R.string.transaction_total)
             .assertEditTextEquals("\$${setVals.decimalFormatter.format(dd.tran1.total)}")
         Espresso.pressBack()
 
@@ -104,19 +104,19 @@ class SettingsTests {
     fun settings_changeTheme() {
         navigateToSettingsScreenFromOverview()
         selectOptionInSetting("THEME", "Light", false)
-        composeRule.onNode(hasTestTag("PWApp Scaffold")).assertBackgroundColor(Purple900Light)
-        composeRule.onNode(hasTestTag("AppBar")).assertBackgroundColor(Purple900)
+        composeRule.onNodeWithTTStrId(R.string.tt_app_scaffold).assertBackgroundColor(Purple900Light)
+        composeRule.onNodeWithTTStrId(R.string.tt_app_bar).assertBackgroundColor(Purple900)
 
         navigateToSettingsScreenFromOverview()
         selectOptionInSetting("THEME", "Dark", false)
-        composeRule.onNode(hasTestTag("PWApp Scaffold")).assertBackgroundColor(PurpleDark)
-        composeRule.onNode(hasTestTag("AppBar")).assertBackgroundColor(PurpleBase)
+        composeRule.onNodeWithTTStrId(R.string.tt_app_scaffold).assertBackgroundColor(PurpleDark)
+        composeRule.onNodeWithTTStrId(R.string.tt_app_bar).assertBackgroundColor(PurpleBase)
 
         // for some reason the second theme switch does not send user to Overview screen, but stays
         // on Setting screen, this only happens in testing
         selectOptionInSetting("THEME", "System", false)
-        composeRule.onNode(hasTestTag("PWApp Scaffold")).assertBackgroundColor(Purple900Light)
-        composeRule.onNode(hasTestTag("AppBar")).assertBackgroundColor(Purple900)
+        composeRule.onNodeWithTTStrId(R.string.tt_app_scaffold).assertBackgroundColor(Purple900Light)
+        composeRule.onNodeWithTTStrId(R.string.tt_app_bar).assertBackgroundColor(Purple900)
     }
 
     @Test
@@ -153,25 +153,49 @@ class SettingsTests {
     }
 
     @Test
+    fun settings_changeView() {
+        // monthly option, which is default, is already checked in checkInitialSettings()
+
+        // navigate to Settings, change view then go back and check
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("VIEW", "Yearly")
+        Espresso.pressBack()
+        checkAllTranListItems()
+
+        // navigate to Settings, change view then go back and check
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("VIEW", "Weekly")
+        Espresso.pressBack()
+        checkTranListItems(listOf(dd.tran1, dd.tran2))
+        checkTranListItemDNE(listOf(dd.tran3, dd.tran4))
+
+        // navigate to Settings, change view then go back and check
+        navigateToSettingsScreenFromOverview()
+        selectOptionInSetting("VIEW", "Daily")
+        Espresso.pressBack()
+        checkTranListItemDNE(dd.tranList)
+    }
+
+    @Test
     fun settings_changeDateFormat() {
         // navigate to Settings, change date format then go back and check
         navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "April 19, 1993")
-        setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(1))
+        setVals = setVals.copy(dateFormat = FormatStyle.LONG)
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change date format then go back and check
         navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "Apr 19, 1993")
-        setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(2))
+        setVals = setVals.copy(dateFormat = FormatStyle.MEDIUM)
         Espresso.pressBack()
         checkAllTranListItems()
 
         // navigate to Settings, change date format then go back and check
         navigateToSettingsScreenFromOverview()
         selectOptionInSetting("DATE_FORMAT", "4/19/93")
-        setVals = setVals.copy(dateFormatter = DateFormat.getDateInstance(3))
+        setVals = setVals.copy(dateFormat = FormatStyle.SHORT)
         Espresso.pressBack()
         checkAllTranListItems()
     }
@@ -181,17 +205,20 @@ class SettingsTests {
         navigateToSettingsScreenFromOverview()
 
         // select same option as decimal symbol
-        composeRule.onNode(hasTestTag("THOUSANDS_SYMBOL")).performClick()
-        composeRule.onNode(hasTestTag("\".\""), useUnmergedTree = true).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog confirm"), useUnmergedTree = true).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_set_name, "THOUSANDS_SYMBOL").performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_option, "\".\"", useUnmergedTree = true)
+            .performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_confirm, useUnmergedTree = true).performClick()
         // confirm switch
-        composeRule.onNode(hasTestTag("AlertDialog confirm"), useUnmergedTree = true).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_confirm, useUnmergedTree = true).performClick()
 
         // confirm that symbols switched positions
-        composeRule.onNode(hasTestTag("THOUSANDS_SYMBOL \".\""), useUnmergedTree = true)
-            .assertIsDisplayed()
-        composeRule.onNode(hasTestTag("DECIMAL_SYMBOL \",\""), useUnmergedTree = true)
-            .assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(
+            R.string.tt_set_select, "THOUSANDS_SYMBOL",  "\".\"", useUnmergedTree = true
+        ).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(
+            R.string.tt_set_select, "DECIMAL_SYMBOL", "\",\"", useUnmergedTree = true
+        ).assertIsDisplayed()
 
         // check TranListItems
         updateTotalFormatters("$", '.', ',')
@@ -237,7 +264,7 @@ class SettingsTests {
      */
     private fun navigateToScreensAndCheckTitleFromSettings(language: LanguageStrings) {
         // check that we start on Settings screen
-        composeRule.onNode(hasTestTag("AppBar ${language.settingsTitle}")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_barTitle, language.settingsTitle).assertIsDisplayed()
         // navigate to Overview screen and check title
         composeRule.onNode(hasContentDescription(language.navContDesc)).performClick()
         composeRule.onNodeWithText(language.overviewTitle).assertIsDisplayed()
@@ -261,8 +288,8 @@ class SettingsTests {
      */
     private fun navigateToDrawerScreenAndBackFromOverview(language: LanguageStrings, screen: String) {
         composeRule.onNode(hasContentDescription(language.drawerContDesc)).performClick()
-        composeRule.onNode(hasTestTag("DrawerItem $screen")).performClick()
-        composeRule.onNode(hasTestTag("AppBar $screen")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_drawItem, screen).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_barTitle, screen).assertIsDisplayed()
         composeRule.onNode(hasContentDescription(language.navContDesc)).performClick()
     }
 
@@ -273,10 +300,12 @@ class SettingsTests {
         // check that we start on Overview screen, open drawer, and navigate to Settings screen
         composeRule.onNodeWithText(language.overviewTitle).assertIsDisplayed()
         composeRule.onNode(hasContentDescription(language.drawerContDesc)).performClick()
-        composeRule.onNode(hasTestTag("DrawerItem ${language.settingsTitle}")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_drawItem, language.settingsTitle)
+            .performClick()
 
         // check that we navigate to Account screen
-        composeRule.onNode(hasTestTag("AppBar ${language.settingsTitle}")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_barTitle, language.settingsTitle)
+            .assertIsDisplayed()
     }
 
     /**
@@ -292,16 +321,31 @@ class SettingsTests {
         // open drawer and click on item with title
         composeRule.onNodeWithContDiscId(R.string.cfl_drawer_description)
             .performClick()
-        composeRule.onNode(hasTestTag("DrawerItem $title")).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_drawItem, title).performClick()
 
         if (translated) {
             // check that title is correctly translated
-            composeRule.onNodeWithText(translatedTitle).assertExists()
+            composeRule.onNodeWithText(translatedTitle).assertIsDisplayed()
         }
-        composeRule.onNode(hasTestTag("AppBar $title")).assertExists()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_barTitle, title).assertIsDisplayed()
 
         // return to Overview screen
         Espresso.pressBack()
+    }
+
+    /**
+     *  Checks that all Transactions of given [list] do not exist.
+     */
+    private fun checkTranListItemDNE(list: List<Transaction>) {
+        list.forEach {
+            val totalText = it.total.prepareTotalText(setVals)
+
+            // checks that total and date are formatted correctly
+            composeRule.onNodeWithText(formatDate(it.date, setVals.dateFormat))
+                .assertDoesNotExist()
+            composeRule.onNodeWithText(text = totalText, useUnmergedTree = true)
+                .assertDoesNotExist()
+        }
     }
 
     /**
@@ -311,14 +355,20 @@ class SettingsTests {
         val totalText = tran.total.prepareTotalText(setVals)
 
         // checks that total and date are formatted correctly
-        composeRule.onNodeWithText(setVals.dateFormatter.format(tran.date)).assertExists()
-        composeRule.onNodeWithText(text = totalText, useUnmergedTree = true).assertExists()
+        composeRule.onNodeWithText(formatDate(tran.date, setVals.dateFormat)).assertIsDisplayed()
+        composeRule.onNodeWithText(text = totalText, useUnmergedTree = true).assertIsDisplayed()
     }
 
     /**
      *  Calls [checkTranListItemDateTotal] on all Transactions in dummy data
      */
     private fun checkAllTranListItems() = dd.tranList.forEach { checkTranListItemDateTotal(it) }
+
+    /**
+     *  Calls [checkTranListItemDateTotal] on given [list] of Transactions
+     */
+    private fun checkTranListItems(list: List<Transaction>) =
+        list.forEach { checkTranListItemDateTotal(it) }
 
     /**
      *  Updates setVal symbols/formatters using [currencySymbol], [decimalSymbol],
@@ -351,12 +401,14 @@ class SettingsTests {
      *  selection if [check] is true.
      */
     private fun selectOptionInSetting(setting: String, option: String, check: Boolean = true) {
-        composeRule.onNode(hasTestTag(setting)).performClick()
-        composeRule.onNode(hasTestTag(option), useUnmergedTree = true).performClick()
-        composeRule.onNode(hasTestTag("AlertDialog confirm"), useUnmergedTree = true).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_set_name, setting).performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_option, option, useUnmergedTree = true)
+            .performClick()
+        composeRule.onNodeWithTTStrId(R.string.tt_ad_confirm, useUnmergedTree = true).performClick()
         if (check) {
-            composeRule.onNode(hasTestTag("$setting $option"), useUnmergedTree = true)
-                .assertIsDisplayed()
+            composeRule.onNodeWithTTStrId(
+                R.string.tt_set_select, setting, option, useUnmergedTree = true
+            ).assertIsDisplayed()
         }
     }
 

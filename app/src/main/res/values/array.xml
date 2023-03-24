@@ -32,6 +32,16 @@
         <item>baht</item>
     </string-array>
 
+    <string-array name="currency_symbol_side_display_array">
+        <item>Left</item>
+        <item>Right</item>
+    </string-array>
+
+    <string-array name="currency_symbol_side_value_array">
+        <item>left</item>
+        <item>right</item>
+    </string-array>
+
     <string-array name="separator_symbol_display_array">
         <item>\",\"</item>
         <item>\".\"</item>
@@ -46,6 +56,30 @@
         <item>space</item>
     </string-array>
 
+    <string-array name="decimal_number_display_array">
+        <item>Yes 123.45</item>
+        <item>No  123</item>
+    </string-array>
+
+    <string-array name="decimal_number_value_array">
+        <item>yes</item>
+        <item>no</item>
+    </string-array>
+
+    <string-array name="view_display_array">
+        <item>@string/preferences_view_yearly</item>
+        <item>@string/preferences_view_monthly</item>
+        <item>@string/preferences_view_weekly</item>
+        <item>@string/preferences_view_daily</item>
+    </string-array>
+
+    <string-array name="view_value_array">
+        <item>yearly</item>
+        <item>monthly</item>
+        <item>weekly</item>
+        <item>daily</item>
+    </string-array>
+
     <string-array name="date_format_display_array">
         <item>@string/preferences_date_short</item>
         <item>@string/preferences_date_medium</item>
@@ -54,10 +88,10 @@
     </string-array>
 
     <string-array name="date_format_value_array">
-        <item>3</item>
-        <item>2</item>
-        <item>1</item>
         <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string-array name="language_display_array">
@@ -78,25 +112,5 @@
         <item>ja</item>
         <item>ko</item>
         <item>th</item>
-    </string-array>
-
-    <string-array name="currency_symbol_side_display_array">
-        <item>Left</item>
-        <item>Right</item>
-    </string-array>
-
-    <string-array name="currency_symbol_side_value_array">
-        <item>left</item>
-        <item>right</item>
-    </string-array>
-
-    <string-array name="decimal_number_display_array">
-        <item>Yes 123.45</item>
-        <item>No  123</item>
-    </string-array>
-
-    <string-array name="decimal_number_value_array">
-        <item>yes</item>
-        <item>no</item>
     </string-array>
 </resources>

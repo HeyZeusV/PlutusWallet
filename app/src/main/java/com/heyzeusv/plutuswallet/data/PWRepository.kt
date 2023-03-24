@@ -8,9 +8,9 @@ import com.heyzeusv.plutuswallet.data.model.Category
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.TranListItem
 import com.heyzeusv.plutuswallet.data.model.Transaction
+import java.time.ZonedDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.Date
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
@@ -76,7 +76,7 @@ class PWRepository @Inject constructor(
     /**
      *  Transaction Queries
      */
-    override suspend fun getFutureTransactionsAsync(currentDate: Date): List<Transaction> =
+    override suspend fun getFutureTransactionsAsync(currentDate: ZonedDateTime): List<Transaction> =
         withContext(Dispatchers.IO) { transactionDao.getFutureTransactions(currentDate) }
 
     override suspend fun getMaxId(): Flow<Int?> = transactionDao.getMaxId()
@@ -99,7 +99,7 @@ class PWRepository @Inject constructor(
      *  Tli = TranListItem
      *  A   = Account
      *  C   = Category
-     *  D   = Date
+     *  D   = ZonedDateTime
      *  T   = Type
      */
     override suspend fun getCt(): Flow<List<CategoryTotals>> = transactionDao.getCt()
@@ -115,16 +115,16 @@ class PWRepository @Inject constructor(
 
     override suspend fun getCtAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>> = transactionDao.getCtAD(accounts, start, end)
 
     override suspend fun getCtACD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>> = transactionDao.getCtACD(accounts, type, categories, start, end)
 
     override suspend fun getCtC(
@@ -135,12 +135,14 @@ class PWRepository @Inject constructor(
     override suspend fun getCtCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<CategoryTotals>> = transactionDao.getCtCD(type, categories, start, end)
 
-    override suspend fun getCtD(start: Date, end: Date): Flow<List<CategoryTotals>> =
-        transactionDao.getCtD(start, end)
+    override suspend fun getCtD(
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): Flow<List<CategoryTotals>> = transactionDao.getCtD(start, end)
 
     override suspend fun getTli(): Flow<List<TranListItem>> = transactionDao.getTli()
 
@@ -149,8 +151,8 @@ class PWRepository @Inject constructor(
 
     override suspend fun getTliAD(
         accounts: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> = transactionDao.getTliAD(accounts, start, end)
 
     override suspend fun getTliAT(
@@ -167,21 +169,23 @@ class PWRepository @Inject constructor(
     override suspend fun getTliATD(
         accounts: List<String>,
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> = transactionDao.getTliATD(accounts, type, start, end)
 
     override suspend fun getTliATCD(
         accounts: List<String>,
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> =
         transactionDao.getTliATCD(accounts, type, categories, start, end)
 
-    override suspend fun getTliD(start: Date, end: Date): Flow<List<TranListItem>> =
-        transactionDao.getTliD(start, end)
+    override suspend fun getTliD(
+        start: ZonedDateTime,
+        end: ZonedDateTime
+    ): Flow<List<TranListItem>> = transactionDao.getTliD(start, end)
 
     override suspend fun getTliT(type: String): Flow<List<TranListItem>> =
         transactionDao.getTliT(type)
@@ -194,13 +198,13 @@ class PWRepository @Inject constructor(
     override suspend fun getTliTCD(
         type: String,
         categories: List<String>,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> = transactionDao.getTliTCD(type, categories, start, end)
 
     override suspend fun getTliTD(
         type: String,
-        start: Date,
-        end: Date
+        start: ZonedDateTime,
+        end: ZonedDateTime
     ): Flow<List<TranListItem>> = transactionDao.getTliTD(type, start, end)
 }

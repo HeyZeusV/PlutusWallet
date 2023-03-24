@@ -10,7 +10,7 @@ buildscript {
         maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.1'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         classpath "de.mannodermaus.gradle.plugins:android-junit5:1.8.2.1"
@@ -38,17 +38,18 @@ ext {
     compileSdkVersion = 33
 
     // dependencies
+    accompanistVersion = '0.30.0'
     activityComposeVersion = '1.6.1'
-    appCompatVersion = '1.6.0'
+    appCompatVersion = '1.6.1'
     androidXAnnotations = '1.1.0'
     androidXLegacySupport = '1.0.0'
     androidXTestCoreVersion = '1.5.0'
     androidXTestExtKotlinRunnerVersion = '1.1.5'
     androidXTestRulesVersion = '1.5.0'
-    archTestingVersion = '2.1.0'
+    archTestingVersion = '2.2.0'
     composeCompilerVersion = '1.3.2'
-    composeVersion = '1.3.3'
-    composeMaterial3Version = '1.1.0-alpha05'
+    composeVersion = '1.4.0'
+    composeMaterial3Version = '1.1.0-beta01'
     constraintLayoutVersion = '2.1.4'
     coreKtxVersion = '1.8.0'
     coroutineVersion = '1.6.4'
@@ -60,12 +61,10 @@ ext {
     junit5Version = '1.3.0'
     lifecycleExtVersion = '2.2.0'
     lifecycleVersion = '2.5.1'
-    materialVersion = '1.9.0-alpha01'
+    materialVersion = '1.9.0-beta01'
     mpAndroidChartVersion = 'v3.1.0'
     preferenceKtxVersion = '1.2.0'
-    recyclerViewVersion = '1.2.1'
-    robolectricVersion = '4.5.1'
-    roomVersion = '2.5.0'
+    roomVersion = '2.5.1'
     testRulesVersion = '1.3.0'
     testRunnerVersion = '1.4.0'
     timberVersion = '4.7.1'

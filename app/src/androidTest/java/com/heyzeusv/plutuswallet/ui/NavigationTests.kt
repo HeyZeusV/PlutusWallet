@@ -2,7 +2,6 @@ package com.heyzeusv.plutuswallet.ui
 
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -13,6 +12,7 @@ import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.assertCurrentRouteName
 import com.heyzeusv.plutuswallet.data.DummyAndroidDataUtil
 import com.heyzeusv.plutuswallet.onNodeWithContDiscId
+import com.heyzeusv.plutuswallet.onNodeWithTTStrId
 import com.heyzeusv.plutuswallet.onNodeWithTextId
 import com.heyzeusv.plutuswallet.util.AboutDestination
 import com.heyzeusv.plutuswallet.util.AccountsDestination
@@ -113,11 +113,12 @@ class NavigationTests {
     private fun checkRouteAndAppBar(dest: PWDestination, navArgs: String = "") {
         // seems like test moves too fast and route name assertion fails due to being null if there
         // isn't a separate assertion beforehand
-        composeRule.onNode(hasTestTag("PWApp Scaffold")).assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(R.string.tt_app_scaffold).assertIsDisplayed()
         navController.assertCurrentRouteName("${dest.route}$navArgs")
         // check app bar title
-        composeRule.onNode(hasTestTag("AppBar ${dest.route.replaceFirstChar { it.uppercase() }}"))
-            .assertIsDisplayed()
+        composeRule.onNodeWithTTStrId(
+            R.string.tt_app_barTitle, dest.route.replaceFirstChar { it.uppercase() }
+        ).assertIsDisplayed()
         // check nav icon
         composeRule.onNodeWithContDiscId(dest.navDescription).assertIsDisplayed()
         // check action buttons
