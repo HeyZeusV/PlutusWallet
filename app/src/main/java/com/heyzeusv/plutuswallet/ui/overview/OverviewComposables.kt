@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -15,9 +14,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,14 +54,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -103,7 +100,6 @@ import com.heyzeusv.plutuswallet.util.datePickerDialog
 import java.math.BigDecimal
 import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -446,13 +442,17 @@ fun ChartCard(
                             )
                         }
                         val totalPrefix = stringResource(R.string.chart_total)
-                        MarqueeText(
+                        Text(
                             text = "$totalPrefix${chartInfo.totalText}",
-                            style = MaterialTheme.typography.subtitle1,
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .align(Alignment.Start)
                                 .padding(horizontal = dimensionResource(R.dimen.chartMarginStartEnd))
                                 .testTag(stringResource(R.string.tt_chart_total, page))
+                                .basicMarquee(),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.subtitle1
                         )
                     } else {
                         Text(
@@ -575,19 +575,34 @@ fun TransactionListItem(
                     .padding(start = 8.dp, top = 4.dp, end = 4.dp, bottom = 2.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                MarqueeText(
+                Text(
                     text = transactionItem.title,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                     style = MaterialTheme.typography.subtitle1
                 )
-                MarqueeText(
+                Text(
                     text = transactionItem.account,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                     style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
                 )
-                MarqueeText(
+                Text(
                     text = transactionItemFormatted.formattedDate,
-                    style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle2
                 )
             }
             Column(
@@ -596,67 +611,34 @@ fun TransactionListItem(
                     .padding(start = 4.dp, top = 8.dp, end = 8.dp, bottom = 2.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                MarqueeText(
+                Text(
                     text = transactionItemFormatted.formattedTotal,
-                    style = MaterialTheme.typography.subtitle1,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
                     color = when (transactionItem.type) {
                         EXPENSE.type -> LocalPWColors.current.expense
                         else -> LocalPWColors.current.income
                     },
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle1
                 )
-                MarqueeText(
+                Text(
                     text = transactionItem.category,
-                    style = MaterialTheme.typography.subtitle2,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .basicMarquee(),
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.subtitle2
                 )
             }
         }
     }
-}
-
-/**
- *  Composable for scrolling Text. Text will scroll indefinitely when it does not fit in given area.
- *  [text] is to be displayed using [style], [color], and [textAlign].
- */
-@Composable
-fun MarqueeText(
-    text: String,
-    style: TextStyle,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.onSurface,
-    textAlign: TextAlign? = null
-) {
-    val scrollState = rememberScrollState()
-    var animate by remember { mutableStateOf(true) }
-
-    // animates text scroll effect forever
-    LaunchedEffect(key1 = animate) {
-        scrollState.animateScrollTo(
-            value = scrollState.maxValue,
-            animationSpec = tween(
-                durationMillis = 4000,
-                delayMillis = 1000,
-                easing = CubicBezierEasing(0f, 0f, 0f, 0f)
-            )
-        )
-        delay(1000)
-        scrollState.scrollTo(0)
-        animate = !animate
-    }
-
-    Text(
-        text = text,
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState, false),
-        color = color,
-        textAlign = textAlign,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        style = style
-    )
 }
 
 /**
@@ -1141,17 +1123,6 @@ fun TransactionListItemPreview() {
             tlItem,
             onLongClick = { },
             onClick = { },
-        )
-    }
-}
-
-@Preview
-@Composable
-fun MarqueeTextPreview() {
-    PreviewHelperCard {
-        MarqueeText(
-            text = "Super duper uber gotta make this text even longer and longer",
-            style = MaterialTheme.typography.subtitle1
         )
     }
 }

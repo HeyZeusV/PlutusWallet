@@ -38,6 +38,7 @@ ext {
     compileSdkVersion = 33
 
     // dependencies
+    accompanistVersion = '0.30.0'
     activityComposeVersion = '1.6.1'
     appCompatVersion = '1.6.1'
     androidXAnnotations = '1.1.0'

@@ -105,9 +105,9 @@ dependencies {
     implementation "androidx.activity:activity-compose:$activityComposeVersion"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.2'
     // Accompanist
-    implementation "com.google.accompanist:accompanist-flowlayout:0.25.0"
-    implementation "com.google.accompanist:accompanist-pager-indicators:0.30.0"
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.0"
+    implementation "com.google.accompanist:accompanist-flowlayout:$accompanistVersion"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanistVersion"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion"
     // Compose
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.foundation:foundation:$composeVersion"
