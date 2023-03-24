@@ -1,5 +1,6 @@
 package com.heyzeusv.plutuswallet.ui.list
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,6 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -33,10 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.Account
 import com.heyzeusv.plutuswallet.data.model.Category
@@ -59,7 +60,7 @@ import com.heyzeusv.plutuswallet.util.TransactionType.INCOME
  *  [navigateUp] returns user back to OverviewScreen. [pagerState] is used to determine which page
  *  the user is currently viewing.
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListCard(
     viewModel: ListViewModel,
@@ -118,7 +119,7 @@ fun ListCard(
  *  Composable that displays List card.
  *  All the data has been hoisted into above [ListCard] thus allowing for easier testing.
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun ListCard(
     pagerState: PagerState = rememberPagerState(),
@@ -157,7 +158,7 @@ fun ListCard(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
-                count = dataListsSize,
+                pageCount = dataListsSize,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.9f)
@@ -222,6 +223,7 @@ fun ListCard(
             if (listSubtitles.isNotEmpty()) {
                 HorizontalPagerIndicator(
                     pagerState = pagerState,
+                    pageCount = dataListsSize,
                     modifier = Modifier
                         .padding(top = 4.dp, bottom = 8.dp)
                         .align(Alignment.CenterHorizontally)
@@ -289,7 +291,7 @@ fun DataItem(
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
 fun ListCardPreview() {

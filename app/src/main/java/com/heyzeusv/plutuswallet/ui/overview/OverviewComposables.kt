@@ -30,6 +30,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
@@ -75,9 +77,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
 import com.heyzeusv.plutuswallet.R
 import com.heyzeusv.plutuswallet.data.model.CategoryTotals
 import com.heyzeusv.plutuswallet.data.model.ChartInformation
@@ -323,7 +323,7 @@ fun OverviewScreen(
 /**
  *  Composable that displays Charts and totals using data from [chartInfoList]
  */
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun ChartCard(
     modifier: Modifier = Modifier,
@@ -352,7 +352,7 @@ fun ChartCard(
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
-                count = 2,
+                pageCount = 2,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.9f)
@@ -467,6 +467,7 @@ fun ChartCard(
             }
             HorizontalPagerIndicator(
                 pagerState = pagerState,
+                pageCount = 2,
                 modifier = Modifier
                     .padding(top = 4.dp, bottom = 8.dp)
                     .align(Alignment.CenterHorizontally)
