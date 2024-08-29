@@ -34,8 +34,8 @@ task clean(type: Delete) {
 ext {
     // SDK and tools
     minSdkVersion = 21
-    targetSdkVersion = 33
-    compileSdkVersion = 33
+    targetSdkVersion = 34
+    compileSdkVersion = 34
 
     // dependencies
     accompanistVersion = '0.30.0'
