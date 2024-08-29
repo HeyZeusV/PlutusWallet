@@ -1,3 +1,6 @@
+v4.1.1
+-Fixed: Increased target API level to Android 14 (34) to comply with Google policy.
+
 v4.1.0
 -New: View setting that allows user to select 4 different views for Overview screen: Yearly, Monthly (default), Weekly (Sunday to Saturday), and Daily.
 -Enhancement: Changed the library used to handle dates. Now saves time zone data.
