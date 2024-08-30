@@ -34,15 +34,10 @@ android {
         targetSdk = 34
         versionCode = 29
         versionName = "4.1.1"
+        testInstrumentationRunnerArguments["runnerBuilder"] =
+            "de.mannodermaus.junit5.AndroidJUnit5Builder"
         testInstrumentationRunner = "com.heyzeusv.plutuswallet.CustomTestRunner"
-        testInstrumentationRunnerArgument("runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder")
-        resConfigs("en", "es", "de", "hi", "ja", "ko", "th")
-//        javaCompileOptions {
-//            annotationProcessorOptions {
-//                // location to save schemas to
-//                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
-//            }
-//        }
+        resourceConfigurations.addAll(listOf("en", "es", "de", "hi", "ja", "ko", "th"))
     }
     buildTypes {
         release {
@@ -55,7 +50,7 @@ android {
         }
         debug {
             applicationIdSuffix = ".dev"
-//            pseudoLocalesEnabled = true
+            isPseudoLocalesEnabled = true
         }
     }
     buildFeatures {
@@ -64,7 +59,7 @@ android {
     }
     compileOptions {
         // Flag to enable support for the new language APIs
-//        coreLibraryDesugaringEnabled = true
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -75,7 +70,7 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     sourceSets {
-//        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
     }
     packagingOptions {
         jniLibs {
@@ -88,8 +83,8 @@ android {
     testOptions {
         animationsDisabled = true
         unitTests {
-//            includeAndroidResources = true
-//            returnDefaultValues = true
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
         }
     }
 }
@@ -108,7 +103,6 @@ dependencies {
         }
     }
 
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.core:core-ktx:1.8.0")
     implementation("androidx.activity:activity-compose:1.6.1")
@@ -135,7 +129,6 @@ dependencies {
     // Hilt
     implementation("com.google.dagger:hilt-android:2.42")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-//    androidTestImplementation project(":app")
     kapt("com.google.dagger:hilt-compiler:2.42")
     kapt("androidx.hilt:hilt-compiler:1.0.0-alpha03")
     // Lifecycle
