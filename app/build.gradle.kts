@@ -89,10 +89,6 @@ android {
     }
 }
 
-repositories {
-    maven { url = uri("https://jitpack.io") }
-}
-
 dependencies {
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
